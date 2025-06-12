@@ -7,5 +7,7 @@ public interface CardCommandService {
 
     Long createCard(Long userId, String content, String imageUrl, Long memberBookId);
 
+    void deleteCard(Long memberId, Long cardId);
+
     PresignedUrlResponse getPresignedUrl(PresignedUrlRequest request);
 }
