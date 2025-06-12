@@ -43,6 +43,19 @@ public class CardCommandServiceImpl implements CardCommandService {
         return card.getId();
     }
 
+    @Transactional
+    @Override
+    public void deleteCard(Long memberId, Long cardId) {
+        Card card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new CardException(NOT_FOUND));
+
+        if (!card.getMemberBook().getMember().getId().equals(memberId)) {
+            throw new CardException(FORBIDDEN);
+        }
+
+        cardRepository.deleteById(cardId);
+    }
+
     @Override
     public PresignedUrlResponse getPresignedUrl(PresignedUrlRequest request) {
         int expirationMinutes = 5;

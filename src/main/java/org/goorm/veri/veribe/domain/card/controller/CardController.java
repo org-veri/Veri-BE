@@ -1,10 +1,14 @@
 package org.goorm.veri.veribe.domain.card.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.goorm.veri.veribe.domain.card.controller.dto.CardCreateRequest;
+import org.goorm.veri.veribe.domain.card.controller.dto.CardCreateResponse;
 import org.goorm.veri.veribe.domain.card.service.CardCommandService;
 import org.goorm.veri.veribe.global.storage.dto.PresignedUrlRequest;
 import org.goorm.veri.veribe.global.storage.dto.PresignedUrlResponse;
 import org.namul.api.payload.response.DefaultResponse;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +33,14 @@ public class CardController {
         );
 
         return DefaultResponse.created(new CardCreateResponse(cardId));
+    }
+
+    @DeleteMapping("/{cardId}")
+    public DefaultResponse<Void> deleteCard(@PathVariable Long cardId) {
+        Long memberId = 1L; // Todo. SecurityContext 로 변경
+
+        cardCommandService.deleteCard(memberId, cardId);
+        return DefaultResponse.noContent();
     }
 
     @PostMapping("/image")
