@@ -1,14 +1,22 @@
 package org.goorm.veri.veribe.domain.book.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
-import org.goorm.veri.veribe.domain.book.entity.enums.BookStatus;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.goorm.veri.veribe.global.entity.BaseEntity;
 
 @Getter
 @Builder
 @Entity
-@Table(name = "card")
+@Table(name = "book")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Book extends BaseEntity {
