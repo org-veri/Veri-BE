@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 
 import static org.goorm.veri.veribe.domain.card.exception.CardErrorCode.BAD_REQUEST;
+import static org.goorm.veri.veribe.domain.card.exception.CardErrorCode.FORBIDDEN;
+import static org.goorm.veri.veribe.domain.card.exception.CardErrorCode.NOT_FOUND;
 import static org.goorm.veri.veribe.global.storage.service.StorageConstants.MB;
 
 @Service
