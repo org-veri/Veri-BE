@@ -61,6 +61,10 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
     implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+
+    // ocr
+    implementation 'net.sourceforge.tess4j:tess4j:5.13.0'
+
 }
 
 tasks.named('test') {
