@@ -5,14 +5,13 @@ import org.goorm.veri.veribe.domain.card.controller.dto.CardConverter;
 import org.goorm.veri.veribe.domain.card.controller.dto.CardCreateRequest;
 import org.goorm.veri.veribe.domain.card.controller.dto.CardCreateResponse;
 import org.goorm.veri.veribe.domain.card.controller.dto.CardDetailResponse;
+import org.goorm.veri.veribe.domain.card.controller.dto.CardListResponse;
 import org.goorm.veri.veribe.domain.card.entity.Card;
-import org.goorm.veri.veribe.domain.card.repository.dto.CardListItem;
 import org.goorm.veri.veribe.domain.card.service.CardCommandService;
 import org.goorm.veri.veribe.domain.card.service.CardQueryService;
 import org.goorm.veri.veribe.global.storage.dto.PresignedUrlRequest;
 import org.goorm.veri.veribe.global.storage.dto.PresignedUrlResponse;
 import org.namul.api.payload.response.DefaultResponse;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,10 +43,10 @@ public class CardController {
     }
 
     @GetMapping("/my")
-    public DefaultResponse<Page<CardListItem>> getMyCards() {
+    public DefaultResponse<CardListResponse> getMyCards() {
         Long memberId = 1L; // Todo. SecurityContext 로 변경
 
-        return DefaultResponse.ok(cardQueryService.getOwnedCards(memberId));
+        return DefaultResponse.ok(new CardListResponse(cardQueryService.getOwnedCards(memberId)));
     }
 
     @GetMapping("/{cardId}")
