@@ -20,8 +20,6 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class AwsStorageService implements StorageService {
 
-    private final StorageUtil storageUtil;
-
     @Value("${cloud.aws.s3.credentials.access-key}")
     private String accessKey;
 
@@ -35,14 +33,19 @@ public class AwsStorageService implements StorageService {
     private String region;
 
     @Override
-    public PresignedUrlResponse generatePresignedUrl(String contentType, Duration duration) {
-        String key = storageUtil.generateUniqueKey(contentType);
+    public PresignedUrlResponse generatePresignedUrl(
+            String contentType,
+            Duration duration,
+            long fileSize,
+            String prefix
+    ) {
+        String key = StorageUtil.generateUniqueKey(contentType, prefix);
 
         PutObjectRequest objectRequest = PutObjectRequest.builder()
                 .bucket(bucket)
                 .key(key)
                 .contentType(contentType)
-                .contentLength(1_048_576L) // 1MB, 임시
+//                .contentLength(fileSize) #10
                 .build();
 
         PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()

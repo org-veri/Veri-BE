@@ -6,5 +6,9 @@ import org.goorm.veri.veribe.global.storage.dto.PresignedUrlResponse;
 import java.time.Duration;
 
 public interface StorageService {
-    PresignedUrlResponse generatePresignedUrl(String contentType, Duration duration);
+    PresignedUrlResponse generatePresignedUrl(String contentType,
+                                              Duration duration,
+                                              long fileSize,
+                                              String prefix
+    );
 }
