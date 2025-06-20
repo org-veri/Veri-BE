@@ -2,6 +2,7 @@ package org.goorm.veri.veribe.domain.book.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.goorm.veri.veribe.domain.book.entity.enums.BookStatus;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 
 import java.time.LocalDateTime;
@@ -35,4 +36,7 @@ public class MemberBook {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id")
     private Book book;
+
+    @Column(name = "status")
+    private BookStatus status;
 }
