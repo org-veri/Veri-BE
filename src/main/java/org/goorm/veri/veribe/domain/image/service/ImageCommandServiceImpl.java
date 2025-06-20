@@ -2,7 +2,10 @@ package org.goorm.veri.veribe.domain.image.service;
 
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
+import org.goorm.veri.veribe.domain.image.exception.ImageErrorCode;
+import org.goorm.veri.veribe.domain.image.exception.ImageException;
 import org.goorm.veri.veribe.domain.image.service.enums.FileInfo;
+import org.goorm.veri.veribe.domain.image.service.enums.FileSize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -48,14 +51,22 @@ public class ImageCommandServiceImpl implements ImageCommandService {
         Tesseract tesseract = new Tesseract();
         tesseract.setDatapath(FileInfo.BASE_META_PATH.getValue()); // tessdata 언어 경로 설정, 로컬 기준이라 production에선 수정.
         tesseract.setLanguage(FileInfo.SUPPORT_LANGUAGE.getValue()); // 한글+영어
-        tesseract.setPageSegMode(6);
+        tesseract.setPageSegMode(3);
 
         return tesseract;
     }
 
-    private File convertAndSaveMultipartFile(MultipartFile file, String targetDirectory) throws IOException {
+    private File convertAndSaveMultipartFile(MultipartFile file, String targetDirectory) throws ImageException {
+        if(file.getSize() > FileSize.PERMITTED_SIZE.getSize()){
+            throw new ImageException(ImageErrorCode.SIZE_EXCEEDED);
+        }
+
         File convFile = new File(targetDirectory, Objects.requireNonNull(file.getOriginalFilename()));
-        file.transferTo(convFile);
+        try {
+            file.transferTo(convFile);
+        } catch (IOException e) {
+            throw new ImageException(ImageErrorCode.CONVERT_FAILED);
+        }
         return convFile;
     }
 }
