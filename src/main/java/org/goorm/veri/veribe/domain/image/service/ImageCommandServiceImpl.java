@@ -7,48 +7,55 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Objects;
 
 @Service
 public class ImageCommandServiceImpl implements ImageCommandService {
     @Override
     public String extractTextFromBook(MultipartFile file) throws Exception {
 
+        // TODO: 토큰 도입 후 추출해서 할당하는 걸로 수정.
         String email = "test1";
 
-        Tesseract tesseract = new Tesseract();
-        tesseract.setDatapath(FileInfo.BASE_META_PATH.getValue()); // tessdata 언어 경로 설정, 로컬 기준이라 production에선 수정.
-        tesseract.setLanguage(FileInfo.SUPPORT_LANGUAGE.getValue()); // 한글+영어
-        tesseract.setPageSegMode(6);
+        Tesseract tesseract = createConfiguredTesseract();
 
         String targetDirectory = makeUserDirectory(email);
 
-        // tessdata 경로 설정, 로컬 기준이라 production에선 수정.
-        File convFile = new File(targetDirectory + file.getOriginalFilename());
-        file.transferTo(convFile);
+        File savedFile = convertAndSaveMultipartFile(file, targetDirectory);
 
         try {
-            return tesseract.doOCR(convFile);
+            return tesseract.doOCR(savedFile);
         } catch (TesseractException e) {
             throw new Exception("OCR Processing Failed", e);
         }
     }
 
+    // 파일 시스템에서 사용자별 업로드 사진을 구분하기 위해 사용자별 디렉토리 생성.
     @Override
     public String makeUserDirectory(String email) {
         String basePath = FileInfo.BASE_UPLOAD_PATH.getValue();
         File userDir = new File(basePath + email);
 
         if (!userDir.exists()) {
-            boolean created = userDir.mkdirs(); // 디렉토리 생성
-            if (created) {
-                System.out.println("디렉토리 생성 완료: " + userDir.getAbsolutePath());
-            } else {
-                System.err.println("디렉토리 생성 실패");
-            }
-        } else {
-            System.out.println("이미 디렉토리 존재함: " + userDir.getAbsolutePath());
+            userDir.mkdirs(); // 디렉토리 생성
         }
 
         return userDir.getAbsolutePath() + File.separator;
+    }
+
+    private Tesseract createConfiguredTesseract() {
+        Tesseract tesseract = new Tesseract();
+        tesseract.setDatapath(FileInfo.BASE_META_PATH.getValue()); // tessdata 언어 경로 설정, 로컬 기준이라 production에선 수정.
+        tesseract.setLanguage(FileInfo.SUPPORT_LANGUAGE.getValue()); // 한글+영어
+        tesseract.setPageSegMode(6);
+
+        return tesseract;
+    }
+
+    private File convertAndSaveMultipartFile(MultipartFile file, String targetDirectory) throws IOException {
+        File convFile = new File(targetDirectory, Objects.requireNonNull(file.getOriginalFilename()));
+        file.transferTo(convFile);
+        return convFile;
     }
 }
