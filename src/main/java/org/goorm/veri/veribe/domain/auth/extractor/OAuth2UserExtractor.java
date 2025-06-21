@@ -1,4 +1,4 @@
-package org.goorm.veri.veribe.domain.auth.service;
+package org.goorm.veri.veribe.domain.auth.extractor;
 
 import org.goorm.veri.veribe.domain.auth.dto.OAuth2Request;
 import org.goorm.veri.veribe.domain.member.entity.enums.ProviderType;

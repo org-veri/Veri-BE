@@ -5,6 +5,8 @@ import org.goorm.veri.veribe.domain.auth.converter.OAuth2Converter;
 import org.goorm.veri.veribe.domain.auth.dto.OAuth2Request;
 import org.goorm.veri.veribe.domain.auth.exception.OAuth2ErrorCode;
 import org.goorm.veri.veribe.domain.auth.exception.OAuth2Exception;
+import org.goorm.veri.veribe.domain.auth.extractor.OAuth2UserExtractor;
+import org.goorm.veri.veribe.domain.auth.extractor.OAuth2UserExtractorFactory;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.goorm.veri.veribe.domain.member.entity.enums.ProviderType;
 import org.goorm.veri.veribe.domain.member.repository.MemberRepository;
