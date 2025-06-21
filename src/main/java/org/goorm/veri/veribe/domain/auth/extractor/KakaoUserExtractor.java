@@ -1,10 +1,8 @@
-package org.goorm.veri.veribe.domain.auth.service;
+package org.goorm.veri.veribe.domain.auth.extractor;
 
-import jakarta.validation.constraints.Null;
 import lombok.Getter;
 import org.goorm.veri.veribe.domain.auth.converter.OAuth2Converter;
 import org.goorm.veri.veribe.domain.auth.dto.OAuth2Request;
-import org.goorm.veri.veribe.domain.auth.exception.OAuth2Exception;
 import org.goorm.veri.veribe.domain.member.entity.enums.ProviderType;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
