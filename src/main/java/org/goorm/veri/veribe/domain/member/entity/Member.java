@@ -34,4 +34,8 @@ public class Member extends BaseEntity {
     @Column(name = "provider_type")
     private ProviderType providerType;
 
+    public void updateInfo(String nickname, String image) {
+        this.nickname = nickname;
+        this.image = image;
+    }
 }
