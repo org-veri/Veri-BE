@@ -26,6 +26,7 @@ public class ImageController {
 
     @GetMapping
     public DefaultResponse<List<String>> getImageFiles() throws IOException {
+        // TODO: 인증 정보 도입
         return DefaultResponse.ok(imageQueryService.fetchUploadedImages("test1"));
     }
 }
