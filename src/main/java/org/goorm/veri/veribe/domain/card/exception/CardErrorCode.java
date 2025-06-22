@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum CardErrorCode implements BaseErrorCode {
     NOT_FOUND(HttpStatus.NOT_FOUND, "CARD404", "카드를 찾을 수 없습니다."),
-    BAD_REQUEST(HttpStatus.BAD_REQUEST, "CARD4000", "잘못된 요청입니다. 요청을 확인해주세요."),
+    BAD_REQUEST(HttpStatus.BAD_REQUEST, "CARD400", "잘못된 요청입니다. 요청을 확인해주세요."),
     FORBIDDEN(HttpStatus.FORBIDDEN, "CARD401", "해당 카드에 대한 권한이 없습니다."),
 
     UNSUPPORTED_IMAGE_TYPE(HttpStatus.BAD_REQUEST, "CARD4001", "지원하지 않는 파일 형식입니다. 이미지만 업로드할 수 있습니다.");
