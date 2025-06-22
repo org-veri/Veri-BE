@@ -3,7 +3,6 @@ package org.goorm.veri.veribe.domain.auth.exception;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.namul.api.payload.code.BaseErrorCode;
-import org.namul.api.payload.code.dto.ErrorReasonDTO;
 import org.namul.api.payload.code.dto.supports.DefaultResponseErrorReasonDTO;
 import org.springframework.http.HttpStatus;
 
@@ -11,6 +10,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum OAuth2ErrorCode implements BaseErrorCode {
     UNSUPPORTED_OAUTH2_PROVIDER(HttpStatus.BAD_REQUEST, "OAUTH400", "지원하지 않는 소셜 로그인입니다."),
+    FAIL_OAUTH2_LOGIN(HttpStatus.UNAUTHORIZED, "OAUTH401", "소셜로그인에 실패했습니다."),
     ;
 
     private final HttpStatus httpStatus;
@@ -18,7 +18,7 @@ public enum OAuth2ErrorCode implements BaseErrorCode {
     private final String message;
 
     @Override
-    public ErrorReasonDTO getReason() {
+    public DefaultResponseErrorReasonDTO getReason() {
         return DefaultResponseErrorReasonDTO.builder()
                 .httpStatus(this.httpStatus)
                 .code(this.code)
