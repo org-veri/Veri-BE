@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.namul.api.payload.code.DefaultResponseErrorCode;
 import org.namul.api.payload.code.dto.supports.DefaultResponseErrorReasonDTO;
 import org.namul.api.payload.writer.FailureResponseWriter;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         ObjectMapper objectMapper = new ObjectMapper();
         DefaultResponseErrorReasonDTO reason = DefaultResponseErrorCode._FORBIDDEN.getReason();
         response.setStatus(reason.getHttpStatus().value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         objectMapper.writeValue(response.getOutputStream(), failureResponseWriter.onFailure(reason, accessDeniedException.getMessage()));
     }
 }
