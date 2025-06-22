@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.namul.api.payload.code.DefaultResponseErrorCode;
 import org.namul.api.payload.code.dto.supports.DefaultResponseErrorReasonDTO;
-import org.namul.api.payload.response.DefaultResponse;
 import org.namul.api.payload.writer.FailureResponseWriter;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
@@ -18,7 +17,7 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
-public class CustomAuthorizationEntryPoint implements AuthenticationEntryPoint {
+public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     private final FailureResponseWriter<DefaultResponseErrorReasonDTO> failureResponseWriter;
 

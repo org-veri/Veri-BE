@@ -60,9 +60,9 @@ public class KakaoOAuth2Service extends AbstractOAuth2Service {
     }
 
     @Override
-    protected OAuth2Request.OAuth2LoginRequest getUserInfo(String token) {
+    protected OAuth2Request.OAuth2LoginUserInfo getUserInfo(String token) {
         KakaoOAuth2DTO.KakaoProfile kakaoProfile = getKakaoProfile(token);
-        return OAuth2Request.OAuth2LoginRequest.builder()
+        return OAuth2Request.OAuth2LoginUserInfo.builder()
                 .email(kakaoProfile.getKakao_account().getEmail())
                 .providerId(String.valueOf(kakaoProfile.getId()))
                 .nickname(kakaoProfile.getProperties().getNickname())

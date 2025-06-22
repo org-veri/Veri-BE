@@ -14,7 +14,7 @@ public class AuthServiceImpl implements AuthService {
     private final OAuth2Service kakaoOAuth2Service;
 
     @Override
-    public OAuth2Response.OAuth2LoginResponse login(String provider, String code) {
+    public OAuth2Response.LoginResponse login(String provider, String code) {
         if (provider.equalsIgnoreCase(ProviderType.KAKAO.name())) {
             return kakaoOAuth2Service.login(code);
         }

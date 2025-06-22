@@ -14,7 +14,7 @@ public class TokenCommandServiceImpl implements TokenCommandService {
     private final JwtUtil jwtUtil;
 
     @Override
-    public OAuth2Response.OAuth2LoginResponse loginToken(Member member) {
-        return OAuth2Converter.toOAuth2LoginResponse(member.getId(), jwtUtil.createAccessToken(member), jwtUtil.createRefreshToken(member));
+    public OAuth2Response.LoginResponse createLoginToken(Member member) {
+        return OAuth2Converter.toOAuth2LoginResponse(jwtUtil.createAccessToken(member), jwtUtil.createRefreshToken(member));
     }
 }

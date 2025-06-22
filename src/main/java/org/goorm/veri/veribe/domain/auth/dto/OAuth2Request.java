@@ -8,13 +8,11 @@ public class OAuth2Request {
 
     @Getter
     @Builder
-    public static class OAuth2LoginRequest {
+    public static class OAuth2LoginUserInfo {
         private String email;
         private String nickname;
         private String image;
         private String providerId;
         private ProviderType providerType;
-
-
     }
 }
