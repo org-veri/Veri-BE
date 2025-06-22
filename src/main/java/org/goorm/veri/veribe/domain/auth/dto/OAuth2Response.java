@@ -7,8 +7,7 @@ public class OAuth2Response {
 
     @Getter
     @Builder
-    public static class OAuth2LoginResponse {
-        private Long id;
+    public static class LoginResponse {
         private String accessToken;
         private String refreshToken;
     }

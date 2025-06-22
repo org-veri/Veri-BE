@@ -16,18 +16,18 @@ public abstract class AbstractOAuth2Service implements OAuth2Service {
     private final TokenCommandService tokenCommandService;
 
     @Override
-    public OAuth2Response.OAuth2LoginResponse login(String code) {
+    public OAuth2Response.LoginResponse login(String code) {
         String accessToken = getAccessToken(code);
-        OAuth2Request.OAuth2LoginRequest request = getUserInfo(accessToken);
+        OAuth2Request.OAuth2LoginUserInfo request = getUserInfo(accessToken);
         Member member = saveOrUpdateMember(request);
-        return tokenCommandService.loginToken(member);
+        return tokenCommandService.createLoginToken(member);
     }
 
     protected abstract String getAccessToken(String code);
 
-    protected abstract OAuth2Request.OAuth2LoginRequest getUserInfo(String token);
+    protected abstract OAuth2Request.OAuth2LoginUserInfo getUserInfo(String token);
 
-    private Member saveOrUpdateMember(OAuth2Request.OAuth2LoginRequest request) {
+    private Member saveOrUpdateMember(OAuth2Request.OAuth2LoginUserInfo request) {
         Member member;
         Optional<Member> optional = memberRepository.findByProviderIdAndProviderType(request.getProviderId(), request.getProviderType());
         if (optional.isPresent()) {
