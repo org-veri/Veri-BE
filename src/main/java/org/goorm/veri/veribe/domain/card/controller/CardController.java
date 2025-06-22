@@ -1,6 +1,7 @@
 package org.goorm.veri.veribe.domain.card.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.goorm.veri.veribe.domain.auth.annotation.AuthenticatedMember;
 import org.goorm.veri.veribe.domain.card.controller.dto.CardConverter;
 import org.goorm.veri.veribe.domain.card.controller.dto.CardCreateRequest;
 import org.goorm.veri.veribe.domain.card.controller.dto.CardCreateResponse;
@@ -9,6 +10,7 @@ import org.goorm.veri.veribe.domain.card.controller.dto.CardListResponse;
 import org.goorm.veri.veribe.domain.card.entity.Card;
 import org.goorm.veri.veribe.domain.card.service.CardCommandService;
 import org.goorm.veri.veribe.domain.card.service.CardQueryService;
+import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.goorm.veri.veribe.global.storage.dto.PresignedUrlRequest;
 import org.goorm.veri.veribe.global.storage.dto.PresignedUrlResponse;
 import org.namul.api.payload.response.DefaultResponse;
@@ -29,11 +31,11 @@ public class CardController {
     private final CardQueryService cardQueryService;
 
     @PostMapping
-    public DefaultResponse<CardCreateResponse> createCard(@RequestBody CardCreateRequest request) {
-        Long memberId = 1L; // Todo. SecurityContext 로 변경
-
+    public DefaultResponse<CardCreateResponse> createCard(
+            @RequestBody CardCreateRequest request,
+            @AuthenticatedMember Member member) { 
         Long cardId = cardCommandService.createCard(
-                memberId,
+                member.getId(),
                 request.content(),
                 request.imageUrl(),
                 request.memberBookId()
@@ -43,10 +45,8 @@ public class CardController {
     }
 
     @GetMapping("/my")
-    public DefaultResponse<CardListResponse> getMyCards() {
-        Long memberId = 1L; // Todo. SecurityContext 로 변경
-
-        return DefaultResponse.ok(new CardListResponse(cardQueryService.getOwnedCards(memberId)));
+    public DefaultResponse<CardListResponse> getMyCards(@AuthenticatedMember Member member) {
+        return DefaultResponse.ok(new CardListResponse(cardQueryService.getOwnedCards(member.getId())));
     }
 
     @GetMapping("/{cardId}")
@@ -56,10 +56,10 @@ public class CardController {
     }
 
     @DeleteMapping("/{cardId}")
-    public DefaultResponse<Void> deleteCard(@PathVariable Long cardId) {
-        Long memberId = 1L; // Todo. SecurityContext 로 변경
+    public DefaultResponse<Void> deleteCard(@PathVariable Long cardId,
+                                            @AuthenticatedMember Member member) {
 
-        cardCommandService.deleteCard(memberId, cardId);
+        cardCommandService.deleteCard(member.getId(), cardId);
         return DefaultResponse.noContent();
     }
 
