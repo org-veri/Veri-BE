@@ -20,7 +20,7 @@ public enum TokenErrorCode implements BaseErrorCode {
     private final String message;
 
     @Override
-    public ErrorReasonDTO getReason() {
+    public DefaultResponseErrorReasonDTO getReason() {
         return DefaultResponseErrorReasonDTO.builder()
                 .httpStatus(this.httpStatus)
                 .code(this.code)
