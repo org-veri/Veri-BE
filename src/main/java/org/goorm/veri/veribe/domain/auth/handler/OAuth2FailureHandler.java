@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.auth.exception.OAuth2ErrorCode;
 import org.namul.api.payload.code.dto.supports.DefaultResponseErrorReasonDTO;
 import org.namul.api.payload.writer.FailureResponseWriter;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,7 @@ public class OAuth2FailureHandler implements AuthenticationFailureHandler {
         ObjectMapper objectMapper = new ObjectMapper();
         DefaultResponseErrorReasonDTO reason = OAuth2ErrorCode.FAIL_OAUTH2_LOGIN.getReason();
         response.setStatus(reason.getHttpStatus().value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         objectMapper.writeValue(response.getOutputStream(), failureResponseWriter.onFailure(reason, exception.getMessage()));
     }
 }
