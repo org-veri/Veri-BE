@@ -18,7 +18,7 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @GetMapping("/oauth2/{provider}")
+    @GetMapping("/api/v1/oauth2/{provider}")
     @Operation(summary = "소셜 로그인 API", description = "Provider와 인가코드를 이용하여 로그인")
     public DefaultResponse<OAuth2Response.LoginResponse> login(@PathVariable String provider, @RequestParam("code") String code) {
         OAuth2Response.LoginResponse response = authService.login(provider, code);
