@@ -105,7 +105,11 @@ public class BookshelfServiceImpl implements BookshelfService {
         MemberBook memberBook = memberBookRepository.findById(memberBookId)
                 .orElseThrow(() -> new MemberBookException(BAD_REQUEST));
 
+        Book book = bookRepository.findById(memberBook.getBook().getId())
+                .orElseThrow(() -> new MemberBookException(BAD_REQUEST));
+
         memberBookRepository.delete(memberBook);
+        bookRepository.delete(book);
     }
 
 
