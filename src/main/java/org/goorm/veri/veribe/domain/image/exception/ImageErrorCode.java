@@ -15,7 +15,8 @@ public enum ImageErrorCode implements BaseErrorCode {
     FORBIDDEN(HttpStatus.FORBIDDEN, "IMG401", "해당 이미지에 대한 권한이 없습니다."),
     ENCODING_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "IMG500_1", "이미지 인코딩에 실패했습니다."),
     SIZE_EXCEEDED(HttpStatus.INTERNAL_SERVER_ERROR, "IMG500_2", "이미지 크기는 1MB를 초과할 수 없습니다."),
-    CONVERT_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "IMG500_3", "파일 변환 도중 오류가 발생했습니다.");
+    CONVERT_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "IMG500_3", "파일 변환 도중 오류가 발생했습니다."),
+    UNSUPPORTED_TYPE(HttpStatus.INTERNAL_SERVER_ERROR, "IMG500_4", "지원하지 않는 파일 형식입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
