@@ -1,8 +1,10 @@
 package org.goorm.veri.veribe.domain.image.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.goorm.veri.veribe.domain.auth.annotation.AuthenticatedMember;
 import org.goorm.veri.veribe.domain.image.service.ImageCommandService;
 import org.goorm.veri.veribe.domain.image.service.ImageQueryService;
+import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.namul.api.payload.response.DefaultResponse;
 
 import org.springframework.web.bind.annotation.*;
@@ -20,13 +22,15 @@ public class ImageController {
     public final ImageQueryService imageQueryService;
 
     @PostMapping
-    public DefaultResponse<String> postImageFile(@RequestParam("file") MultipartFile file) throws Exception {
-        return DefaultResponse.ok(imageCmdService.extractTextFromBook(file));
+    public DefaultResponse<String> postImageFile(
+            //@AuthenticatedMember Member member,
+            @RequestParam("file") MultipartFile file) throws Exception {
+        return DefaultResponse.ok(imageCmdService.processImageOcrAndSave(file));
     }
 
     @GetMapping
     public DefaultResponse<List<String>> getImageFiles() throws IOException {
         // TODO: 인증 정보 도입
-        return DefaultResponse.ok(imageQueryService.fetchUploadedImages("test1"));
+        return DefaultResponse.ok(imageQueryService.fetchUploadedImages(1L));
     }
 }
