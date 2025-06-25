@@ -1,15 +1,18 @@
 package org.goorm.veri.veribe.domain.book.entity.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.goorm.veri.veribe.domain.book.entity.dtos.book.BookRequest;
+import org.goorm.veri.veribe.domain.book.entity.dtos.book.BookResponse;
 import org.goorm.veri.veribe.domain.book.entity.dtos.memberBook.MemberBookAddRequest;
 import org.goorm.veri.veribe.domain.book.entity.dtos.memberBook.MemberBookAddResponse;
 import org.goorm.veri.veribe.domain.book.entity.dtos.memberBook.MemberBookDetailResponse;
 import org.goorm.veri.veribe.domain.book.entity.dtos.memberBook.MemberBookResponse;
+import org.goorm.veri.veribe.domain.book.entity.service.BookService;
 import org.goorm.veri.veribe.domain.book.entity.service.BookshelfService;
 import org.namul.api.payload.response.DefaultResponse;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequestMapping("/api/v0/bookshelf")
@@ -18,17 +21,37 @@ import java.util.List;
 public class BookshelfController {
 
     private final BookshelfService bookshelfService;
+    private final BookService bookService;
 
     @PostMapping
     public DefaultResponse<MemberBookAddResponse> addBook(@RequestBody MemberBookAddRequest request) {
+
+        BookRequest bookRequest = request.bookRequest();
+
+        Long bookId = bookService.addBook(
+                bookRequest.title(),
+                bookRequest.image(),
+                bookRequest.author(),
+                bookRequest.publisher(),
+                bookRequest.isbn());
+
         Long memberBookId = bookshelfService.addBookshelf(
                 request.memberId(),
-                request.bookId(),
+                bookId,
                 request.score(),
                 request.startedAt(),
                 request.endedAt());
 
-        return DefaultResponse.created(new MemberBookAddResponse(memberBookId, LocalDate.now().atStartOfDay()));
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime parsedTime = LocalDateTime.of(now.getYear(),
+                now.getMonth(),
+                now.getDayOfMonth(),
+                now.getHour(),
+                now.getMinute(),
+                0,
+                0);
+
+        return DefaultResponse.created(new MemberBookAddResponse(memberBookId, parsedTime));
     }
 
     @GetMapping("/all")
@@ -48,15 +71,24 @@ public class BookshelfController {
 //        return DefaultResponse.ok(response);
 //    }
 
+    @GetMapping("/search")
+    public DefaultResponse<List<BookResponse>> searchBooks(@RequestParam String query) {
+        List<BookResponse> bookResponses = bookService.searchBook(query);
+
+        return DefaultResponse.ok(bookResponses);
+    }
+
     @PatchMapping("/status/start")
     public DefaultResponse<Void> startReading(@RequestParam Long memberBookId) {
         bookshelfService.readStart(memberBookId);
+
         return DefaultResponse.noContent();
     }
 
     @PatchMapping("/status/over")
     public DefaultResponse<Void> finishReading(@RequestParam Long memberBookId) {
         bookshelfService.readOver(memberBookId);
+
         return DefaultResponse.noContent();
     }
 
