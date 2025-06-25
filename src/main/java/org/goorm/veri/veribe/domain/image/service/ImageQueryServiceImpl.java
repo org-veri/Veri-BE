@@ -1,62 +1,44 @@
 package org.goorm.veri.veribe.domain.image.service;
 
-import org.goorm.veri.veribe.domain.image.exception.DirectoryErrorCode;
-import org.goorm.veri.veribe.domain.image.exception.DirectoryException;
+import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.image.exception.ImageErrorCode;
 import org.goorm.veri.veribe.domain.image.exception.ImageException;
-import org.goorm.veri.veribe.domain.image.service.enums.FileExtension;
-import org.goorm.veri.veribe.domain.image.service.enums.FileInfo;
+import org.goorm.veri.veribe.domain.image.repository.ImageRepository;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ImageQueryServiceImpl implements ImageQueryService{
+    private final ImageRepository imageRepository;
 
     @Override
-    public List<String> fetchUploadedImages(String email) throws ImageException, DirectoryException {
+    public List<String> fetchUploadedImages(Long userId) {
+        List<String> publicUrls = imageRepository.findByMemberId(userId);
 
-
-        File userDir = new File(fetchUserDirectory(email));
-
-        File[] imageFiles = userDir.listFiles((dir, name) ->
-                FileExtension.checkAvailable(name)
-        );
-
-        if (imageFiles == null || imageFiles.length == 0) {
-            return List.of(); // 업로드된 이미지 없음
+        if (publicUrls.isEmpty()) {
+            return List.of();
         }
 
-        return Arrays.stream(imageFiles)
-                .map(this::encodeFileToBase64)
+        return publicUrls.stream()
+                .map(this::downloadAndEncodeToBase64)
                 .toList();
     }
 
-    @Override
-    public String fetchUserDirectory(String email) throws DirectoryException{
-        String basePath = FileInfo.BASE_UPLOAD_PATH.getValue();
-        File userDir = new File(basePath + email);
-
-        if (userDir.exists() && userDir.isDirectory()) {
-            return userDir.getAbsolutePath();
-        } else {
-            throw new DirectoryException(DirectoryErrorCode.NOT_FOUND);
-        }
-    }
-
-
-    private String encodeFileToBase64(File file) {
+    private String downloadAndEncodeToBase64(String imageUrl) {
         try {
-            byte[] fileContent = Files.readAllBytes(file.toPath());
-            return Base64.getEncoder().encodeToString(fileContent);
+            byte[] imageBytes = new URL(imageUrl).openStream().readAllBytes();
+            return Base64.getEncoder().encodeToString(imageBytes);
         } catch (IOException e) {
-            throw new ImageException(ImageErrorCode.ENCODING_FAILED);
+            throw new ImageException(ImageErrorCode.ENCODING_FAILED); // 새로 정의 필요
         }
     }
 }
