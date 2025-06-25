@@ -3,12 +3,13 @@ package org.goorm.veri.veribe.domain.image.service;
 import lombok.RequiredArgsConstructor;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
-import org.goorm.veri.veribe.domain.card.exception.CardErrorCode;
-import org.goorm.veri.veribe.domain.card.exception.CardException;
 import org.goorm.veri.veribe.domain.image.entity.Image;
+import org.goorm.veri.veribe.domain.image.exception.ImageErrorCode;
+import org.goorm.veri.veribe.domain.image.exception.ImageException;
 import org.goorm.veri.veribe.domain.image.repository.ImageRepository;
 import org.goorm.veri.veribe.domain.image.service.enums.FileInfo;
 import org.goorm.veri.veribe.domain.member.entity.Member;
+import org.goorm.veri.veribe.domain.member.repository.MemberRepository;
 import org.goorm.veri.veribe.global.storage.dto.PresignedUrlResponse;
 import org.goorm.veri.veribe.global.storage.service.StorageService;
 import org.goorm.veri.veribe.global.storage.service.StorageUtil;
@@ -20,14 +21,11 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
-import java.io.File;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.Duration;
-import java.util.Objects;
 
 import static org.goorm.veri.veribe.global.storage.service.StorageConstants.MB;
 
@@ -37,9 +35,9 @@ public class ImageCommandServiceImpl implements ImageCommandService {
 
     private final StorageService storageService;
     private final ImageRepository imageRepository;
+    private final MemberRepository memberRepository;
 
-
-    public void insertImageUrl(String imageUrl, Member member){
+    private void insertImageUrl(String imageUrl, Member member){
         Image image = Image.builder()
                 .member(member)
                 .imageUrl(imageUrl)
@@ -48,20 +46,29 @@ public class ImageCommandServiceImpl implements ImageCommandService {
         imageRepository.save(image);
     }
 
-
     @Override
-    public String extractTextFromBook(MultipartFile file) throws Exception {
+    public String processImageOcrAndSave(MultipartFile file) throws Exception {
+        // TODO: 컨트롤러에서 Member 전달 받음.
+        Member member = memberRepository.findById(1L).orElseThrow();
 
-        BufferedImage preprocessed = preprocessImage(convertFileToImage(file));
+        BufferedImage original = ImageIO.read(file.getInputStream()); // 원본 이미지, 사용자가 업로드 한 이미지를 불러올 떄 사용
+        BufferedImage preprocessed = preprocessImage(convertFileToImage(file)); // 전처리 이미지, OCR 인식률 높이기 위한 목적.
 
-        String email = "test1";
+        PresignedUrlResponse presignedOriginal = getPresignedUrl(file.getContentType());
+        PresignedUrlResponse presignedPreprocessed = getPresignedUrl(file.getContentType());
 
-        PresignedUrlResponse presigned = getPresignedUrl(file.getContentType());
+        storageService.uploadImageToS3(original, presignedOriginal.imageKey());
+        storageService.uploadImageToS3(preprocessed, presignedPreprocessed.imageKey());
 
-        storageService.uploadFileToS3(preprocessed, presigned.imageKey());
+        String ocrResult = extractTextFromBook(presignedPreprocessed);
 
-        URL s3Url = new URL(presigned.publicUrl());
+        insertImageUrl(presignedOriginal.publicUrl(), member);
 
+        return ocrResult;
+    }
+
+    private String extractTextFromBook(PresignedUrlResponse presignedUrlResponse) throws Exception {
+        URL s3Url = new URL(presignedUrlResponse.publicUrl());
         Tesseract tesseract = createConfiguredTesseract();
 
         try (InputStream inputStream = s3Url.openStream()) {
@@ -71,11 +78,11 @@ public class ImageCommandServiceImpl implements ImageCommandService {
         }
     }
 
-    public BufferedImage convertFileToImage(MultipartFile file) throws IOException {
+    private BufferedImage convertFileToImage(MultipartFile file) throws IOException {
         return ImageIO.read(file.getInputStream());
     }
 
-    public BufferedImage preprocessImage(BufferedImage input) {
+    private BufferedImage preprocessImage(BufferedImage input) {
         BufferedImage gray = new BufferedImage(input.getWidth(), input.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
         Graphics2D g = gray.createGraphics();
         g.drawImage(input, 0, 0, null);
@@ -93,12 +100,12 @@ public class ImageCommandServiceImpl implements ImageCommandService {
         return gray;
     }
 
-    public PresignedUrlResponse getPresignedUrl(String request) {
+    private PresignedUrlResponse getPresignedUrl(String request) {
         int expirationMinutes = 5;
         long allowedSize = MB; // 1MB
         String prefix = "public";
 
-        if (!StorageUtil.isImage(request)) throw new CardException(CardErrorCode.UNSUPPORTED_IMAGE_TYPE);
+        if (!StorageUtil.isImage(request)) throw new ImageException(ImageErrorCode.UNSUPPORTED_TYPE);
 
         return storageService.generatePresignedUrl(
                 request,
