@@ -6,6 +6,5 @@ import org.goorm.veri.veribe.domain.image.exception.ImageException;
 import java.util.List;
 
 public interface ImageQueryService {
-    List<String> fetchUploadedImages(String email) throws ImageException, DirectoryException;
-    String fetchUserDirectory(String email) throws DirectoryException;
+    List<String> fetchUploadedImages(Long userId) throws ImageException, DirectoryException;
 }
