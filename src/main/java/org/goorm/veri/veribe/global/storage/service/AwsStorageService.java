@@ -1,18 +1,27 @@
 package org.goorm.veri.veribe.global.storage.service;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.global.storage.dto.PresignedUrlResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.Duration;
 
 @Service
@@ -31,6 +40,17 @@ public class AwsStorageService implements StorageService {
 
     @Value("${cloud.aws.s3.region}")
     private String region;
+    private S3Client s3Client;
+
+    @PostConstruct
+    public void initS3Client() {
+        this.s3Client = S3Client.builder()
+                .region(Region.of(region))
+                .credentialsProvider(
+                        StaticCredentialsProvider.create(
+                                AwsBasicCredentials.create(accessKey, secretKey)))
+                .build();
+    }
 
     @Override
     public PresignedUrlResponse generatePresignedUrl(
@@ -61,10 +81,34 @@ public class AwsStorageService implements StorageService {
                 .build()) {
 
             PresignedPutObjectRequest presignedRequest = presigner.presignPutObject(presignRequest);
-            return new PresignedUrlResponse(presignedRequest.url().toString(), getPublicUrl(key));
+            return new PresignedUrlResponse(presignedRequest.url().toString(), getPublicUrl(key), key);
         }
     }
 
+    public void uploadImageToS3(BufferedImage image, String imageKey) {
+        try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+
+            String format = "jpeg";
+            // 업로드
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(imageKey)
+                    .contentType(format)
+                    .build();
+
+
+            ImageIO.write(image, format, os);
+            byte[] bytes = os.toByteArray();
+
+
+            s3Client.putObject(putObjectRequest, RequestBody.fromBytes(bytes));
+
+
+        } catch (IOException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR, "이미지 업로드 실패", e);
+        }
+    }
     private String getPublicUrl(String key) {
         return String.format("https://%s.s3.amazonaws.com/%s", bucket, key);
     }
