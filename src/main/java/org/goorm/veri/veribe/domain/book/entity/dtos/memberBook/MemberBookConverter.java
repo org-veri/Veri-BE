@@ -13,4 +13,15 @@ public class MemberBookConverter {
                 .author(memberBook.getBook().getAuthor())
                 .build();
     }
+
+    public static MemberBookDetailResponse toMemberBookDetailResponse(MemberBook memberBook) {
+        return MemberBookDetailResponse.builder()
+                .bookId(memberBook.getBook().getId())
+                .title(memberBook.getBook().getTitle())
+                .imageUrl(memberBook.getBook().getImage())
+                .status(memberBook.getStatus())
+                .score(memberBook.getScore())
+                .author(memberBook.getBook().getAuthor())
+                .build();
+    }
 }
