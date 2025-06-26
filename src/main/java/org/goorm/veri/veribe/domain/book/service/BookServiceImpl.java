@@ -1,16 +1,16 @@
-package org.goorm.veri.veribe.domain.book.entity.service;
+package org.goorm.veri.veribe.domain.book.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.book.entity.Book;
-import org.goorm.veri.veribe.domain.book.entity.config.NaverConfig;
-import org.goorm.veri.veribe.domain.book.entity.dtos.book.BookConverter;
-import org.goorm.veri.veribe.domain.book.entity.dtos.book.BookResponse;
-import org.goorm.veri.veribe.domain.book.entity.dtos.book.NaverBookItem;
-import org.goorm.veri.veribe.domain.book.entity.dtos.book.NaverBookResponse;
-import org.goorm.veri.veribe.domain.book.entity.exception.NaverAPIException;
-import org.goorm.veri.veribe.domain.book.entity.repository.BookRepository;
+import org.goorm.veri.veribe.domain.book.config.NaverConfig;
+import org.goorm.veri.veribe.domain.book.dtos.book.BookConverter;
+import org.goorm.veri.veribe.domain.book.dtos.book.BookResponse;
+import org.goorm.veri.veribe.domain.book.dtos.book.NaverBookItem;
+import org.goorm.veri.veribe.domain.book.dtos.book.NaverBookResponse;
+import org.goorm.veri.veribe.domain.book.exception.NaverAPIException;
+import org.goorm.veri.veribe.domain.book.repository.BookRepository;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -24,7 +24,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.goorm.veri.veribe.domain.book.entity.exception.NaverAPIErrorCode.BAD_REQUEST;
+import static org.goorm.veri.veribe.domain.book.exception.NaverAPIErrorCode.BAD_REQUEST;
 
 @Service
 @Transactional

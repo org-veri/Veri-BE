@@ -1,4 +1,4 @@
-package org.goorm.veri.veribe.domain.book.entity.repository;
+package org.goorm.veri.veribe.domain.book.repository;
 
 import org.goorm.veri.veribe.domain.book.entity.MemberBook;
 import org.springframework.data.jpa.repository.JpaRepository;

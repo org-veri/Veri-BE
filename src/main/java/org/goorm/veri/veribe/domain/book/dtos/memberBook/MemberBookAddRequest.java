@@ -1,6 +1,6 @@
-package org.goorm.veri.veribe.domain.book.entity.dtos.memberBook;
+package org.goorm.veri.veribe.domain.book.dtos.memberBook;
 
-import org.goorm.veri.veribe.domain.book.entity.dtos.book.BookRequest;
+import org.goorm.veri.veribe.domain.book.dtos.book.BookRequest;
 
 import java.time.LocalDateTime;
 

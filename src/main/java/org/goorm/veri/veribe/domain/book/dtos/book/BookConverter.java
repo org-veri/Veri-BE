@@ -1,4 +1,4 @@
-package org.goorm.veri.veribe.domain.book.entity.dtos.book;
+package org.goorm.veri.veribe.domain.book.dtos.book;
 
 public class BookConverter {
 
