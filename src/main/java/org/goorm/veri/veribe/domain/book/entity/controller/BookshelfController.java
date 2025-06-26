@@ -63,13 +63,12 @@ public class BookshelfController {
 
     //TODO: 책장에서 책의 상세정보 열람
     //의문점: 책장에서 책의 상세정보를 열람할때 해당 책의 독서카드도 같이 보여줘야 한다 -> MemberBook 에서 어떻게 Card 를 참조할지....
+    @GetMapping("/detail")
+    public DefaultResponse<MemberBookDetailResponse> getBookDetail(@RequestParam Long memberBookId) {
+        MemberBookDetailResponse response = bookshelfService.searchDetail(memberBookId);
 
-//    @GetMapping("/{memberBookId}")
-//    public DefaultResponse<MemberBookDetailResponse> getBookDetail(@PathVariable("memberBookId") Long memberBookId) {
-//        MemberBookResponse response = bookshelfService.searchDetail(memberBookId);
-//
-//        return DefaultResponse.ok(response);
-//    }
+        return DefaultResponse.ok(response);
+    }
 
     @GetMapping("/search")
     public DefaultResponse<List<BookResponse>> searchBooks(@RequestParam String query) {
