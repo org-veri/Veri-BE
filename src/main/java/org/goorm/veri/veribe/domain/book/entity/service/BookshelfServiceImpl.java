@@ -65,6 +65,15 @@ public class BookshelfServiceImpl implements BookshelfService {
     }
 
     @Override
+    public MemberBookDetailResponse searchDetail(Long memberBookId) {
+        MemberBook memberBook = memberBookRepository.findById(memberBookId)
+                .orElseThrow(() -> new MemberBookException(BAD_REQUEST));
+
+        MemberBookDetailResponse dto = MemberBookConverter.toMemberBookDetailResponse(memberBook);
+        return dto;
+    }
+
+    @Override
     public void readStart(Long memberBookId) {
         MemberBook memberBook = memberBookRepository.findById(memberBookId)
                 .orElseThrow(() -> new MemberBookException(BAD_REQUEST));
@@ -111,16 +120,5 @@ public class BookshelfServiceImpl implements BookshelfService {
         memberBookRepository.delete(memberBook);
         bookRepository.delete(book);
     }
-
-
-//    @Override
-//    public MemberBookDetailResponse searchDetail(Long memberBookId) {
-//        MemberBook memberBook = memberBookRepository.findById(memberBookId)
-//                .orElseThrow(() -> new MemberBookException(BAD_REQUEST));
-//
-//        MemberBookResponse dto = MemberBookConverter.toMemberBookDetailResponse(memberBook);
-//        return dto;
-//    }
-
 
 }

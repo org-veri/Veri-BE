@@ -1,5 +1,6 @@
 package org.goorm.veri.veribe.domain.book.entity.service;
 
+import org.goorm.veri.veribe.domain.book.entity.dtos.memberBook.MemberBookDetailResponse;
 import org.goorm.veri.veribe.domain.book.entity.dtos.memberBook.MemberBookResponse;
 
 import java.time.LocalDateTime;
@@ -11,7 +12,7 @@ public interface BookshelfService {
 
     List<MemberBookResponse> searchAll(Long memberId);
 
-//    MemberBookResponse searchDetail(Long memberBookId);
+    MemberBookDetailResponse searchDetail(Long memberBookId);
 
     void readStart(Long memberBookId);
 
