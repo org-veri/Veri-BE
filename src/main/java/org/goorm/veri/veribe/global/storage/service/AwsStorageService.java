@@ -1,18 +1,17 @@
 package org.goorm.veri.veribe.global.storage.service;
 
+import io.github.miensoap.s3.core.ExtendedS3Presigner;
+import io.github.miensoap.s3.core.post.dto.PostObjectPresignRequest;
+import io.github.miensoap.s3.core.post.dto.PresignedPostForm;
+import io.github.miensoap.s3.core.post.s3policy.PostConditions;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.goorm.veri.veribe.domain.image.exception.ImageErrorCode;
-import org.goorm.veri.veribe.domain.image.exception.ImageException;
 import org.goorm.veri.veribe.global.storage.dto.PresignedUrlResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -20,10 +19,6 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.time.Duration;
 
 @Service
@@ -59,7 +54,6 @@ public class AwsStorageService implements StorageService {
     public PresignedUrlResponse generatePresignedUrl(
             String contentType,
             Duration duration,
-            long fileSize,
             String prefix
     ) {
         String key = StorageUtil.generateUniqueKey(contentType, prefix);
@@ -68,7 +62,6 @@ public class AwsStorageService implements StorageService {
                 .bucket(bucket)
                 .key(key)
                 .contentType(contentType)
-//                .contentLength(fileSize) #10
                 .build();
 
         PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
@@ -87,6 +80,38 @@ public class AwsStorageService implements StorageService {
             return new PresignedUrlResponse(presignedRequest.url().toString(), getPublicUrl(key));
         }
     }
+
+    public PresignedPostForm generatePresignedPost(
+            String contentType,
+            Duration duration,
+            long fileSize,
+            String prefix
+    ) {
+        String key = StorageUtil.generateUniqueKey(contentType, prefix);
+
+        PostConditions conditions = PostConditions.builder()
+                .contentType(contentType)
+                .maxSize(fileSize)
+                .build();
+
+        PostObjectPresignRequest presignRequest = PostObjectPresignRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .conditions(conditions)
+                .signatureDuration(duration)
+                .build();
+
+        try (ExtendedS3Presigner presigner = ExtendedS3Presigner.builder()
+                .region(Region.of(region))
+                .credentialsProvider(
+                        StaticCredentialsProvider.create(
+                                AwsBasicCredentials.create(accessKey, secretKey)))
+                .build()) {
+
+            return presigner.presignPostObject(presignRequest);
+        }
+    }
+
     private String getPublicUrl(String key) {
         return String.format("https://%s.s3.amazonaws.com/%s", bucket, key);
     }
