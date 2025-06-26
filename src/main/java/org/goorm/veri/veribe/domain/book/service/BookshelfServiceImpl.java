@@ -78,13 +78,22 @@ public class BookshelfServiceImpl implements BookshelfService {
         MemberBook memberBook = memberBookRepository.findById(memberBookId)
                 .orElseThrow(() -> new MemberBookException(BAD_REQUEST));
 
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startedTime = LocalDateTime.of(now.getYear(),
+                now.getMonth(),
+                now.getDayOfMonth(),
+                now.getHour(),
+                now.getMinute(),
+                0,
+                0);
+
         MemberBook updated = MemberBook.builder()
                 .id(memberBook.getId())
                 .member(memberBook.getMember())
                 .book(memberBook.getBook())
                 .score(memberBook.getScore())
-                .startedAt(memberBook.getStartedAt())
-                .endedAt(memberBook.getEndedAt())
+                .startedAt(LocalDateTime.now())
+                .endedAt(startedTime)
                 .status(READING)
                 .build();
 
@@ -96,13 +105,22 @@ public class BookshelfServiceImpl implements BookshelfService {
         MemberBook memberBook = memberBookRepository.findById(memberBookId)
                 .orElseThrow(() -> new MemberBookException(BAD_REQUEST));
 
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime endedTime = LocalDateTime.of(now.getYear(),
+                now.getMonth(),
+                now.getDayOfMonth(),
+                now.getHour(),
+                now.getMinute(),
+                0,
+                0);
+
         MemberBook updated = MemberBook.builder()
                 .id(memberBook.getId())
                 .member(memberBook.getMember())
                 .book(memberBook.getBook())
                 .score(memberBook.getScore())
                 .startedAt(memberBook.getStartedAt())
-                .endedAt(memberBook.getEndedAt())
+                .endedAt(endedTime)
                 .status(DONE)
                 .build();
 
