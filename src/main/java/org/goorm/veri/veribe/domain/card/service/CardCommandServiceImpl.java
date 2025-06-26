@@ -1,5 +1,6 @@
 package org.goorm.veri.veribe.domain.card.service;
 
+import io.github.miensoap.s3.core.post.dto.PresignedPostForm;
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.book.entity.MemberBook;
 import org.goorm.veri.veribe.domain.book.repository.MemberBookRepository;
@@ -61,12 +62,26 @@ public class CardCommandServiceImpl implements CardCommandService {
     @Override
     public PresignedUrlResponse getPresignedUrl(PresignedUrlRequest request) {
         int expirationMinutes = 5;
-        long allowedSize = MB; // 1MB
         String prefix = "public";
 
         if (!StorageUtil.isImage(request.contentType())) throw new CardException(CardErrorCode.UNSUPPORTED_IMAGE_TYPE);
 
         return storageService.generatePresignedUrl(
+                request.contentType(),
+                Duration.ofMinutes(expirationMinutes),
+                prefix
+        );
+    }
+
+    @Override
+    public PresignedPostForm getPresignedPost(PresignedUrlRequest request) {
+        int expirationMinutes = 5;
+        long allowedSize = MB; // 1MB
+        String prefix = "public";
+
+        if (!StorageUtil.isImage(request.contentType())) throw new CardException(CardErrorCode.UNSUPPORTED_IMAGE_TYPE);
+
+        return storageService.generatePresignedPost(
                 request.contentType(),
                 Duration.ofMinutes(expirationMinutes),
                 allowedSize,

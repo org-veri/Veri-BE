@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping("/api/v1/cards")
+@RequestMapping("/api")
 @RestController
 @RequiredArgsConstructor
 public class CardController {
@@ -78,5 +78,10 @@ public class CardController {
     @PostMapping("/image")
     public DefaultResponse<PresignedUrlResponse> uploadCardImage(@RequestBody PresignedUrlRequest request) {
         return DefaultResponse.ok(cardCommandService.getPresignedUrl(request));
+    }
+
+    @PostMapping("v2/cards/image")
+    public DefaultResponse<PresignedPostForm> uploadCardImageV2(@RequestBody PresignedUrlRequest request) {
+        return DefaultResponse.ok(cardCommandService.getPresignedPost(request));
     }
 }

@@ -1,5 +1,6 @@
 package org.goorm.veri.veribe.domain.card.service;
 
+import io.github.miensoap.s3.core.post.dto.PresignedPostForm;
 import org.goorm.veri.veribe.global.storage.dto.PresignedUrlRequest;
 import org.goorm.veri.veribe.global.storage.dto.PresignedUrlResponse;
 
@@ -10,4 +11,6 @@ public interface CardCommandService {
     void deleteCard(Long memberId, Long cardId);
 
     PresignedUrlResponse getPresignedUrl(PresignedUrlRequest request);
+
+    PresignedPostForm getPresignedPost(PresignedUrlRequest request);
 }
