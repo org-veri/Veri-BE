@@ -23,6 +23,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.goorm.veri.veribe.domain.book.exception.NaverAPIErrorCode.BAD_REQUEST;
 
@@ -38,6 +39,12 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Long addBook(String title, String image, String author, String publisher, String isbn) {
+
+        Optional<Book> findBook = bookRepository.findBookByIsbn(isbn);
+        if (findBook.isPresent()) {
+            return findBook.get().getId();
+        }
+
         Book book = Book.builder()
                 .title(title)
                 .image(image)
