@@ -35,12 +35,7 @@ public class BookshelfController {
                 bookRequest.publisher(),
                 bookRequest.isbn());
 
-        Long memberBookId = bookshelfService.addToBookshelf(
-                request.memberId(),
-                bookId,
-                request.score(),
-                request.startedAt(),
-                request.endedAt());
+        Long memberBookId = bookshelfService.addToBookshelf(request.memberId(), bookId);
 
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime parsedTime = LocalDateTime.of(now.getYear(),
@@ -75,6 +70,13 @@ public class BookshelfController {
         List<BookResponse> bookResponses = bookService.searchBook(query);
 
         return DefaultResponse.ok(bookResponses);
+    }
+
+    @PatchMapping("/rate/{score}")
+    public DefaultResponse<Void> rateBook(@PathVariable("score") Double score, @RequestParam Long memberBookId) {
+        bookshelfService.rateScore(score, memberBookId);
+
+        return DefaultResponse.noContent();
     }
 
     @PatchMapping("/status/start")

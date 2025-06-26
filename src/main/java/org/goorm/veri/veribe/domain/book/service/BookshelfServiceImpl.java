@@ -31,7 +31,7 @@ public class BookshelfServiceImpl implements BookshelfService {
     private final MemberRepository memberRepository;
 
     @Override
-    public Long addToBookshelf(Long memberId, Long bookId, Double score, LocalDateTime startedAt, LocalDateTime endedAt) {
+    public Long addToBookshelf(Long memberId, Long bookId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberBookException(BAD_REQUEST));
 
@@ -41,9 +41,9 @@ public class BookshelfServiceImpl implements BookshelfService {
         MemberBook memberBook = MemberBook.builder()
                 .member(member)
                 .book(book)
-                .score(score)
-                .startedAt(startedAt)
-                .endedAt(endedAt)
+                .score(null)
+                .startedAt(null)
+                .endedAt(null)
                 .status(NOT_START)
                 .build();
 
@@ -71,6 +71,24 @@ public class BookshelfServiceImpl implements BookshelfService {
 
         MemberBookDetailResponse dto = MemberBookConverter.toMemberBookDetailResponse(memberBook);
         return dto;
+    }
+
+    @Override
+    public void rateScore(Double score, Long memberBookId) {
+        MemberBook memberBook = memberBookRepository.findById(memberBookId)
+                .orElseThrow(() -> new MemberBookException(BAD_REQUEST));
+
+        MemberBook updated = MemberBook.builder()
+                .id(memberBook.getId())
+                .member(memberBook.getMember())
+                .book(memberBook.getBook())
+                .score(score)
+                .startedAt(memberBook.getStartedAt())
+                .endedAt(memberBook.getEndedAt())
+                .status(memberBook.getStatus())
+                .build();
+
+        memberBookRepository.save(updated);
     }
 
     @Override
