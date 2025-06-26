@@ -8,7 +8,6 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.global.storage.dto.PresignedUrlResponse;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -22,7 +21,6 @@ import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignReques
 import java.time.Duration;
 
 @Service
-@ConditionalOnProperty(name = "cloud.storage.platform", havingValue = "aws")
 @RequiredArgsConstructor
 public class AwsStorageService implements StorageService {
 
