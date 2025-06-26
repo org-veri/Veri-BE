@@ -1,14 +1,14 @@
-package org.goorm.veri.veribe.domain.book.entity.service;
+package org.goorm.veri.veribe.domain.book.service;
 
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.book.entity.Book;
 import org.goorm.veri.veribe.domain.book.entity.MemberBook;
-import org.goorm.veri.veribe.domain.book.entity.dtos.memberBook.MemberBookConverter;
-import org.goorm.veri.veribe.domain.book.entity.dtos.memberBook.MemberBookDetailResponse;
-import org.goorm.veri.veribe.domain.book.entity.dtos.memberBook.MemberBookResponse;
-import org.goorm.veri.veribe.domain.book.entity.exception.MemberBookException;
-import org.goorm.veri.veribe.domain.book.entity.repository.BookRepository;
-import org.goorm.veri.veribe.domain.book.entity.repository.MemberBookRepository;
+import org.goorm.veri.veribe.domain.book.dtos.memberBook.MemberBookConverter;
+import org.goorm.veri.veribe.domain.book.dtos.memberBook.MemberBookDetailResponse;
+import org.goorm.veri.veribe.domain.book.dtos.memberBook.MemberBookResponse;
+import org.goorm.veri.veribe.domain.book.exception.MemberBookException;
+import org.goorm.veri.veribe.domain.book.repository.BookRepository;
+import org.goorm.veri.veribe.domain.book.repository.MemberBookRepository;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.goorm.veri.veribe.domain.member.entity.repository.MemberRepository;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.goorm.veri.veribe.domain.book.entity.enums.BookStatus.*;
-import static org.goorm.veri.veribe.domain.book.entity.exception.MemberBookErrorCode.*;
+import static org.goorm.veri.veribe.domain.book.exception.MemberBookErrorCode.BAD_REQUEST;
 
 @Service
 @Transactional
@@ -31,7 +31,7 @@ public class BookshelfServiceImpl implements BookshelfService {
     private final MemberRepository memberRepository;
 
     @Override
-    public Long addBookshelf(Long memberId, Long bookId, Double score, LocalDateTime startedAt, LocalDateTime endedAt) {
+    public Long addToBookshelf(Long memberId, Long bookId, Double score, LocalDateTime startedAt, LocalDateTime endedAt) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberBookException(BAD_REQUEST));
 

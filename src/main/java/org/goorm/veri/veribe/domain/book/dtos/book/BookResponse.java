@@ -1,4 +1,4 @@
-package org.goorm.veri.veribe.domain.book.entity.dtos.book;
+package org.goorm.veri.veribe.domain.book.dtos.book;
 
 import lombok.Builder;
 import lombok.Getter;

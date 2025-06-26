@@ -1,4 +1,4 @@
-package org.goorm.veri.veribe.domain.book.entity.exception;
+package org.goorm.veri.veribe.domain.book.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,8 +9,9 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public enum NaverAPIErrorCode implements BaseErrorCode {
-    BAD_REQUEST(HttpStatus.BAD_REQUEST, "NAVER400", "잘못된 요청입니다.")
+public enum MemberBookErrorCode implements BaseErrorCode {
+    NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBERBOOK404", "해당 책을 책장에서 찾을 수 없습니다."),
+    BAD_REQUEST(HttpStatus.BAD_REQUEST, "MEMBERBOOK400", "잘못된 요청입니다.")
     ;
 
     private final HttpStatus httpStatus;
@@ -26,3 +27,5 @@ public enum NaverAPIErrorCode implements BaseErrorCode {
                 .build();
     }
 }
+
+

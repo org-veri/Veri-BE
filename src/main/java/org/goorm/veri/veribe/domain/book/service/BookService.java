@@ -1,6 +1,6 @@
-package org.goorm.veri.veribe.domain.book.entity.service;
+package org.goorm.veri.veribe.domain.book.service;
 
-import org.goorm.veri.veribe.domain.book.entity.dtos.book.BookResponse;
+import org.goorm.veri.veribe.domain.book.dtos.book.BookResponse;
 
 import java.util.List;
 

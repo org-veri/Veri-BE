@@ -1,4 +1,4 @@
-package org.goorm.veri.veribe.domain.book.entity.config;
+package org.goorm.veri.veribe.domain.book.config;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;

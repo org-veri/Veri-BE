@@ -1,14 +1,14 @@
-package org.goorm.veri.veribe.domain.book.entity.controller;
+package org.goorm.veri.veribe.domain.book.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.goorm.veri.veribe.domain.book.entity.dtos.book.BookRequest;
-import org.goorm.veri.veribe.domain.book.entity.dtos.book.BookResponse;
-import org.goorm.veri.veribe.domain.book.entity.dtos.memberBook.MemberBookAddRequest;
-import org.goorm.veri.veribe.domain.book.entity.dtos.memberBook.MemberBookAddResponse;
-import org.goorm.veri.veribe.domain.book.entity.dtos.memberBook.MemberBookDetailResponse;
-import org.goorm.veri.veribe.domain.book.entity.dtos.memberBook.MemberBookResponse;
-import org.goorm.veri.veribe.domain.book.entity.service.BookService;
-import org.goorm.veri.veribe.domain.book.entity.service.BookshelfService;
+import org.goorm.veri.veribe.domain.book.dtos.book.BookRequest;
+import org.goorm.veri.veribe.domain.book.dtos.book.BookResponse;
+import org.goorm.veri.veribe.domain.book.dtos.memberBook.MemberBookAddRequest;
+import org.goorm.veri.veribe.domain.book.dtos.memberBook.MemberBookAddResponse;
+import org.goorm.veri.veribe.domain.book.dtos.memberBook.MemberBookDetailResponse;
+import org.goorm.veri.veribe.domain.book.dtos.memberBook.MemberBookResponse;
+import org.goorm.veri.veribe.domain.book.service.BookService;
+import org.goorm.veri.veribe.domain.book.service.BookshelfService;
 import org.namul.api.payload.response.DefaultResponse;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,7 +35,7 @@ public class BookshelfController {
                 bookRequest.publisher(),
                 bookRequest.isbn());
 
-        Long memberBookId = bookshelfService.addBookshelf(
+        Long memberBookId = bookshelfService.addToBookshelf(
                 request.memberId(),
                 bookId,
                 request.score(),
@@ -92,7 +92,7 @@ public class BookshelfController {
     }
 
     @DeleteMapping
-    public DefaultResponse<Void> deleteBookshelf(@RequestParam Long memberBookId) {
+    public DefaultResponse<Void> deleteFromBookshelf(@RequestParam Long memberBookId) {
         bookshelfService.deleteBook(memberBookId);
 
         return DefaultResponse.noContent();
