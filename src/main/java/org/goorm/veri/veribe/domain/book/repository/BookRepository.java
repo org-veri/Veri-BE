@@ -3,9 +3,9 @@ package org.goorm.veri.veribe.domain.book.repository;
 import org.goorm.veri.veribe.domain.book.entity.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
+import java.util.Optional;
 
 public interface BookRepository extends JpaRepository<Book, Long> {
 
-    List<Book> findBookByTitle(String title);
+    Optional<Book> findBookByIsbn(String isbn);
 }
