@@ -1,5 +1,6 @@
 package org.goorm.veri.veribe.domain.card.controller;
 
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.auth.annotation.AuthenticatedMember;
 import org.goorm.veri.veribe.domain.card.controller.dto.CardConverter;
@@ -7,6 +8,7 @@ import org.goorm.veri.veribe.domain.card.controller.dto.CardCreateRequest;
 import org.goorm.veri.veribe.domain.card.controller.dto.CardCreateResponse;
 import org.goorm.veri.veribe.domain.card.controller.dto.CardDetailResponse;
 import org.goorm.veri.veribe.domain.card.controller.dto.CardListResponse;
+import org.goorm.veri.veribe.domain.card.controller.enums.CardSortType;
 import org.goorm.veri.veribe.domain.card.entity.Card;
 import org.goorm.veri.veribe.domain.card.service.CardCommandService;
 import org.goorm.veri.veribe.domain.card.service.CardQueryService;
@@ -48,10 +50,15 @@ public class CardController {
     @GetMapping("/my")
     public DefaultResponse<CardListResponse> getMyCards(
             @AuthenticatedMember Member member,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "1") @Min(1) int page,
+            @RequestParam(defaultValue = "10") @Min(1) int size,
+            @RequestParam(defaultValue = "newest") String sort
     ) {
-        return DefaultResponse.ok(new CardListResponse(cardQueryService.getOwnedCards(member.getId(), page, size)));
+        CardSortType sortType = CardSortType.from(sort);
+
+        return DefaultResponse.ok(
+                new CardListResponse(cardQueryService.getOwnedCards(member.getId(), page - 1, size, sortType))
+        );
     }
 
     @GetMapping("/{cardId}")

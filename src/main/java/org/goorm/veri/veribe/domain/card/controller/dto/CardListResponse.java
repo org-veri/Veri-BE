@@ -15,7 +15,7 @@ public record CardListResponse(
     public CardListResponse(Page<CardListItem> pageData) {
         this(
                 pageData.getContent(),
-                pageData.getNumber(),
+                pageData.getNumber() + 1, // 페이지 번호는 0부터 시작하므로 +1
                 pageData.getSize(),
                 pageData.getTotalElements(),
                 pageData.getTotalPages()
