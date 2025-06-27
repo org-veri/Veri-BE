@@ -26,7 +26,6 @@ public class MemberBookConverter {
 
         List<Card> cards = memberBook.getCards();
 
-
         for (Card card : cards) {
             cardUrls.add(card.getImage());
             cardIds.add(card.getId());
