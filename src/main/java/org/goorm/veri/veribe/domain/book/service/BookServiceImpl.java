@@ -7,8 +7,6 @@ import org.goorm.veri.veribe.domain.book.dto.book.BookSearchResponse;
 import org.goorm.veri.veribe.domain.book.entity.Book;
 import org.goorm.veri.veribe.domain.book.config.NaverConfig;
 import org.goorm.veri.veribe.domain.book.dto.book.BookConverter;
-import org.goorm.veri.veribe.domain.book.dto.book.BookResponse;
-import org.goorm.veri.veribe.domain.book.dto.book.NaverBookItem;
 import org.goorm.veri.veribe.domain.book.dto.book.NaverBookResponse;
 import org.goorm.veri.veribe.domain.book.exception.NaverAPIException;
 import org.goorm.veri.veribe.domain.book.repository.BookRepository;
@@ -22,8 +20,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static org.goorm.veri.veribe.domain.book.exception.NaverAPIErrorCode.BAD_REQUEST;

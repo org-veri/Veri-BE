@@ -4,8 +4,8 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.auth.annotation.AuthenticatedMember;
+import org.goorm.veri.veribe.domain.book.dto.book.BookPopularResponse;
 import org.goorm.veri.veribe.domain.book.dto.book.BookRequest;
-import org.goorm.veri.veribe.domain.book.dto.book.BookResponse;
 import org.goorm.veri.veribe.domain.book.dto.book.BookSearchResponse;
 import org.goorm.veri.veribe.domain.book.dto.memberBook.*;
 import org.goorm.veri.veribe.domain.book.entity.MemberBook;
@@ -63,6 +63,13 @@ public class BookshelfController {
         BookSearchResponse bookResponses = bookService.searchBook(query, page, size);
 
         return DefaultResponse.ok(bookResponses);
+    }
+
+    @GetMapping("/popular")
+    public DefaultResponse<List<BookPopularResponse>> getPopularBooks() {
+        List<BookPopularResponse> result = bookshelfService.searchPopular();
+
+        return DefaultResponse.ok(result);
     }
 
     @PatchMapping("/rate/{score}")
