@@ -1,10 +1,11 @@
 package org.goorm.veri.veribe.domain.image.service;
 
+import org.goorm.veri.veribe.domain.image.dto.response.PageResponse;
 import org.goorm.veri.veribe.domain.image.exception.DirectoryException;
 import org.goorm.veri.veribe.domain.image.exception.ImageException;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 
 public interface ImageQueryService {
-    List<String> fetchUploadedImages(Long userId) throws ImageException, DirectoryException;
+    PageResponse<String> fetchUploadedImages(Long userId, Pageable pageable) throws ImageException, DirectoryException;
 }
