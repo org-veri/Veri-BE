@@ -3,6 +3,7 @@ package org.goorm.veri.veribe.domain.book.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.goorm.veri.veribe.domain.book.dto.book.BookSearchResponse;
 import org.goorm.veri.veribe.domain.book.entity.Book;
 import org.goorm.veri.veribe.domain.book.config.NaverConfig;
 import org.goorm.veri.veribe.domain.book.dto.book.BookConverter;
@@ -61,13 +62,14 @@ public class BookServiceImpl implements BookService {
      * Naver OpenAPI 활용해 책의 정보를 보여주는 메서드
      */
     @Override
-    public List<BookResponse> searchBook(String query, int display, int start) {
+    public BookSearchResponse searchBook(String query, int page, int size) {
+        int start = (page - 1) * size + 1;
 
         URI uri = UriComponentsBuilder
                 .fromUriString("https://openapi.naver.com")
                 .path("/v1/search/book.json")
                 .queryParam("query", query)
-                .queryParam("display", display)
+                .queryParam("display", size)
                 .queryParam("start", start)
                 .queryParam("sort", "sim")
                 .encode()
@@ -89,13 +91,7 @@ public class BookServiceImpl implements BookService {
         String body = respEntity.getBody();
         try {
             NaverBookResponse naverResp = objectMapper.readValue(body, NaverBookResponse.class);
-            List<NaverBookItem> items = naverResp.getItems();
-            List<BookResponse> result = new ArrayList<>();
-            for (NaverBookItem item : items) {
-                result.add(BookConverter.toBookResponse(item));
-            }
-
-            return result;
+            return BookConverter.toBookSearchResponse(naverResp);
         } catch (JsonProcessingException e) {
             throw new NaverAPIException(BAD_REQUEST);
         }

@@ -53,11 +53,12 @@ public class BookshelfController {
     }
 
     @GetMapping("/search")
-    public DefaultResponse<List<BookResponse>> searchBooks(@RequestParam int display,
-                                                           @RequestParam int start,
-                                                           @RequestParam String query)
-    {
-        List<BookResponse> bookResponses = bookService.searchBook(query, display, start);
+    public DefaultResponse<BookSearchResponse> searchBooks(
+            @RequestParam String query,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        BookSearchResponse bookResponses = bookService.searchBook(query, page, size);
 
         return DefaultResponse.ok(bookResponses);
     }
