@@ -74,18 +74,17 @@ public class CardCommandServiceImpl implements CardCommandService {
     }
 
     @Override
-    public PresignedPostForm getPresignedPost(PresignedUrlRequest request) {
+    public PresignedPostForm getPresignedPost() {
+        String allowedContentType = "image/*";
         int expirationMinutes = 5;
         long allowedSize = MB; // 1MB
         String prefix = "public";
 
-        if (!StorageUtil.isImage(request.contentType())) throw new CardException(CardErrorCode.UNSUPPORTED_IMAGE_TYPE);
-
         return storageService.generatePresignedPost(
-                request.contentType(),
-                Duration.ofMinutes(expirationMinutes),
+                allowedContentType,
                 allowedSize,
-                prefix
+                prefix,
+                Duration.ofMinutes(expirationMinutes)
         );
     }
 }

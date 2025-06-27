@@ -12,5 +12,5 @@ public interface CardCommandService {
 
     PresignedUrlResponse getPresignedUrl(PresignedUrlRequest request);
 
-    PresignedPostForm getPresignedPost(PresignedUrlRequest request);
+    PresignedPostForm getPresignedPost();
 }
