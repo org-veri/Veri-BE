@@ -80,8 +80,13 @@ public class CardController {
         return DefaultResponse.ok(cardCommandService.getPresignedUrl(request));
     }
 
+    /**
+     * image/* 타입의 1MB 이하 업로드를 위한 presigned post form을 반환합니다.
+     * <p>
+     * 클라이언트에서 form-data 에 실제 이미지와 Content-Type을 수정하여 POST 방식 업로드
+     */
     @PostMapping("v2/cards/image")
-    public DefaultResponse<PresignedPostForm> uploadCardImageV2(@RequestBody PresignedUrlRequest request) {
-        return DefaultResponse.ok(cardCommandService.getPresignedPost(request));
+    public DefaultResponse<PresignedPostForm> uploadCardImageV2() {
+        return DefaultResponse.ok(cardCommandService.getPresignedPost());
     }
 }

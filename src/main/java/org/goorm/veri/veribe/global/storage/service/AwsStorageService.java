@@ -81,9 +81,9 @@ public class AwsStorageService implements StorageService {
 
     public PresignedPostForm generatePresignedPost(
             String contentType,
-            Duration duration,
             long fileSize,
-            String prefix
+            String prefix,
+            Duration duration
     ) {
         String key = StorageUtil.generateUniqueKey(contentType, prefix);
 

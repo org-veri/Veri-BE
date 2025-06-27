@@ -15,8 +15,8 @@ public interface StorageService {
     );
 
     PresignedPostForm generatePresignedPost(String contentType,
-                                            Duration duration,
                                             long fileSize,
-                                            String prefix
+                                            String prefix,
+                                            Duration duration
     );
 }
