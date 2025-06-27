@@ -1,7 +1,7 @@
 package org.goorm.veri.veribe.domain.book.service;
 
-import org.goorm.veri.veribe.domain.book.dtos.memberBook.MemberBookDetailResponse;
-import org.goorm.veri.veribe.domain.book.dtos.memberBook.MemberBookResponse;
+import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookDetailResponse;
+import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookResponse;
 import org.goorm.veri.veribe.domain.book.entity.MemberBook;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 

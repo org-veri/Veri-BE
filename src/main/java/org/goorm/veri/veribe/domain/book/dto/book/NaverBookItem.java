@@ -1,4 +1,4 @@
-package org.goorm.veri.veribe.domain.book.dtos.book;
+package org.goorm.veri.veribe.domain.book.dto.book;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;

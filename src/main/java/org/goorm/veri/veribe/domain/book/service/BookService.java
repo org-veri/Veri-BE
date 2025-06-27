@@ -1,8 +1,6 @@
 package org.goorm.veri.veribe.domain.book.service;
 
-import org.goorm.veri.veribe.domain.book.dtos.book.BookResponse;
-
-import java.util.List;
+import org.goorm.veri.veribe.domain.book.dto.book.BookSearchResponse;
 
 public interface BookService {
 
