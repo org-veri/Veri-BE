@@ -14,5 +14,5 @@ public interface StorageService {
                                               String prefix
     );
 
-    void uploadImageToS3(BufferedImage image, String presignedUrl);
+    void uploadImageToS3(BufferedImage image, String presignedUrl, String fileFormat);
 }
