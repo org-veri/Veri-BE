@@ -1,17 +1,18 @@
 package org.goorm.veri.veribe.domain.image.service;
 
 import lombok.RequiredArgsConstructor;
+import org.goorm.veri.veribe.domain.image.dto.response.PageResponse;
 import org.goorm.veri.veribe.domain.image.exception.ImageErrorCode;
 import org.goorm.veri.veribe.domain.image.exception.ImageException;
 import org.goorm.veri.veribe.domain.image.repository.ImageRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
+
 
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
@@ -21,16 +22,19 @@ public class ImageQueryServiceImpl implements ImageQueryService{
     private final ImageRepository imageRepository;
 
     @Override
-    public List<String> fetchUploadedImages(Long userId) {
-        List<String> publicUrls = imageRepository.findByMemberId(userId);
+    public PageResponse<String> fetchUploadedImages(Long userId, Pageable pageable) {
+        Page<String> imageUrls = imageRepository.findByMemberId(userId, pageable);
 
-        if (publicUrls.isEmpty()) {
-            return List.of();
+        if(imageUrls.isEmpty()){
+            return PageResponse.empty(pageable);
         }
 
-        return publicUrls.stream()
+        List<String> encodedImages = imageUrls.stream()
                 .map(this::downloadAndEncodeToBase64)
                 .toList();
+
+        return PageResponse.of(encodedImages, imageUrls.getNumber(), imageUrls.getSize(),
+                imageUrls.getTotalElements(), imageUrls.getTotalPages());
     }
 
     private String downloadAndEncodeToBase64(String imageUrl) {
@@ -38,7 +42,7 @@ public class ImageQueryServiceImpl implements ImageQueryService{
             byte[] imageBytes = new URL(imageUrl).openStream().readAllBytes();
             return Base64.getEncoder().encodeToString(imageBytes);
         } catch (IOException e) {
-            throw new ImageException(ImageErrorCode.ENCODING_FAILED); // 새로 정의 필요
+            throw new ImageException(ImageErrorCode.ENCODING_FAILED);
         }
     }
 }
