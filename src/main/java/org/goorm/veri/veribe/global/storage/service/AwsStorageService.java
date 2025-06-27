@@ -88,6 +88,7 @@ public class AwsStorageService implements StorageService {
         }
     }
 
+    @Override
     public void uploadImageToS3(BufferedImage image, String imageKey, String fileFormat) {
         try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
 
