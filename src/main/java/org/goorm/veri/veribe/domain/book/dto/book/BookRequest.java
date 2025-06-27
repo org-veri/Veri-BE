@@ -1,4 +1,4 @@
-package org.goorm.veri.veribe.domain.book.dtos.book;
+package org.goorm.veri.veribe.domain.book.dto.book;
 
 public record BookRequest(
         String title,

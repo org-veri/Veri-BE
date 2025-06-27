@@ -1,4 +1,6 @@
-package org.goorm.veri.veribe.domain.book.dtos.book;
+package org.goorm.veri.veribe.domain.book.dto.book;
+
+import java.util.List;
 
 public class BookConverter {
 
