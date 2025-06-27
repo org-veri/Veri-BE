@@ -15,6 +15,7 @@ public class MemberBookConverter {
                 .imageUrl(memberBook.getBook().getImage())
                 .status(memberBook.getStatus())
                 .author(memberBook.getBook().getAuthor())
+                .score(memberBook.getScore())
                 .build();
     }
 

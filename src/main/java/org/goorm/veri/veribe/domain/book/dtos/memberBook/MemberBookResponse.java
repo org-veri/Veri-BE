@@ -10,6 +10,7 @@ public record MemberBookResponse (
         String title,
         String author,
         String imageUrl,
+        Double score,
         BookStatus status)
 {}
 
