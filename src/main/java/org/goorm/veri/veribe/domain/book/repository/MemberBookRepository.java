@@ -23,9 +23,9 @@ public interface MemberBookRepository extends JpaRepository<MemberBook, Long> {
     @Query("""
             SELECT mb.book
             FROM MemberBook mb
-            WHERE mb.startedAt >= :oneWeekAgo
+            WHERE mb.startedAt >= :startOfWeek
             GROUP BY mb.book
             ORDER BY COUNT(mb) DESC
             """)
-    List<Book> findMostPopularBook(LocalDateTime oneWeekAgo);
+    List<Book> findMostPopularBook(LocalDateTime startOfWeek);
 }
