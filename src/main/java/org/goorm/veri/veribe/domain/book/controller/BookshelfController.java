@@ -1,5 +1,7 @@
 package org.goorm.veri.veribe.domain.book.controller;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.auth.annotation.AuthenticatedMember;
 import org.goorm.veri.veribe.domain.book.dto.book.BookRequest;
@@ -55,8 +57,8 @@ public class BookshelfController {
     @GetMapping("/search")
     public DefaultResponse<BookSearchResponse> searchBooks(
             @RequestParam String query,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "1") @Min(1) int page,
+            @RequestParam(defaultValue = "10") @Min(1) int size
     ) {
         BookSearchResponse bookResponses = bookService.searchBook(query, page, size);
 

@@ -64,6 +64,9 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookSearchResponse searchBook(String query, int page, int size) {
         int start = (page - 1) * size + 1;
+        if (start > 1000) {
+            throw new NaverAPIException(BAD_REQUEST);
+        }
 
         URI uri = UriComponentsBuilder
                 .fromUriString("https://openapi.naver.com")
