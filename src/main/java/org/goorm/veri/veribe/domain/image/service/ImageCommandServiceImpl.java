@@ -8,10 +8,10 @@ import org.goorm.veri.veribe.domain.image.exception.ImageErrorCode;
 import org.goorm.veri.veribe.domain.image.exception.ImageException;
 import org.goorm.veri.veribe.domain.image.repository.ImageRepository;
 import org.goorm.veri.veribe.domain.image.service.enums.FileExtension;
-import org.goorm.veri.veribe.domain.image.service.enums.FileInfo;
 import org.goorm.veri.veribe.domain.image.service.enums.FileSize;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.goorm.veri.veribe.domain.member.repository.MemberRepository;
+import org.goorm.veri.veribe.global.data.OcrConfigData;
 import org.goorm.veri.veribe.global.storage.dto.PresignedUrlResponse;
 import org.goorm.veri.veribe.global.storage.service.StorageService;
 import org.goorm.veri.veribe.global.storage.service.StorageUtil;
@@ -38,6 +38,7 @@ public class ImageCommandServiceImpl implements ImageCommandService {
     private final StorageService storageService;
     private final ImageRepository imageRepository;
     private final MemberRepository memberRepository;
+    private final OcrConfigData ocrConfigData;
 
     private void insertImageUrl(String imageUrl, Member member){
         Image image = Image.builder()
@@ -128,8 +129,8 @@ public class ImageCommandServiceImpl implements ImageCommandService {
 
     private Tesseract createConfiguredTesseract() {
         Tesseract tesseract = new Tesseract();
-        tesseract.setDatapath(FileInfo.BASE_META_PATH.getValue()); // tessdata 언어 경로 설정, 로컬 기준이라 production에선 수정.
-        tesseract.setLanguage(FileInfo.SUPPORT_LANGUAGE.getValue()); // 한글+영어
+        tesseract.setDatapath(ocrConfigData.getTessdataPath());
+        tesseract.setLanguage(ocrConfigData.getLanguage());
         tesseract.setPageSegMode(3);
 
         return tesseract;
