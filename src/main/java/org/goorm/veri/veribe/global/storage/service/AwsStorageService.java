@@ -2,6 +2,8 @@ package org.goorm.veri.veribe.global.storage.service;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.goorm.veri.veribe.domain.image.exception.ImageErrorCode;
+import org.goorm.veri.veribe.domain.image.exception.ImageException;
 import org.goorm.veri.veribe.global.storage.dto.PresignedUrlResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -40,6 +42,7 @@ public class AwsStorageService implements StorageService {
 
     @Value("${cloud.aws.s3.region}")
     private String region;
+
     private S3Client s3Client;
 
     @PostConstruct
@@ -85,19 +88,17 @@ public class AwsStorageService implements StorageService {
         }
     }
 
-    public void uploadImageToS3(BufferedImage image, String imageKey) {
+    public void uploadImageToS3(BufferedImage image, String imageKey, String fileFormat) {
         try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
 
-            String format = "jpeg";
-            // 업로드
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(bucket)
                     .key(imageKey)
-                    .contentType(format)
+                    .contentType(fileFormat)
                     .build();
 
 
-            ImageIO.write(image, format, os);
+            ImageIO.write(image, fileFormat, os);
             byte[] bytes = os.toByteArray();
 
 
@@ -105,8 +106,7 @@ public class AwsStorageService implements StorageService {
 
 
         } catch (IOException e) {
-            throw new ResponseStatusException(
-                    HttpStatus.INTERNAL_SERVER_ERROR, "이미지 업로드 실패", e);
+            throw new ImageException(ImageErrorCode.UPLOAD_FAILED);
         }
     }
     private String getPublicUrl(String key) {
