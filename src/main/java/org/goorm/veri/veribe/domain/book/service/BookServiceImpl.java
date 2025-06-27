@@ -61,14 +61,14 @@ public class BookServiceImpl implements BookService {
      * Naver OpenAPI 활용해 책의 정보를 보여주는 메서드
      */
     @Override
-    public List<BookResponse> searchBook(String query) {
+    public List<BookResponse> searchBook(String query, int display, int start) {
 
         URI uri = UriComponentsBuilder
                 .fromUriString("https://openapi.naver.com")
                 .path("/v1/search/book.json")
                 .queryParam("query", query)
-                .queryParam("display", 10)
-                .queryParam("start", 1)
+                .queryParam("display", display)
+                .queryParam("start", start)
                 .queryParam("sort", "sim")
                 .encode()
                 .build()
