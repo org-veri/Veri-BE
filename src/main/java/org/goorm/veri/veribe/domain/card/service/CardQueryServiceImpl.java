@@ -8,6 +8,7 @@ import org.goorm.veri.veribe.domain.card.repository.CardRepository;
 import org.goorm.veri.veribe.domain.card.repository.dto.CardListItem;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,13 +23,13 @@ public class CardQueryServiceImpl implements CardQueryService {
     private final CardRepository cardRepository;
 
     @Override
-    public Page<CardListItem> getOwnedCards(Long userId) {
-        Pageable pageable = Pageable.unpaged();
+    public Page<CardListItem> getOwnedCards(Long userId, int page, int size) {
+        Pageable pageRequest = PageRequest.of(page, size);
 
-        List<CardListItem> cards = cardRepository.findAllByMemberId(userId, null);
+        List<CardListItem> cards = cardRepository.findAllByMemberId(userId, pageRequest);
         int totalCards = cardRepository.countAllByMemberId(userId);
 
-        return new PageImpl<>(cards, pageable, totalCards);
+        return new PageImpl<>(cards, pageRequest, totalCards);
     }
 
     @Override

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/api/v1/cards")
@@ -33,7 +34,7 @@ public class CardController {
     @PostMapping
     public DefaultResponse<CardCreateResponse> createCard(
             @RequestBody CardCreateRequest request,
-            @AuthenticatedMember Member member) { 
+            @AuthenticatedMember Member member) {
         Long cardId = cardCommandService.createCard(
                 member.getId(),
                 request.content(),
@@ -45,8 +46,12 @@ public class CardController {
     }
 
     @GetMapping("/my")
-    public DefaultResponse<CardListResponse> getMyCards(@AuthenticatedMember Member member) {
-        return DefaultResponse.ok(new CardListResponse(cardQueryService.getOwnedCards(member.getId())));
+    public DefaultResponse<CardListResponse> getMyCards(
+            @AuthenticatedMember Member member,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return DefaultResponse.ok(new CardListResponse(cardQueryService.getOwnedCards(member.getId(), page, size)));
     }
 
     @GetMapping("/{cardId}")
