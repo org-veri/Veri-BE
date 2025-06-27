@@ -1,8 +1,8 @@
 package org.goorm.veri.veribe.domain.book.service;
 
 import lombok.RequiredArgsConstructor;
-import org.goorm.veri.veribe.domain.book.dtos.book.BookConverter;
-import org.goorm.veri.veribe.domain.book.dtos.book.BookPopularResponse;
+import org.goorm.veri.veribe.domain.book.dto.book.BookPopularResponse;
+import org.goorm.veri.veribe.domain.book.dto.book.BookConverter;
 import org.goorm.veri.veribe.domain.book.entity.Book;
 import org.goorm.veri.veribe.domain.book.entity.MemberBook;
 import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookConverter;
@@ -15,7 +15,9 @@ import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,8 +74,10 @@ public class BookshelfServiceImpl implements BookshelfService {
 
     @Override
     public List<BookPopularResponse> searchPopular() {
-        LocalDateTime weekAgo = LocalDateTime.now().minusWeeks(1);
-        List<Book> bookList = memberBookRepository.findMostPopularBook(weekAgo);
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+        LocalDateTime startOfWeek = now.with(DayOfWeek.MONDAY).toLocalDate().atStartOfDay();
+
+        List<Book> bookList = memberBookRepository.findMostPopularBook(startOfWeek);
 
         List<BookPopularResponse> result = BookConverter.toBookPopularResponse(bookList);
 
