@@ -41,7 +41,7 @@ public class SecurityConfig {
             "/swagger-ui/**",
             "/swagger-resources/**",
             "/v3/api-docs/**",
-            "/oauth2/**",
+            "/api/v1/oauth2/**",
             "/health-check"
     };
 
