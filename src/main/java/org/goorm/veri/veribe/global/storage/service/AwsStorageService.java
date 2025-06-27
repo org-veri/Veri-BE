@@ -51,14 +51,16 @@ public class AwsStorageService implements StorageService {
     @Override
     public PresignedUrlResponse generatePresignedUrl(
             String contentType,
-            Duration duration,
-            String prefix
+            long contentLength,
+            String prefix,
+            Duration duration
     ) {
         String key = StorageUtil.generateUniqueKey(contentType, prefix);
 
         PutObjectRequest objectRequest = PutObjectRequest.builder()
                 .bucket(bucket)
                 .key(key)
+                .contentLength(contentLength)
                 .contentType(contentType)
                 .build();
 

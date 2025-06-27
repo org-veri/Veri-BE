@@ -64,12 +64,17 @@ public class CardCommandServiceImpl implements CardCommandService {
         int expirationMinutes = 5;
         String prefix = "public";
 
+        if(request.contentLength() > MB) {
+            throw new CardException(CardErrorCode.IMAGE_TOO_LARGE);
+        }
+
         if (!StorageUtil.isImage(request.contentType())) throw new CardException(CardErrorCode.UNSUPPORTED_IMAGE_TYPE);
 
         return storageService.generatePresignedUrl(
                 request.contentType(),
-                Duration.ofMinutes(expirationMinutes),
-                prefix
+                request.contentLength(),
+                prefix,
+                Duration.ofMinutes(expirationMinutes)
         );
     }
 
