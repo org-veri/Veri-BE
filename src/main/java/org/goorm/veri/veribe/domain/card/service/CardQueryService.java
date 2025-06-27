@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 
 public interface CardQueryService {
 
-    Page<CardListItem> getOwnedCards(Long userId);
+    Page<CardListItem> getOwnedCards(Long userId, int page, int size);
 
     Card getCardById(Long cardId);
 }
