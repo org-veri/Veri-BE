@@ -1,6 +1,8 @@
 package org.goorm.veri.veribe.domain.book.service;
 
 import lombok.RequiredArgsConstructor;
+import org.goorm.veri.veribe.domain.book.dtos.book.BookConverter;
+import org.goorm.veri.veribe.domain.book.dtos.book.BookPopularResponse;
 import org.goorm.veri.veribe.domain.book.entity.Book;
 import org.goorm.veri.veribe.domain.book.entity.MemberBook;
 import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookConverter;
@@ -66,6 +68,16 @@ public class BookshelfServiceImpl implements BookshelfService {
         MemberBookDetailResponse dto = MemberBookConverter.toMemberBookDetailResponse(memberBook);
 
         return dto;
+    }
+
+    @Override
+    public List<BookPopularResponse> searchPopular() {
+        LocalDateTime weekAgo = LocalDateTime.now().minusWeeks(1);
+        List<Book> bookList = memberBookRepository.findMostPopularBook(weekAgo);
+
+        List<BookPopularResponse> result = BookConverter.toBookPopularResponse(bookList);
+
+        return result;
     }
 
     @Override
