@@ -11,4 +11,23 @@ public class BookConverter {
                 .title(response.getTitle())
                 .build();
     }
+
+    public static BookSearchResponse toBookSearchResponse(NaverBookResponse naverResponse) {
+        List<BookResponse> books = naverResponse.getItems().stream()
+                .map(BookConverter::toBookResponse)
+                .toList();
+
+        int size = naverResponse.getDisplay();
+        int page = naverResponse.getStart() / naverResponse.getDisplay() + 1;
+        long totalElements = naverResponse.getTotal();
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+
+        return new BookSearchResponse(
+                books,
+                page,
+                size,
+                totalElements,
+                totalPages
+        );
+    }
 }
