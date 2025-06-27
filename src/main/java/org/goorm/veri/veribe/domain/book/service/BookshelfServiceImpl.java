@@ -45,6 +45,7 @@ public class BookshelfServiceImpl implements BookshelfService {
                 .startedAt(null)
                 .endedAt(null)
                 .status(NOT_START)
+                .cards(new ArrayList<>())
                 .build();
 
         memberBookRepository.save(memberBook);
@@ -66,10 +67,11 @@ public class BookshelfServiceImpl implements BookshelfService {
 
     @Override
     public MemberBookDetailResponse searchDetail(Long memberBookId) {
-        MemberBook memberBook = memberBookRepository.findById(memberBookId)
+        MemberBook memberBook = memberBookRepository.findByIdWithCardsAndBook(memberBookId)
                 .orElseThrow(() -> new MemberBookException(BAD_REQUEST));
 
         MemberBookDetailResponse dto = MemberBookConverter.toMemberBookDetailResponse(memberBook);
+
         return dto;
     }
 
@@ -86,6 +88,7 @@ public class BookshelfServiceImpl implements BookshelfService {
                 .startedAt(memberBook.getStartedAt())
                 .endedAt(memberBook.getEndedAt())
                 .status(memberBook.getStatus())
+                .cards(memberBook.getCards())
                 .build();
 
         memberBookRepository.save(updated);
@@ -113,6 +116,7 @@ public class BookshelfServiceImpl implements BookshelfService {
                 .startedAt(LocalDateTime.now())
                 .endedAt(startedTime)
                 .status(READING)
+                .cards(memberBook.getCards())
                 .build();
 
         memberBookRepository.save(updated);
@@ -140,6 +144,7 @@ public class BookshelfServiceImpl implements BookshelfService {
                 .startedAt(memberBook.getStartedAt())
                 .endedAt(endedTime)
                 .status(DONE)
+                .cards(memberBook.getCards())
                 .build();
 
         memberBookRepository.save(updated);

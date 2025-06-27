@@ -3,10 +3,7 @@ package org.goorm.veri.veribe.domain.book.controller;
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.book.dtos.book.BookRequest;
 import org.goorm.veri.veribe.domain.book.dtos.book.BookResponse;
-import org.goorm.veri.veribe.domain.book.dtos.memberBook.MemberBookAddRequest;
-import org.goorm.veri.veribe.domain.book.dtos.memberBook.MemberBookAddResponse;
-import org.goorm.veri.veribe.domain.book.dtos.memberBook.MemberBookDetailResponse;
-import org.goorm.veri.veribe.domain.book.dtos.memberBook.MemberBookResponse;
+import org.goorm.veri.veribe.domain.book.dtos.memberBook.*;
 import org.goorm.veri.veribe.domain.book.service.BookService;
 import org.goorm.veri.veribe.domain.book.service.BookshelfService;
 import org.namul.api.payload.response.DefaultResponse;
@@ -56,13 +53,11 @@ public class BookshelfController {
         return DefaultResponse.ok(result);
     }
 
-    //TODO: 책장에서 책의 상세정보 열람
-    //의문점: 책장에서 책의 상세정보를 열람할때 해당 책의 독서카드도 같이 보여줘야 한다 -> MemberBook 에서 어떻게 Card 를 참조할지....
     @GetMapping("/detail")
     public DefaultResponse<MemberBookDetailResponse> getBookDetail(@RequestParam Long memberBookId) {
-        MemberBookDetailResponse response = bookshelfService.searchDetail(memberBookId);
+        MemberBookDetailResponse result = bookshelfService.searchDetail(memberBookId);
 
-        return DefaultResponse.ok(response);
+        return DefaultResponse.ok(result);
     }
 
     @GetMapping("/search/{display}/{start}")

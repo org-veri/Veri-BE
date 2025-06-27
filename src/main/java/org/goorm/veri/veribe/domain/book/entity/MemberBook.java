@@ -3,9 +3,12 @@ package org.goorm.veri.veribe.domain.book.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.goorm.veri.veribe.domain.book.entity.enums.BookStatus;
+import org.goorm.veri.veribe.domain.card.entity.Card;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Builder
@@ -39,4 +42,7 @@ public class MemberBook {
 
     @Column(name = "status")
     private BookStatus status;
+
+    @OneToMany(mappedBy = "memberBook", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Card> cards = new ArrayList<>();
 }
