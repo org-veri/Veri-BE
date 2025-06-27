@@ -4,12 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.book.dtos.book.BookRequest;
 import org.goorm.veri.veribe.domain.book.dtos.book.BookResponse;
 import org.goorm.veri.veribe.domain.book.dtos.memberBook.*;
+import org.goorm.veri.veribe.domain.book.entity.MemberBook;
 import org.goorm.veri.veribe.domain.book.service.BookService;
 import org.goorm.veri.veribe.domain.book.service.BookshelfService;
 import org.namul.api.payload.response.DefaultResponse;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RequestMapping("/api/v0/bookshelf")
@@ -32,18 +32,9 @@ public class BookshelfController {
                 bookRequest.publisher(),
                 bookRequest.isbn());
 
-        Long memberBookId = bookshelfService.addToBookshelf(request.memberId(), bookId);
+        MemberBook memberBook = bookshelfService.addToBookshelf(request.memberId(), bookId);
 
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime parsedTime = LocalDateTime.of(now.getYear(),
-                now.getMonth(),
-                now.getDayOfMonth(),
-                now.getHour(),
-                now.getMinute(),
-                0,
-                0);
-
-        return DefaultResponse.created(new MemberBookAddResponse(memberBookId, parsedTime));
+        return DefaultResponse.created(new MemberBookAddResponse(memberBook.getId(), memberBook.getCreatedAt()));
     }
 
     @GetMapping("/all")

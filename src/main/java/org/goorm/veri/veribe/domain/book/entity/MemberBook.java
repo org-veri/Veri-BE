@@ -5,6 +5,7 @@ import lombok.*;
 import org.goorm.veri.veribe.domain.book.entity.enums.BookStatus;
 import org.goorm.veri.veribe.domain.card.entity.Card;
 import org.goorm.veri.veribe.domain.member.entity.Member;
+import org.goorm.veri.veribe.global.entity.BaseEntity;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.List;
 @Table(name = "member_book")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class MemberBook {
+public class MemberBook extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

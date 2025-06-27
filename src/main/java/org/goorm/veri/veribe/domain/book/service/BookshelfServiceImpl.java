@@ -31,7 +31,7 @@ public class BookshelfServiceImpl implements BookshelfService {
     private final MemberRepository memberRepository;
 
     @Override
-    public Long addToBookshelf(Long memberId, Long bookId) {
+    public MemberBook addToBookshelf(Long memberId, Long bookId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberBookException(BAD_REQUEST));
 
@@ -48,9 +48,7 @@ public class BookshelfServiceImpl implements BookshelfService {
                 .cards(new ArrayList<>())
                 .build();
 
-        memberBookRepository.save(memberBook);
-
-        return memberBook.getId();
+        return memberBookRepository.save(memberBook);
     }
 
     @Override
