@@ -10,8 +10,9 @@ import java.time.Duration;
 
 public interface StorageService {
     PresignedUrlResponse generatePresignedUrl(String contentType,
-                                              Duration duration,
-                                              String prefix
+                                              long contentLength,
+                                              String prefix,
+                                              Duration duration
     );
 
     PresignedPostForm generatePresignedPost(String contentType,
