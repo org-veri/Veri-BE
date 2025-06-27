@@ -1,12 +1,14 @@
 package org.goorm.veri.veribe.domain.book.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.goorm.veri.veribe.domain.auth.annotation.AuthenticatedMember;
 import org.goorm.veri.veribe.domain.book.dtos.book.BookRequest;
 import org.goorm.veri.veribe.domain.book.dtos.book.BookResponse;
 import org.goorm.veri.veribe.domain.book.dtos.memberBook.*;
 import org.goorm.veri.veribe.domain.book.entity.MemberBook;
 import org.goorm.veri.veribe.domain.book.service.BookService;
 import org.goorm.veri.veribe.domain.book.service.BookshelfService;
+import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.namul.api.payload.response.DefaultResponse;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,25 +23,23 @@ public class BookshelfController {
     private final BookService bookService;
 
     @PostMapping
-    public DefaultResponse<MemberBookAddResponse> addBook(@RequestBody MemberBookAddRequest request) {
-
-        BookRequest bookRequest = request.bookRequest();
+    public DefaultResponse<MemberBookAddResponse> addBook(@RequestBody BookRequest request, @AuthenticatedMember Member member) {
 
         Long bookId = bookService.addBook(
-                bookRequest.title(),
-                bookRequest.image(),
-                bookRequest.author(),
-                bookRequest.publisher(),
-                bookRequest.isbn());
+                request.title(),
+                request.image(),
+                request.author(),
+                request.publisher(),
+                request.isbn());
 
-        MemberBook memberBook = bookshelfService.addToBookshelf(request.memberId(), bookId);
+        MemberBook memberBook = bookshelfService.addToBookshelf(member, bookId);
 
         return DefaultResponse.created(new MemberBookAddResponse(memberBook.getId(), memberBook.getCreatedAt()));
     }
 
     @GetMapping("/all")
-    public DefaultResponse<List<MemberBookResponse>> getAllBooks(@RequestParam Long memberId) {
-        List<MemberBookResponse> result = bookshelfService.searchAll(memberId);
+    public DefaultResponse<List<MemberBookResponse>> getAllBooks(@AuthenticatedMember Member member) {
+        List<MemberBookResponse> result = bookshelfService.searchAll(member);
 
         return DefaultResponse.ok(result);
     }

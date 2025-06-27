@@ -10,7 +10,6 @@ import org.goorm.veri.veribe.domain.book.exception.MemberBookException;
 import org.goorm.veri.veribe.domain.book.repository.BookRepository;
 import org.goorm.veri.veribe.domain.book.repository.MemberBookRepository;
 import org.goorm.veri.veribe.domain.member.entity.Member;
-import org.goorm.veri.veribe.domain.member.entity.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,13 +27,9 @@ public class BookshelfServiceImpl implements BookshelfService {
 
     private final MemberBookRepository memberBookRepository;
     private final BookRepository bookRepository;
-    private final MemberRepository memberRepository;
 
     @Override
-    public MemberBook addToBookshelf(Long memberId, Long bookId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberBookException(BAD_REQUEST));
-
+    public MemberBook addToBookshelf(Member member, Long bookId) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new MemberBookException(BAD_REQUEST));
 
@@ -52,8 +47,8 @@ public class BookshelfServiceImpl implements BookshelfService {
     }
 
     @Override
-    public List<MemberBookResponse> searchAll(Long memberId) {
-        List<MemberBook> result = memberBookRepository.findAllByMember_Id(memberId);
+    public List<MemberBookResponse> searchAll(Member member) {
+        List<MemberBook> result = memberBookRepository.findAllByMember_Id(member.getId());
 
         List<MemberBookResponse> dtos = new ArrayList<>();
         for (MemberBook memberBook : result) {

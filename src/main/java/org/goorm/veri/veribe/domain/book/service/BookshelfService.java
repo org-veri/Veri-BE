@@ -3,14 +3,15 @@ package org.goorm.veri.veribe.domain.book.service;
 import org.goorm.veri.veribe.domain.book.dtos.memberBook.MemberBookDetailResponse;
 import org.goorm.veri.veribe.domain.book.dtos.memberBook.MemberBookResponse;
 import org.goorm.veri.veribe.domain.book.entity.MemberBook;
+import org.goorm.veri.veribe.domain.member.entity.Member;
 
 import java.util.List;
 
 public interface BookshelfService {
 
-    MemberBook addToBookshelf(Long memberId, Long bookId);
+    MemberBook addToBookshelf(Member member, Long bookId);
 
-    List<MemberBookResponse> searchAll(Long memberId);
+    List<MemberBookResponse> searchAll(Member member);
 
     MemberBookDetailResponse searchDetail(Long memberBookId);
 
