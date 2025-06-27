@@ -11,15 +11,11 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum CardErrorCode implements BaseErrorCode {
     NOT_FOUND(HttpStatus.NOT_FOUND, "CARD404", "카드를 찾을 수 없습니다."),
-<<<<<<< HEAD
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "CARD400", "잘못된 요청입니다. 요청을 확인해주세요."),
     FORBIDDEN(HttpStatus.FORBIDDEN, "CARD403", "해당 카드에 대한 권한이 없습니다."),
 
-    UNSUPPORTED_IMAGE_TYPE(HttpStatus.BAD_REQUEST, "CARD400", "지원하지 않는 파일 형식입니다. 이미지만 업로드할 수 있습니다.");
-=======
-    UNSUPPORTED_IMAGE_TYPE(HttpStatus.BAD_REQUEST, "CARD4001", "지원하지 않는 파일 형식입니다. 이미지만 업로드할 수 있습니다."),
-    IMAGE_TOO_LARGE(HttpStatus.BAD_REQUEST, "CARD400" , "카드 이미지는 1MB 이하 크기만 가능합니다." );
->>>>>>> 4376a41 (feat. 이미지 업로드 v1 개선)
+    UNSUPPORTED_IMAGE_TYPE(HttpStatus.BAD_REQUEST, "CARD400", "지원하지 않는 파일 형식입니다. 이미지만 업로드할 수 있습니다."),
+    IMAGE_TOO_LARGE(HttpStatus.BAD_REQUEST, "CARD400", "카드 이미지는 1MB 이하 크기만 가능합니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

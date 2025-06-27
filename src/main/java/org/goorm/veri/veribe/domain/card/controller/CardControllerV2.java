@@ -21,7 +21,7 @@ public class CardControllerV2 {
      * <p>
      * 클라이언트에서 form-data 에 실제 이미지와 Content-Type을 수정하여 POST 방식 업로드
      */
-    @PostMapping("v2/cards/image")
+    @PostMapping("/image")
     public DefaultResponse<PresignedPostForm> uploadCardImageV2() {
         return DefaultResponse.ok(cardCommandService.getPresignedPost());
     }
