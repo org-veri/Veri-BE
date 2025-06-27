@@ -2,6 +2,7 @@ package org.goorm.veri.veribe.domain.book.service;
 
 import org.goorm.veri.veribe.domain.book.dtos.memberBook.MemberBookDetailResponse;
 import org.goorm.veri.veribe.domain.book.dtos.memberBook.MemberBookResponse;
+
 import java.util.List;
 
 public interface BookshelfService {
