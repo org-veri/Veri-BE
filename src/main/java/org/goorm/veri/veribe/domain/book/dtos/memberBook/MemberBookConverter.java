@@ -22,11 +22,14 @@ public class MemberBookConverter {
     public static MemberBookDetailResponse toMemberBookDetailResponse(MemberBook memberBook) {
 
         List<String> cardUrls = new ArrayList<>();
+        List<Long> cardIds = new ArrayList<>();
 
         List<Card> cards = memberBook.getCards();
 
+
         for (Card card : cards) {
             cardUrls.add(card.getImage());
+            cardIds.add(card.getId());
         }
 
         return MemberBookDetailResponse.builder()
@@ -37,6 +40,7 @@ public class MemberBookConverter {
                 .score(memberBook.getScore())
                 .author(memberBook.getBook().getAuthor())
                 .cardUrls(cardUrls)
+                .cardIds(cardIds)
                 .build();
     }
 }
