@@ -13,6 +13,5 @@ public record MemberBookDetailResponse (
         String imageUrl,
         BookStatus status,
         Double score,
-        List<String> cardUrls,
-        List<Long> cardIds
-        ) {}
+        List<CardSummaries> cardSummaries)
+{}

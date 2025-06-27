@@ -1,9 +1,7 @@
 package org.goorm.veri.veribe.domain.book.dtos.memberBook;
 
 import org.goorm.veri.veribe.domain.book.entity.MemberBook;
-import org.goorm.veri.veribe.domain.card.entity.Card;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MemberBookConverter {
@@ -21,15 +19,9 @@ public class MemberBookConverter {
 
     public static MemberBookDetailResponse toMemberBookDetailResponse(MemberBook memberBook) {
 
-        List<String> cardUrls = new ArrayList<>();
-        List<Long> cardIds = new ArrayList<>();
-
-        List<Card> cards = memberBook.getCards();
-
-        for (Card card : cards) {
-            cardUrls.add(card.getImage());
-            cardIds.add(card.getId());
-        }
+        List<CardSummaries> summaries = memberBook.getCards().stream()
+                                        .map(card -> new CardSummaries(card.getId(), card.getImage()))
+                                        .toList();
 
         return MemberBookDetailResponse.builder()
                 .bookId(memberBook.getBook().getId())
@@ -38,8 +30,7 @@ public class MemberBookConverter {
                 .status(memberBook.getStatus())
                 .score(memberBook.getScore())
                 .author(memberBook.getBook().getAuthor())
-                .cardUrls(cardUrls)
-                .cardIds(cardIds)
+                .cardSummaries(summaries)
                 .build();
     }
 }
