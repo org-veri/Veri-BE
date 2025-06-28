@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
 import java.util.List;
 
 
@@ -27,8 +26,8 @@ public class ImageController {
     public final ImageCommandService imageCmdService;
     public final ImageQueryService imageQueryService;
 
-    @PostMapping
-    public DefaultResponse<String> postImageFile(
+    @PostMapping("/ocr")
+    public DefaultResponse<String> ocrImage(
             @AuthenticatedMember Member member,
             @RequestParam("imageUrl") String imageUrl) throws Exception {
 
