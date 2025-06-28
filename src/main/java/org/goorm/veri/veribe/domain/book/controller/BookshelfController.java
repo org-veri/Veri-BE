@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.auth.annotation.AuthenticatedMember;
 import org.goorm.veri.veribe.domain.book.controller.enums.MemberBookSortType;
+import org.goorm.veri.veribe.domain.book.dto.book.BookPopularListResponse;
 import org.goorm.veri.veribe.domain.book.dto.book.BookPopularResponse;
 import org.goorm.veri.veribe.domain.book.dto.book.BookRequest;
 import org.goorm.veri.veribe.domain.book.dto.book.BookSearchResponse;
@@ -15,8 +16,6 @@ import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.namul.api.payload.response.DefaultResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequestMapping("/api/v0/bookshelf")
 @RestController
@@ -73,10 +72,13 @@ public class BookshelfController {
     }
 
     @GetMapping("/popular")
-    public DefaultResponse<List<BookPopularResponse>> getPopularBooks() {
-        List<BookPopularResponse> result = bookshelfService.searchPopular();
+    public DefaultResponse<BookPopularListResponse> getPopularBooks(
+            @RequestParam(defaultValue = "1") @Min(1) int page,
+            @RequestParam(defaultValue = "10") @Min(1) int size
+    ) {
+        Page<BookPopularResponse> pageData = bookshelfService.searchPopular(page, size);
 
-        return DefaultResponse.ok(result);
+        return DefaultResponse.ok(new BookPopularListResponse(pageData));
     }
 
     @PatchMapping("/rate/{score}")
