@@ -2,6 +2,7 @@ package org.goorm.veri.veribe.domain.book.dto.memberBook;
 
 import org.goorm.veri.veribe.domain.book.entity.MemberBook;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MemberBookConverter {
@@ -32,5 +33,23 @@ public class MemberBookConverter {
                 .author(memberBook.getBook().getAuthor())
                 .cardSummaries(summaries)
                 .build();
+    }
+
+    public static MemberBookSortResponse toMemberBookSortResponse(List<MemberBook> memberBooks, int page, int size, int totalElements) {
+
+        List<MemberBookResponse> dtoList = new ArrayList<>();
+        for (MemberBook memberBook : memberBooks) {
+            dtoList.add(toMemberBookResponse(memberBook));
+        }
+
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+
+        return new MemberBookSortResponse(
+                dtoList,
+                page,
+                size,
+                totalElements,
+                totalPages
+        );
     }
 }
