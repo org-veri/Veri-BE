@@ -41,6 +41,7 @@ public interface MemberBookRepository extends JpaRepository<MemberBook, Long> {
             mb.book.author,
             mb.book.image,
             mb.score,
+            mb.startedAt,
             mb.status)
             FROM MemberBook mb
             WHERE mb.member.id = :memberId
