@@ -3,11 +3,11 @@ package org.goorm.veri.veribe.domain.book.service;
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.book.dto.book.BookPopularResponse;
 import org.goorm.veri.veribe.domain.book.dto.book.BookConverter;
+import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookSortResponse;
 import org.goorm.veri.veribe.domain.book.entity.Book;
 import org.goorm.veri.veribe.domain.book.entity.MemberBook;
 import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookConverter;
 import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookDetailResponse;
-import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookResponse;
 import org.goorm.veri.veribe.domain.book.exception.MemberBookException;
 import org.goorm.veri.veribe.domain.book.repository.BookRepository;
 import org.goorm.veri.veribe.domain.book.repository.MemberBookRepository;
@@ -51,15 +51,36 @@ public class BookshelfServiceImpl implements BookshelfService {
     }
 
     @Override
-    public List<MemberBookResponse> searchAll(Member member) {
-        List<MemberBook> result = memberBookRepository.findAllByMember_Id(member.getId());
+    public MemberBookSortResponse searchAllNewest(int page, int size, Member member) {
+        List<MemberBook> result = memberBookRepository.findMemberBookNewest(member.getId());
 
-        List<MemberBookResponse> dtos = new ArrayList<>();
-        for (MemberBook memberBook : result) {
-            dtos.add(MemberBookConverter.toMemberBookResponse(memberBook));
-        }
+        int totalElements = result.size();
 
-        return dtos;
+        MemberBookSortResponse dto = MemberBookConverter.toMemberBookSortResponse(result, page, size, totalElements);
+
+        return dto;
+    }
+
+    @Override
+    public MemberBookSortResponse searchAllOldest(int page, int size, Member member) {
+        List<MemberBook> result = memberBookRepository.findMemberBookOldest(member.getId());
+
+        int totalElements = result.size();
+
+        MemberBookSortResponse dto = MemberBookConverter.toMemberBookSortResponse(result, page, size, totalElements);
+
+        return dto;
+    }
+
+    @Override
+    public MemberBookSortResponse searchAllHighScore(int page, int size, Member member) {
+        List<MemberBook> result = memberBookRepository.findMemberBookByScoreDesc(member.getId());
+
+        int totalElements = result.size();
+
+        MemberBookSortResponse dto = MemberBookConverter.toMemberBookSortResponse(result, page, size, totalElements);
+
+        return dto;
     }
 
     @Override
