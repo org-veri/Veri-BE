@@ -1,5 +1,6 @@
 package org.goorm.veri.veribe.domain.image.controller;
 
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 
 import org.goorm.veri.veribe.domain.image.dto.response.PageResponse;
@@ -11,9 +12,9 @@ import org.namul.api.payload.response.DefaultResponse;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 
 @RestController
@@ -27,14 +28,14 @@ public class ImageController {
     @PostMapping
     public DefaultResponse<String> postImageFile(
             //@AuthenticatedMember Member member,
-            @RequestParam("file") MultipartFile file) throws Exception {
-        return DefaultResponse.ok(imageCmdService.processImageOcrAndSave(file));
+            @RequestParam("imageUrl") String imageUrl) throws Exception {
+        return DefaultResponse.ok(imageCmdService.processImageOcrAndSave(imageUrl));
     }
 
     @GetMapping
-    public DefaultResponse<PageResponse<String>> getImageFiles(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "5") int size
+    public DefaultResponse<PageResponse<List<String>>> getImageFiles(
+            @RequestParam(defaultValue = "1") @Min(value = 1) int page,
+            @RequestParam(defaultValue = "5") @Min(value = 1) int size
     ) throws IOException {
         // TODO: 인증 정보 도입
         Pageable pageable = PageRequest.of(page - 1, size); // 백 페이지네이션 시에는 1-based index 를 0으로 보정.
