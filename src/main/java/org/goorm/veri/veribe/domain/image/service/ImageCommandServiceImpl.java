@@ -7,17 +7,11 @@ import org.goorm.veri.veribe.domain.image.entity.Image;
 import org.goorm.veri.veribe.domain.image.exception.ImageErrorCode;
 import org.goorm.veri.veribe.domain.image.exception.ImageException;
 import org.goorm.veri.veribe.domain.image.repository.ImageRepository;
-import org.goorm.veri.veribe.domain.image.service.enums.FileExtension;
-import org.goorm.veri.veribe.domain.image.service.enums.FileSize;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.goorm.veri.veribe.domain.member.repository.MemberRepository;
 import org.goorm.veri.veribe.global.data.OcrConfigData;
-import org.goorm.veri.veribe.global.storage.dto.PresignedUrlResponse;
-import org.goorm.veri.veribe.global.storage.service.StorageService;
-import org.goorm.veri.veribe.global.storage.service.StorageUtil;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -27,9 +21,6 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.time.Duration;
-
-import static org.goorm.veri.veribe.global.storage.service.StorageConstants.MB;
 
 @Service
 @RequiredArgsConstructor
