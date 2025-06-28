@@ -1,9 +1,10 @@
 package org.goorm.veri.veribe.domain.book.service;
 
 import lombok.RequiredArgsConstructor;
+import org.goorm.veri.veribe.domain.book.controller.enums.MemberBookSortType;
 import org.goorm.veri.veribe.domain.book.dto.book.BookPopularResponse;
 import org.goorm.veri.veribe.domain.book.dto.book.BookConverter;
-import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookPagingResponse;
+import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookResponse;
 import org.goorm.veri.veribe.domain.book.entity.Book;
 import org.goorm.veri.veribe.domain.book.entity.MemberBook;
 import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookConverter;
@@ -12,6 +13,9 @@ import org.goorm.veri.veribe.domain.book.exception.MemberBookException;
 import org.goorm.veri.veribe.domain.book.repository.BookRepository;
 import org.goorm.veri.veribe.domain.book.repository.MemberBookRepository;
 import org.goorm.veri.veribe.domain.member.entity.Member;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,36 +55,12 @@ public class BookshelfServiceImpl implements BookshelfService {
     }
 
     @Override
-    public MemberBookPagingResponse searchAllNewest(int page, int size, Member member) {
-        List<MemberBook> result = memberBookRepository.findMemberBookNewest(member.getId());
+    public Page<MemberBookResponse> searchAll(Long memberId, int page, int size, MemberBookSortType sortType) {
+        Pageable pageRequest = PageRequest.of(page, size, sortType.getSort());
 
-        int totalElements = result.size();
+        Page<MemberBookResponse> responses = memberBookRepository.findMemberBookPage(memberId, pageRequest);
 
-        MemberBookPagingResponse dto = MemberBookConverter.toMemberBookSortResponse(result, page, size, totalElements);
-
-        return dto;
-    }
-
-    @Override
-    public MemberBookPagingResponse searchAllOldest(int page, int size, Member member) {
-        List<MemberBook> result = memberBookRepository.findMemberBookOldest(member.getId());
-
-        int totalElements = result.size();
-
-        MemberBookPagingResponse dto = MemberBookConverter.toMemberBookSortResponse(result, page, size, totalElements);
-
-        return dto;
-    }
-
-    @Override
-    public MemberBookPagingResponse searchAllHighScore(int page, int size, Member member) {
-        List<MemberBook> result = memberBookRepository.findMemberBookByScoreDesc(member.getId());
-
-        int totalElements = result.size();
-
-        MemberBookPagingResponse dto = MemberBookConverter.toMemberBookSortResponse(result, page, size, totalElements);
-
-        return dto;
+        return responses;
     }
 
     @Override
