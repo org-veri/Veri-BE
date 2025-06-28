@@ -22,27 +22,14 @@ public class ImageQueryServiceImpl implements ImageQueryService{
     private final ImageRepository imageRepository;
 
     @Override
-    public PageResponse<String> fetchUploadedImages(Long userId, Pageable pageable) {
+    public PageResponse<List<String>> fetchUploadedImages(Long userId, Pageable pageable) {
         Page<String> imageUrls = imageRepository.findByMemberId(userId, pageable);
 
         if(imageUrls.isEmpty()){
             return PageResponse.empty(pageable);
         }
 
-        List<String> encodedImages = imageUrls.stream()
-                .map(this::downloadAndEncodeToBase64)
-                .toList();
-
-        return PageResponse.of(encodedImages, imageUrls.getNumber(), imageUrls.getSize(),
+        return PageResponse.of(imageUrls.getContent(), imageUrls.getNumber(), imageUrls.getSize(),
                 imageUrls.getTotalElements(), imageUrls.getTotalPages());
-    }
-
-    private String downloadAndEncodeToBase64(String imageUrl) {
-        try {
-            byte[] imageBytes = new URL(imageUrl).openStream().readAllBytes();
-            return Base64.getEncoder().encodeToString(imageBytes);
-        } catch (IOException e) {
-            throw new ImageException(ImageErrorCode.ENCODING_FAILED);
-        }
     }
 }
