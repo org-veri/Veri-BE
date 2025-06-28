@@ -11,6 +11,8 @@ public class BookConverter {
                 .author(response.getAuthor())
                 .imageUrl(response.getImage())
                 .title(response.getTitle())
+                .publisher(response.getPublisher())
+                .isbn(response.getIsbn())
                 .build();
     }
 
