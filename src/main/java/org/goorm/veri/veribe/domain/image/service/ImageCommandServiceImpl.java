@@ -35,7 +35,6 @@ import static org.goorm.veri.veribe.global.storage.service.StorageConstants.MB;
 @RequiredArgsConstructor
 public class ImageCommandServiceImpl implements ImageCommandService {
 
-    private final StorageService storageService;
     private final ImageRepository imageRepository;
     private final MemberRepository memberRepository;
     private final OcrConfigData ocrConfigData;
@@ -50,49 +49,32 @@ public class ImageCommandServiceImpl implements ImageCommandService {
     }
 
     @Override
-    public String processImageOcrAndSave(MultipartFile file) throws Exception {
-        // TODO: 컨트롤러에서 Member 전달 받는 로직 추가 후 아랫 줄 삭제.
+    public String processImageOcrAndSave(String imageUrl) throws Exception {
+        // TODO: 추후 인증 컨텍스트에서 사용자 정보 주입
         Member member = memberRepository.findById(1L).orElseThrow();
 
-
-        if (FileSize.PERMITTED_SIZE.getSize() < file.getSize()) {
-            throw new ImageException(ImageErrorCode.SIZE_EXCEEDED);
+        BufferedImage original;
+        try (InputStream inputStream = new URL(imageUrl).openStream()) {
+            original = ImageIO.read(inputStream);
+        } catch (IOException e) {
+            throw new ImageException(ImageErrorCode.BAD_REQUEST);
         }
+        insertImageUrl(imageUrl, member);
+        BufferedImage preprocessed = preprocessImage(original);
 
-        if (FileExtension.checkAvailable(file.getName())){
-            throw new ImageException(ImageErrorCode.UNSUPPORTED_TYPE);
-        }
-
-        BufferedImage original = ImageIO.read(file.getInputStream()); // 원본 이미지, 사용자가 업로드 한 이미지를 불러올 떄 사용
-        BufferedImage preprocessed = preprocessImage(convertFileToImage(file)); // 전처리 이미지, OCR 인식률 높이기 위한 목적.
-
-        PresignedUrlResponse presignedOriginal = getPresignedUrl(file.getContentType());
-        PresignedUrlResponse presignedPreprocessed = getPresignedUrl(file.getContentType());
-
-        storageService.uploadImageToS3(original, presignedOriginal.imageKey(), FileExtension.convertMimeToExtension(file.getContentType()));
-        storageService.uploadImageToS3(preprocessed, presignedPreprocessed.imageKey(), FileExtension.convertMimeToExtension(file.getContentType()));
-
-        String ocrResult = extractTextFromBook(presignedPreprocessed);
-
-        insertImageUrl(presignedOriginal.publicUrl(), member);
-
-        return ocrResult;
+        return extractTextFromBufferedImage(preprocessed);
     }
 
-    private String extractTextFromBook(PresignedUrlResponse presignedUrlResponse) throws Exception {
-        URL s3Url = new URL(presignedUrlResponse.publicUrl());
+    private String extractTextFromBufferedImage(BufferedImage preprocessed) throws Exception {
         Tesseract tesseract = createConfiguredTesseract();
 
-        try (InputStream inputStream = s3Url.openStream()) {
-            return tesseract.doOCR(ImageIO.read(inputStream));
+        try {
+            return tesseract.doOCR(preprocessed);
         } catch (TesseractException e) {
             throw new Exception("OCR Processing Failed", e);
         }
     }
 
-    private BufferedImage convertFileToImage(MultipartFile file) throws IOException {
-        return ImageIO.read(file.getInputStream());
-    }
 
     private BufferedImage preprocessImage(BufferedImage input) {
         BufferedImage gray = new BufferedImage(input.getWidth(), input.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
@@ -110,21 +92,6 @@ public class ImageCommandServiceImpl implements ImageCommandService {
         }
 
         return gray;
-    }
-
-    private PresignedUrlResponse getPresignedUrl(String request) {
-        int expirationMinutes = 5;
-        long allowedSize = MB; // 1MB
-        String prefix = "public";
-
-        if (!StorageUtil.isImage(request)) throw new ImageException(ImageErrorCode.UNSUPPORTED_TYPE);
-
-        return storageService.generatePresignedUrl(
-                request,
-                Duration.ofMinutes(expirationMinutes),
-                allowedSize,
-                prefix
-        );
     }
 
     private Tesseract createConfiguredTesseract() {

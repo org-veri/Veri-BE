@@ -4,5 +4,5 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 public interface ImageCommandService {
-    String processImageOcrAndSave(MultipartFile file) throws Exception;
+    String processImageOcrAndSave(String imageUrl) throws Exception;
 }
