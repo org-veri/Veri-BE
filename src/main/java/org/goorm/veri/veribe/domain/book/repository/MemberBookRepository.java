@@ -1,8 +1,11 @@
 package org.goorm.veri.veribe.domain.book.repository;
 
 import io.lettuce.core.dynamic.annotation.Param;
+import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookResponse;
 import org.goorm.veri.veribe.domain.book.entity.Book;
 import org.goorm.veri.veribe.domain.book.entity.MemberBook;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -27,12 +30,16 @@ public interface MemberBookRepository extends JpaRepository<MemberBook, Long> {
             """)
     List<Book> findMostPopularBook(LocalDateTime startOfWeek);
 
-    @Query("SELECT mb FROM MemberBook mb WHERE mb.member.id = :memberId ORDER BY mb.createdAt DESC")
-    List<MemberBook> findMemberBookNewest(@Param("memberId") Long memberId);
-
-    @Query("SELECT mb FROM MemberBook mb WHERE mb.member.id = :memberId ORDER BY mb.createdAt ASC")
-    List<MemberBook> findMemberBookOldest(@Param("memberId") Long memberId);
-
-    @Query("SELECT mb FROM MemberBook mb WHERE mb.member.id = :memberId ORDER BY mb.score DESC")
-    List<MemberBook> findMemberBookByScoreDesc(@Param("memberId") Long memberId);
+    @Query("""
+            SELECT new org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookResponse(
+            mb.book.id,
+            mb.book.title,
+            mb.book.author,
+            mb.book.image,
+            mb.score,
+            mb.status)
+            FROM MemberBook mb
+            WHERE mb.member.id = :memberId
+            """)
+    Page<MemberBookResponse> findMemberBookPage(@Param("memberId") Long memberId, Pageable pageable);
 }
