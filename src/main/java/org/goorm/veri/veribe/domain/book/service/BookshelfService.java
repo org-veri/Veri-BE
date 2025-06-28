@@ -8,8 +8,6 @@ import org.goorm.veri.veribe.domain.book.entity.MemberBook;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
-
 public interface BookshelfService {
 
     MemberBook addToBookshelf(Member member, Long bookId);
@@ -18,7 +16,7 @@ public interface BookshelfService {
 
     MemberBookDetailResponse searchDetail(Long memberBookId);
 
-    List<BookPopularResponse> searchPopular();
+    Page<BookPopularResponse> searchPopular(int page, int size);
 
     void rateScore(Double score, Long memberBookId);
 
