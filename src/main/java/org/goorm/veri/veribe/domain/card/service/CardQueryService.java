@@ -10,4 +10,6 @@ public interface CardQueryService {
     Page<CardListItem> getOwnedCards(Long userId, int page, int size, CardSortType sortType);
 
     Card getCardById(Long cardId);
+
+    int getOwnedCardCount(Long memberId);
 }
