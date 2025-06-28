@@ -37,4 +37,9 @@ public class CardQueryServiceImpl implements CardQueryService {
         return cardRepository.findById(cardId)
                 .orElseThrow(() -> new CardException(CardErrorCode.NOT_FOUND));
     }
+
+    @Override
+    public int getOwnedCardCount(Long memberId) {
+        return cardRepository.countAllByMemberId(memberId);
+    }
 }

@@ -47,6 +47,11 @@ public class CardController {
         return DefaultResponse.created(new CardCreateResponse(cardId));
     }
 
+    @GetMapping("/my/count")
+    public DefaultResponse<Integer> getMyCardCount(@AuthenticatedMember Member member) {
+        return DefaultResponse.ok(cardQueryService.getOwnedCardCount(member.getId()));
+    }
+
     @GetMapping("/my")
     public DefaultResponse<CardListResponse> getMyCards(
             @AuthenticatedMember Member member,
