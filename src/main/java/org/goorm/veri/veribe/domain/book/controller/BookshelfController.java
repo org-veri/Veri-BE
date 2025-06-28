@@ -40,34 +40,34 @@ public class BookshelfController {
     }
 
     @GetMapping("/all")
-    public DefaultResponse<MemberBookSortResponse> getAllBooksNewest(
+    public DefaultResponse<MemberBookPagingResponse> getAllBooksNewest(
             @RequestParam(defaultValue = "1") @Min(1) int page,
             @RequestParam(defaultValue = "10") @Min(1) int size,
             @AuthenticatedMember Member member
     ) {
-        MemberBookSortResponse result = bookshelfService.searchAllNewest(page, size, member);
+        MemberBookPagingResponse result = bookshelfService.searchAllNewest(page, size, member);
 
         return DefaultResponse.ok(result);
     }
 
     @GetMapping("/all/oldest")
-    public DefaultResponse<MemberBookSortResponse> getAllBooksOldest(
+    public DefaultResponse<MemberBookPagingResponse> getAllBooksOldest(
             @RequestParam(defaultValue = "1") @Min(1) int page,
             @RequestParam(defaultValue = "10") @Min(1) int size,
             @AuthenticatedMember Member member
     ) {
-        MemberBookSortResponse result = bookshelfService.searchAllOldest(page, size, member);
+        MemberBookPagingResponse result = bookshelfService.searchAllOldest(page, size, member);
 
         return DefaultResponse.ok(result);
     }
 
     @GetMapping("/all/highScore")
-    public DefaultResponse<MemberBookSortResponse> getAllBooksScore(
+    public DefaultResponse<MemberBookPagingResponse> getAllBooksScore(
             @RequestParam(defaultValue = "1") @Min(1) int page,
             @RequestParam(defaultValue = "10") @Min(1) int size,
             @AuthenticatedMember Member member
     ) {
-        MemberBookSortResponse result = bookshelfService.searchAllHighScore(page, size, member);
+        MemberBookPagingResponse result = bookshelfService.searchAllHighScore(page, size, member);
 
         return DefaultResponse.ok(result);
     }

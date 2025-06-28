@@ -35,7 +35,7 @@ public class MemberBookConverter {
                 .build();
     }
 
-    public static MemberBookSortResponse toMemberBookSortResponse(List<MemberBook> memberBooks, int page, int size, int totalElements) {
+    public static MemberBookPagingResponse toMemberBookSortResponse(List<MemberBook> memberBooks, int page, int size, int totalElements) {
 
         List<MemberBookResponse> dtoList = new ArrayList<>();
         for (MemberBook memberBook : memberBooks) {
@@ -44,7 +44,7 @@ public class MemberBookConverter {
 
         int totalPages = (int) Math.ceil((double) totalElements / size);
 
-        return new MemberBookSortResponse(
+        return new MemberBookPagingResponse(
                 dtoList,
                 page,
                 size,
