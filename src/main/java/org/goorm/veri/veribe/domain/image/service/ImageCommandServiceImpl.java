@@ -8,16 +8,13 @@ import org.goorm.veri.veribe.domain.image.exception.ImageErrorCode;
 import org.goorm.veri.veribe.domain.image.exception.ImageException;
 import org.goorm.veri.veribe.domain.image.repository.ImageRepository;
 import org.goorm.veri.veribe.domain.member.entity.Member;
-import org.goorm.veri.veribe.domain.member.repository.MemberRepository;
 import org.goorm.veri.veribe.global.data.OcrConfigData;
-
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -27,10 +24,9 @@ import java.net.URL;
 public class ImageCommandServiceImpl implements ImageCommandService {
 
     private final ImageRepository imageRepository;
-    private final MemberRepository memberRepository;
     private final OcrConfigData ocrConfigData;
 
-    private void insertImageUrl(String imageUrl, Member member){
+    private void insertImageUrl(String imageUrl, Member member) {
         Image image = Image.builder()
                 .member(member)
                 .imageUrl(imageUrl)
@@ -40,16 +36,14 @@ public class ImageCommandServiceImpl implements ImageCommandService {
     }
 
     @Override
-    public String processImageOcrAndSave(String imageUrl) throws Exception {
-        // TODO: 추후 인증 컨텍스트에서 사용자 정보 주입
-        Member member = memberRepository.findById(1L).orElseThrow();
-
+    public String processImageOcrAndSave(String imageUrl, Member member) throws Exception {
         BufferedImage original;
         try (InputStream inputStream = new URL(imageUrl).openStream()) {
             original = ImageIO.read(inputStream);
         } catch (IOException e) {
             throw new ImageException(ImageErrorCode.BAD_REQUEST);
         }
+
         insertImageUrl(imageUrl, member);
         BufferedImage preprocessed = preprocessImage(original);
 
