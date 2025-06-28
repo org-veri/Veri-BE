@@ -3,6 +3,7 @@ package org.goorm.veri.veribe.domain.book.controller;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.auth.annotation.AuthenticatedMember;
+import org.goorm.veri.veribe.domain.book.controller.enums.MemberBookSortType;
 import org.goorm.veri.veribe.domain.book.dto.book.BookPopularResponse;
 import org.goorm.veri.veribe.domain.book.dto.book.BookRequest;
 import org.goorm.veri.veribe.domain.book.dto.book.BookSearchResponse;
@@ -12,6 +13,7 @@ import org.goorm.veri.veribe.domain.book.service.BookService;
 import org.goorm.veri.veribe.domain.book.service.BookshelfService;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.namul.api.payload.response.DefaultResponse;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,36 +42,16 @@ public class BookshelfController {
     }
 
     @GetMapping("/all")
-    public DefaultResponse<MemberBookPagingResponse> getAllBooksNewest(
+    public DefaultResponse<MemberBookListResponse> getAllBooks(
             @RequestParam(defaultValue = "1") @Min(1) int page,
             @RequestParam(defaultValue = "10") @Min(1) int size,
+            @RequestParam(defaultValue = "newest") String sort,
             @AuthenticatedMember Member member
     ) {
-        MemberBookPagingResponse result = bookshelfService.searchAllNewest(page, size, member);
+        MemberBookSortType sortType = MemberBookSortType.from(sort);
+        Page<MemberBookResponse> pageData = bookshelfService.searchAll(member.getId(), page - 1, size, sortType);
 
-        return DefaultResponse.ok(result);
-    }
-
-    @GetMapping("/all/oldest")
-    public DefaultResponse<MemberBookPagingResponse> getAllBooksOldest(
-            @RequestParam(defaultValue = "1") @Min(1) int page,
-            @RequestParam(defaultValue = "10") @Min(1) int size,
-            @AuthenticatedMember Member member
-    ) {
-        MemberBookPagingResponse result = bookshelfService.searchAllOldest(page, size, member);
-
-        return DefaultResponse.ok(result);
-    }
-
-    @GetMapping("/all/highScore")
-    public DefaultResponse<MemberBookPagingResponse> getAllBooksScore(
-            @RequestParam(defaultValue = "1") @Min(1) int page,
-            @RequestParam(defaultValue = "10") @Min(1) int size,
-            @AuthenticatedMember Member member
-    ) {
-        MemberBookPagingResponse result = bookshelfService.searchAllHighScore(page, size, member);
-
-        return DefaultResponse.ok(result);
+        return DefaultResponse.ok(new MemberBookListResponse(pageData));
     }
 
     @GetMapping("/detail")
