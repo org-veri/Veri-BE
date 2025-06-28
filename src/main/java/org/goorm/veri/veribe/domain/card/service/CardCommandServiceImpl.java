@@ -32,7 +32,7 @@ public class CardCommandServiceImpl implements CardCommandService {
 
     @Transactional
     @Override
-    public Long createCard(Long userId, String content, String imageUrl, Long memberBookId) {
+    public Long createCard(Long memberId, String content, String imageUrl, Long memberBookId) {
         MemberBook memberBook = memberBookRepository.findById(memberBookId)
                 .orElseThrow(() -> new CardException(BAD_REQUEST));
 
