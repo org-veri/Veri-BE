@@ -11,14 +11,12 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MemberBookRepository extends JpaRepository<MemberBook, Long> {
-    List<MemberBook> findAllByMember_Id(Long memberId);
 
     @Query("SELECT mb FROM MemberBook mb " +
             "LEFT JOIN FETCH mb.cards " +
             "JOIN FETCH mb.book " +
             "WHERE mb.id = :memberBookId")
     Optional<MemberBook> findByIdWithCardsAndBook(@Param("memberBookId") Long memberBookId);
-
 
     @Query("""
             SELECT mb.book
@@ -28,4 +26,13 @@ public interface MemberBookRepository extends JpaRepository<MemberBook, Long> {
             ORDER BY COUNT(mb) DESC
             """)
     List<Book> findMostPopularBook(LocalDateTime startOfWeek);
+
+    @Query("SELECT mb FROM MemberBook mb WHERE mb.member.id = :memberId ORDER BY mb.createdAt DESC")
+    List<MemberBook> findMemberBookNewest(@Param("memberId") Long memberId);
+
+    @Query("SELECT mb FROM MemberBook mb WHERE mb.member.id = :memberId ORDER BY mb.createdAt ASC")
+    List<MemberBook> findMemberBookOldest(@Param("memberId") Long memberId);
+
+    @Query("SELECT mb FROM MemberBook mb WHERE mb.member.id = :memberId ORDER BY mb.score DESC")
+    List<MemberBook> findMemberBookByScoreDesc(@Param("memberId") Long memberId);
 }
