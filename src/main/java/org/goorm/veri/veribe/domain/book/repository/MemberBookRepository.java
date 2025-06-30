@@ -4,6 +4,7 @@ import io.lettuce.core.dynamic.annotation.Param;
 import org.goorm.veri.veribe.domain.book.dto.book.BookPopularResponse;
 import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookResponse;
 import org.goorm.veri.veribe.domain.book.entity.MemberBook;
+import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.goorm.veri.veribe.domain.book.entity.enums.BookStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
