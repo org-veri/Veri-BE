@@ -81,6 +81,13 @@ public class BookshelfController {
         return DefaultResponse.ok(new BookPopularListResponse(pageData));
     }
 
+    @GetMapping("/my/count")
+    public DefaultResponse<Integer> getMyBookCount(@AuthenticatedMember Member member) {
+        Integer count = bookshelfService.searchMyBookCount(member.getId());
+
+        return DefaultResponse.ok(count);
+    }
+
     @PatchMapping("/rate/{score}")
     public DefaultResponse<Void> rateBook(@PathVariable("score") Double score, @RequestParam Long memberBookId) {
         bookshelfService.rateScore(score, memberBookId);
