@@ -33,4 +33,10 @@ public class OAuth2Converter {
                 .refreshToken(refresh)
                 .build();
     }
+
+    public static OAuth2Response.ReissueTokenResponse toReissueTokenResponse(String access) {
+        return OAuth2Response.ReissueTokenResponse.builder()
+                .accessToken(access)
+                .build();
+    }
 }
