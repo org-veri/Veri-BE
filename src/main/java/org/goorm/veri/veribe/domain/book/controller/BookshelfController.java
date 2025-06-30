@@ -1,5 +1,6 @@
 package org.goorm.veri.veribe.domain.book.controller;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.auth.annotation.AuthenticatedMember;
@@ -88,9 +89,12 @@ public class BookshelfController {
         return DefaultResponse.ok(count);
     }
 
-    @PatchMapping("/rate/{score}")
-    public DefaultResponse<Void> rateBook(@PathVariable("score") Double score, @RequestParam Long memberBookId) {
-        bookshelfService.rateScore(score, memberBookId);
+    @PatchMapping("/rate")
+    public DefaultResponse<Void> rateBook(
+            @RequestBody @Valid MemberBookScoreRequest request,
+            @RequestParam Long memberBookId)
+    {
+        bookshelfService.rateScore(request.score(), memberBookId);
 
         return DefaultResponse.noContent();
     }
