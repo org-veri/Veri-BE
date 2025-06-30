@@ -84,6 +84,11 @@ public class BookshelfServiceImpl implements BookshelfService {
     }
 
     @Override
+    public int searchMyBookCount(Long memberId) {
+        return memberBookRepository.countByStatusAndMember(DONE,memberId);
+    }
+
+    @Override
     public void rateScore(Double score, Long memberBookId) {
         MemberBook memberBook = memberBookRepository.findById(memberBookId)
                 .orElseThrow(() -> new MemberBookException(BAD_REQUEST));
