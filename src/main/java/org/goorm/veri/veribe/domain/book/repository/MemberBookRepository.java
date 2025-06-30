@@ -7,6 +7,7 @@ import org.goorm.veri.veribe.domain.book.entity.MemberBook;
 import org.goorm.veri.veribe.domain.book.entity.enums.BookStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -21,6 +22,7 @@ public interface MemberBookRepository extends JpaRepository<MemberBook, Long> {
             "WHERE mb.id = :memberBookId")
     Optional<MemberBook> findByIdWithCardsAndBook(@Param("memberBookId") Long memberBookId);
 
+    int countAllByMember(Member member);
     @Query("""
             SELECT new org.goorm.veri.veribe.domain.book.dto.book.BookPopularResponse(
             mb.book.image,
