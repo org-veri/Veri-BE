@@ -84,7 +84,7 @@ public class BookshelfServiceImpl implements BookshelfService {
     }
 
     @Override
-    public int searchMyBookCount(Long memberId) {
+    public int searchMyReadingDoneCount(Long memberId) {
         return memberBookRepository.countByStatusAndMember(DONE,memberId);
     }
 
