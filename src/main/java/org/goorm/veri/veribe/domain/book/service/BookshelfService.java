@@ -18,7 +18,7 @@ public interface BookshelfService {
 
     Page<BookPopularResponse> searchPopular(int page, int size);
 
-    int searchMyBookCount(Long memberId);
+    int searchMyReadingDoneCount(Long memberId);
 
     void rateScore(Double score, Long memberBookId);
 

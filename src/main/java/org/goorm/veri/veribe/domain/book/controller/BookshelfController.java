@@ -83,7 +83,7 @@ public class BookshelfController {
 
     @GetMapping("/my/count")
     public DefaultResponse<Integer> getMyBookCount(@AuthenticatedMember Member member) {
-        Integer count = bookshelfService.searchMyBookCount(member.getId());
+        Integer count = bookshelfService.searchMyReadingDoneCount(member.getId());
 
         return DefaultResponse.ok(count);
     }
