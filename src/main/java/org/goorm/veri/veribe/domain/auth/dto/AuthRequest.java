@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import org.goorm.veri.veribe.domain.member.entity.enums.ProviderType;
 
-public class OAuth2Request {
+public class AuthRequest {
 
     @Getter
     @Builder

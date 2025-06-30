@@ -2,7 +2,7 @@ package org.goorm.veri.veribe.domain.auth.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.goorm.veri.veribe.domain.auth.dto.KakaoOAuth2DTO;
-import org.goorm.veri.veribe.domain.auth.dto.OAuth2Request;
+import org.goorm.veri.veribe.domain.auth.dto.AuthRequest;
 import org.goorm.veri.veribe.domain.auth.exception.OAuth2ErrorCode;
 import org.goorm.veri.veribe.domain.auth.exception.OAuth2Exception;
 import org.goorm.veri.veribe.domain.member.entity.enums.ProviderType;
@@ -60,9 +60,9 @@ public class KakaoOAuth2Service extends AbstractOAuth2Service {
     }
 
     @Override
-    protected OAuth2Request.OAuth2LoginUserInfo getUserInfo(String token) {
+    protected AuthRequest.OAuth2LoginUserInfo getUserInfo(String token) {
         KakaoOAuth2DTO.KakaoProfile kakaoProfile = getKakaoProfile(token);
-        return OAuth2Request.OAuth2LoginUserInfo.builder()
+        return AuthRequest.OAuth2LoginUserInfo.builder()
                 .email(kakaoProfile.getKakao_account().getEmail())
                 .providerId(String.valueOf(kakaoProfile.getId()))
                 .nickname(kakaoProfile.getProperties().getNickname())
