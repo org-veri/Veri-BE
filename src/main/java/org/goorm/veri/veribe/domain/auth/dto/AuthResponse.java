@@ -3,7 +3,7 @@ package org.goorm.veri.veribe.domain.auth.dto;
 import lombok.Builder;
 import lombok.Getter;
 
-public class OAuth2Response {
+public class AuthResponse {
 
     @Getter
     @Builder

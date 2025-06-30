@@ -1,9 +1,9 @@
 package org.goorm.veri.veribe.domain.auth.service;
 
 import lombok.RequiredArgsConstructor;
-import org.goorm.veri.veribe.domain.auth.converter.OAuth2Converter;
-import org.goorm.veri.veribe.domain.auth.dto.OAuth2Request;
-import org.goorm.veri.veribe.domain.auth.dto.OAuth2Response;
+import org.goorm.veri.veribe.domain.auth.converter.AuthConverter;
+import org.goorm.veri.veribe.domain.auth.dto.AuthRequest;
+import org.goorm.veri.veribe.domain.auth.dto.AuthResponse;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.goorm.veri.veribe.domain.member.repository.MemberRepository;
 
@@ -16,18 +16,18 @@ public abstract class AbstractOAuth2Service implements OAuth2Service {
     private final TokenCommandService tokenCommandService;
 
     @Override
-    public OAuth2Response.LoginResponse login(String code) {
+    public AuthResponse.LoginResponse login(String code) {
         String accessToken = getAccessToken(code);
-        OAuth2Request.OAuth2LoginUserInfo request = getUserInfo(accessToken);
+        AuthRequest.OAuth2LoginUserInfo request = getUserInfo(accessToken);
         Member member = saveOrUpdateMember(request);
         return tokenCommandService.createLoginToken(member);
     }
 
     protected abstract String getAccessToken(String code);
 
-    protected abstract OAuth2Request.OAuth2LoginUserInfo getUserInfo(String token);
+    protected abstract AuthRequest.OAuth2LoginUserInfo getUserInfo(String token);
 
-    private Member saveOrUpdateMember(OAuth2Request.OAuth2LoginUserInfo request) {
+    private Member saveOrUpdateMember(AuthRequest.OAuth2LoginUserInfo request) {
         Member member;
         Optional<Member> optional = memberRepository.findByProviderIdAndProviderType(request.getProviderId(), request.getProviderType());
         if (optional.isPresent()) {
@@ -35,7 +35,7 @@ public abstract class AbstractOAuth2Service implements OAuth2Service {
             member.updateInfo(request.getNickname(), request.getImage());
         }
         else {
-            member = OAuth2Converter.toMember(request);
+            member = AuthConverter.toMember(request);
         }
         return memberRepository.save(member);
     }

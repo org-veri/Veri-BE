@@ -1,9 +1,9 @@
 package org.goorm.veri.veribe.domain.auth.service;
 
 import lombok.RequiredArgsConstructor;
-import org.goorm.veri.veribe.domain.auth.converter.OAuth2Converter;
-import org.goorm.veri.veribe.domain.auth.dto.OAuth2Request;
-import org.goorm.veri.veribe.domain.auth.dto.OAuth2Response;
+import org.goorm.veri.veribe.domain.auth.converter.AuthConverter;
+import org.goorm.veri.veribe.domain.auth.dto.AuthRequest;
+import org.goorm.veri.veribe.domain.auth.dto.AuthResponse;
 import org.goorm.veri.veribe.domain.auth.exception.OAuth2ErrorCode;
 import org.goorm.veri.veribe.domain.auth.exception.OAuth2Exception;
 import org.goorm.veri.veribe.domain.member.entity.Member;
@@ -24,7 +24,7 @@ public class AuthServiceImpl implements AuthService {
     private final MemberRepository memberRepository;
 
     @Override
-    public OAuth2Response.LoginResponse login(String provider, String code) {
+    public AuthResponse.LoginResponse login(String provider, String code) {
         if (provider.equalsIgnoreCase(ProviderType.KAKAO.name())) {
             return kakaoOAuth2Service.login(code);
         }
@@ -34,10 +34,10 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public OAuth2Response.ReissueTokenResponse reissueToken(OAuth2Request.AuthReissueRequest request) {
+    public AuthResponse.ReissueTokenResponse reissueToken(AuthRequest.AuthReissueRequest request) {
         Long id = jwtUtil.getUserId(request.getRefreshToken());
         Member member = memberRepository.findById(id).orElseThrow(() ->
                 new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
-        return OAuth2Converter.toReissueTokenResponse(jwtUtil.createAccessToken(member));
+        return AuthConverter.toReissueTokenResponse(jwtUtil.createAccessToken(member));
     }
 }
