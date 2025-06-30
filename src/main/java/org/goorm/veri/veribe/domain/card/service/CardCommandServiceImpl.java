@@ -1,5 +1,6 @@
 package org.goorm.veri.veribe.domain.card.service;
 
+import io.github.miensoap.s3.core.post.dto.PresignedPostForm;
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.book.entity.MemberBook;
 import org.goorm.veri.veribe.domain.book.repository.MemberBookRepository;
@@ -31,7 +32,7 @@ public class CardCommandServiceImpl implements CardCommandService {
 
     @Transactional
     @Override
-    public Long createCard(Long userId, String content, String imageUrl, Long memberBookId) {
+    public Long createCard(Long memberId, String content, String imageUrl, Long memberBookId) {
         MemberBook memberBook = memberBookRepository.findById(memberBookId)
                 .orElseThrow(() -> new CardException(BAD_REQUEST));
 
@@ -61,16 +62,34 @@ public class CardCommandServiceImpl implements CardCommandService {
     @Override
     public PresignedUrlResponse getPresignedUrl(PresignedUrlRequest request) {
         int expirationMinutes = 5;
-        long allowedSize = MB; // 1MB
         String prefix = "public";
+
+        if(request.contentLength() > MB) {
+            throw new CardException(CardErrorCode.IMAGE_TOO_LARGE);
+        }
 
         if (!StorageUtil.isImage(request.contentType())) throw new CardException(CardErrorCode.UNSUPPORTED_IMAGE_TYPE);
 
         return storageService.generatePresignedUrl(
                 request.contentType(),
-                Duration.ofMinutes(expirationMinutes),
+                request.contentLength(),
+                prefix,
+                Duration.ofMinutes(expirationMinutes)
+        );
+    }
+
+    @Override
+    public PresignedPostForm getPresignedPost() {
+        String allowedContentType = "image/*";
+        int expirationMinutes = 5;
+        long allowedSize = MB; // 1MB
+        String prefix = "public";
+
+        return storageService.generatePresignedPost(
+                allowedContentType,
                 allowedSize,
-                prefix
+                prefix,
+                Duration.ofMinutes(expirationMinutes)
         );
     }
 }

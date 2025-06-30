@@ -1,21 +1,27 @@
 package org.goorm.veri.veribe.domain.book.service;
 
 import lombok.RequiredArgsConstructor;
+import org.goorm.veri.veribe.domain.book.controller.enums.MemberBookSortType;
+import org.goorm.veri.veribe.domain.book.dto.book.BookPopularResponse;
+import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookResponse;
 import org.goorm.veri.veribe.domain.book.entity.Book;
 import org.goorm.veri.veribe.domain.book.entity.MemberBook;
 import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookConverter;
 import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookDetailResponse;
-import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookResponse;
 import org.goorm.veri.veribe.domain.book.exception.MemberBookException;
 import org.goorm.veri.veribe.domain.book.repository.BookRepository;
 import org.goorm.veri.veribe.domain.book.repository.MemberBookRepository;
 import org.goorm.veri.veribe.domain.member.entity.Member;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.goorm.veri.veribe.domain.book.entity.enums.BookStatus.*;
 import static org.goorm.veri.veribe.domain.book.exception.MemberBookErrorCode.BAD_REQUEST;
@@ -47,15 +53,12 @@ public class BookshelfServiceImpl implements BookshelfService {
     }
 
     @Override
-    public List<MemberBookResponse> searchAll(Member member) {
-        List<MemberBook> result = memberBookRepository.findAllByMember_Id(member.getId());
+    public Page<MemberBookResponse> searchAll(Long memberId, int page, int size, MemberBookSortType sortType) {
+        Pageable pageRequest = PageRequest.of(page, size, sortType.getSort());
 
-        List<MemberBookResponse> dtos = new ArrayList<>();
-        for (MemberBook memberBook : result) {
-            dtos.add(MemberBookConverter.toMemberBookResponse(memberBook));
-        }
+        Page<MemberBookResponse> responses = memberBookRepository.findMemberBookPage(memberId, pageRequest);
 
-        return dtos;
+        return responses;
     }
 
     @Override
@@ -66,6 +69,23 @@ public class BookshelfServiceImpl implements BookshelfService {
         MemberBookDetailResponse dto = MemberBookConverter.toMemberBookDetailResponse(memberBook);
 
         return dto;
+    }
+
+    @Override
+    public Page<BookPopularResponse> searchPopular(int page, int size) {
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+        LocalDateTime startOfWeek = now.with(DayOfWeek.MONDAY).toLocalDate().atStartOfDay();
+
+        Pageable pageRequest = PageRequest.of(page, size);
+
+        Page<BookPopularResponse> responses = memberBookRepository.findMostPopularBook(startOfWeek, pageRequest);
+
+        return responses;
+    }
+
+    @Override
+    public int searchMyReadingDoneCount(Long memberId) {
+        return memberBookRepository.countByStatusAndMember(DONE,memberId);
     }
 
     @Override

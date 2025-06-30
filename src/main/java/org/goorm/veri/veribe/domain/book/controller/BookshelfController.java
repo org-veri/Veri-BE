@@ -1,11 +1,12 @@
 package org.goorm.veri.veribe.domain.book.controller;
 
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.auth.annotation.AuthenticatedMember;
+import org.goorm.veri.veribe.domain.book.controller.enums.MemberBookSortType;
+import org.goorm.veri.veribe.domain.book.dto.book.BookPopularListResponse;
+import org.goorm.veri.veribe.domain.book.dto.book.BookPopularResponse;
 import org.goorm.veri.veribe.domain.book.dto.book.BookRequest;
-import org.goorm.veri.veribe.domain.book.dto.book.BookResponse;
 import org.goorm.veri.veribe.domain.book.dto.book.BookSearchResponse;
 import org.goorm.veri.veribe.domain.book.dto.memberBook.*;
 import org.goorm.veri.veribe.domain.book.entity.MemberBook;
@@ -13,9 +14,8 @@ import org.goorm.veri.veribe.domain.book.service.BookService;
 import org.goorm.veri.veribe.domain.book.service.BookshelfService;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.namul.api.payload.response.DefaultResponse;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequestMapping("/api/v0/bookshelf")
 @RestController
@@ -41,10 +41,16 @@ public class BookshelfController {
     }
 
     @GetMapping("/all")
-    public DefaultResponse<List<MemberBookResponse>> getAllBooks(@AuthenticatedMember Member member) {
-        List<MemberBookResponse> result = bookshelfService.searchAll(member);
+    public DefaultResponse<MemberBookListResponse> getAllBooks(
+            @RequestParam(defaultValue = "1") @Min(1) int page,
+            @RequestParam(defaultValue = "10") @Min(1) int size,
+            @RequestParam(defaultValue = "newest") String sort,
+            @AuthenticatedMember Member member
+    ) {
+        MemberBookSortType sortType = MemberBookSortType.from(sort);
+        Page<MemberBookResponse> pageData = bookshelfService.searchAll(member.getId(), page - 1, size, sortType);
 
-        return DefaultResponse.ok(result);
+        return DefaultResponse.ok(new MemberBookListResponse(pageData));
     }
 
     @GetMapping("/detail")
@@ -63,6 +69,23 @@ public class BookshelfController {
         BookSearchResponse bookResponses = bookService.searchBook(query, page, size);
 
         return DefaultResponse.ok(bookResponses);
+    }
+
+    @GetMapping("/popular")
+    public DefaultResponse<BookPopularListResponse> getPopularBooks(
+            @RequestParam(defaultValue = "1") @Min(1) int page,
+            @RequestParam(defaultValue = "10") @Min(1) int size
+    ) {
+        Page<BookPopularResponse> pageData = bookshelfService.searchPopular(page, size);
+
+        return DefaultResponse.ok(new BookPopularListResponse(pageData));
+    }
+
+    @GetMapping("/my/count")
+    public DefaultResponse<Integer> getMyBookCount(@AuthenticatedMember Member member) {
+        Integer count = bookshelfService.searchMyReadingDoneCount(member.getId());
+
+        return DefaultResponse.ok(count);
     }
 
     @PatchMapping("/rate/{score}")

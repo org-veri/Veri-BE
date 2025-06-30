@@ -47,6 +47,11 @@ public class CardController {
         return DefaultResponse.created(new CardCreateResponse(cardId));
     }
 
+    @GetMapping("/my/count")
+    public DefaultResponse<Integer> getMyCardCount(@AuthenticatedMember Member member) {
+        return DefaultResponse.ok(cardQueryService.getOwnedCardCount(member.getId()));
+    }
+
     @GetMapping("/my")
     public DefaultResponse<CardListResponse> getMyCards(
             @AuthenticatedMember Member member,
@@ -75,8 +80,14 @@ public class CardController {
         return DefaultResponse.noContent();
     }
 
+    /**
+     * 요청한 이미지 타입과 크기에 맞는 presigned url을 반환합니다.
+     * <p>
+     * 클라이언트에서 해당 url에 PUT 방식으로 이미지 업로드
+     */
     @PostMapping("/image")
     public DefaultResponse<PresignedUrlResponse> uploadCardImage(@RequestBody PresignedUrlRequest request) {
+
         return DefaultResponse.ok(cardCommandService.getPresignedUrl(request));
     }
 }

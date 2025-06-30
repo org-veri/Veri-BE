@@ -6,17 +6,6 @@ import java.util.List;
 
 public class MemberBookConverter {
 
-    public static MemberBookResponse toMemberBookResponse(MemberBook memberBook) {
-        return MemberBookResponse.builder()
-                .bookId(memberBook.getBook().getId())
-                .title(memberBook.getBook().getTitle())
-                .imageUrl(memberBook.getBook().getImage())
-                .status(memberBook.getStatus())
-                .author(memberBook.getBook().getAuthor())
-                .score(memberBook.getScore())
-                .build();
-    }
-
     public static MemberBookDetailResponse toMemberBookDetailResponse(MemberBook memberBook) {
 
         List<CardSummaries> summaries = memberBook.getCards().stream()

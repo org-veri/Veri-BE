@@ -1,19 +1,24 @@
 package org.goorm.veri.veribe.domain.book.service;
 
+import org.goorm.veri.veribe.domain.book.controller.enums.MemberBookSortType;
+import org.goorm.veri.veribe.domain.book.dto.book.BookPopularResponse;
 import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookDetailResponse;
 import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookResponse;
 import org.goorm.veri.veribe.domain.book.entity.MemberBook;
 import org.goorm.veri.veribe.domain.member.entity.Member;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 public interface BookshelfService {
 
     MemberBook addToBookshelf(Member member, Long bookId);
 
-    List<MemberBookResponse> searchAll(Member member);
+    Page<MemberBookResponse> searchAll(Long memberId, int page, int size, MemberBookSortType sortType);
 
     MemberBookDetailResponse searchDetail(Long memberBookId);
+
+    Page<BookPopularResponse> searchPopular(int page, int size);
+
+    int searchMyReadingDoneCount(Long memberId);
 
     void rateScore(Double score, Long memberBookId);
 

@@ -1,13 +1,18 @@
 package org.goorm.veri.veribe.global.storage.service;
 
+import io.github.miensoap.s3.core.ExtendedS3Presigner;
+import io.github.miensoap.s3.core.post.dto.PostObjectPresignRequest;
+import io.github.miensoap.s3.core.post.dto.PresignedPostForm;
+import io.github.miensoap.s3.core.post.s3policy.PostConditions;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.global.storage.dto.PresignedUrlResponse;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
@@ -16,7 +21,6 @@ import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignReques
 import java.time.Duration;
 
 @Service
-@ConditionalOnProperty(name = "cloud.storage.platform", havingValue = "aws")
 @RequiredArgsConstructor
 public class AwsStorageService implements StorageService {
 
@@ -32,20 +36,32 @@ public class AwsStorageService implements StorageService {
     @Value("${cloud.aws.s3.region}")
     private String region;
 
+    private S3Client s3Client;
+
+    @PostConstruct
+    public void initS3Client() {
+        this.s3Client = S3Client.builder()
+                .region(Region.of(region))
+                .credentialsProvider(
+                        StaticCredentialsProvider.create(
+                                AwsBasicCredentials.create(accessKey, secretKey)))
+                .build();
+    }
+
     @Override
     public PresignedUrlResponse generatePresignedUrl(
             String contentType,
-            Duration duration,
-            long fileSize,
-            String prefix
+            long contentLength,
+            String prefix,
+            Duration duration
     ) {
         String key = StorageUtil.generateUniqueKey(contentType, prefix);
 
         PutObjectRequest objectRequest = PutObjectRequest.builder()
                 .bucket(bucket)
                 .key(key)
+                .contentLength(contentLength)
                 .contentType(contentType)
-//                .contentLength(fileSize) #10
                 .build();
 
         PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
@@ -62,6 +78,37 @@ public class AwsStorageService implements StorageService {
 
             PresignedPutObjectRequest presignedRequest = presigner.presignPutObject(presignRequest);
             return new PresignedUrlResponse(presignedRequest.url().toString(), getPublicUrl(key));
+        }
+    }
+
+    public PresignedPostForm generatePresignedPost(
+            String contentType,
+            long fileSize,
+            String prefix,
+            Duration duration
+    ) {
+        String key = StorageUtil.generateUniqueKey(contentType, prefix);
+
+        PostConditions conditions = PostConditions.builder()
+                .contentType(contentType)
+                .maxSize(fileSize)
+                .build();
+
+        PostObjectPresignRequest presignRequest = PostObjectPresignRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .conditions(conditions)
+                .signatureDuration(duration)
+                .build();
+
+        try (ExtendedS3Presigner presigner = ExtendedS3Presigner.builder()
+                .region(Region.of(region))
+                .credentialsProvider(
+                        StaticCredentialsProvider.create(
+                                AwsBasicCredentials.create(accessKey, secretKey)))
+                .build()) {
+
+            return presigner.presignPostObject(presignRequest);
         }
     }
 
