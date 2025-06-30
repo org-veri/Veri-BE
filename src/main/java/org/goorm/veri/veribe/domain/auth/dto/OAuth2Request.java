@@ -15,4 +15,9 @@ public class OAuth2Request {
         private String providerId;
         private ProviderType providerType;
     }
+
+    @Getter
+    public static class AuthReissueRequest {
+        private String refreshToken;
+    }
 }

@@ -12,9 +12,13 @@ import org.springframework.stereotype.Service;
 public class TokenCommandServiceImpl implements TokenCommandService {
 
     private final JwtUtil jwtUtil;
+    private final TokenStorageService tokenStorageService;
 
     @Override
     public OAuth2Response.LoginResponse createLoginToken(Member member) {
-        return OAuth2Converter.toOAuth2LoginResponse(jwtUtil.createAccessToken(member), jwtUtil.createRefreshToken(member));
+        String accessToken = jwtUtil.createAccessToken(member);
+        String refreshToken = jwtUtil.createRefreshToken(member);
+        tokenStorageService.addRefreshToken(member.getId(), refreshToken);
+        return OAuth2Converter.toOAuth2LoginResponse(accessToken, refreshToken);
     }
 }
