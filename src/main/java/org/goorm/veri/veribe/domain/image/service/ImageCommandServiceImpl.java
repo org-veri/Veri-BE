@@ -3,6 +3,11 @@ package org.goorm.veri.veribe.domain.image.service;
 import lombok.RequiredArgsConstructor;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
+import org.bytedeco.javacv.Java2DFrameConverter;
+import org.bytedeco.javacv.OpenCVFrameConverter;
+import org.bytedeco.opencv.global.opencv_imgproc;
+import org.bytedeco.opencv.opencv_core.Mat;
+import org.bytedeco.opencv.opencv_core.Size;
 import org.goorm.veri.veribe.domain.image.entity.Image;
 import org.goorm.veri.veribe.domain.image.exception.ImageErrorCode;
 import org.goorm.veri.veribe.domain.image.exception.ImageException;
@@ -14,7 +19,7 @@ import org.springframework.stereotype.Service;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.WritableRaster;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -36,14 +41,13 @@ public class ImageCommandServiceImpl implements ImageCommandService {
     }
 
     @Override
-    public String processImageOcrAndSave(String imageUrl, Member member) throws Exception {
+    public String processImageOcrAndSave(Member member, String imageUrl) throws Exception {
         BufferedImage original;
         try (InputStream inputStream = new URL(imageUrl).openStream()) {
             original = ImageIO.read(inputStream);
         } catch (IOException e) {
             throw new ImageException(ImageErrorCode.BAD_REQUEST);
         }
-
         insertImageUrl(imageUrl, member);
         BufferedImage preprocessed = preprocessImage(original);
 
@@ -52,7 +56,6 @@ public class ImageCommandServiceImpl implements ImageCommandService {
 
     private String extractTextFromBufferedImage(BufferedImage preprocessed) throws Exception {
         Tesseract tesseract = createConfiguredTesseract();
-
         try {
             return tesseract.doOCR(preprocessed);
         } catch (TesseractException e) {
@@ -62,28 +65,37 @@ public class ImageCommandServiceImpl implements ImageCommandService {
 
 
     private BufferedImage preprocessImage(BufferedImage input) {
-        BufferedImage gray = new BufferedImage(input.getWidth(), input.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
-        Graphics2D g = gray.createGraphics();
-        g.drawImage(input, 0, 0, null);
-        g.dispose();
+        try (OpenCVFrameConverter.ToMat converterToMat = new OpenCVFrameConverter.ToMat();
+             Java2DFrameConverter converterToFrame = new Java2DFrameConverter()) {
 
-        WritableRaster raster = gray.getRaster();
-        for (int y = 0; y < raster.getHeight(); y++) {
-            for (int x = 0; x < raster.getWidth(); x++) {
-                int value = raster.getSample(x, y, 0);
-                int newValue = value < 140 ? 0 : 255;
-                raster.setSample(x, y, 0, newValue);
-            }
+            Mat mat = converterToMat.convert(converterToFrame.convert(input));
+
+            Mat resized = new Mat();
+            opencv_imgproc.resize(mat, resized, new Size(mat.cols() * 2, mat.rows() * 2));
+
+            Mat gray = new Mat();
+            opencv_imgproc.cvtColor(resized, gray, opencv_imgproc.COLOR_BGR2GRAY);
+
+            Mat binary = new Mat();
+            opencv_imgproc.adaptiveThreshold(
+                    gray,
+                    binary,
+                    255,
+                    opencv_imgproc.ADAPTIVE_THRESH_MEAN_C,
+                    opencv_imgproc.THRESH_BINARY,
+                    15,
+                    10
+            );
+
+            return converterToFrame.convert(converterToMat.convert(binary));
         }
-
-        return gray;
     }
 
     private Tesseract createConfiguredTesseract() {
         Tesseract tesseract = new Tesseract();
         tesseract.setDatapath(ocrConfigData.getTessdataPath());
         tesseract.setLanguage(ocrConfigData.getLanguage());
-        tesseract.setPageSegMode(3);
+        tesseract.setPageSegMode(6);
 
         return tesseract;
     }

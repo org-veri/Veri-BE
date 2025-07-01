@@ -34,7 +34,7 @@ public class ImageController {
             @AuthenticatedMember Member member,
             @RequestParam("imageUrl") String imageUrl) throws Exception {
 
-        return DefaultResponse.ok(imageCmdService.processImageOcrAndSave(imageUrl, member));
+        return DefaultResponse.ok(imageCmdService.processImageOcrAndSave(member, imageUrl));
     }
 
     @Operation(summary = "업로드 이미지 목록 조회", description = "내가 업로드한 이미지 파일 목록을 페이지네이션으로 조회합니다.")
