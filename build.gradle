@@ -66,6 +66,11 @@ dependencies {
     // ocr
     implementation 'net.sourceforge.tess4j:tess4j:5.13.0'
 
+    // OpenCV + JavaCV with native bindings
+    implementation 'org.bytedeco:javacv-platform:1.5.9'
+    implementation 'org.bytedeco:opencv-platform:4.7.0-1.5.9'
+    implementation "org.bytedeco:openblas-platform:0.3.23-1.5.9"
+
 }
 
 tasks.named('test') {
