@@ -17,7 +17,6 @@ import org.goorm.veri.veribe.global.data.OcrConfigData;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 
 import java.io.IOException;
@@ -95,7 +94,7 @@ public class ImageCommandServiceImpl implements ImageCommandService {
         Tesseract tesseract = new Tesseract();
         tesseract.setDatapath(ocrConfigData.getTessdataPath());
         tesseract.setLanguage(ocrConfigData.getLanguage());
-        tesseract.setPageSegMode(6);
+        tesseract.setPageSegMode(11);
 
         return tesseract;
     }
