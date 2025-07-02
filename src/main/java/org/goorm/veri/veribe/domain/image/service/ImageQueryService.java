@@ -8,5 +8,5 @@ import java.util.List;
 
 
 public interface ImageQueryService {
-    PageResponse<List<String>> fetchUploadedImages(Member member, Pageable pageable);
+    PageResponse<List<String>> fetchUploadedImages(Long memberId, Pageable pageable);
 }

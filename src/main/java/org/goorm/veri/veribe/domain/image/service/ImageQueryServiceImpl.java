@@ -16,8 +16,8 @@ public class ImageQueryServiceImpl implements ImageQueryService{
     private final ImageRepository imageRepository;
 
     @Override
-    public PageResponse<List<String>> fetchUploadedImages(Member member, Pageable pageable) {
-        Page<String> imageUrls = imageRepository.findByMemberId(member.getId(), pageable);
+    public PageResponse<List<String>> fetchUploadedImages(Long memberId, Pageable pageable) {
+        Page<String> imageUrls = imageRepository.findByMemberId(memberId, pageable);
 
         if(imageUrls.isEmpty()){
             return PageResponse.empty(pageable);
