@@ -15,7 +15,7 @@ import java.util.List;
 @Repository
 public interface CardRepository extends JpaRepository<Card, Long> {
 
-    @Query("SELECT new org.goorm.veri.veribe.domain.card.repository.dto.CardListItem(c.id, c.content, c.image) " +
+    @Query("SELECT new org.goorm.veri.veribe.domain.card.repository.dto.CardListItem(c.id, c.content, c.image, c.createdAt) " +
             "FROM Card c " +
             "WHERE c.memberBook.member.id = :memberId")
     Page<CardListItem> findAllByMemberId(@Param("memberId") Long memberId, Pageable pageable);

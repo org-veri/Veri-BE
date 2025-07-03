@@ -9,6 +9,7 @@ public class CardConverter {
                 card.getId(),
                 card.getContent(),
                 card.getImage(),
+                card.getCreatedAt(),
                 new CardDetailResponse.BookInfo(card.getMemberBook().getBook())
         );
     }
