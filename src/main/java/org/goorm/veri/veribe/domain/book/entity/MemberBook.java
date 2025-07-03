@@ -44,6 +44,7 @@ public class MemberBook extends BaseEntity {
     @Column(name = "status")
     private BookStatus status;
 
-    @OneToMany(mappedBy = "memberBook", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    @OneToMany(mappedBy = "memberBook")
     private List<Card> cards = new ArrayList<>();
 }
