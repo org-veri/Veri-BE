@@ -8,7 +8,6 @@ import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.goorm.veri.veribe.domain.book.entity.enums.BookStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -40,6 +39,7 @@ public interface MemberBookRepository extends JpaRepository<MemberBook, Long> {
 
     @Query("""
             SELECT new org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookResponse(
+            mb.id,
             mb.book.id,
             mb.book.title,
             mb.book.author,
