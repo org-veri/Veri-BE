@@ -8,6 +8,7 @@ import java.util.List;
 
 @Builder
 public record MemberBookDetailResponse (
+        Long memberBookId,
         Long bookId,
         String title,
         String author,
