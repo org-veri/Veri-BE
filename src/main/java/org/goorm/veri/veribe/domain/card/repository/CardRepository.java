@@ -17,9 +17,9 @@ public interface CardRepository extends JpaRepository<Card, Long> {
 
     @Query("SELECT new org.goorm.veri.veribe.domain.card.repository.dto.CardListItem(c.id, c.content, c.image, c.createdAt) " +
             "FROM Card c " +
-            "WHERE c.memberBook.member.id = :memberId")
+            "WHERE c.member.id = :memberId")
     Page<CardListItem> findAllByMemberId(@Param("memberId") Long memberId, Pageable pageable);
 
-    @Query("SELECT COUNT(c) FROM Card c WHERE c.memberBook.member.id = :memberId")
+    @Query("SELECT COUNT(c) FROM Card c WHERE c.member.id = :memberId")
     int countAllByMemberId(@Param("memberId") Long memberId);
 }

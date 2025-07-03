@@ -42,7 +42,7 @@ public class CardController {
             @RequestBody CardCreateRequest request,
             @AuthenticatedMember Member member) {
         Long cardId = cardCommandService.createCard(
-                member.getId(),
+                member,
                 request.content(),
                 request.imageUrl(),
                 request.memberBookId()

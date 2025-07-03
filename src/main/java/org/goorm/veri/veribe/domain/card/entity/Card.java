@@ -17,6 +17,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.goorm.veri.veribe.domain.book.entity.MemberBook;
+import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.goorm.veri.veribe.global.entity.BaseEntity;
 
 @Getter
@@ -51,4 +52,8 @@ public class Card extends BaseEntity {
             )
     )
     private MemberBook memberBook;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
 }
