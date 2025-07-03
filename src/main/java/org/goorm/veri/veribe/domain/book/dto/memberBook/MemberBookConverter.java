@@ -14,7 +14,6 @@ public class MemberBookConverter {
 
         return MemberBookDetailResponse.builder()
                 .memberBookId(memberBook.getId())
-                .bookId(memberBook.getBook().getId())
                 .title(memberBook.getBook().getTitle())
                 .imageUrl(memberBook.getBook().getImage())
                 .status(memberBook.getStatus())

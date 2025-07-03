@@ -40,7 +40,6 @@ public interface MemberBookRepository extends JpaRepository<MemberBook, Long> {
     @Query("""
             SELECT new org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookResponse(
             mb.id,
-            mb.book.id,
             mb.book.title,
             mb.book.author,
             mb.book.image,
