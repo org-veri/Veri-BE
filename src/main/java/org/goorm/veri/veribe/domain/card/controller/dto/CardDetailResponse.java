@@ -18,8 +18,9 @@ public record CardDetailResponse(
             String coverImageUrl,
             String author
     ) {
-        public BookInfo(MemberBook memberBook) {
-            this(
+        public static BookInfo from(MemberBook memberBook) {
+            if (memberBook == null) return null;
+            return new BookInfo(
                     memberBook.getId(),
                     memberBook.getBook().getTitle(),
                     memberBook.getBook().getImage(),

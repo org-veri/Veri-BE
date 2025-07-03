@@ -10,7 +10,7 @@ public class CardConverter {
                 card.getContent(),
                 card.getImage(),
                 card.getCreatedAt(),
-                new CardDetailResponse.BookInfo(card.getMemberBook())
+                CardDetailResponse.BookInfo.from(card.getMemberBook())
         );
     }
 }
