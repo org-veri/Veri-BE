@@ -15,10 +15,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
 
-
+@Tag(name = "이미지 API")
 @RestController
 @RequestMapping("/api/v0/images")
 @RequiredArgsConstructor
@@ -26,6 +28,7 @@ public class ImageController {
     public final ImageCommandService imageCmdService;
     public final ImageQueryService imageQueryService;
 
+    @Operation(summary = "이미지 OCR 처리 및 저장", description = "이미지 URL을 받아 OCR을 수행하고 결과를 저장합니다.")
     @PostMapping("/ocr")
     public DefaultResponse<String> ocrImage(
             @AuthenticatedMember Member member,
@@ -34,6 +37,7 @@ public class ImageController {
         return DefaultResponse.ok(imageCmdService.processImageOcrAndSave(imageUrl, member));
     }
 
+    @Operation(summary = "업로드 이미지 목록 조회", description = "내가 업로드한 이미지 파일 목록을 페이지네이션으로 조회합니다.")
     @GetMapping
     public DefaultResponse<PageResponse<List<String>>> getImageFiles(
             @RequestParam(defaultValue = "1") @Min(value = 1) int page,
