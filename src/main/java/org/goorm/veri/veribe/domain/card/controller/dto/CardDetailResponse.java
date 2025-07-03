@@ -1,6 +1,6 @@
 package org.goorm.veri.veribe.domain.card.controller.dto;
 
-import org.goorm.veri.veribe.domain.book.entity.Book;
+import org.goorm.veri.veribe.domain.book.entity.MemberBook;
 
 import java.time.LocalDateTime;
 
@@ -13,15 +13,17 @@ public record CardDetailResponse(
 ) {
 
     record BookInfo(
+            Long id,
             String title,
             String coverImageUrl,
             String author
     ) {
-        public BookInfo(Book book) {
+        public BookInfo(MemberBook memberBook) {
             this(
-                    book.getTitle(),
-                    book.getImage(),
-                    book.getAuthor()
+                    memberBook.getId(),
+                    memberBook.getBook().getTitle(),
+                    memberBook.getBook().getImage(),
+                    memberBook.getBook().getAuthor()
             );
         }
     }
