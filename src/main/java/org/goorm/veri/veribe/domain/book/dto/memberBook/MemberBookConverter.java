@@ -19,6 +19,7 @@ public class MemberBookConverter {
                 .status(memberBook.getStatus())
                 .score(memberBook.getScore())
                 .author(memberBook.getBook().getAuthor())
+                .startedAt(memberBook.getStartedAt())
                 .cardSummaries(summaries)
                 .build();
     }
