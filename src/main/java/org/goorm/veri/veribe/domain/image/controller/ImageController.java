@@ -37,10 +37,10 @@ public class ImageController {
     @GetMapping
     public DefaultResponse<PageResponse<List<String>>> getImageFiles(
             @RequestParam(defaultValue = "1") @Min(value = 1) int page,
-            @RequestParam(defaultValue = "5") @Min(value = 1) int size
+            @RequestParam(defaultValue = "5") @Min(value = 1) int size,
+            @AuthenticatedMember Member member
     ) {
-        // TODO: 인증 정보 도입
         Pageable pageable = PageRequest.of(page - 1, size); // 백 페이지네이션 시에는 1-based index 를 0으로 보정.
-        return DefaultResponse.ok(imageQueryService.fetchUploadedImages(1L, pageable));
+        return DefaultResponse.ok(imageQueryService.fetchUploadedImages(member.getId(), pageable));
     }
 }
