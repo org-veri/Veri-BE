@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 @Builder
 public record MemberBookResponse (
         Long memberBookId,
-        Long bookId,
         String title,
         String author,
         String imageUrl,
