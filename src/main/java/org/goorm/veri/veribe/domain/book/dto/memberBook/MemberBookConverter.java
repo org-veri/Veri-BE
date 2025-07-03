@@ -13,6 +13,7 @@ public class MemberBookConverter {
                                         .toList();
 
         return MemberBookDetailResponse.builder()
+                .memberBookId(memberBook.getId())
                 .bookId(memberBook.getBook().getId())
                 .title(memberBook.getBook().getTitle())
                 .imageUrl(memberBook.getBook().getImage())
