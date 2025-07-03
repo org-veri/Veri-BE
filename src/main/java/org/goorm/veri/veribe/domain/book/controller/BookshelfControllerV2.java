@@ -5,23 +5,35 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.auth.annotation.AuthenticatedMember;
 import org.goorm.veri.veribe.domain.book.controller.enums.MemberBookSortType;
-import org.goorm.veri.veribe.domain.book.dto.book.BookPopularListResponse;
+import org.goorm.veri.veribe.domain.book.dto.book.BookPopularListResponseV2;
 import org.goorm.veri.veribe.domain.book.dto.book.BookPopularResponse;
 import org.goorm.veri.veribe.domain.book.dto.book.BookRequest;
 import org.goorm.veri.veribe.domain.book.dto.book.BookSearchResponse;
-import org.goorm.veri.veribe.domain.book.dto.memberBook.*;
+import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookAddResponse;
+import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookDetailResponse;
+import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookListResponse;
+import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookResponse;
+import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookScoreRequest;
 import org.goorm.veri.veribe.domain.book.entity.MemberBook;
 import org.goorm.veri.veribe.domain.book.service.BookService;
 import org.goorm.veri.veribe.domain.book.service.BookshelfService;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.namul.api.payload.response.DefaultResponse;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping("/api/v0/bookshelf")
+@RequestMapping("/api/v2/bookshelf")
 @RestController
 @RequiredArgsConstructor
-public class BookshelfController {
+public class BookshelfControllerV2 {
 
     private final BookshelfService bookshelfService;
     private final BookService bookService;
@@ -41,7 +53,7 @@ public class BookshelfController {
         return DefaultResponse.created(new MemberBookAddResponse(memberBook.getId(), memberBook.getCreatedAt()));
     }
 
-    @GetMapping("/all")
+    @GetMapping("/my")
     public DefaultResponse<MemberBookListResponse> getAllBooks(
             @RequestParam(defaultValue = "1") @Min(1) int page,
             @RequestParam(defaultValue = "10") @Min(1) int size,
@@ -54,8 +66,8 @@ public class BookshelfController {
         return DefaultResponse.ok(new MemberBookListResponse(pageData));
     }
 
-    @GetMapping("/detail")
-    public DefaultResponse<MemberBookDetailResponse> getBookDetail(@RequestParam Long memberBookId) {
+    @GetMapping("/{memberBookId}")
+    public DefaultResponse<MemberBookDetailResponse> getBookDetail(@PathVariable Long memberBookId) {
         MemberBookDetailResponse result = bookshelfService.searchDetail(memberBookId);
 
         return DefaultResponse.ok(result);
@@ -73,13 +85,10 @@ public class BookshelfController {
     }
 
     @GetMapping("/popular")
-    public DefaultResponse<BookPopularListResponse> getPopularBooks(
-            @RequestParam(defaultValue = "1") @Min(1) int page,
-            @RequestParam(defaultValue = "10") @Min(1) int size
-    ) {
-        Page<BookPopularResponse> pageData = bookshelfService.searchPopular(page, size);
+    public DefaultResponse<BookPopularListResponseV2> getPopularBooks() {
+        Page<BookPopularResponse> pageData = bookshelfService.searchPopular(0, 10); // 상위 10개
 
-        return DefaultResponse.ok(new BookPopularListResponse(pageData));
+        return DefaultResponse.ok(new BookPopularListResponseV2(pageData.getContent()));
     }
 
     @GetMapping("/my/count")
@@ -89,31 +98,31 @@ public class BookshelfController {
         return DefaultResponse.ok(count);
     }
 
-    @PatchMapping("/rate")
+    @PatchMapping("/{memberBookId}/rate")
     public DefaultResponse<Void> rateBook(
             @RequestBody @Valid MemberBookScoreRequest request,
-            @RequestParam Long memberBookId) {
+            @PathVariable Long memberBookId) {
         bookshelfService.rateScore(request.score(), memberBookId);
 
         return DefaultResponse.noContent();
     }
 
-    @PatchMapping("/status/start")
-    public DefaultResponse<Void> startReading(@RequestParam Long memberBookId) {
+    @PatchMapping("/{memberBookId}/status/start")
+    public DefaultResponse<Void> startReading(@PathVariable Long memberBookId) {
         bookshelfService.readStart(memberBookId);
 
         return DefaultResponse.noContent();
     }
 
-    @PatchMapping("/status/over")
-    public DefaultResponse<Void> finishReading(@RequestParam Long memberBookId) {
+    @PatchMapping("/{memberBookId}/status/over")
+    public DefaultResponse<Void> finishReading(@PathVariable Long memberBookId) {
         bookshelfService.readOver(memberBookId);
 
         return DefaultResponse.noContent();
     }
 
-    @DeleteMapping
-    public DefaultResponse<Void> deleteFromBookshelf(@RequestParam Long memberBookId) {
+    @DeleteMapping("/{memberBookId}")
+    public DefaultResponse<Void> deleteFromBookshelf(@PathVariable Long memberBookId) {
         bookshelfService.deleteBook(memberBookId);
 
         return DefaultResponse.noContent();
