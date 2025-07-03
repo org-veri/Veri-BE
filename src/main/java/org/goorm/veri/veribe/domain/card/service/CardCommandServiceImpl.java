@@ -8,6 +8,7 @@ import org.goorm.veri.veribe.domain.card.entity.Card;
 import org.goorm.veri.veribe.domain.card.exception.CardErrorCode;
 import org.goorm.veri.veribe.domain.card.exception.CardException;
 import org.goorm.veri.veribe.domain.card.repository.CardRepository;
+import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.goorm.veri.veribe.global.storage.dto.PresignedUrlRequest;
 import org.goorm.veri.veribe.global.storage.dto.PresignedUrlResponse;
 import org.goorm.veri.veribe.global.storage.service.StorageService;
@@ -32,11 +33,12 @@ public class CardCommandServiceImpl implements CardCommandService {
 
     @Transactional
     @Override
-    public Long createCard(Long memberId, String content, String imageUrl, Long memberBookId) {
+    public Long createCard(Member member, String content, String imageUrl, Long memberBookId) {
         MemberBook memberBook = memberBookRepository.findById(memberBookId)
                 .orElseThrow(() -> new CardException(BAD_REQUEST));
 
         Card card = Card.builder()
+                .member(member)
                 .content(content)
                 .image(imageUrl)
                 .memberBook(memberBook)
@@ -52,7 +54,7 @@ public class CardCommandServiceImpl implements CardCommandService {
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new CardException(NOT_FOUND));
 
-        if (!card.getMemberBook().getMember().getId().equals(memberId)) {
+        if (!card.getMember().getId().equals(memberId)) {
             throw new CardException(FORBIDDEN);
         }
 
@@ -64,7 +66,7 @@ public class CardCommandServiceImpl implements CardCommandService {
         int expirationMinutes = 5;
         String prefix = "public";
 
-        if(request.contentLength() > MB) {
+        if (request.contentLength() > MB) {
             throw new CardException(CardErrorCode.IMAGE_TOO_LARGE);
         }
 
