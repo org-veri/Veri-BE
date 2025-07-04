@@ -10,9 +10,7 @@ public record MemberBookModifyRequest(
         @Max(5)
         @Digits(integer = 1, fraction = 1)
         Double score,
-        @PastOrPresent
         LocalDateTime startedAt,
-        @PastOrPresent
         LocalDateTime endedAt
 ) {
     @AssertTrue(message = "0.5 단위로만 입력할 수 있습니다.")
