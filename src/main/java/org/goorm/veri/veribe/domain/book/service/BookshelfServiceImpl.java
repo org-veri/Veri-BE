@@ -8,6 +8,7 @@ import org.goorm.veri.veribe.domain.book.entity.Book;
 import org.goorm.veri.veribe.domain.book.entity.MemberBook;
 import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookConverter;
 import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookDetailResponse;
+import org.goorm.veri.veribe.domain.book.entity.enums.BookStatus;
 import org.goorm.veri.veribe.domain.book.exception.MemberBookException;
 import org.goorm.veri.veribe.domain.book.repository.BookRepository;
 import org.goorm.veri.veribe.domain.book.repository.MemberBookRepository;
@@ -86,6 +87,59 @@ public class BookshelfServiceImpl implements BookshelfService {
     @Override
     public int searchMyReadingDoneCount(Long memberId) {
         return memberBookRepository.countByStatusAndMember(DONE,memberId);
+    }
+
+    @Override
+    public void modifyBook(Double score, LocalDateTime startedAt, LocalDateTime endedAt, Long memberBookId) {
+        MemberBook memberBook = memberBookRepository.findById(memberBookId)
+                .orElseThrow(() -> new MemberBookException(BAD_REQUEST));
+
+        BookStatus status = memberBook.getStatus();
+
+        //독서 시작 시간 변경값이 현재보다 미래 시간이라면 NOT_START
+        if (startedAt.isAfter(LocalDateTime.now())) {
+            status = NOT_START;
+        }
+
+        //독서 시작 시간이 현재보다 과거 시간으로 넘어온 경우,
+        if (startedAt.isBefore(LocalDateTime.now())) {
+
+            //독서 완료 시간 변경값이 넘어오지 않으면 READING
+            if (endedAt == null) {
+                status = READING;
+            }
+
+            //독서 완료 시간 변경값이 넘어오면
+            if (endedAt != null) {
+
+                //독서 완료 시간이 과거 시간이면 DONE
+                if (endedAt.isBefore(LocalDateTime.now())) {
+                    status = DONE;
+                }
+
+                //독서 완료 시간이 미래 시간이면 READING
+                /*
+                의문점 : 책 내용 전체 수정 과정에서 "독서 완료 시간을 미래 시간으로 설정하는 상황" 자체가 존재하는가?
+                        존재한다면, 이를 허용해야 하는가 막아야 하는가
+                 */
+                if (endedAt.isAfter(LocalDateTime.now())) {
+                    status = READING;
+                }
+            }
+        }
+
+        MemberBook updated = MemberBook.builder()
+                .id(memberBook.getId())
+                .score(score)
+                .startedAt(startedAt)
+                .endedAt(endedAt)
+                .book(memberBook.getBook())
+                .member(memberBook.getMember())
+                .cards(memberBook.getCards())
+                .status(status)
+                .build();
+
+        memberBookRepository.save(updated);
     }
 
     @Override
