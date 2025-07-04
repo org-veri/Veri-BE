@@ -9,11 +9,7 @@ import org.goorm.veri.veribe.domain.book.dto.book.BookPopularListResponseV2;
 import org.goorm.veri.veribe.domain.book.dto.book.BookPopularResponse;
 import org.goorm.veri.veribe.domain.book.dto.book.BookRequest;
 import org.goorm.veri.veribe.domain.book.dto.book.BookSearchResponse;
-import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookAddResponse;
-import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookDetailResponse;
-import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookListResponse;
-import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookResponse;
-import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookScoreRequest;
+import org.goorm.veri.veribe.domain.book.dto.memberBook.*;
 import org.goorm.veri.veribe.domain.book.entity.MemberBook;
 import org.goorm.veri.veribe.domain.book.service.BookService;
 import org.goorm.veri.veribe.domain.book.service.BookshelfService;
@@ -105,6 +101,18 @@ public class BookshelfControllerV2 {
         Integer count = bookshelfService.searchMyReadingDoneCount(member.getId());
 
         return DefaultResponse.ok(count);
+    }
+
+    @Operation(summary = "책장 도서 내용 전체 수정", description = "책장에 등록된 책의 별점, 독서 시작 시간, 독서 완료 시간, 독서 상태를 변경합니다")
+    @PatchMapping("/{memberBookId}/modify")
+    public DefaultResponse<Void> modifyBook(
+            @RequestBody @Valid MemberBookModifyRequest request,
+            @PathVariable Long memberBookId
+    )
+    {
+        bookshelfService.modifyBook(request.score(), request.startedAt(), request.endedAt(), memberBookId);
+
+        return DefaultResponse.noContent();
     }
 
     @Operation(summary = "책 평점 등록/수정", description = "책장에 등록된 책의 평점을 등록 또는 수정합니다.")
