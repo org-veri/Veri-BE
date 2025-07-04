@@ -17,6 +17,7 @@ import org.goorm.veri.veribe.global.data.OcrConfigData;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 import java.io.IOException;
@@ -67,26 +68,35 @@ public class ImageCommandServiceImpl implements ImageCommandService {
         try (OpenCVFrameConverter.ToMat converterToMat = new OpenCVFrameConverter.ToMat();
              Java2DFrameConverter converterToFrame = new Java2DFrameConverter()) {
 
-            Mat mat = converterToMat.convert(converterToFrame.convert(input));
+            // 1. Java2D로 Grayscale 변환
+            BufferedImage gray = new BufferedImage(input.getWidth(), input.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+            Graphics2D g = gray.createGraphics();
+            g.drawImage(input, 0, 0, null);
+            g.dispose();
 
-            Mat resized = new Mat();
-            opencv_imgproc.resize(mat, resized, new Size(mat.cols() * 2, mat.rows() * 2));
+            // 2. BufferedImage → Mat (OpenCV로 변환)
+            Mat matGray = converterToMat.convert(converterToFrame.convert(gray));
 
-            Mat gray = new Mat();
-            opencv_imgproc.cvtColor(resized, gray, opencv_imgproc.COLOR_BGR2GRAY);
+            opencv_imgproc.GaussianBlur(matGray, matGray, new Size(3, 3), 0);
 
+
+            // 3. OpenCV adaptive threshold (이진화)
             Mat binary = new Mat();
             opencv_imgproc.adaptiveThreshold(
-                    gray,
+                    matGray,
                     binary,
                     255,
                     opencv_imgproc.ADAPTIVE_THRESH_MEAN_C,
                     opencv_imgproc.THRESH_BINARY,
-                    15,
-                    10
+                    17,   // blockSize (홀수만 가능, 15~25 사이 실험 추천)
+                    7    // C 값 (조정값, 작을수록 더 민감)
             );
 
+
             return converterToFrame.convert(converterToMat.convert(binary));
+
+        } catch (Exception e) {
+            throw new RuntimeException("Image preprocessing failed", e);
         }
     }
 
@@ -94,7 +104,7 @@ public class ImageCommandServiceImpl implements ImageCommandService {
         Tesseract tesseract = new Tesseract();
         tesseract.setDatapath(ocrConfigData.getTessdataPath());
         tesseract.setLanguage(ocrConfigData.getLanguage());
-        tesseract.setPageSegMode(11);
+        tesseract.setPageSegMode(6);
 
         return tesseract;
     }
