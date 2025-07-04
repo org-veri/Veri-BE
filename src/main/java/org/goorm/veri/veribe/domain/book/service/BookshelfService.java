@@ -8,6 +8,8 @@ import org.goorm.veri.veribe.domain.book.entity.MemberBook;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.springframework.data.domain.Page;
 
+import java.time.LocalDateTime;
+
 public interface BookshelfService {
 
     MemberBook addToBookshelf(Member member, Long bookId);
@@ -19,6 +21,8 @@ public interface BookshelfService {
     Page<BookPopularResponse> searchPopular(int page, int size);
 
     int searchMyReadingDoneCount(Long memberId);
+
+    void modifyBook(Double score, LocalDateTime startedAt, LocalDateTime endedAt, Long memberBookId);
 
     void rateScore(Double score, Long memberBookId);
 
