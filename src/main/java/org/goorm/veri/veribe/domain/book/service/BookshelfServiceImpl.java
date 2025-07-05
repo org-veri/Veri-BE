@@ -147,16 +147,7 @@ public class BookshelfServiceImpl implements BookshelfService {
         MemberBook memberBook = memberBookRepository.findById(memberBookId)
                 .orElseThrow(() -> new MemberBookException(BAD_REQUEST));
 
-        MemberBook updated = MemberBook.builder()
-                .id(memberBook.getId())
-                .member(memberBook.getMember())
-                .book(memberBook.getBook())
-                .score(score)
-                .startedAt(memberBook.getStartedAt())
-                .endedAt(memberBook.getEndedAt())
-                .status(memberBook.getStatus())
-                .cards(memberBook.getCards())
-                .build();
+        MemberBook updated = memberBook.toBuilder().score(score).build();
 
         memberBookRepository.save(updated);
     }
@@ -175,15 +166,9 @@ public class BookshelfServiceImpl implements BookshelfService {
                 0,
                 0);
 
-        MemberBook updated = MemberBook.builder()
-                .id(memberBook.getId())
-                .member(memberBook.getMember())
-                .book(memberBook.getBook())
-                .score(memberBook.getScore())
-                .startedAt(LocalDateTime.now())
-                .endedAt(startedTime)
+        MemberBook updated = memberBook.toBuilder()
+                .startedAt(startedTime)
                 .status(READING)
-                .cards(memberBook.getCards())
                 .build();
 
         memberBookRepository.save(updated);
@@ -203,15 +188,9 @@ public class BookshelfServiceImpl implements BookshelfService {
                 0,
                 0);
 
-        MemberBook updated = MemberBook.builder()
-                .id(memberBook.getId())
-                .member(memberBook.getMember())
-                .book(memberBook.getBook())
-                .score(memberBook.getScore())
-                .startedAt(memberBook.getStartedAt())
+        MemberBook updated = memberBook.toBuilder()
                 .endedAt(endedTime)
                 .status(DONE)
-                .cards(memberBook.getCards())
                 .build();
 
         memberBookRepository.save(updated);
