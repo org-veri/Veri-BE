@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Builder
+@Builder(toBuilder = true)
 @Entity
 @Table(name = "member_book")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
