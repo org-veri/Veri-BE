@@ -8,6 +8,7 @@ import org.goorm.veri.veribe.domain.book.entity.Book;
 import org.goorm.veri.veribe.domain.book.entity.MemberBook;
 import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookConverter;
 import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookDetailResponse;
+import org.goorm.veri.veribe.domain.book.entity.enums.BookStatus;
 import org.goorm.veri.veribe.domain.book.exception.MemberBookException;
 import org.goorm.veri.veribe.domain.book.repository.BookRepository;
 import org.goorm.veri.veribe.domain.book.repository.MemberBookRepository;
@@ -93,13 +94,28 @@ public class BookshelfServiceImpl implements BookshelfService {
         MemberBook memberBook = memberBookRepository.findById(memberBookId)
                 .orElseThrow(() -> new MemberBookException(BAD_REQUEST));
 
+        BookStatus updateStatus = decideStatus(startedAt, endedAt);
+
         MemberBook updated = memberBook.toBuilder()
                 .score(score)
                 .startedAt(startedAt)
                 .endedAt(endedAt)
+                .status(updateStatus)
                 .build();
 
         memberBookRepository.save(updated);
+    }
+
+    private BookStatus decideStatus(LocalDateTime updateStart, LocalDateTime updateEnd) {
+        if (updateEnd != null) { //독서 완료 시간이 존재 시 DONE
+            return DONE;
+        }
+
+        if (updateStart != null) { //독서 완료 시간은 null, 독서 시작 시간은 존재시 READING
+            return READING;
+        }
+
+        return NOT_START; //그 이외는 독서 시작 & 완료 모두 null 이므로 NOT_START
     }
 
     @Override
