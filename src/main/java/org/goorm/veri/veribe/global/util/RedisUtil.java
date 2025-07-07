@@ -1,11 +1,14 @@
 package org.goorm.veri.veribe.global.util;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 
+@Profile("!dev")
 @Component
 @RequiredArgsConstructor
 public class RedisUtil {

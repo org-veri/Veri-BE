@@ -3,10 +3,12 @@ package org.goorm.veri.veribe.domain.auth.service;
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.global.data.JwtConfigData;
 import org.goorm.veri.veribe.global.util.RedisUtil;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 
+@Profile("!dev")
 @Service
 @RequiredArgsConstructor
 public class RedisStorageService implements TokenStorageService {
