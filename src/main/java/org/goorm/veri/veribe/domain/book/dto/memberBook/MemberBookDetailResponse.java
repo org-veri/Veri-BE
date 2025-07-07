@@ -15,5 +15,6 @@ public record MemberBookDetailResponse (
         BookStatus status,
         Double score,
         LocalDateTime startedAt,
+        LocalDateTime endedAt,
         List<CardSummaries> cardSummaries)
 {}
