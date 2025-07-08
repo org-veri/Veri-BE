@@ -7,7 +7,6 @@ import org.goorm.veri.veribe.domain.auth.filter.JwtFilter;
 import org.goorm.veri.veribe.domain.auth.filter.JwtLogoutFilter;
 import org.goorm.veri.veribe.domain.auth.service.TokenStorageService;
 import org.goorm.veri.veribe.domain.member.service.MemberQueryService;
-import org.goorm.veri.veribe.global.data.CorsConfigData;
 import org.goorm.veri.veribe.global.util.JwtUtil;
 import org.namul.api.payload.code.dto.supports.DefaultResponseErrorReasonDTO;
 import org.namul.api.payload.writer.FailureResponseWriter;
@@ -22,18 +21,13 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final CorsConfigData corsConfigData;
     private final JwtUtil jwtUtil;
     private final MemberQueryService memberQueryService;
     private final TokenStorageService tokenStorageService;
@@ -71,7 +65,6 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .oauth2Login(Customizer.withDefaults())
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(authenticationEntryPoint)
@@ -100,16 +93,5 @@ public class SecurityConfig {
     @Bean
     SecurityContextRepository securityContextRepository() {
         return new RequestAttributeSecurityContextRepository();
-    }
-
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(corsConfigData.getUrls());
-        configuration.setAllowedMethods(corsConfigData.getMethods());
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
     }
 }
