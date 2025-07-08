@@ -5,5 +5,8 @@ import org.goorm.veri.veribe.domain.auth.dto.AuthResponse;
 
 public interface AuthService {
     AuthResponse.LoginResponse login(String provider, String code);
+
+    AuthResponse.LoginResponse login(String provider, String code, String origin);
+
     AuthResponse.ReissueTokenResponse reissueToken(AuthRequest.AuthReissueRequest request);
 }

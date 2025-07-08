@@ -23,7 +23,17 @@ public abstract class AbstractOAuth2Service implements OAuth2Service {
         return tokenCommandService.createLoginToken(member);
     }
 
+    @Override
+    public AuthResponse.LoginResponse login(String code, String origin) {
+        String accessToken = getAccessToken(code, origin);
+        AuthRequest.OAuth2LoginUserInfo request = getUserInfo(accessToken);
+        Member member = saveOrUpdateMember(request);
+        return tokenCommandService.createLoginToken(member);
+    }
+
     protected abstract String getAccessToken(String code);
+
+    protected abstract String getAccessToken(String code, String origin);
 
     protected abstract AuthRequest.OAuth2LoginUserInfo getUserInfo(String token);
 
@@ -33,8 +43,7 @@ public abstract class AbstractOAuth2Service implements OAuth2Service {
         if (optional.isPresent()) {
             member = optional.get();
             member.updateInfo(request.getNickname(), request.getImage());
-        }
-        else {
+        } else {
             member = AuthConverter.toMember(request);
         }
         return memberRepository.save(member);

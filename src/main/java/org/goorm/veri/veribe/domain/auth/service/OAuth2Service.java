@@ -4,4 +4,6 @@ import org.goorm.veri.veribe.domain.auth.dto.AuthResponse;
 
 public interface OAuth2Service {
     AuthResponse.LoginResponse login(String code);
+
+    AuthResponse.LoginResponse login(String code, String origin);
 }

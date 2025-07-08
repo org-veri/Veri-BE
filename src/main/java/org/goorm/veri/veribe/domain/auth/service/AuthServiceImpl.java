@@ -27,8 +27,16 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse.LoginResponse login(String provider, String code) {
         if (provider.equalsIgnoreCase(ProviderType.KAKAO.name())) {
             return kakaoOAuth2Service.login(code);
+        } else {
+            throw new OAuth2Exception(OAuth2ErrorCode.UNSUPPORTED_OAUTH2_PROVIDER);
         }
-        else {
+    }
+
+    @Override
+    public AuthResponse.LoginResponse login(String provider, String code, String origin) {
+        if (provider.equalsIgnoreCase(ProviderType.KAKAO.name())) {
+            return kakaoOAuth2Service.login(code, origin);
+        } else {
             throw new OAuth2Exception(OAuth2ErrorCode.UNSUPPORTED_OAUTH2_PROVIDER);
         }
     }

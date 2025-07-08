@@ -1,8 +1,8 @@
 package org.goorm.veri.veribe.domain.auth.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.goorm.veri.veribe.domain.auth.dto.KakaoOAuth2DTO;
 import org.goorm.veri.veribe.domain.auth.dto.AuthRequest;
+import org.goorm.veri.veribe.domain.auth.dto.KakaoOAuth2DTO;
 import org.goorm.veri.veribe.domain.auth.exception.OAuth2ErrorCode;
 import org.goorm.veri.veribe.domain.auth.exception.OAuth2Exception;
 import org.goorm.veri.veribe.domain.member.entity.enums.ProviderType;
@@ -16,6 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 @Service
 public class KakaoOAuth2Service extends AbstractOAuth2Service {
@@ -39,6 +42,48 @@ public class KakaoOAuth2Service extends AbstractOAuth2Service {
         map.add("grant_type", "authorization_code");
         map.add("client_id", kakaoOAuth2ConfigData.getClientId());
         map.add("redirect_uri", kakaoOAuth2ConfigData.getRedirectUri());
+        map.add("code", code);
+        HttpEntity<MultiValueMap> request = new HttpEntity<>(map, httpHeaders);
+
+        ResponseEntity<String> response1 = restTemplate.exchange(
+                kakaoOAuth2ConfigData.getTokenUri(),
+                HttpMethod.POST,
+                request,
+                String.class);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        KakaoOAuth2DTO.OAuth2TokenDTO oAuth2TokenDTO = null;
+
+        try {
+            oAuth2TokenDTO = objectMapper.readValue(response1.getBody(), KakaoOAuth2DTO.OAuth2TokenDTO.class);
+            return oAuth2TokenDTO.getAccess_token();
+        } catch (Exception e) {
+            throw new OAuth2Exception(OAuth2ErrorCode.FAIL_ACCESS_TOKEN);
+        }
+    }
+
+    @Override
+    protected String getAccessToken(String code, String origin) {
+        // 인가코드 토큰 가져오기
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders httpHeaders = new HttpHeaders();
+
+        String redirectUri = null;
+        try {
+            redirectUri = origin + new URL(kakaoOAuth2ConfigData.getRedirectUri()).getPath();
+        } catch (MalformedURLException e) {
+            throw new OAuth2Exception(OAuth2ErrorCode.FAIL_ACCESS_TOKEN);
+        }
+
+        System.out.println("Origin: " + origin);
+        System.out.println("Redirect URI: " + redirectUri);
+
+        httpHeaders.add("Content-Type", "application/x-www-form-urlencoded");
+
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add("grant_type", "authorization_code");
+        map.add("client_id", kakaoOAuth2ConfigData.getClientId());
+        map.add("redirect_uri", redirectUri);
         map.add("code", code);
         HttpEntity<MultiValueMap> request = new HttpEntity<>(map, httpHeaders);
 
@@ -92,7 +137,7 @@ public class KakaoOAuth2Service extends AbstractOAuth2Service {
 
         try {
             return om.readValue(response2.getBody(), KakaoOAuth2DTO.KakaoProfile.class);
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new OAuth2Exception(OAuth2ErrorCode.FAIL_USER_INFO);
         }
     }
