@@ -103,6 +103,18 @@ public class BookshelfControllerV2 {
         return DefaultResponse.ok(count);
     }
 
+    @Operation(summary = "내 책장 책 제목 & 저자 조회", description = "내 책장에서 제목과 저자값으로 책의 id를 검색합니다")
+    @GetMapping("/my/search")
+    public DefaultResponse<Long> getMyBookByTitleAndAuthor(
+            @AuthenticatedMember Member member,
+            @RequestParam String title,
+            @RequestParam String author)
+    {
+        Long memberBookId = bookshelfService.searchByTitleAndAuthor(member.getId(), title, author);
+
+        return DefaultResponse.ok(memberBookId);
+    }
+
     @Operation(summary = "책장 도서 내용 전체 수정", description = "책장에 등록된 책의 별점, 독서 시작 시간, 독서 완료 시간, 독서 상태를 변경합니다")
     @PatchMapping("/{memberBookId}/modify")
     public DefaultResponse<Void> modifyBook(
