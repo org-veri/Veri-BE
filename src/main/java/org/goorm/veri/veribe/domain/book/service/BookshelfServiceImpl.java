@@ -23,8 +23,10 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import static org.goorm.veri.veribe.domain.book.entity.enums.BookStatus.*;
+import static org.goorm.veri.veribe.domain.book.exception.MemberBookErrorCode.ALREADY_EXIST;
 import static org.goorm.veri.veribe.domain.book.exception.MemberBookErrorCode.BAD_REQUEST;
 
 @Service
@@ -93,6 +95,14 @@ public class BookshelfServiceImpl implements BookshelfService {
     @Override
     public int searchMyReadingDoneCount(Long memberId) {
         return memberBookRepository.countByStatusAndMember(DONE,memberId);
+    }
+
+    @Override
+    public Long searchByTitleAndAuthor(Long memberId, String title, String author) {
+        MemberBook memberBook = memberBookRepository.findByAuthorAndTitle(memberId, title, author)
+                .orElseThrow(() -> new MemberBookException(BAD_REQUEST));
+
+        return memberBook.getId();
     }
 
     @Override

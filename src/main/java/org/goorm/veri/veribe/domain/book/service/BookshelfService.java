@@ -22,6 +22,8 @@ public interface BookshelfService {
 
     int searchMyReadingDoneCount(Long memberId);
 
+    Long searchByTitleAndAuthor(Long memberId, String title, String author);
+
     void modifyBook(Double score, LocalDateTime startedAt, LocalDateTime endedAt, Long memberBookId);
 
     void rateScore(Double score, Long memberBookId);
