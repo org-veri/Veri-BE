@@ -65,4 +65,11 @@ public interface MemberBookRepository extends JpaRepository<MemberBook, Long> {
         """)
     Optional<MemberBook> findByMemberAndBook(@Param("memberId") Long memberId, @Param("bookId") Long bookId);
 
+    @Query("""
+            SELECT mb FROM MemberBook mb
+            WHERE mb.member.id = :memberId
+                AND mb.book.title = :title
+                AND mb.book.author = :author
+    """)
+    Optional<MemberBook> findByAuthorAndTitle(@Param("memberId") Long memberId ,@Param("title") String title, @Param("author") String author);
 }
