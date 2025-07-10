@@ -11,7 +11,8 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum MemberBookErrorCode implements BaseErrorCode {
     NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBERBOOK404", "해당 책을 책장에서 찾을 수 없습니다."),
-    BAD_REQUEST(HttpStatus.BAD_REQUEST, "MEMBERBOOK400", "잘못된 요청입니다.")
+    BAD_REQUEST(HttpStatus.BAD_REQUEST, "MEMBERBOOK400", "잘못된 요청입니다."),
+    ALREADY_EXIST(HttpStatus.BAD_REQUEST, "MEMBERBOOK409", "이미 존재하는 책 입니다")
     ;
 
     private final HttpStatus httpStatus;
