@@ -40,6 +40,12 @@ public class BookshelfServiceImpl implements BookshelfService {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new MemberBookException(BAD_REQUEST));
 
+        //MemberBook 중복 저장 방지 로직 추가
+        Optional<MemberBook> findMemberBook = memberBookRepository.findByMemberAndBook(member.getId(), bookId);
+        if (findMemberBook.isPresent()) {
+            throw new MemberBookException(ALREADY_EXIST);
+        }
+
         MemberBook memberBook = MemberBook.builder()
                 .member(member)
                 .book(book)
