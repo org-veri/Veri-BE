@@ -99,10 +99,9 @@ public class BookshelfServiceImpl implements BookshelfService {
 
     @Override
     public Long searchByTitleAndAuthor(Long memberId, String title, String author) {
-        MemberBook memberBook = memberBookRepository.findByAuthorAndTitle(memberId, title, author)
-                .orElseThrow(() -> new MemberBookException(BAD_REQUEST));
+        Optional<MemberBook> memberBookOPT = memberBookRepository.findByAuthorAndTitle(memberId, title, author);
 
-        return memberBook.getId();
+        return memberBookOPT.map(MemberBook::getId).orElse(null);
     }
 
     @Override
