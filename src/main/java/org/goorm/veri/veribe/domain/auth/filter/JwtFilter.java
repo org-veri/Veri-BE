@@ -1,6 +1,5 @@
 package org.goorm.veri.veribe.domain.auth.filter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,12 +9,8 @@ import org.goorm.veri.veribe.domain.auth.service.TokenStorageService;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.goorm.veri.veribe.domain.member.service.MemberQueryService;
 import org.goorm.veri.veribe.global.util.JwtUtil;
-import org.namul.api.payload.code.DefaultResponseErrorCode;
-import org.namul.api.payload.code.dto.supports.DefaultResponseErrorReasonDTO;
-import org.namul.api.payload.response.DefaultResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -47,6 +42,8 @@ public class JwtFilter extends OncePerRequestFilter {
             Authentication authentication = createAuthentication(member);
             onAuthorization(request, response, authentication);
         }
+
+        request.setAttribute("token", token);
         filterChain.doFilter(request, response);
     }
 

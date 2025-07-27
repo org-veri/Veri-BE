@@ -23,6 +23,7 @@ public class AuthService {
     private final JwtUtil jwtUtil;
 
     private final MemberRepository memberRepository;
+    private final TokenStorageService tokenStorageService;
 
     public AuthResponse.LoginResponse login(String provider, String code) {
         if (provider.equalsIgnoreCase(ProviderType.KAKAO.name())) {
@@ -37,5 +38,28 @@ public class AuthService {
         Member member = memberRepository.findById(id).orElseThrow(() ->
                 new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
         return AuthConverter.toReissueTokenResponse(jwtUtil.createAccessToken(member));
+    }
+
+    public void logout(String accessToken) {
+        Long userId = jwtUtil.getUserId(accessToken);
+        String refreshToken = tokenStorageService.getRefreshToken(userId);
+        tokenStorageService.deleteRefreshToken(userId);
+
+        // access token 만료시간 계산
+        java.time.Instant accessExp = jwtUtil.getExpirationInstant(accessToken);
+        long now = java.time.Instant.now().toEpochMilli();
+        long accessRemainMs = (accessExp != null) ? accessExp.toEpochMilli() - now : 0L;
+        if (accessRemainMs > 0) {
+            tokenStorageService.addBlackList(accessToken, accessRemainMs);
+        }
+
+        // refresh token이 존재하면 만료시간 계산 후 블랙리스트 등록
+        if (refreshToken != null) {
+            java.time.Instant refreshExp = jwtUtil.getExpirationInstant(refreshToken);
+            long refreshRemainMs = (refreshExp != null) ? refreshExp.toEpochMilli() - now : 0L;
+            if (refreshRemainMs > 0) {
+                tokenStorageService.addBlackList(refreshToken, refreshRemainMs);
+            }
+        }
     }
 }
