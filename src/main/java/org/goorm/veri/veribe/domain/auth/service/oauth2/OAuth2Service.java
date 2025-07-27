@@ -1,4 +1,4 @@
-package org.goorm.veri.veribe.domain.auth.service;
+package org.goorm.veri.veribe.domain.auth.service.oauth2;
 
 import org.goorm.veri.veribe.domain.auth.dto.AuthResponse;
 

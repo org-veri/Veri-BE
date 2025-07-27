@@ -54,6 +54,21 @@ public class JwtUtil {
         }
     }
 
+    /**
+     * JWT 토큰에서 만료시간(Expiration)을 추출
+     */
+    public Date getExpiration(String token) {
+        try {
+            return getClaims(token).getPayload().getExpiration();
+        } catch (JwtException e) {
+            return null;
+        }
+    }
+    public Instant getExpirationInstant(String token) {
+        Date exp = getExpiration(token);
+        return exp != null ? exp.toInstant() : null;
+    }
+
     private String createToken(Member member, Duration expiration) {
         Instant now = Instant.now();
         return Jwts.builder()

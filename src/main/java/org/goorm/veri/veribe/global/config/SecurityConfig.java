@@ -60,7 +60,8 @@ public class SecurityConfig {
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtExceptionFilter(), JwtFilter.class)
                 .addFilterBefore(logoutFilter(), JwtExceptionFilter.class)
-                .securityContext(securityContext -> securityContext.securityContextRepository(securityContextRepository()))
+                .securityContext(securityContext -> securityContext.securityContextRepository(
+                        securityContextRepository()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.NEVER))
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
@@ -69,15 +70,15 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(authenticationEntryPoint)
                         .accessDeniedHandler(accessDeniedHandler)
-                )
-        ;
+                );
 
         return http.build();
     }
 
     @Bean
     Filter jwtFilter() {
-        return new JwtFilter(jwtUtil, memberQueryService, tokenStorageService, securityContextRepository());
+        return new JwtFilter(jwtUtil, memberQueryService, tokenStorageService,
+                securityContextRepository());
     }
 
     @Bean

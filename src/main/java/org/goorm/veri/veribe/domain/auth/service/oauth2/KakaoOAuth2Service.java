@@ -1,10 +1,11 @@
-package org.goorm.veri.veribe.domain.auth.service;
+package org.goorm.veri.veribe.domain.auth.service.oauth2;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.goorm.veri.veribe.domain.auth.dto.KakaoOAuth2DTO;
 import org.goorm.veri.veribe.domain.auth.dto.AuthRequest;
 import org.goorm.veri.veribe.domain.auth.exception.OAuth2ErrorCode;
 import org.goorm.veri.veribe.domain.auth.exception.OAuth2Exception;
+import org.goorm.veri.veribe.domain.auth.service.TokenCommandService;
 import org.goorm.veri.veribe.domain.member.entity.enums.ProviderType;
 import org.goorm.veri.veribe.domain.member.repository.MemberRepository;
 import org.goorm.veri.veribe.global.data.KakaoOAuth2ConfigData;

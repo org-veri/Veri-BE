@@ -1,9 +1,10 @@
-package org.goorm.veri.veribe.domain.auth.service;
+package org.goorm.veri.veribe.domain.auth.service.oauth2;
 
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.auth.converter.AuthConverter;
 import org.goorm.veri.veribe.domain.auth.dto.AuthRequest;
 import org.goorm.veri.veribe.domain.auth.dto.AuthResponse;
+import org.goorm.veri.veribe.domain.auth.service.TokenCommandService;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.goorm.veri.veribe.domain.member.repository.MemberRepository;
 

@@ -17,6 +17,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.time.Instant;
 
 @RequiredArgsConstructor
 public class JwtLogoutFilter extends OncePerRequestFilter {
@@ -30,10 +31,9 @@ public class JwtLogoutFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if (!requiresAuthentication(request))  {
+        if (!requiresAuthentication(request)) {
             filterChain.doFilter(request, response);
-        }
-        else {
+        } else {
             String access = getToken(request);
             if (access == null) {
                 throw new TokenException(TokenErrorCode.LOGOUT_TOKEN_NOT_EXIST);
@@ -52,12 +52,30 @@ public class JwtLogoutFilter extends OncePerRequestFilter {
         return null;
     }
 
+    /**
+     * 로그아웃 시 access/refresh 토큰을 블랙리스트에 등록하고, refresh 토큰을 DB에서 삭제
+     */
     private void processLogout(String accessToken) {
         Long userId = jwtUtil.getUserId(accessToken);
         String refreshToken = tokenStorageService.getRefreshToken(userId);
         tokenStorageService.deleteRefreshToken(userId);
-        tokenStorageService.addBlackList(accessToken);
-        tokenStorageService.addBlackList(refreshToken);
+
+        // access token 만료시간 계산
+        Instant accessExp = jwtUtil.getExpirationInstant(accessToken);
+        long now = Instant.now().toEpochMilli();
+        long accessRemainMs = (accessExp != null) ? accessExp.toEpochMilli() - now : 0L;
+        if (accessRemainMs > 0) {
+            tokenStorageService.addBlackList(accessToken, accessRemainMs);
+        }
+
+        // refresh token이 존재하면 만료시간 계산 후 블랙리스트 등록
+        if (refreshToken != null) {
+            Instant refreshExp = jwtUtil.getExpirationInstant(refreshToken);
+            long refreshRemainMs = (refreshExp != null) ? refreshExp.toEpochMilli() - now : 0L;
+            if (refreshRemainMs > 0) {
+                tokenStorageService.addBlackList(refreshToken, refreshRemainMs);
+            }
+        }
     }
 
     private boolean requiresAuthentication(HttpServletRequest request) {
