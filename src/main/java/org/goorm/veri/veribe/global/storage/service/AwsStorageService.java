@@ -4,14 +4,10 @@ import io.github.miensoap.s3.core.ExtendedS3Presigner;
 import io.github.miensoap.s3.core.post.dto.PostObjectPresignRequest;
 import io.github.miensoap.s3.core.post.dto.PresignedPostForm;
 import io.github.miensoap.s3.core.post.s3policy.PostConditions;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.global.storage.dto.PresignedUrlResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
@@ -24,29 +20,12 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class AwsStorageService implements StorageService {
 
-    @Value("${cloud.aws.s3.credentials.access-key}")
-    private String accessKey;
-
-    @Value("${cloud.aws.s3.credentials.secret-key}")
-    private String secretKey;
-
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    @Value("${cloud.aws.s3.region}")
-    private String region;
-
-    private S3Client s3Client;
-
-    @PostConstruct
-    public void initS3Client() {
-        this.s3Client = S3Client.builder()
-                .region(Region.of(region))
-                .credentialsProvider(
-                        StaticCredentialsProvider.create(
-                                AwsBasicCredentials.create(accessKey, secretKey)))
-                .build();
-    }
+    private final S3Client s3Client;
+    private final S3Presigner s3Presigner;
+    private final ExtendedS3Presigner extendedS3Presigner;
 
     @Override
     public PresignedUrlResponse generatePresignedUrl(
@@ -69,16 +48,9 @@ public class AwsStorageService implements StorageService {
                 .putObjectRequest(objectRequest)
                 .build();
 
-        try (S3Presigner presigner = S3Presigner.builder()
-                .region(Region.of(region))
-                .credentialsProvider(
-                        StaticCredentialsProvider.create(
-                                AwsBasicCredentials.create(accessKey, secretKey)))
-                .build()) {
+        PresignedPutObjectRequest presignedRequest = s3Presigner.presignPutObject(presignRequest);
 
-            PresignedPutObjectRequest presignedRequest = presigner.presignPutObject(presignRequest);
-            return new PresignedUrlResponse(presignedRequest.url().toString(), getPublicUrl(key));
-        }
+        return new PresignedUrlResponse(presignedRequest.url().toString(), getPublicUrl(key));
     }
 
     public PresignedPostForm generatePresignedPost(
@@ -101,18 +73,11 @@ public class AwsStorageService implements StorageService {
                 .signatureDuration(duration)
                 .build();
 
-        try (ExtendedS3Presigner presigner = ExtendedS3Presigner.builder()
-                .region(Region.of(region))
-                .credentialsProvider(
-                        StaticCredentialsProvider.create(
-                                AwsBasicCredentials.create(accessKey, secretKey)))
-                .build()) {
-
-            return presigner.presignPostObject(presignRequest);
-        }
+        return extendedS3Presigner.presignPostObject(presignRequest);
     }
 
     private String getPublicUrl(String key) {
-        return String.format("https://%s.s3.amazonaws.com/%s", bucket, key);
+        // 주입받은 s3Client를 사용하여 URL을 생성합니다.
+        return s3Client.utilities().getUrl(b -> b.bucket(bucket).key(key)).toString();
     }
 }
