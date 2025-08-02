@@ -1,111 +1,92 @@
 package org.goorm.veri.veribe.domain.image.service;
 
 import lombok.RequiredArgsConstructor;
-import net.sourceforge.tess4j.Tesseract;
-import net.sourceforge.tess4j.TesseractException;
-import org.bytedeco.javacv.Java2DFrameConverter;
-import org.bytedeco.javacv.OpenCVFrameConverter;
-import org.bytedeco.opencv.global.opencv_imgproc;
-import org.bytedeco.opencv.opencv_core.Mat;
-import org.bytedeco.opencv.opencv_core.Size;
 import org.goorm.veri.veribe.domain.image.entity.Image;
 import org.goorm.veri.veribe.domain.image.exception.ImageErrorCode;
 import org.goorm.veri.veribe.domain.image.exception.ImageException;
 import org.goorm.veri.veribe.domain.image.repository.ImageRepository;
 import org.goorm.veri.veribe.domain.member.entity.Member;
-import org.goorm.veri.veribe.global.data.OcrConfigData;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.core.SdkBytes;
+import software.amazon.awssdk.services.textract.TextractClient;
+import software.amazon.awssdk.services.textract.model.Block;
+import software.amazon.awssdk.services.textract.model.DetectDocumentTextRequest;
+import software.amazon.awssdk.services.textract.model.Document;
+import software.amazon.awssdk.services.textract.model.TextractException;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ImageCommandServiceImpl implements ImageCommandService {
 
     private final ImageRepository imageRepository;
-    private final OcrConfigData ocrConfigData;
+    private final TextractClient textractClient;
+
+    @Override
+    public String processImageOcrAndSave(Member member, String imageUrl) {
+        try (InputStream inputStream = new URL(imageUrl).openStream()) {
+            byte[] imageBytes = toByteArray(inputStream);
+            insertImageUrl(imageUrl, member);
+            return extractTextWithTextract(imageBytes);
+
+        } catch (IOException e) {
+            throw new ImageException(ImageErrorCode.BAD_REQUEST);
+        } catch (TextractException e) {
+            throw new ImageException(ImageErrorCode.OCR_PROCESSING_FAILED);
+        }
+    }
 
     private void insertImageUrl(String imageUrl, Member member) {
         Image image = Image.builder()
                 .member(member)
                 .imageUrl(imageUrl)
                 .build();
-
         imageRepository.save(image);
     }
 
-    @Override
-    public String processImageOcrAndSave(Member member, String imageUrl) throws Exception {
-        BufferedImage original;
-        try (InputStream inputStream = new URL(imageUrl).openStream()) {
-            original = ImageIO.read(inputStream);
-        } catch (IOException e) {
-            throw new ImageException(ImageErrorCode.BAD_REQUEST);
-        }
-        insertImageUrl(imageUrl, member);
-        BufferedImage preprocessed = preprocessImage(original);
+    /**
+     * AWS Textract를 호출하여 이미지 바이트에서 텍스트를 추출합니다.
+     *
+     * @param imageBytes 이미지의 byte 배열
+     * @return 추출된 텍스트
+     */
+    private String extractTextWithTextract(byte[] imageBytes) {
+        SdkBytes sourceBytes = SdkBytes.fromByteArray(imageBytes);
+        Document document = Document.builder().bytes(sourceBytes).build();
 
-        return extractTextFromBufferedImage(preprocessed);
+        DetectDocumentTextRequest detectDocumentTextRequest = DetectDocumentTextRequest.builder()
+                .document(document)
+                .build();
+
+        // Textract API를 호출하고, 결과에서 'LINE' 타입의 텍스트만 추출하여 반환합니다.
+        List<Block> resultBlocks = textractClient.detectDocumentText(detectDocumentTextRequest).blocks();
+        return resultBlocks.stream()
+                .filter(block -> "LINE".equals(block.blockTypeAsString()))
+                .map(Block::text)
+                .collect(Collectors.joining("\n"));
     }
 
-    private String extractTextFromBufferedImage(BufferedImage preprocessed) throws Exception {
-        Tesseract tesseract = createConfiguredTesseract();
-        try {
-            return tesseract.doOCR(preprocessed);
-        } catch (TesseractException e) {
-            throw new Exception("OCR Processing Failed", e);
+    /**
+     * InputStream을 byte 배열로 변환하는 유틸리티 메서드입니다.
+     *
+     * @param inputStream 변환할 InputStream
+     * @return byte 배열
+     * @throws IOException 읽기/쓰기 예외
+     */
+    private byte[] toByteArray(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        int nRead;
+        byte[] data = new byte[1024];
+        while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, nRead);
         }
-    }
-
-
-    private BufferedImage preprocessImage(BufferedImage input) {
-        try (OpenCVFrameConverter.ToMat converterToMat = new OpenCVFrameConverter.ToMat();
-             Java2DFrameConverter converterToFrame = new Java2DFrameConverter()) {
-
-            // 1. Java2D로 Grayscale 변환
-            BufferedImage gray = new BufferedImage(input.getWidth(), input.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
-            Graphics2D g = gray.createGraphics();
-            g.drawImage(input, 0, 0, null);
-            g.dispose();
-
-            // 2. BufferedImage → Mat (OpenCV로 변환)
-            Mat matGray = converterToMat.convert(converterToFrame.convert(gray));
-
-            opencv_imgproc.GaussianBlur(matGray, matGray, new Size(3, 3), 0);
-
-
-            // 3. OpenCV adaptive threshold (이진화)
-            Mat binary = new Mat();
-            opencv_imgproc.adaptiveThreshold(
-                    matGray,
-                    binary,
-                    255,
-                    opencv_imgproc.ADAPTIVE_THRESH_MEAN_C,
-                    opencv_imgproc.THRESH_BINARY,
-                    17,   // blockSize (홀수만 가능, 15~25 사이 실험 추천)
-                    7    // C 값 (조정값, 작을수록 더 민감)
-            );
-
-
-            return converterToFrame.convert(converterToMat.convert(binary));
-
-        } catch (Exception e) {
-            throw new RuntimeException("Image preprocessing failed", e);
-        }
-    }
-
-    private Tesseract createConfiguredTesseract() {
-        Tesseract tesseract = new Tesseract();
-        tesseract.setDatapath(ocrConfigData.getTessdataPath());
-        tesseract.setLanguage(ocrConfigData.getLanguage());
-        tesseract.setPageSegMode(6);
-
-        return tesseract;
+        buffer.flush();
+        return buffer.toByteArray();
     }
 }

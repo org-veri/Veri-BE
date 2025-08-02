@@ -15,7 +15,8 @@ public enum ImageErrorCode implements BaseErrorCode {
     FORBIDDEN(HttpStatus.FORBIDDEN, "IMG401", "해당 이미지에 대한 권한이 없습니다."),
     CROP_RANGE_INVALID(HttpStatus.INTERNAL_SERVER_ERROR, "IMG500_1", "크롭된 이미지의 좌표 및 높낮이 값이 유효하지 않습니다."),
     SIZE_EXCEEDED(HttpStatus.INTERNAL_SERVER_ERROR, "IMG500_2", "이미지 크기는 1MB를 초과할 수 없습니다."),
-    UNSUPPORTED_TYPE(HttpStatus.INTERNAL_SERVER_ERROR, "IMG500_3", "지원하지 않는 파일 형식입니다.");
+    UNSUPPORTED_TYPE(HttpStatus.INTERNAL_SERVER_ERROR, "IMG500_3", "지원하지 않는 파일 형식입니다."),
+    OCR_PROCESSING_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "IMG5004", "OCR 처리에 실패했습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
