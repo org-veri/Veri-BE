@@ -1,11 +1,4 @@
 services:
-  redis:
-    image: redis:7.2-alpine
-    container_name: redis
-    restart: unless-stopped
-    ports:
-      - "6379:6379"
-
   mysql:
     image: mysql:8.0
     container_name: mysql
@@ -22,7 +15,7 @@ services:
       - mysql_data:/var/lib/mysql
 
   app:
-    image: ghcr.io/9oormthon-univ-veri/very-be:latest
+    image: ghcr.io/9oormthon-univ-veri/veri-be:latest
     container_name: very
     restart: unless-stopped
     ports:
@@ -37,7 +30,6 @@ services:
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     depends_on:
-      - redis
       - mysql
 
 volumes:
