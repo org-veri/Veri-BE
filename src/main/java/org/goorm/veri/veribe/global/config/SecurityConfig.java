@@ -4,7 +4,6 @@ import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.auth.filter.JwtExceptionFilter;
 import org.goorm.veri.veribe.domain.auth.filter.JwtFilter;
-import org.goorm.veri.veribe.domain.auth.filter.JwtLogoutFilter;
 import org.goorm.veri.veribe.domain.auth.service.TokenStorageService;
 import org.goorm.veri.veribe.domain.member.service.MemberQueryService;
 import org.goorm.veri.veribe.global.util.JwtUtil;
@@ -59,7 +58,6 @@ public class SecurityConfig {
                 )
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtExceptionFilter(), JwtFilter.class)
-                .addFilterBefore(logoutFilter(), JwtExceptionFilter.class)
                 .securityContext(securityContext -> securityContext.securityContextRepository(
                         securityContextRepository()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.NEVER))
@@ -84,11 +82,6 @@ public class SecurityConfig {
     @Bean
     Filter jwtExceptionFilter() {
         return new JwtExceptionFilter(failureResponseWriter);
-    }
-
-    @Bean
-    Filter logoutFilter() {
-        return new JwtLogoutFilter(tokenStorageService, jwtUtil);
     }
 
     @Bean
