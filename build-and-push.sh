@@ -2,7 +2,7 @@
 
 set -e
 
-APP_NAME="very-be-test"
+APP_NAME="veri-be"
 IMAGE_NAME="ghcr.io/9oormthon-univ-veri/${APP_NAME}"
 TAG=$(date +%Y%m%d-%H%M%S)
 
