@@ -1,6 +1,7 @@
 package org.goorm.veri.veribe.domain.auth.service.oauth2;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.goorm.veri.veribe.domain.auth.dto.AuthRequest;
 import org.goorm.veri.veribe.domain.auth.dto.KakaoOAuth2DTO;
 import org.goorm.veri.veribe.domain.auth.exception.AuthErrorInfo;
@@ -18,6 +19,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+@Slf4j
 @Service
 public class KakaoOAuth2Service extends AbstractOAuth2Service {
 
@@ -59,6 +61,7 @@ public class KakaoOAuth2Service extends AbstractOAuth2Service {
             oAuth2TokenDTO = objectMapper.readValue(response1.getBody(), KakaoOAuth2DTO.OAuth2TokenDTO.class);
             return oAuth2TokenDTO.getAccess_token();
         } catch (Exception e) {
+            log.error("Failed to get access token from Kakao: {}\n{}", e.getMessage(), response1.getBody());
             throw new ExternalApiException(AuthErrorInfo.FAIL_GET_ACCESS_TOKEN);
         }
     }
@@ -97,6 +100,7 @@ public class KakaoOAuth2Service extends AbstractOAuth2Service {
         try {
             return om.readValue(response2.getBody(), KakaoOAuth2DTO.KakaoProfile.class);
         } catch (Exception e) {
+            log.error("Failed to get user info from Kakao: {}\n{}", e.getMessage(), response2.getBody());
             throw new ExternalApiException(AuthErrorInfo.FAIL_GET_USER_INFO);
         }
     }
