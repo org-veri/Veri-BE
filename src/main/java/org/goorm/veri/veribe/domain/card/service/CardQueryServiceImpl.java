@@ -3,10 +3,10 @@ package org.goorm.veri.veribe.domain.card.service;
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.card.controller.enums.CardSortType;
 import org.goorm.veri.veribe.domain.card.entity.Card;
-import org.goorm.veri.veribe.domain.card.exception.CardErrorCode;
-import org.goorm.veri.veribe.domain.card.exception.CardException;
+import org.goorm.veri.veribe.domain.card.exception.CardErrorInfo;
 import org.goorm.veri.veribe.domain.card.repository.CardRepository;
 import org.goorm.veri.veribe.domain.card.repository.dto.CardListItem;
+import org.goorm.veri.veribe.global.exception.http.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +31,7 @@ public class CardQueryServiceImpl implements CardQueryService {
     @Override
     public Card getCardById(Long cardId) {
         return cardRepository.findById(cardId)
-                .orElseThrow(() -> new CardException(CardErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(CardErrorInfo.NOT_FOUND));
     }
 
     @Override

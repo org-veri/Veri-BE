@@ -5,10 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.book.entity.MemberBook;
 import org.goorm.veri.veribe.domain.book.repository.MemberBookRepository;
 import org.goorm.veri.veribe.domain.card.entity.Card;
-import org.goorm.veri.veribe.domain.card.exception.CardErrorCode;
-import org.goorm.veri.veribe.domain.card.exception.CardException;
+import org.goorm.veri.veribe.domain.card.exception.CardErrorInfo;
 import org.goorm.veri.veribe.domain.card.repository.CardRepository;
 import org.goorm.veri.veribe.domain.member.entity.Member;
+import org.goorm.veri.veribe.global.exception.http.BadRequestException;
+import org.goorm.veri.veribe.global.exception.http.ForbiddenException;
+import org.goorm.veri.veribe.global.exception.http.NotFoundException;
 import org.goorm.veri.veribe.global.storage.dto.PresignedUrlRequest;
 import org.goorm.veri.veribe.global.storage.dto.PresignedUrlResponse;
 import org.goorm.veri.veribe.global.storage.service.StorageService;
@@ -18,9 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 
-import static org.goorm.veri.veribe.domain.card.exception.CardErrorCode.BAD_REQUEST;
-import static org.goorm.veri.veribe.domain.card.exception.CardErrorCode.FORBIDDEN;
-import static org.goorm.veri.veribe.domain.card.exception.CardErrorCode.NOT_FOUND;
 import static org.goorm.veri.veribe.global.storage.service.StorageConstants.MB;
 
 @Service
@@ -35,7 +34,7 @@ public class CardCommandServiceImpl implements CardCommandService {
     @Override
     public Long createCard(Member member, String content, String imageUrl, Long memberBookId) {
         MemberBook memberBook = memberBookRepository.findById(memberBookId)
-                .orElseThrow(() -> new CardException(BAD_REQUEST));
+                .orElseThrow(() -> new BadRequestException(CardErrorInfo.BAD_REQUEST));
 
         Card card = Card.builder()
                 .member(member)
@@ -52,10 +51,10 @@ public class CardCommandServiceImpl implements CardCommandService {
     @Override
     public void deleteCard(Long memberId, Long cardId) {
         Card card = cardRepository.findById(cardId)
-                .orElseThrow(() -> new CardException(NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(CardErrorInfo.NOT_FOUND));
 
         if (!card.getMember().getId().equals(memberId)) {
-            throw new CardException(FORBIDDEN);
+            throw new ForbiddenException(CardErrorInfo.FORBIDDEN);
         }
 
         cardRepository.deleteById(cardId);
@@ -67,10 +66,10 @@ public class CardCommandServiceImpl implements CardCommandService {
         String prefix = "public";
 
         if (request.contentLength() > MB) {
-            throw new CardException(CardErrorCode.IMAGE_TOO_LARGE);
+            throw new BadRequestException(CardErrorInfo.IMAGE_TOO_LARGE);
         }
 
-        if (!StorageUtil.isImage(request.contentType())) throw new CardException(CardErrorCode.UNSUPPORTED_IMAGE_TYPE);
+        if (!StorageUtil.isImage(request.contentType())) throw new BadRequestException(CardErrorInfo.UNSUPPORTED_IMAGE_TYPE);
 
         return storageService.generatePresignedUrl(
                 request.contentType(),
