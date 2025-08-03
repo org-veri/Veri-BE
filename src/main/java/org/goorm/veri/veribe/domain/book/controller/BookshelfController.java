@@ -1,5 +1,7 @@
 package org.goorm.veri.veribe.domain.book.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +16,9 @@ import org.goorm.veri.veribe.domain.book.entity.MemberBook;
 import org.goorm.veri.veribe.domain.book.service.BookService;
 import org.goorm.veri.veribe.domain.book.service.BookshelfService;
 import org.goorm.veri.veribe.domain.member.entity.Member;
-import org.namul.api.payload.response.DefaultResponse;
+import org.goorm.veri.veribe.global.response.ApiResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "책장 API", description = "책장(내 서재) 관련 API")
 @RequestMapping("/api/v0/bookshelf")
@@ -31,7 +31,7 @@ public class BookshelfController {
 
     @Operation(summary = "책장에 책 추가", description = "신규 도서를 등록하고 내 책장에 추가합니다.")
     @PostMapping
-    public DefaultResponse<MemberBookAddResponse> addBook(@RequestBody BookRequest request, @AuthenticatedMember Member member) {
+    public ApiResponse<MemberBookAddResponse> addBook(@RequestBody BookRequest request, @AuthenticatedMember Member member) {
 
         Long bookId = bookService.addBook(
                 request.title(),
@@ -42,12 +42,12 @@ public class BookshelfController {
 
         MemberBook memberBook = bookshelfService.addToBookshelf(member, bookId);
 
-        return DefaultResponse.created(new MemberBookAddResponse(memberBook.getId(), memberBook.getCreatedAt()));
+        return ApiResponse.created(new MemberBookAddResponse(memberBook.getId(), memberBook.getCreatedAt()));
     }
 
     @Operation(summary = "내 책장 전체 조회", description = "내 책장에 등록된 모든 책을 페이지네이션과 정렬 기준으로 조회합니다.")
     @GetMapping("/all")
-    public DefaultResponse<MemberBookListResponse> getAllBooks(
+    public ApiResponse<MemberBookListResponse> getAllBooks(
             @RequestParam(defaultValue = "1") @Min(1) int page,
             @RequestParam(defaultValue = "10") @Min(1) int size,
             @RequestParam(defaultValue = "newest") String sort,
@@ -56,80 +56,76 @@ public class BookshelfController {
         MemberBookSortType sortType = MemberBookSortType.from(sort);
         Page<MemberBookResponse> pageData = bookshelfService.searchAll(member.getId(), page - 1, size, sortType);
 
-        return DefaultResponse.ok(new MemberBookListResponse(pageData));
+        return ApiResponse.ok(new MemberBookListResponse(pageData));
     }
 
     @Operation(summary = "책장 상세 조회", description = "memberBookId로 책장에 등록된 책의 상세 정보를 조회합니다.")
     @GetMapping("/detail")
-    public DefaultResponse<MemberBookDetailResponse> getBookDetail(@RequestParam Long memberBookId) {
+    public ApiResponse<MemberBookDetailResponse> getBookDetail(@RequestParam Long memberBookId) {
         MemberBookDetailResponse result = bookshelfService.searchDetail(memberBookId);
 
-        return DefaultResponse.ok(result);
+        return ApiResponse.ok(result);
     }
 
     @Operation(summary = "도서 검색", description = "검색어로 도서를 검색합니다.")
     @GetMapping("/search")
-    public DefaultResponse<BookSearchResponse> searchBooks(
+    public ApiResponse<BookSearchResponse> searchBooks(
             @RequestParam String query,
             @RequestParam(defaultValue = "1") @Min(1) int page,
             @RequestParam(defaultValue = "10") @Min(1) int size
     ) {
         BookSearchResponse bookResponses = bookService.searchBook(query, page, size);
 
-        return DefaultResponse.ok(bookResponses);
+        return ApiResponse.ok(bookResponses);
     }
 
     @Operation(summary = "인기 도서 조회", description = "인기 도서 목록을 페이지네이션으로 조회합니다.")
     @GetMapping("/popular")
-    public DefaultResponse<BookPopularListResponse> getPopularBooks(
+    public ApiResponse<BookPopularListResponse> getPopularBooks(
             @RequestParam(defaultValue = "1") @Min(1) int page,
             @RequestParam(defaultValue = "10") @Min(1) int size
     ) {
         Page<BookPopularResponse> pageData = bookshelfService.searchPopular(page, size);
 
-        return DefaultResponse.ok(new BookPopularListResponse(pageData));
+        return ApiResponse.ok(new BookPopularListResponse(pageData));
     }
 
     @Operation(summary = "내 완독 책 개수 조회", description = "내가 완독한 책의 개수를 조회합니다.")
     @GetMapping("/my/count")
-    public DefaultResponse<Integer> getMyBookCount(@AuthenticatedMember Member member) {
+    public ApiResponse<Integer> getMyBookCount(@AuthenticatedMember Member member) {
         Integer count = bookshelfService.searchMyReadingDoneCount(member.getId());
 
-        return DefaultResponse.ok(count);
+        return ApiResponse.ok(count);
     }
 
     @Operation(summary = "책 평점 등록/수정", description = "책장에 등록된 책의 평점을 등록 또는 수정합니다.")
     @PatchMapping("/rate")
-    public DefaultResponse<Void> rateBook(
+    public ApiResponse<Void> rateBook(
             @RequestBody @Valid MemberBookScoreRequest request,
             @RequestParam Long memberBookId) {
         bookshelfService.rateScore(request.score(), memberBookId);
-
-        return DefaultResponse.noContent();
+        return ApiResponse.noContent();
     }
 
     @Operation(summary = "독서 시작 상태 변경", description = "책장에 등록된 책의 상태를 '읽는 중'으로 변경합니다.")
     @PatchMapping("/status/start")
-    public DefaultResponse<Void> startReading(@RequestParam Long memberBookId) {
+    public ApiResponse<Void> startReading(@RequestParam Long memberBookId) {
         bookshelfService.readStart(memberBookId);
-
-        return DefaultResponse.noContent();
+        return ApiResponse.noContent();
     }
 
     @Operation(summary = "독서 완료 상태 변경", description = "책장에 등록된 책의 상태를 '완독'으로 변경합니다.")
     @PatchMapping("/status/over")
-    public DefaultResponse<Void> finishReading(@RequestParam Long memberBookId) {
+    public ApiResponse<Void> finishReading(@RequestParam Long memberBookId) {
         bookshelfService.readOver(memberBookId);
-
-        return DefaultResponse.noContent();
+        return ApiResponse.noContent();
     }
 
     @Operation(summary = "책장 도서 삭제", description = "책장에 등록된 책을 삭제합니다.")
     @DeleteMapping
-    public DefaultResponse<Void> deleteFromBookshelf(@RequestParam Long memberBookId) {
+    public ApiResponse<Void> deleteFromBookshelf(@RequestParam Long memberBookId) {
         bookshelfService.deleteBook(memberBookId);
-
-        return DefaultResponse.noContent();
+        return ApiResponse.noContent();
     }
 
 }

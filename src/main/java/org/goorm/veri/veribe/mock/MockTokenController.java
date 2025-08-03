@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.auth.dto.AuthResponse;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.goorm.veri.veribe.domain.member.repository.MemberRepository;
-import org.goorm.veri.veribe.global.util.JwtUtil;
+import org.goorm.veri.veribe.global.jwt.JwtProvider;
 import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MockTokenController {
 
     private final MemberRepository memberRepository;
-    private final JwtUtil jwtUtil;
+    private final JwtProvider jwtProvider;
 
     @GetMapping("/api/v1/oauth2/mock/{memberId}")
     public AuthResponse.LoginResponse getMockToken(@PathVariable Long memberId) {
@@ -24,8 +24,8 @@ public class MockTokenController {
                 .orElseThrow(() -> new IllegalArgumentException("Member not found with ID: " + memberId));
 
         return AuthResponse.LoginResponse.builder()
-                .accessToken(jwtUtil.createAccessToken(member))
-                .refreshToken(jwtUtil.createRefreshToken(member))
+                .accessToken(jwtProvider.generateAccessToken(member.getId(), member.getNickname(), false))
+                .refreshToken(jwtProvider.generateRefreshToken(member.getId()))
                 .build();
     }
 }

@@ -6,9 +6,9 @@ import org.goorm.veri.veribe.domain.card.repository.CardRepository;
 import org.goorm.veri.veribe.domain.member.converter.MemberConverter;
 import org.goorm.veri.veribe.domain.member.dto.MemberResponse;
 import org.goorm.veri.veribe.domain.member.entity.Member;
-import org.goorm.veri.veribe.domain.member.exception.MemberErrorCode;
-import org.goorm.veri.veribe.domain.member.exception.MemberException;
+import org.goorm.veri.veribe.domain.member.exception.MemberErrorInfo;
 import org.goorm.veri.veribe.domain.member.repository.MemberRepository;
+import org.goorm.veri.veribe.global.exception.http.NotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,7 +22,7 @@ public class MemberQueryServiceImpl implements MemberQueryService {
     @Override
     public Member findById(Long id) {
         return memberRepository.findById(id).orElseThrow(() ->
-                new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+                new NotFoundException(MemberErrorInfo.NOT_FOUND));
     }
 
     @Override

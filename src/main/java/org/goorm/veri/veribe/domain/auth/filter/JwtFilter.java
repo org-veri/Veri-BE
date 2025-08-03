@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.auth.service.TokenStorageService;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.goorm.veri.veribe.domain.member.service.MemberQueryService;
-import org.goorm.veri.veribe.global.util.JwtUtil;
+import org.goorm.veri.veribe.global.jwt.JwtAuthenticator;
+import org.goorm.veri.veribe.global.jwt.JwtExtractor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,7 +28,8 @@ public class JwtFilter extends OncePerRequestFilter {
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String TOKEN_PREFIX = "Bearer ";
 
-    private final JwtUtil jwtUtil;
+    private final JwtAuthenticator jwtAuthenticator;
+    private final JwtExtractor jwtExtractor;
     private final MemberQueryService memberQueryService;
     private final TokenStorageService tokenStorageService;
     private final SecurityContextRepository securityContextRepository;
@@ -36,13 +38,29 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = getToken(request);
-        if (token != null && jwtUtil.isValid(token) && !tokenStorageService.isBlackList(token)) {
-            Long id = jwtUtil.getUserId(token);
-            Member member = memberQueryService.findById(id);
-            Authentication authentication = createAuthentication(member);
-            onAuthorization(request, response, authentication);
+        boolean valid = false;
+        if (token != null && !tokenStorageService.isBlackList(token)) {
+            try {
+                jwtAuthenticator.verifyAccessToken(token);
+                valid = true;
+            } catch (Exception e) {
+                valid = false;
+            }
         }
-
+        if (token != null && valid) {
+            String subject = jwtExtractor.parseAccessTokenPayloads(token).getSubject();
+            Long id = null;
+            try {
+                id = Long.valueOf(subject);
+            } catch (Exception e) {
+                id = null;
+            }
+            if (id != null) {
+                Member member = memberQueryService.findById(id);
+                Authentication authentication = createAuthentication(member);
+                onAuthorization(request, response, authentication);
+            }
+        }
         request.setAttribute("token", token);
         filterChain.doFilter(request, response);
     }

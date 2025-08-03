@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.auth.converter.AuthConverter;
 import org.goorm.veri.veribe.domain.auth.dto.AuthResponse;
 import org.goorm.veri.veribe.domain.member.entity.Member;
-import org.goorm.veri.veribe.global.util.JwtUtil;
+import org.goorm.veri.veribe.global.jwt.JwtProvider;
 import org.goorm.veri.veribe.global.data.JwtConfigData;
 import org.springframework.stereotype.Service;
 
@@ -12,13 +12,13 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class TokenCommandService {
 
-    private final JwtUtil jwtUtil;
+    private final JwtProvider jwtProvider;
     private final TokenStorageService tokenStorageService;
     private final JwtConfigData jwtConfigData;
 
     public AuthResponse.LoginResponse createLoginToken(Member member) {
-        String accessToken = jwtUtil.createAccessToken(member);
-        String refreshToken = jwtUtil.createRefreshToken(member);
+        String accessToken = jwtProvider.generateAccessToken(member.getId(), member.getNickname(), false);
+        String refreshToken = jwtProvider.generateRefreshToken(member.getId());
         tokenStorageService.addRefreshToken(member.getId(), refreshToken, jwtConfigData.getTime().getRefresh());
         return AuthConverter.toOAuth2LoginResponse(accessToken, refreshToken);
     }

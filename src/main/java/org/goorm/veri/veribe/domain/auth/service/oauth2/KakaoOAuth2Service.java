@@ -1,14 +1,14 @@
 package org.goorm.veri.veribe.domain.auth.service.oauth2;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.goorm.veri.veribe.domain.auth.dto.KakaoOAuth2DTO;
 import org.goorm.veri.veribe.domain.auth.dto.AuthRequest;
-import org.goorm.veri.veribe.domain.auth.exception.OAuth2ErrorCode;
-import org.goorm.veri.veribe.domain.auth.exception.OAuth2Exception;
+import org.goorm.veri.veribe.domain.auth.dto.KakaoOAuth2DTO;
+import org.goorm.veri.veribe.domain.auth.exception.AuthErrorInfo;
 import org.goorm.veri.veribe.domain.auth.service.TokenCommandService;
 import org.goorm.veri.veribe.domain.member.entity.enums.ProviderType;
 import org.goorm.veri.veribe.domain.member.repository.MemberRepository;
 import org.goorm.veri.veribe.global.data.KakaoOAuth2ConfigData;
+import org.goorm.veri.veribe.global.exception.http.ExternalApiException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -23,7 +23,10 @@ public class KakaoOAuth2Service extends AbstractOAuth2Service {
 
     private final KakaoOAuth2ConfigData kakaoOAuth2ConfigData;
 
-    public KakaoOAuth2Service(MemberRepository memberRepository, TokenCommandService tokenCommandService, KakaoOAuth2ConfigData kakaoOAuth2ConfigData) {
+    public KakaoOAuth2Service(MemberRepository memberRepository,
+                              TokenCommandService tokenCommandService,
+                              KakaoOAuth2ConfigData kakaoOAuth2ConfigData
+    ) {
         super(memberRepository, tokenCommandService);
         this.kakaoOAuth2ConfigData = kakaoOAuth2ConfigData;
     }
@@ -56,7 +59,7 @@ public class KakaoOAuth2Service extends AbstractOAuth2Service {
             oAuth2TokenDTO = objectMapper.readValue(response1.getBody(), KakaoOAuth2DTO.OAuth2TokenDTO.class);
             return oAuth2TokenDTO.getAccess_token();
         } catch (Exception e) {
-            throw new OAuth2Exception(OAuth2ErrorCode.FAIL_ACCESS_TOKEN);
+            throw new ExternalApiException(AuthErrorInfo.FAIL_GET_ACCESS_TOKEN);
         }
     }
 
@@ -93,8 +96,8 @@ public class KakaoOAuth2Service extends AbstractOAuth2Service {
 
         try {
             return om.readValue(response2.getBody(), KakaoOAuth2DTO.KakaoProfile.class);
-        } catch(Exception e) {
-            throw new OAuth2Exception(OAuth2ErrorCode.FAIL_USER_INFO);
+        } catch (Exception e) {
+            throw new ExternalApiException(AuthErrorInfo.FAIL_GET_USER_INFO);
         }
     }
 }

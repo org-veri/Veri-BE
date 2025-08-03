@@ -6,10 +6,10 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.namul.api.payload.code.DefaultResponseErrorCode;
-import org.namul.api.payload.code.dto.supports.DefaultResponseErrorReasonDTO;
-import org.namul.api.payload.error.exception.ServerApplicationException;
-import org.namul.api.payload.writer.FailureResponseWriter;
+import org.goorm.veri.veribe.global.exception.ApplicationException;
+import org.goorm.veri.veribe.global.exception.CommonErrorInfo;
+import org.goorm.veri.veribe.global.response.ApiResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -18,30 +18,37 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtExceptionFilter extends OncePerRequestFilter {
 
-    private final FailureResponseWriter<DefaultResponseErrorReasonDTO> failureResponseWriter;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
         try {
             filterChain.doFilter(request, response);
-        } catch (ServerApplicationException e) {
+        } catch (ApplicationException e) {
             handleServerApplicationException(response, e);
         } catch (Exception e) {
             handleException(response, e);
         }
     }
 
-    private void handleServerApplicationException(HttpServletResponse response, ServerApplicationException e) throws IOException {
-        response.setStatus(e.getErrorReason().getHttpStatus().value());
+    private void handleServerApplicationException(HttpServletResponse response, ApplicationException e) throws IOException {
+        response.setStatus(e.getHttpStatus().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        objectMapper.writeValue(response.getOutputStream(), failureResponseWriter.onFailure((DefaultResponseErrorReasonDTO) e.getErrorReason(), null));
+        ApiResponse<?> apiResponse = ApiResponse.error(e.getErrorInfo(), e.getHttpStatus());
+        objectMapper.writeValue(response.getOutputStream(), apiResponse);
     }
 
     private void handleException(HttpServletResponse response, Exception e) throws IOException {
-        DefaultResponseErrorReasonDTO reasonDTO = DefaultResponseErrorCode._UNAUTHORIZED.getReason();
-        response.setStatus(reasonDTO.getHttpStatus().value());
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        objectMapper.writeValue(response.getOutputStream(), failureResponseWriter.onFailure(reasonDTO, e.getMessage()));
+        ApiResponse<?> apiResponse = ApiResponse.error(
+                CommonErrorInfo.INVALID_TOKEN,
+                HttpStatus.UNAUTHORIZED
+        );
+        objectMapper.writeValue(response.getOutputStream(), apiResponse);
     }
 }
