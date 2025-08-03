@@ -10,14 +10,14 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "jwt")
 public class JwtConfigData {
-    private String secret;
-    private JwtTime time;
+
+    private TokenConfig access;
+    private TokenConfig refresh;
 
     @Getter
     @Setter
-    public static class JwtTime {
-        private long access;
-        private long refresh;
-
+    public static class TokenConfig {
+        private String secret;
+        private long validity;
     }
 }
