@@ -2,10 +2,11 @@ package org.goorm.veri.veribe.domain.image.service;
 
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.image.entity.Image;
-import org.goorm.veri.veribe.domain.image.exception.ImageErrorCode;
-import org.goorm.veri.veribe.domain.image.exception.ImageException;
+import org.goorm.veri.veribe.domain.image.exception.ImageErrorInfo;
 import org.goorm.veri.veribe.domain.image.repository.ImageRepository;
 import org.goorm.veri.veribe.domain.member.entity.Member;
+import org.goorm.veri.veribe.global.exception.http.BadRequestException;
+import org.goorm.veri.veribe.global.exception.http.InternalServerException;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.textract.TextractClient;
@@ -36,9 +37,9 @@ public class ImageCommandServiceImpl implements ImageCommandService {
             return extractTextWithTextract(imageBytes);
 
         } catch (IOException e) {
-            throw new ImageException(ImageErrorCode.BAD_REQUEST);
+            throw new BadRequestException(ImageErrorInfo.BAD_REQUEST);
         } catch (TextractException e) {
-            throw new ImageException(ImageErrorCode.OCR_PROCESSING_FAILED);
+            throw new InternalServerException(ImageErrorInfo.OCR_PROCESSING_FAILED);
         }
     }
 
