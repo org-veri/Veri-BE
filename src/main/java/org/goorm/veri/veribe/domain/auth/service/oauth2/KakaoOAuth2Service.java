@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
@@ -48,21 +49,23 @@ public class KakaoOAuth2Service extends AbstractOAuth2Service {
         map.add("code", code);
         HttpEntity<MultiValueMap> request = new HttpEntity<>(map, httpHeaders);
 
-        ResponseEntity<String> response1 = restTemplate.exchange(
-                kakaoOAuth2ConfigData.getTokenUri(),
-                HttpMethod.POST,
-                request,
-                String.class);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        KakaoOAuth2DTO.OAuth2TokenDTO oAuth2TokenDTO = null;
-
         try {
+            ResponseEntity<String> response1 = restTemplate.exchange(
+                    kakaoOAuth2ConfigData.getTokenUri(),
+                    HttpMethod.POST,
+                    request,
+                    String.class);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            KakaoOAuth2DTO.OAuth2TokenDTO oAuth2TokenDTO = null;
+
             oAuth2TokenDTO = objectMapper.readValue(response1.getBody(), KakaoOAuth2DTO.OAuth2TokenDTO.class);
             return oAuth2TokenDTO.getAccess_token();
-        } catch (Exception e) {
-            log.error("Failed to get access token from Kakao: {}\n{}", e.getMessage(), response1.getBody());
+        } catch (HttpClientErrorException e) {
+            log.error("Failed to get access token from Kakao: {}\n{}", e.getMessage(), e.getResponseBodyAsString());
             throw new ExternalApiException(AuthErrorInfo.FAIL_GET_ACCESS_TOKEN);
+        } catch (Exception e) {
+            throw new ExternalApiException(AuthErrorInfo.FAIL_PROCESS_RESPONSE);
         }
     }
 
@@ -85,23 +88,24 @@ public class KakaoOAuth2Service extends AbstractOAuth2Service {
 
         httpHeaders.add("Authorization", "Bearer " + token);
         httpHeaders.add("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
-
         HttpEntity<MultiValueMap> request1 = new HttpEntity<>(httpHeaders);
 
-        ResponseEntity<String> response2 = restTemplate.exchange(
-                kakaoOAuth2ConfigData.getUserInfoUri(),
-                HttpMethod.GET,
-                request1,
-                String.class
-        );
-
-        ObjectMapper om = new ObjectMapper();
-
         try {
+            ResponseEntity<String> response2 = restTemplate.exchange(
+                    kakaoOAuth2ConfigData.getUserInfoUri(),
+                    HttpMethod.GET,
+                    request1,
+                    String.class
+            );
+
+            ObjectMapper om = new ObjectMapper();
+
             return om.readValue(response2.getBody(), KakaoOAuth2DTO.KakaoProfile.class);
-        } catch (Exception e) {
-            log.error("Failed to get user info from Kakao: {}\n{}", e.getMessage(), response2.getBody());
+        } catch (HttpClientErrorException e) {
+            log.error("Failed to get user info from Kakao: {}\n{}", e.getMessage(), e.getResponseBodyAsString());
             throw new ExternalApiException(AuthErrorInfo.FAIL_GET_USER_INFO);
+        } catch (Exception e) {
+            throw new ExternalApiException(AuthErrorInfo.FAIL_PROCESS_RESPONSE);
         }
     }
 }
