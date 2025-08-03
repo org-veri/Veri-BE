@@ -6,9 +6,8 @@ import org.goorm.veri.veribe.domain.auth.filter.JwtExceptionFilter;
 import org.goorm.veri.veribe.domain.auth.filter.JwtFilter;
 import org.goorm.veri.veribe.domain.auth.service.TokenStorageService;
 import org.goorm.veri.veribe.domain.member.service.MemberQueryService;
-import org.goorm.veri.veribe.global.util.JwtUtil;
-import org.namul.api.payload.code.dto.supports.DefaultResponseErrorReasonDTO;
-import org.namul.api.payload.writer.FailureResponseWriter;
+import org.goorm.veri.veribe.global.jwt.JwtAuthenticator;
+import org.goorm.veri.veribe.global.jwt.JwtExtractor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -27,12 +26,12 @@ import org.springframework.security.web.context.SecurityContextRepository;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtUtil jwtUtil;
+    private final JwtAuthenticator jwtAuthenticator;
+    private final JwtExtractor jwtExtractor;
     private final MemberQueryService memberQueryService;
     private final TokenStorageService tokenStorageService;
     private final AuthenticationEntryPoint authenticationEntryPoint;
     private final AccessDeniedHandler accessDeniedHandler;
-    private final FailureResponseWriter<DefaultResponseErrorReasonDTO> failureResponseWriter;
 
     String[] allowUrl = {
             "/swagger-ui/**",
@@ -75,13 +74,13 @@ public class SecurityConfig {
 
     @Bean
     Filter jwtFilter() {
-        return new JwtFilter(jwtUtil, memberQueryService, tokenStorageService,
+        return new JwtFilter(jwtAuthenticator, jwtExtractor, memberQueryService, tokenStorageService,
                 securityContextRepository());
     }
 
     @Bean
     Filter jwtExceptionFilter() {
-        return new JwtExceptionFilter(failureResponseWriter);
+        return new JwtExceptionFilter();
     }
 
     @Bean

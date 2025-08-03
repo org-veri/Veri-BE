@@ -5,9 +5,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.namul.api.payload.code.DefaultResponseErrorCode;
-import org.namul.api.payload.code.dto.supports.DefaultResponseErrorReasonDTO;
-import org.namul.api.payload.writer.FailureResponseWriter;
+import org.goorm.veri.veribe.domain.auth.exception.AuthErrorInfo;
+import org.goorm.veri.veribe.global.response.ApiResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -19,15 +19,16 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-    private final FailureResponseWriter<DefaultResponseErrorReasonDTO> failureResponseWriter;
-
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+    public void commence(HttpServletRequest request,
+                         HttpServletResponse response,
+                         AuthenticationException authException
+    ) throws IOException, ServletException {
         ObjectMapper objectMapper = new ObjectMapper();
-        DefaultResponseErrorReasonDTO reason = DefaultResponseErrorCode._UNAUTHORIZED.getReason();
-        response.setStatus(reason.getHttpStatus().value());
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        objectMapper.writeValue(response.getOutputStream(), failureResponseWriter.onFailure(reason, authException.getMessage()));
+        ApiResponse<?> apiResponse = ApiResponse.error(AuthErrorInfo.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+        objectMapper.writeValue(response.getOutputStream(), apiResponse);
     }
 
 }
