@@ -8,7 +8,8 @@ import org.goorm.veri.veribe.domain.book.entity.Book;
 import org.goorm.veri.veribe.domain.book.config.NaverConfig;
 import org.goorm.veri.veribe.domain.book.dto.book.BookConverter;
 import org.goorm.veri.veribe.domain.book.dto.book.NaverBookResponse;
-import org.goorm.veri.veribe.domain.book.exception.NaverAPIException;
+import org.goorm.veri.veribe.global.exception.http.BadRequestException;
+import org.goorm.veri.veribe.domain.book.exception.BookErrorInfo;
 import org.goorm.veri.veribe.domain.book.repository.BookRepository;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -21,8 +22,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.Optional;
-
-import static org.goorm.veri.veribe.domain.book.exception.NaverAPIErrorCode.BAD_REQUEST;
 
 @Service
 @Transactional
@@ -61,7 +60,7 @@ public class BookServiceImpl implements BookService {
     public BookSearchResponse searchBook(String query, int page, int size) {
         int start = (page - 1) * size + 1;
         if (start > 1000) {
-            throw new NaverAPIException(BAD_REQUEST);
+            throw new BadRequestException(BookErrorInfo.BAD_REQUEST);
         }
 
         URI uri = UriComponentsBuilder
@@ -83,8 +82,7 @@ public class BookServiceImpl implements BookService {
         ResponseEntity<String> respEntity = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
 
         if (respEntity.getStatusCode().is5xxServerError() || respEntity.getBody() == null) {
-            // 네이버 API 호출 실패 시 빈 리스트 또는 오류 응답 처리
-            throw new NaverAPIException(BAD_REQUEST);
+            throw new BadRequestException(BookErrorInfo.BAD_REQUEST);
         }
 
         String body = respEntity.getBody();
@@ -92,7 +90,7 @@ public class BookServiceImpl implements BookService {
             NaverBookResponse naverResp = objectMapper.readValue(body, NaverBookResponse.class);
             return BookConverter.toBookSearchResponse(naverResp);
         } catch (JsonProcessingException e) {
-            throw new NaverAPIException(BAD_REQUEST);
+            throw new BadRequestException(BookErrorInfo.BAD_REQUEST);
         }
     }
 }
