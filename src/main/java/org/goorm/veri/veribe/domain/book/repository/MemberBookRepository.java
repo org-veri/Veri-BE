@@ -1,11 +1,10 @@
 package org.goorm.veri.veribe.domain.book.repository;
 
-
 import org.goorm.veri.veribe.domain.book.dto.book.BookPopularResponse;
 import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookResponse;
 import org.goorm.veri.veribe.domain.book.entity.MemberBook;
-import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.goorm.veri.veribe.domain.book.entity.enums.BookStatus;
+import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,6 +23,7 @@ public interface MemberBookRepository extends JpaRepository<MemberBook, Long> {
     Optional<MemberBook> findByIdWithCardsAndBook(@Param("memberBookId") Long memberBookId);
 
     int countAllByMember(Member member);
+
     @Query("""
             SELECT new org.goorm.veri.veribe.domain.book.dto.book.BookPopularResponse(
             mb.book.image,
@@ -36,7 +36,9 @@ public interface MemberBookRepository extends JpaRepository<MemberBook, Long> {
             GROUP BY mb.book
             ORDER BY COUNT(mb) DESC
             """)
-    Page<BookPopularResponse> findMostPopularBook(@Param("startOfWeek") LocalDateTime startOfWeek, Pageable pageable);
+    Page<BookPopularResponse> findMostPopularBook(@Param("startOfWeek") LocalDateTime startOfWeek,
+                                                  Pageable pageable
+    );
 
     @Query("""
             SELECT new org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookResponse(
@@ -61,16 +63,18 @@ public interface MemberBookRepository extends JpaRepository<MemberBook, Long> {
     int countByStatusAndMember(@Param("status") BookStatus status, @Param("memberId") Long memberId);
 
     @Query("""
-            SELECT mb FROM MemberBook mb
-            WHERE mb.book.id = :bookId AND mb.member.id = :memberId
-        """)
-    Optional<MemberBook> findByMemberAndBook(@Param("memberId") Long memberId, @Param("bookId") Long bookId);
+                SELECT mb FROM MemberBook mb
+                WHERE mb.book.id = :bookId AND mb.member.id = :memberId
+            """)
+    Optional<MemberBook> findByMemberAndBook(@Param("memberId") Long memberId,
+                                             @Param("bookId") Long bookId);
 
     @Query("""
-            SELECT mb FROM MemberBook mb
-            WHERE mb.member.id = :memberId
-                AND mb.book.title = :title
-                AND mb.book.author = :author
-    """)
-    Optional<MemberBook> findByAuthorAndTitle(@Param("memberId") Long memberId ,@Param("title") String title, @Param("author") String author);
+                    SELECT mb FROM MemberBook mb
+                    WHERE mb.member.id = :memberId
+                        AND mb.book.title = :title
+                        AND mb.book.author = :author
+            """)
+    Optional<MemberBook> findByAuthorAndTitle(@Param("memberId") Long memberId,
+                                              @Param("title") String title, @Param("author") String author);
 }

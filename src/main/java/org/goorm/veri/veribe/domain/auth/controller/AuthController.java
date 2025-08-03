@@ -6,8 +6,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.auth.dto.AuthRequest;
 import org.goorm.veri.veribe.domain.auth.dto.AuthResponse;
-import org.goorm.veri.veribe.domain.auth.exception.TokenErrorCode;
-import org.goorm.veri.veribe.domain.auth.exception.TokenException;
 import org.goorm.veri.veribe.domain.auth.service.AuthService;
 import org.namul.api.payload.response.DefaultResponse;
 import org.springframework.web.bind.annotation.*;
