@@ -39,13 +39,13 @@ public class BookshelfServiceImpl implements BookshelfService {
 
     @Override
     public MemberBook addToBookshelf(Member member, Long bookId) {
-        Book book = bookRepository.findById(bookId)
+        Book book = bookRepository.findById(bookId) 
                 .orElseThrow(() -> new BadRequestException(BookErrorInfo.BAD_REQUEST));
 
-        //MemberBook 중복 저장 방지 로직 추가
+        //MemberBook 중복 저장 방지 로직 추가 -> 기존 책을 응답
         Optional<MemberBook> findMemberBook = memberBookRepository.findByMemberAndBook(member.getId(), bookId);
         if (findMemberBook.isPresent()) {
-            throw new ConflictException(BookErrorInfo.ALREADY_EXIST);
+            return findMemberBook.get();
         }
 
         MemberBook memberBook = MemberBook.builder()
@@ -94,7 +94,7 @@ public class BookshelfServiceImpl implements BookshelfService {
 
     @Override
     public int searchMyReadingDoneCount(Long memberId) {
-        return memberBookRepository.countByStatusAndMember(DONE,memberId);
+        return memberBookRepository.countByStatusAndMember(DONE, memberId);
     }
 
     @Override
