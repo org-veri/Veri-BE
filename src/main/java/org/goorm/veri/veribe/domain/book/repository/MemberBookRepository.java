@@ -33,10 +33,12 @@ public interface MemberBookRepository extends JpaRepository<MemberBook, Long> {
             mb.book.isbn)
             FROM MemberBook mb
             WHERE mb.startedAt >= :startOfWeek
+            AND mb.startedAt < :startOfNextWeek
             GROUP BY mb.book
             ORDER BY COUNT(mb) DESC
             """)
     Page<BookPopularResponse> findMostPopularBook(@Param("startOfWeek") LocalDateTime startOfWeek,
+                                                  @Param("startOfNextWeek") LocalDateTime startOfNextWeek,
                                                   Pageable pageable
     );
 

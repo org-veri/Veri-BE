@@ -39,7 +39,7 @@ public class BookshelfServiceImpl implements BookshelfService {
 
     @Override
     public MemberBook addToBookshelf(Member member, Long bookId) {
-        Book book = bookRepository.findById(bookId) 
+        Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new BadRequestException(BookErrorInfo.BAD_REQUEST));
 
         //MemberBook 중복 저장 방지 로직 추가 -> 기존 책을 응답
@@ -84,10 +84,11 @@ public class BookshelfServiceImpl implements BookshelfService {
     public Page<BookPopularResponse> searchPopular(int page, int size) {
         LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
         LocalDateTime startOfWeek = now.with(DayOfWeek.MONDAY).toLocalDate().atStartOfDay();
+        LocalDateTime startOfNextWeek = startOfWeek.plusWeeks(1);
 
         Pageable pageRequest = PageRequest.of(page, size);
 
-        Page<BookPopularResponse> responses = memberBookRepository.findMostPopularBook(startOfWeek, pageRequest);
+        Page<BookPopularResponse> responses = memberBookRepository.findMostPopularBook(startOfWeek, startOfNextWeek, pageRequest);
 
         return responses;
     }
