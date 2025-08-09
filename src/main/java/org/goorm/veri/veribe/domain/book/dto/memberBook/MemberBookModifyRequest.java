@@ -10,10 +10,11 @@ public record MemberBookModifyRequest(
         @Max(5)
         @Digits(integer = 1, fraction = 1)
         Double score,
-        //독서 시작 시간, 완료 시간 수정은 무조건 과거 시간으로 받기
-        @Past
+
+        @Past(message = "시작 시간은 과거 시간이어야 합니다.")
         LocalDateTime startedAt,
-        @Past
+
+        @Past(message = "종료 시간은 과거 시간이어야 합니다.")
         LocalDateTime endedAt
 ) {
     @AssertTrue(message = "0.5 단위로만 입력할 수 있습니다.")
@@ -26,4 +27,10 @@ public record MemberBookModifyRequest(
         return remainder.compareTo(BigDecimal.ZERO) == 0; //나머지가 0 이면 .5 단위 수 -> 정상
     }
 
+    @AssertTrue(message = "종료 시간은 시작 시간 이후여야 합니다.")
+    private boolean isEndAfterStart() {
+        if (startedAt == null || endedAt == null) return true;
+
+        return !endedAt.isBefore(startedAt);
+    }
 }
