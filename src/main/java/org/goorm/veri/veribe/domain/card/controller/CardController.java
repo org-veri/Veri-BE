@@ -66,10 +66,25 @@ public class CardController {
         return ApiResponse.ok(CardConverter.toCardDetailResponse(card));
     }
 
+    @Operation(summary = "카드 수정", description = "카드 ID로 카드를 수정합니다. 본인 소유 카드만 수정할 수 있습니다.")
+    @PatchMapping("/{cardId}")
+    public ApiResponse<CardUpdateResponse> updateCard(
+            @PathVariable Long cardId,
+            @RequestBody CardUpdateRequest request,
+            @AuthenticatedMember Member member) {
+        Card response = cardCommandService.updateCard(
+                member.getId(),
+                cardId,
+                request.content(),
+                request.imageUrl()
+        );
+        return ApiResponse.ok(CardConverter.toCardUpdateResponse(response));
+    }
+
     @Operation(summary = "카드 삭제", description = "카드 ID로 카드를 삭제합니다. 본인 소유 카드만 삭제할 수 있습니다.")
     @DeleteMapping("/{cardId}")
     public ApiResponse<Void> deleteCard(@PathVariable Long cardId,
-                                            @AuthenticatedMember Member member) {
+                                        @AuthenticatedMember Member member) {
         cardCommandService.deleteCard(member.getId(), cardId);
         return ApiResponse.noContent();
     }

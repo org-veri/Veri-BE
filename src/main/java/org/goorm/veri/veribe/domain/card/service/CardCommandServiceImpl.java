@@ -50,8 +50,7 @@ public class CardCommandServiceImpl implements CardCommandService {
     @Transactional
     @Override
     public void deleteCard(Long memberId, Long cardId) {
-        Card card = cardRepository.findById(cardId)
-                .orElseThrow(() -> new NotFoundException(CardErrorInfo.NOT_FOUND));
+        Card card = getCard(cardId);
 
         if (!card.getMember().getId().equals(memberId)) {
             throw new ForbiddenException(CardErrorInfo.FORBIDDEN);
@@ -69,7 +68,8 @@ public class CardCommandServiceImpl implements CardCommandService {
             throw new BadRequestException(CardErrorInfo.IMAGE_TOO_LARGE);
         }
 
-        if (!StorageUtil.isImage(request.contentType())) throw new BadRequestException(CardErrorInfo.UNSUPPORTED_IMAGE_TYPE);
+        if (!StorageUtil.isImage(request.contentType()))
+            throw new BadRequestException(CardErrorInfo.UNSUPPORTED_IMAGE_TYPE);
 
         return storageService.generatePresignedUrl(
                 request.contentType(),
@@ -92,5 +92,26 @@ public class CardCommandServiceImpl implements CardCommandService {
                 prefix,
                 Duration.ofMinutes(expirationMinutes)
         );
+    }
+
+    @Transactional
+    @Override
+    public Card updateCard(Long id, Long cardId, String content, String imageUrl) {
+        Card card = this.getCard(cardId);
+        if (!card.getMember().getId().equals(id)) {
+            throw new ForbiddenException(CardErrorInfo.FORBIDDEN);
+        }
+
+        Card updatedCard = card.toBuilder()
+                .content(content)
+                .image(imageUrl)
+                .build();
+
+        return cardRepository.save(updatedCard);
+    }
+
+    public Card getCard(Long cardId) {
+        return cardRepository.findById(cardId)
+                .orElseThrow(() -> new NotFoundException(CardErrorInfo.NOT_FOUND));
     }
 }

@@ -13,4 +13,15 @@ public class CardConverter {
                 CardDetailResponse.BookInfo.from(card.getMemberBook())
         );
     }
+
+    public static CardUpdateResponse toCardUpdateResponse(Card card) {
+        return new CardUpdateResponse(
+                card.getId(),
+                card.getContent(),
+                card.getImage(),
+                card.getCreatedAt(),
+                card.getUpdatedAt(),
+                CardDetailResponse.BookInfo.from(card.getMemberBook())
+        );
+    }
 }
