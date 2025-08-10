@@ -26,7 +26,7 @@ public class Book extends BaseEntity {
     @Column(name = "book_id")
     private Long id;
 
-    @Column(name = "image")
+    @Column(name = "image", nullable = false, columnDefinition = "VARCHAR(2083)")
     private String image;
 
     @Column(name = "title")

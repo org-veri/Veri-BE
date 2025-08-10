@@ -22,7 +22,7 @@ public class Image extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column(name = "image_url")
+    @Column(name = "image_url", nullable = false, columnDefinition = "VARCHAR(2083)")
     private String imageUrl;
 
 }

@@ -24,7 +24,7 @@ public class Member extends BaseEntity {
     @Column(name = "nickname")
     private String nickname;
 
-    @Column(name = "image")
+    @Column(name = "image", nullable = false, columnDefinition = "VARCHAR(2083)")
     private String image;
 
     @Column(name = "provider_id")
