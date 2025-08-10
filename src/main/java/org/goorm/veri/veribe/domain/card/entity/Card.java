@@ -2,12 +2,13 @@ package org.goorm.veri.veribe.domain.card.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.goorm.veri.veribe.domain.book.entity.MemberBook;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.goorm.veri.veribe.global.entity.BaseEntity;
 
 @Getter
-@Builder
+@SuperBuilder(toBuilder = true)
 @Entity
 @Table(name = "card")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

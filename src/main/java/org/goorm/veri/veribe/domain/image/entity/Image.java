@@ -2,12 +2,16 @@ package org.goorm.veri.veribe.domain.image.entity;
 
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.goorm.veri.veribe.global.entity.BaseEntity;
 
 @Getter
-@Builder
+@SuperBuilder
 @Entity
 @Table(name = "image")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

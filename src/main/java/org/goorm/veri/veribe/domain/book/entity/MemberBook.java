@@ -2,6 +2,7 @@ package org.goorm.veri.veribe.domain.book.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.goorm.veri.veribe.domain.book.entity.enums.BookStatus;
 import org.goorm.veri.veribe.domain.card.entity.Card;
 import org.goorm.veri.veribe.domain.member.entity.Member;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Builder(toBuilder = true)
+@SuperBuilder(toBuilder = true)
 @Entity
 @Table(name = "member_book")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
