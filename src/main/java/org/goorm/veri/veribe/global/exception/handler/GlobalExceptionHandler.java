@@ -27,9 +27,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ApplicationException.class)
     public ApiResponse<Map<?, ?>> handleApplicationException(ApplicationException e) {
         if (e.getHttpStatus().is4xxClientError()) {
-            log.warn("Client Error: {}", e.getMessage());
+            log.warn(e.getMessage());
         } else {
-            log.error("Server Error: {}", e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
 
         return ApiResponse.error(e.getErrorInfo(), e.getHttpStatus());
@@ -52,7 +52,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoResourceFoundException.class)
     public ApiResponse<Map<?, ?>> handleNoResourceFoundException(NoResourceFoundException e,
                                                                  HttpServletRequest request) {
-        log.error("Resource '{}' Not Found. Request IP : {}", request.getRequestURI(),
+        log.warn("Resource '{}' Not Found. Request IP : {}", request.getRequestURI(),
                 request.getAttribute(InjectIPAddressInterceptor.IP));
         return ApiResponse.error(CommonErrorInfo.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
@@ -61,7 +61,7 @@ public class GlobalExceptionHandler {
     public ApiResponse<Map<?, ?>> handleHttpRequestNotSupportedException(
             HttpRequestMethodNotSupportedException e,
             HttpServletRequest request) {
-        log.error("Method {} for '{}' Not supported. Request IP : {}", request.getMethod(),
+        log.warn("Method {} for '{}' Not supported. Request IP : {}", request.getMethod(),
                 request.getRequestURI(),
                 request.getAttribute(InjectIPAddressInterceptor.IP));
         return ApiResponse.error(CommonErrorInfo.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND);
