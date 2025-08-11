@@ -19,8 +19,13 @@ public class AuthController {
 
     @GetMapping("/api/v1/oauth2/{provider}")
     @Operation(summary = "소셜 로그인 API", description = "Provider와 인가코드를 이용하여 로그인")
-    public ApiResponse<AuthResponse.LoginResponse> login(@PathVariable String provider, @RequestParam("code") String code) {
-        AuthResponse.LoginResponse response = authService.login(provider, code);
+    public ApiResponse<AuthResponse.LoginResponse> login(
+            @PathVariable String provider,
+            @RequestParam("code") String code,
+            HttpServletRequest request
+    ) {
+        String origin = request.getHeader("Origin");
+        AuthResponse.LoginResponse response = authService.login(provider, code, origin);
         return ApiResponse.ok(response);
     }
 

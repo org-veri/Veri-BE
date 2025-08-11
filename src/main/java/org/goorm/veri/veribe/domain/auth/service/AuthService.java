@@ -29,9 +29,9 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final TokenStorageService tokenStorageService;
 
-    public AuthResponse.LoginResponse login(String provider, String code) {
+    public AuthResponse.LoginResponse login(String provider, String code, String origin) {
         if (provider.equalsIgnoreCase(ProviderType.KAKAO.name())) {
-            return kakaoOAuth2Service.login(code);
+            return kakaoOAuth2Service.login(code, origin);
         } else {
             throw new BadRequestException(AuthErrorInfo.UNSUPPORTED_OAUTH2_PROVIDER);
         }

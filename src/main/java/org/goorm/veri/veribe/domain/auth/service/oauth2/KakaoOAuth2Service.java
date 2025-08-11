@@ -30,12 +30,12 @@ public class KakaoOAuth2Service extends AbstractOAuth2Service {
                               TokenCommandService tokenCommandService,
                               KakaoOAuth2ConfigData kakaoOAuth2ConfigData
     ) {
-        super(memberRepository, tokenCommandService);
+        super(ProviderType.KAKAO, memberRepository, tokenCommandService);
         this.kakaoOAuth2ConfigData = kakaoOAuth2ConfigData;
     }
 
     @Override
-    protected String getAccessToken(String code) {
+    protected String getAccessToken(String code, String redirectUri) {
         // 인가코드 토큰 가져오기
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -45,7 +45,7 @@ public class KakaoOAuth2Service extends AbstractOAuth2Service {
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add("grant_type", "authorization_code");
         map.add("client_id", kakaoOAuth2ConfigData.getClientId());
-        map.add("redirect_uri", kakaoOAuth2ConfigData.getRedirectUri());
+        map.add("redirect_uri", redirectUri);
         map.add("code", code);
         HttpEntity<MultiValueMap> request = new HttpEntity<>(map, httpHeaders);
 
@@ -107,5 +107,10 @@ public class KakaoOAuth2Service extends AbstractOAuth2Service {
         } catch (Exception e) {
             throw new ExternalApiException(AuthErrorInfo.FAIL_PROCESS_RESPONSE);
         }
+    }
+
+    @Override
+    protected String getDefaultRedirectUri() {
+        return kakaoOAuth2ConfigData.getRedirectUri();
     }
 }

@@ -6,6 +6,7 @@ import org.goorm.veri.veribe.domain.auth.dto.AuthRequest;
 import org.goorm.veri.veribe.domain.auth.dto.AuthResponse;
 import org.goorm.veri.veribe.domain.auth.service.TokenCommandService;
 import org.goorm.veri.veribe.domain.member.entity.Member;
+import org.goorm.veri.veribe.domain.member.entity.enums.ProviderType;
 import org.goorm.veri.veribe.domain.member.repository.MemberRepository;
 
 import java.util.Optional;
@@ -13,18 +14,19 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public abstract class AbstractOAuth2Service implements OAuth2Service {
 
+    private final ProviderType providerType;
     private final MemberRepository memberRepository;
     private final TokenCommandService tokenCommandService;
 
     @Override
-    public AuthResponse.LoginResponse login(String code) {
-        String accessToken = getAccessToken(code);
+    public AuthResponse.LoginResponse login(String code, String origin) {
+        String accessToken = getAccessToken(code, getRedirectUri(origin));
         AuthRequest.OAuth2LoginUserInfo request = getUserInfo(accessToken);
         Member member = saveOrUpdateMember(request);
         return tokenCommandService.createLoginToken(member);
     }
 
-    protected abstract String getAccessToken(String code);
+    protected abstract String getAccessToken(String code, String redirectUri);
 
     protected abstract AuthRequest.OAuth2LoginUserInfo getUserInfo(String token);
 
@@ -34,10 +36,18 @@ public abstract class AbstractOAuth2Service implements OAuth2Service {
         if (optional.isPresent()) {
             member = optional.get();
             member.updateInfo(request.getNickname(), request.getImage());
-        }
-        else {
+        } else {
             member = AuthConverter.toMember(request);
         }
         return memberRepository.save(member);
     }
+
+    private String getRedirectUri(String origin) {
+        if (origin == null || origin.isEmpty()) {
+            return getDefaultRedirectUri();
+        }
+        return origin + "/oauth/callback/" + providerType.name().toLowerCase();
+    }
+
+    protected abstract String getDefaultRedirectUri();
 }
