@@ -8,6 +8,7 @@ import org.goorm.veri.veribe.domain.auth.dto.AuthRequest;
 import org.goorm.veri.veribe.domain.auth.dto.AuthResponse;
 import org.goorm.veri.veribe.domain.auth.service.AuthService;
 import org.goorm.veri.veribe.global.response.ApiResponse;
+import org.goorm.veri.veribe.global.util.UrlUtil;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,7 +25,7 @@ public class AuthController {
             @RequestParam("code") String code,
             HttpServletRequest request
     ) {
-        String origin = request.getHeader("Origin");
+        String origin = UrlUtil.getRequestingUrl(request);
         AuthResponse.LoginResponse response = authService.login(provider, code, origin);
         return ApiResponse.ok(response);
     }
