@@ -23,7 +23,7 @@ public class ImageCommandService {
     public String processWithMistral(Member member, String imageUrl) {
         insertImageUrl(imageUrl, member);
         try {
-            return mistralOcrService.doExtract(imageUrl).text();
+            return mistralOcrService.doExtract(imageUrl);
         } catch (InternalServerException e) {
             throw e;
         } catch (Exception e) {
@@ -35,7 +35,7 @@ public class ImageCommandService {
     public String processWithTextract(Member member, String imageUrl) {
         insertImageUrl(imageUrl, member);
         try {
-            return textractOcrService.doExtract(imageUrl).text();
+            return textractOcrService.doExtract(imageUrl);
         } catch (TextractException | IllegalArgumentException e) {
             throw new BadRequestException(ImageErrorInfo.BAD_REQUEST);
         } catch (Exception e) {

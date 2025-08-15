@@ -37,16 +37,18 @@ public class TextractOcrService extends OcrService {
      * 전처리된 S3 URL로 먼저 Textract OCR을 시도하고, 실패 시 원본 URL로 재시도합니다.
      */
     @Override
-    protected OcrResultPayload doExtract(String s3Url) {
+    protected String doExtract(String s3Url) {
         String preprocessedS3Url = this.getPreprocessedUrl(s3Url);
         try {
             String text = callTextractAndProcess(preprocessedS3Url);
-            return new OcrResultPayload(preprocessedS3Url, text);
+            saveOcrResult(s3Url, preprocessedS3Url, text);
+            return text;
         } catch (Exception e1) {
             log.warn("Textract OCR(preprocessed) 실패: {} -> 원본으로 재시도", e1.getMessage());
             try {
                 String text = callTextractAndProcess(s3Url);
-                return new OcrResultPayload(null, text);
+                saveOcrResult(s3Url, null, text);
+                return text;
             } catch (Exception e2) {
                 log.error("Textract OCR 원본도 실패: {}", e2.getMessage());
                 throw new ExternalApiException(ImageErrorInfo.OCR_PROCESSING_FAILED);

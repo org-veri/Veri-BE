@@ -44,16 +44,18 @@ public class MistralOcrService extends OcrService {
     }
 
     @Override
-    protected OcrResultPayload doExtract(String imageUrl) {
+    protected String doExtract(String imageUrl) {
         String preprocessedImageUrl = this.getPreprocessedUrl(imageUrl);
         try {
             String text = callMistralApi(preprocessedImageUrl);
-            return new OcrResultPayload(preprocessedImageUrl, text);
+            saveOcrResult(imageUrl, preprocessedImageUrl, text);
+            return text;
         } catch (RestClientException e1) {
             log.warn("Mistral OCR(preprocessed) 실패: {} -> 원본으로 재시도", e1.getMessage());
             try {
                 String text = callMistralApi(imageUrl);
-                return new OcrResultPayload(null, text);
+                saveOcrResult(imageUrl, null, text);
+                return text;
             } catch (RestClientException e2) {
                 log.error("Mistral OCR 원본도 실패: {}", e2.getMessage());
                 throw new InternalServerException(ImageErrorInfo.OCR_PROCESSING_FAILED);

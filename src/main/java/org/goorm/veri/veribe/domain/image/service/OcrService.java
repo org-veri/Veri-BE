@@ -35,8 +35,5 @@ public abstract class OcrService {
     /**
      * @return (preProcessedUrl, text) 쌍
      */
-    protected abstract OcrResultPayload doExtract(String imageUrl);
-
-    protected record OcrResultPayload(String preprocessedUrl, String text) {
-    }
+    protected abstract String doExtract(String imageUrl);
 }
