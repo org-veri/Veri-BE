@@ -16,6 +16,8 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 @Slf4j
 @Service
@@ -45,7 +47,7 @@ public class MistralOcrService extends OcrService {
 
     @Override
     protected String doExtract(String imageUrl) {
-        // 전처리 이미지 사용 위해 0.5초 대기
+        // Todo. 전처리 이미지 사용 위해 0.5초 대기, 테스트 후 제거 고려
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
@@ -53,20 +55,45 @@ public class MistralOcrService extends OcrService {
         }
 
         String preprocessedImageUrl = this.getPreprocessedUrl(imageUrl);
+
+        // Todo. 전처리 / 원본 동시 요청, 전처리 유효 테스트 중에만 사용
+        CompletableFuture<String> preFuture =
+                CompletableFuture.supplyAsync(() -> callMistralApi(preprocessedImageUrl));
+
+        CompletableFuture<String> origFuture =
+                CompletableFuture.supplyAsync(() -> callMistralApi(imageUrl));
+
+        String preText = null;
+        String origText = null;
+
         try {
-            String text = callMistralApi(preprocessedImageUrl);
-            saveOcrResult(imageUrl, preprocessedImageUrl, text);
-            return text;
-        } catch (RestClientException e1) {
-            log.warn("Mistral OCR(preprocessed) 실패: {} -> 원본으로 재시도", e1.getMessage());
-            try {
-                String text = callMistralApi(imageUrl);
-                saveOcrResult(imageUrl, null, text);
-                return text;
-            } catch (RestClientException e2) {
-                log.error("Mistral OCR 원본도 실패: {}", e2.getMessage());
-                throw new InternalServerException(ImageErrorInfo.OCR_PROCESSING_FAILED);
-            }
+            preText = preFuture.join();
+        } catch (CompletionException e) {
+            log.warn("Mistral OCR(preprocessed) 실패: {}",
+                    e.getCause() != null ? e.getCause().getMessage() : e.getMessage());
+        }
+
+        try {
+            origText = origFuture.join();
+        } catch (CompletionException e) {
+            log.warn("Mistral OCR(원본) 실패: {}",
+                    e.getCause() != null ? e.getCause().getMessage() : e.getMessage());
+        }
+
+        if (preText != null) {
+            saveOcrResult(imageUrl, preprocessedImageUrl, preText);
+        }
+        if (origText != null) {
+            saveOcrResult(imageUrl, null, origText);
+        }
+
+        if (preText != null) {
+            return preText;
+        } else if (origText != null) {
+            return origText;
+        } else {
+            log.error("Mistral OCR 전처리/원본 모두 실패");
+            throw new InternalServerException(ImageErrorInfo.OCR_PROCESSING_FAILED);
         }
     }
 
