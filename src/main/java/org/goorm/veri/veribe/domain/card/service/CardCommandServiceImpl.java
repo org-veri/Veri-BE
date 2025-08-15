@@ -64,7 +64,7 @@ public class CardCommandServiceImpl implements CardCommandService {
         int expirationMinutes = 5;
         String prefix = "public/ocr";
 
-        if (request.contentLength() > MB) {
+        if (request.contentLength() > 3 * MB) {
             throw new BadRequestException(CardErrorInfo.IMAGE_TOO_LARGE);
         }
 
@@ -84,7 +84,7 @@ public class CardCommandServiceImpl implements CardCommandService {
         int expirationMinutes = 5;
         String prefix = "public";
 
-        if (request.contentLength() > MB) {
+        if (request.contentLength() > 3 * MB) {
             throw new BadRequestException(CardErrorInfo.IMAGE_TOO_LARGE);
         }
 
@@ -103,7 +103,7 @@ public class CardCommandServiceImpl implements CardCommandService {
     public PresignedPostForm getPresignedPost() {
         String allowedContentType = "image/*";
         int expirationMinutes = 5;
-        long allowedSize = MB; // 1MB
+        long allowedSize = 3 * MB; // 1MB
         String prefix = "public";
 
         return storageService.generatePresignedPost(
