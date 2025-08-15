@@ -116,7 +116,7 @@ public class CardCommandServiceImpl implements CardCommandService {
 
     @Transactional
     @Override
-    public Card updateCard(Long id, Long cardId, String content, String imageUrl) {
+    public Card updateCard(Long id, Long cardId, String content) {
         Card card = this.getCard(cardId);
         if (!card.getMember().getId().equals(id)) {
             throw new ForbiddenException(CardErrorInfo.FORBIDDEN);
@@ -124,7 +124,6 @@ public class CardCommandServiceImpl implements CardCommandService {
 
         Card updatedCard = card.toBuilder()
                 .content(content)
-                .image(imageUrl)
                 .build();
 
         return cardRepository.save(updatedCard);

@@ -75,8 +75,7 @@ public class CardController {
         Card response = cardCommandService.updateCard(
                 member.getId(),
                 cardId,
-                request.content(),
-                request.imageUrl()
+                request.content()
         );
         return ApiResponse.ok(CardConverter.toCardUpdateResponse(response));
     }

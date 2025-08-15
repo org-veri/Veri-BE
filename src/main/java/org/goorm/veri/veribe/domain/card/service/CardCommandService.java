@@ -19,5 +19,5 @@ public interface CardCommandService {
 
     PresignedPostForm getPresignedPost();
 
-    Card updateCard(Long id, Long cardId, String content, String imageUrl);
+    Card updateCard(Long id, Long cardId, String content);
 }
