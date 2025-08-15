@@ -60,6 +60,26 @@ public class CardCommandServiceImpl implements CardCommandService {
     }
 
     @Override
+    public PresignedUrlResponse getPresignedUrlForOcr(PresignedUrlRequest request) {
+        int expirationMinutes = 5;
+        String prefix = "public/ocr";
+
+        if (request.contentLength() > MB) {
+            throw new BadRequestException(CardErrorInfo.IMAGE_TOO_LARGE);
+        }
+
+        if (!StorageUtil.isImage(request.contentType()))
+            throw new BadRequestException(CardErrorInfo.UNSUPPORTED_IMAGE_TYPE);
+
+        return storageService.generatePresignedUrl(
+                request.contentType(),
+                request.contentLength(),
+                prefix,
+                Duration.ofMinutes(expirationMinutes)
+        );
+    }
+
+    @Override
     public PresignedUrlResponse getPresignedUrl(PresignedUrlRequest request) {
         int expirationMinutes = 5;
         String prefix = "public";

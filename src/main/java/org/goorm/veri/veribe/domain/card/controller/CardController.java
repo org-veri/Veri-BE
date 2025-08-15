@@ -99,4 +99,10 @@ public class CardController {
     public ApiResponse<PresignedUrlResponse> uploadCardImage(@RequestBody PresignedUrlRequest request) {
         return ApiResponse.ok(cardCommandService.getPresignedUrl(request));
     }
+
+    @Operation(summary = "ocr을 위한 이미지 presigned URL 발급", description = "요청한 이미지 타입과 크기에 맞는 presigned URL을 발급합니다. 해당 URL로 PUT 방식 업로드가 가능합니다.")
+    @PostMapping("/image/ocr")
+    public ApiResponse<PresignedUrlResponse> uploadCardImageForOcr(@RequestBody PresignedUrlRequest request) {
+        return ApiResponse.ok(cardCommandService.getPresignedUrlForOcr(request));
+    }
 }

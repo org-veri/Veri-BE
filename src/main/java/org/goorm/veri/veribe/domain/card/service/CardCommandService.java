@@ -15,6 +15,8 @@ public interface CardCommandService {
 
     PresignedUrlResponse getPresignedUrl(PresignedUrlRequest request);
 
+    PresignedUrlResponse getPresignedUrlForOcr(PresignedUrlRequest request);
+
     PresignedPostForm getPresignedPost();
 
     Card updateCard(Long id, Long cardId, String content, String imageUrl);
