@@ -11,9 +11,9 @@ import software.amazon.awssdk.services.textract.model.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
+@Deprecated
 @Slf4j
 @Service
 public class TextractOcrService extends OcrService {
@@ -91,31 +91,9 @@ public class TextractOcrService extends OcrService {
      * @return 정렬된 전체 텍스트
      */
     private String parseTextFromResponse(DetectDocumentTextResponse resp) {
-        final double sameLineEpsilon = 0.01; // 같은 줄로 판단할 Y좌표 오차 범위
-
-        List<Block> lines = resp.blocks().stream()
-                .filter(b -> "LINE".equals(b.blockTypeAsString()))
-                .filter(b -> b.confidence() == null || b.confidence() >= 85.0f) // 신뢰도 85% 이상 필터링
-                .toList();
-
-        return lines.stream()
-                .collect(Collectors.groupingBy(Block::page)) // 페이지별로 그룹화
-                .entrySet().stream()
-                .sorted(Map.Entry.comparingByKey()) // 페이지 번호로 정렬
-                .flatMap(entry -> entry.getValue().stream()
-                        .sorted((b1, b2) -> { // 페이지 내에서 라인 정렬
-                            double y1 = b1.geometry().boundingBox().top();
-                            double y2 = b2.geometry().boundingBox().top();
-                            // Y좌표가 비슷하면 X좌표로 정렬 (왼쪽 -> 오른쪽)
-                            if (Math.abs(y1 - y2) < sameLineEpsilon) {
-                                double x1 = b1.geometry().boundingBox().left();
-                                double x2 = b2.geometry().boundingBox().left();
-                                return Double.compare(x1, x2);
-                            }
-                            // Y좌표로 정렬 (위 -> 아래)
-                            return Double.compare(y1, y2);
-                        })
-                )
+        List<Block> resultBlocks = resp.blocks();
+        return resultBlocks.stream()
+                .filter(block -> "LINE".equals(block.blockTypeAsString()))
                 .map(Block::text)
                 .collect(Collectors.joining("\n"));
     }

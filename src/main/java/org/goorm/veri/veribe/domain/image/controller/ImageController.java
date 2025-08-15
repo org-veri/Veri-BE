@@ -30,7 +30,7 @@ public class ImageController {
     public ApiResponse<String> ocrImage(
             @AuthenticatedMember Member member,
             @RequestParam("imageUrl") String imageUrl) {
-        return ApiResponse.ok(imageCmdService.processWithTextract(member, imageUrl));
+        return ApiResponse.ok(imageCmdService.processWithMistral(member, imageUrl)); // textract 제거 예정
     }
 
     @Operation(summary = "Mistral OCR API를 통한 이미지 텍스트 추출",
