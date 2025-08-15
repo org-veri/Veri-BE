@@ -19,6 +19,9 @@ public class OcrResult {
     @Column(name = "image_url", nullable = false, columnDefinition = "VARCHAR(2083)")
     private String imageUrl;
 
+    @Column(name = "preProcessed_url", nullable = true, columnDefinition = "VARCHAR(2083)")
+    private String preProcessedUrl;
+
     @Column(name = "result_text", nullable = false, columnDefinition = "TEXT")
     private String resultText;
 

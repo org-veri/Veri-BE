@@ -1,17 +1,12 @@
 package org.goorm.veri.veribe.domain.image.service;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.goorm.veri.veribe.domain.image.entity.Image;
-import org.goorm.veri.veribe.domain.image.entity.OcrResult;
 import org.goorm.veri.veribe.domain.image.exception.ImageErrorInfo;
-import org.goorm.veri.veribe.domain.image.repository.ImageRepository;
 import org.goorm.veri.veribe.domain.image.repository.OcrResultRepository;
-import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.goorm.veri.veribe.global.exception.http.InternalServerException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -24,95 +19,72 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class MistralOcrService {
+public class MistralOcrService extends OcrService {
 
     private final RestClient restClient;
     private final String mistralApiKey;
     private final String mistralOcrModel;
-    private final OcrResultRepository ocrResultRepository;
-    private final ImageRepository imageRepository;
 
     public MistralOcrService(
             RestClient.Builder restClientBuilder,
             @Value("${mistral.ocr.url}") String mistralApiUrl,
             @Value("${mistral.ocr.key}") String mistralApiKey,
             @Value("${mistral.ocr.model}") String mistralOcrModel,
-            OcrResultRepository ocrResultRepository,
-            ImageRepository imageRepository
+            OcrResultRepository ocrResultRepository
     ) {
+        super(ocrResultRepository);
         this.restClient = restClientBuilder.baseUrl(mistralApiUrl).build();
         this.mistralApiKey = mistralApiKey;
         this.mistralOcrModel = mistralOcrModel;
-        this.ocrResultRepository = ocrResultRepository;
-        this.imageRepository = imageRepository;
     }
 
-    /**
-     * 이미지 URL을 받아 Mistral OCR API를 호출하고, 추출된 텍스트를 반환합니다.
-     *
-     * @param imageUrl OCR을 수행할 이미지의 URL
-     * @return 추출된 텍스트 (String)
-     */
-    @Transactional
-    public String extractTextFromImageUrl(String imageUrl, Member member) {
-        insertImageUrl(imageUrl, member);
+    @Override
+    protected String serviceName() {
+        return "Mistral";
+    }
 
-        MistralOcrRequest requestBody = MistralOcrRequest.builder()
-                .model(mistralOcrModel)
-                .document(new DocumentPayload(new ImageUrlPayload(imageUrl)))
-                .build();
-
+    @Override
+    protected OcrResultPayload doExtract(String imageUrl) {
+        String preprocessedImageUrl = this.getPreprocessedUrl(imageUrl);
         try {
-            MistralOcrResponse response = restClient.post()
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + mistralApiKey)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(requestBody)
-                    .retrieve()
-                    .onStatus(
-                            status -> status.is4xxClientError() || status.is5xxServerError(),
-                            (request, clientResponse) -> {
-                                throw new RestClientException(
-                                        String.format("Mistral API 호출 실패: Status %d, Body: %s",
-                                                clientResponse.getStatusCode().value(),
-                                                new String(clientResponse.getBody().readAllBytes()))
-                                );
-                            }
-                    )
-                    .body(MistralOcrResponse.class);
-
-            if (response == null || response.pages == null || response.pages.isEmpty()) {
+            String text = callMistralApi(preprocessedImageUrl);
+            return new OcrResultPayload(preprocessedImageUrl, text);
+        } catch (RestClientException e1) {
+            log.warn("Mistral OCR(preprocessed) 실패: {} -> 원본으로 재시도", e1.getMessage());
+            try {
+                String text = callMistralApi(imageUrl);
+                return new OcrResultPayload(null, text);
+            } catch (RestClientException e2) {
+                log.error("Mistral OCR 원본도 실패: {}", e2.getMessage());
                 throw new InternalServerException(ImageErrorInfo.OCR_PROCESSING_FAILED);
             }
+        }
+    }
 
-            String extracted = response.pages.stream()
-                    .map(Page::getMarkdown)
-                    .reduce("", (acc, pageText) -> acc + "\n" + pageText).trim();
+    private String callMistralApi(String targetImageUrl) throws RestClientException {
+        MistralOcrRequest requestBody = MistralOcrRequest.builder()
+                .model(mistralOcrModel)
+                .document(new DocumentPayload(new ImageUrlPayload(targetImageUrl)))
+                .build();
 
-            OcrResult result = OcrResult.builder()
-                    .resultText(extracted)
-                    .imageUrl(imageUrl)
-                    .ocrService("Mistral")
-                    .build();
-            ocrResultRepository.save(result);
+        MistralOcrResponse response = restClient.post()
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + mistralApiKey)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(requestBody)
+                .retrieve()
+                .body(MistralOcrResponse.class);
 
-            return extracted;
-
-
-        } catch (RestClientException e) {
-            log.error("Mistral OCR Error.", e);
+        if (response == null || response.pages == null || response.pages.isEmpty()) {
             throw new InternalServerException(ImageErrorInfo.OCR_PROCESSING_FAILED);
         }
 
+        return response.pages.stream()
+                .map(Page::getMarkdown)
+                .reduce("", (acc, pageText) -> acc + "\n" + pageText)
+                .trim();
     }
 
-    private void insertImageUrl(String imageUrl, Member member) {
-        Image image = Image.builder()
-                .member(member)
-                .imageUrl(imageUrl)
-                .build();
-        imageRepository.save(image);
-    }
-
+    // --- DTOs ---
     @Data
     @Builder
     private static class MistralOcrRequest {
@@ -145,5 +117,4 @@ public class MistralOcrService {
         private int index;
         private String markdown;
     }
-
 }

@@ -8,7 +8,6 @@ import org.goorm.veri.veribe.domain.auth.annotation.AuthenticatedMember;
 import org.goorm.veri.veribe.domain.image.dto.response.PageResponse;
 import org.goorm.veri.veribe.domain.image.service.ImageCommandService;
 import org.goorm.veri.veribe.domain.image.service.ImageQueryService;
-import org.goorm.veri.veribe.domain.image.service.MistralOcrService;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.goorm.veri.veribe.global.response.ApiResponse;
 import org.springframework.data.domain.PageRequest;
@@ -25,14 +24,13 @@ public class ImageController {
 
     private final ImageCommandService imageCmdService;
     private final ImageQueryService imageQueryService;
-    private final MistralOcrService mistralOcrService;
 
     @Operation(summary = "이미지 OCR 처리 및 저장", description = "이미지 URL을 받아 OCR을 수행하고 결과를 저장합니다.")
     @PostMapping("/v0/images/ocr")
     public ApiResponse<String> ocrImage(
             @AuthenticatedMember Member member,
             @RequestParam("imageUrl") String imageUrl) {
-        return ApiResponse.ok(imageCmdService.processImageOcrAndSave(member, imageUrl));
+        return ApiResponse.ok(imageCmdService.processWithTextract(member, imageUrl));
     }
 
     @Operation(summary = "Mistral OCR API를 통한 이미지 텍스트 추출",
@@ -41,7 +39,7 @@ public class ImageController {
     public ApiResponse<String> extractTextFromImageUrl(
             @AuthenticatedMember Member member,
             @RequestParam("imageUrl") String imageUrl) {
-        return ApiResponse.ok(mistralOcrService.extractTextFromImageUrl(imageUrl, member));
+        return ApiResponse.ok(imageCmdService.processWithMistral(member, imageUrl));
     }
 
     @Operation(summary = "업로드 이미지 목록 조회", description = "내가 업로드한 이미지 파일 목록을 페이지네이션으로 조회합니다.")
