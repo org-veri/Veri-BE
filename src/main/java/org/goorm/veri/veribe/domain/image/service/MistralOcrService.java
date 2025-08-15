@@ -45,6 +45,13 @@ public class MistralOcrService extends OcrService {
 
     @Override
     protected String doExtract(String imageUrl) {
+        // 전처리 이미지 사용 위해 0.5초 대기
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            throw new InternalServerException(ImageErrorInfo.OCR_PROCESSING_FAILED);
+        }
+
         String preprocessedImageUrl = this.getPreprocessedUrl(imageUrl);
         try {
             String text = callMistralApi(preprocessedImageUrl);
