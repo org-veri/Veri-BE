@@ -55,7 +55,21 @@ public class CardController {
     ) {
         CardSortType sortType = CardSortType.from(sort);
         return ApiResponse.ok(
-                new CardListResponse(cardQueryService.getOwnedCards(member.getId(), page - 1, size, sortType))
+                CardListResponse.ofOwn(
+                        cardQueryService.getOwnedCards(member.getId(), page - 1, size, sortType), member)
+        );
+    }
+
+    @Operation(summary = "카드 목록 조회", description = "카드 목록을 페이지네이션과 정렬 기준으로 조회합니다.")
+    @GetMapping()
+    public ApiResponse<CardListResponse> getCards(
+            @RequestParam(defaultValue = "1") @Min(1) int page,
+            @RequestParam(defaultValue = "10") @Min(1) int size,
+            @RequestParam(defaultValue = "newest") String sort
+    ) {
+        CardSortType sortType = CardSortType.from(sort);
+        return ApiResponse.ok(
+                new CardListResponse(cardQueryService.getAllCards(page - 1, size, sortType))
         );
     }
 

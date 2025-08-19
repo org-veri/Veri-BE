@@ -7,7 +7,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Builder
-public record MemberBookDetailResponse (
+public record MemberBookDetailResponse(
+        // Todo. 작성자 추가
+        // Todo. 책 ID 추가해서 내책장으로 가져가기?
         Long memberBookId,
         String title,
         String author,
@@ -16,5 +18,6 @@ public record MemberBookDetailResponse (
         Double score,
         LocalDateTime startedAt,
         LocalDateTime endedAt,
-        List<CardSummaries> cardSummaries)
-{}
+        List<CardSummaries> cardSummaries
+) {
+}

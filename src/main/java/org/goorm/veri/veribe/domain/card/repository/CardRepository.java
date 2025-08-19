@@ -32,7 +32,7 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     @Query(
             "SELECT new org.goorm.veri.veribe.domain.card.repository.dto.CardFeedItem(" +
                     "c.id, " +
-                    "c.member, " + // Note. 이후 연관 관계 조회시 유의 
+                    "c.member, " + // Note. 이후 연관 관계 조회시 유의
                     "c.memberBook.book.title, " +
                     "c.content, " +
                     "c.image, " +

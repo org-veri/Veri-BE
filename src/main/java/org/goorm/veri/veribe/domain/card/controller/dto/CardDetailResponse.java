@@ -1,15 +1,18 @@
 package org.goorm.veri.veribe.domain.card.controller.dto;
 
 import org.goorm.veri.veribe.domain.book.entity.MemberBook;
+import org.goorm.veri.veribe.domain.common.dto.MemberProfile;
 
 import java.time.LocalDateTime;
 
 public record CardDetailResponse(
         Long id,
+        MemberProfile memberProfile,
         String content,
         String imageUrl,
         LocalDateTime createdAt,
-        BookInfo book
+        BookInfo book,
+        Boolean isPublic
 ) {
 
     record BookInfo(
