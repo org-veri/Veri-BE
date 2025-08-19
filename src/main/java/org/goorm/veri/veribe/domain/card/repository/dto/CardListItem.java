@@ -9,7 +9,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class CardListItem {
     private Long cardId;
+    private String bookTitle;
     private String content;
     private String image;
     private LocalDateTime created;
+    private boolean isPublic;
 }

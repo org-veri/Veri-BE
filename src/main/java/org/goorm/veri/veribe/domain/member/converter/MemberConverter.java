@@ -9,7 +9,7 @@ public class MemberConverter {
         return MemberResponse.MemberInfoResponse.builder()
                 .email(member.getEmail())
                 .nickname(member.getNickname())
-                .image(member.getImage())
+                .image(member.getProfileImageUrl())
                 .numOfReadBook(numOfBook)
                 .numOfCard(numOfCard)
                 .build();

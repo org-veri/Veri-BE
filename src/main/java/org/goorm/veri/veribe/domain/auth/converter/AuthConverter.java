@@ -21,7 +21,7 @@ public class AuthConverter {
         return Member.builder()
                 .email(request.getEmail())
                 .nickname(request.getNickname())
-                .image(request.getImage())
+                .profileImageUrl(request.getImage())
                 .providerId(request.getProviderId())
                 .providerType(request.getProviderType())
                 .build();

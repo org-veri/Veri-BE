@@ -29,7 +29,7 @@ public class Member extends BaseEntity {
     private String nickname;
 
     @Column(name = "image", nullable = false, columnDefinition = "VARCHAR(2083)")
-    private String image;
+    private String profileImageUrl;
 
     @Column(name = "provider_id")
     private String providerId;
@@ -38,8 +38,8 @@ public class Member extends BaseEntity {
     @Column(name = "provider_type")
     private ProviderType providerType;
 
-    public void updateInfo(String nickname, String image) {
+    public void updateInfo(String nickname, String profileImageUrl) {
         this.nickname = nickname;
-        this.image = image;
+        this.profileImageUrl = profileImageUrl;
     }
 }

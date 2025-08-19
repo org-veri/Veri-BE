@@ -43,4 +43,8 @@ public class Card extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    @Builder.Default
+    @Column(name = "is_public", nullable = false)
+    private boolean isPublic = false;
 }
