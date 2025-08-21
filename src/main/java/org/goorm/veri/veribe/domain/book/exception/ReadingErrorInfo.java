@@ -6,7 +6,7 @@ import org.goorm.veri.veribe.global.exception.ErrorInfo;
 
 @AllArgsConstructor
 @Getter
-public enum MemberBookErrorInfo implements ErrorInfo {
+public enum ReadingErrorInfo implements ErrorInfo {
     BAD_REQUEST("잘못된 요청입니다.", "MB1001"),
     ALREADY_EXIST("이미 등록된 책입니다.", "MB1002");
 

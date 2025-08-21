@@ -18,7 +18,7 @@ import java.util.List;
 @Table(name = "member_book")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class MemberBook extends BaseEntity {
+public class Reading extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,6 +46,22 @@ public class MemberBook extends BaseEntity {
     private BookStatus status;
 
     @Builder.Default
-    @OneToMany(mappedBy = "memberBook")
+    @Column(name = "is_public")
+    private boolean isPublic = false;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "reading")
     private List<Card> cards = new ArrayList<>();
+
+    public void setPublic() {
+        this.isPublic = true;
+    }
+
+    /**
+     * 독서를 비공개 설정 하면 모든 카드도 비공개
+     */
+    public void setPrivate() {
+        this.isPublic = false;
+        this.cards.forEach(Card::setPrivate);
+    }
 }

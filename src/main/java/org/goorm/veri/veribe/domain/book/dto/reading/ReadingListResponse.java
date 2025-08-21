@@ -1,17 +1,17 @@
-package org.goorm.veri.veribe.domain.book.dto.memberBook;
+package org.goorm.veri.veribe.domain.book.dto.reading;
 
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
-public record MemberBookListResponse(
-        List<MemberBookResponse> memberBooks,
+public record ReadingListResponse(
+        List<ReadingResponse> memberBooks,
         int page,
         int size,
         long totalElements,
         int totalPages
 ) {
-    public MemberBookListResponse(Page<MemberBookResponse> pageData) {
+    public ReadingListResponse(Page<ReadingResponse> pageData) {
         this(
                 pageData.getContent(),
                 pageData.getNumber() + 1,

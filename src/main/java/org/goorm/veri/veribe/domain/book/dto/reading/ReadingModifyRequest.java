@@ -1,11 +1,11 @@
-package org.goorm.veri.veribe.domain.book.dto.memberBook;
+package org.goorm.veri.veribe.domain.book.dto.reading;
 
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public record MemberBookModifyRequest(
+public record ReadingModifyRequest(
         @Min(0)
         @Max(5)
         @Digits(integer = 1, fraction = 1)

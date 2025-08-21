@@ -1,4 +1,4 @@
-package org.goorm.veri.veribe.domain.book.dto.memberBook;
+package org.goorm.veri.veribe.domain.book.dto.reading;
 
 public record CardSummaries (
         Long cardId,

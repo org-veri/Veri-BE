@@ -6,18 +6,18 @@ import org.goorm.veri.veribe.global.exception.http.BadRequestException;
 import org.springframework.data.domain.Sort;
 
 @Getter
-public enum MemberBookSortType {
+public enum ReadingSortType {
     NEWEST(Sort.by(Sort.Direction.DESC, "createdAt")),
     OLDEST(Sort.by(Sort.Direction.ASC, "createdAt")),
     SCORE(Sort.by(Sort.Direction.DESC, "score"));
 
     private final Sort sort;
 
-    MemberBookSortType(Sort sort) {
+    ReadingSortType(Sort sort) {
         this.sort = sort;
     }
 
-    public static MemberBookSortType from(String value) {
+    public static ReadingSortType from(String value) {
         return switch (value.toLowerCase()) {
             case "newest" -> NEWEST;
             case "oldest" -> OLDEST;

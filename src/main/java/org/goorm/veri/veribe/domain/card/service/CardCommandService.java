@@ -2,8 +2,8 @@ package org.goorm.veri.veribe.domain.card.service;
 
 import io.github.miensoap.s3.core.post.dto.PresignedPostForm;
 import lombok.RequiredArgsConstructor;
-import org.goorm.veri.veribe.domain.book.entity.MemberBook;
-import org.goorm.veri.veribe.domain.book.repository.MemberBookRepository;
+import org.goorm.veri.veribe.domain.book.entity.Reading;
+import org.goorm.veri.veribe.domain.book.repository.ReadingRepository;
 import org.goorm.veri.veribe.domain.card.entity.Card;
 import org.goorm.veri.veribe.domain.card.exception.CardErrorInfo;
 import org.goorm.veri.veribe.domain.card.repository.CardRepository;
@@ -27,19 +27,19 @@ import static org.goorm.veri.veribe.global.storage.service.StorageConstants.MB;
 public class CardCommandService {
 
     private final CardRepository cardRepository;
-    private final MemberBookRepository memberBookRepository;
+    private final ReadingRepository memberBookRepository;
     private final StorageService storageService;
 
     @Transactional
     public Long createCard(Member member, String content, String imageUrl, Long memberBookId) {
-        MemberBook memberBook = memberBookRepository.findById(memberBookId)
+        Reading reading = memberBookRepository.findById(memberBookId)
                 .orElseThrow(() -> new BadRequestException(CardErrorInfo.BAD_REQUEST));
 
         Card card = Card.builder()
                 .member(member)
                 .content(content)
                 .image(imageUrl)
-                .memberBook(memberBook)
+                .reading(reading)
                 .build();
 
         cardRepository.save(card);

@@ -1,8 +1,8 @@
 package org.goorm.veri.veribe.domain.book.repository;
 
 import org.goorm.veri.veribe.domain.book.dto.book.BookPopularResponse;
-import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookResponse;
-import org.goorm.veri.veribe.domain.book.entity.MemberBook;
+import org.goorm.veri.veribe.domain.book.dto.reading.ReadingResponse;
+import org.goorm.veri.veribe.domain.book.entity.Reading;
 import org.goorm.veri.veribe.domain.book.entity.enums.BookStatus;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.springframework.data.domain.Page;
@@ -14,13 +14,13 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-public interface MemberBookRepository extends JpaRepository<MemberBook, Long> {
+public interface ReadingRepository extends JpaRepository<Reading, Long> {
 
-    @Query("SELECT mb FROM MemberBook mb " +
+    @Query("SELECT mb FROM Reading mb " +
             "LEFT JOIN FETCH mb.cards " +
             "JOIN FETCH mb.book " +
             "WHERE mb.id = :memberBookId")
-    Optional<MemberBook> findByIdWithCardsAndBook(@Param("memberBookId") Long memberBookId);
+    Optional<Reading> findByIdWithCardsAndBook(@Param("memberBookId") Long memberBookId);
 
     int countAllByMember(Member member);
 
@@ -31,7 +31,7 @@ public interface MemberBookRepository extends JpaRepository<MemberBook, Long> {
             mb.book.author,
             mb.book.publisher,
             mb.book.isbn)
-            FROM MemberBook mb
+            FROM Reading mb
             WHERE mb.startedAt >= :startOfWeek
             AND mb.startedAt < :startOfNextWeek
             GROUP BY mb.book
@@ -43,7 +43,7 @@ public interface MemberBookRepository extends JpaRepository<MemberBook, Long> {
     );
 
     @Query("""
-            SELECT new org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookResponse(
+            SELECT new org.goorm.veri.veribe.domain.book.dto.reading.ReadingResponse(
             mb.id,
             mb.book.title,
             mb.book.author,
@@ -51,32 +51,32 @@ public interface MemberBookRepository extends JpaRepository<MemberBook, Long> {
             mb.score,
             mb.startedAt,
             mb.status)
-            FROM MemberBook mb
+            FROM Reading mb
             WHERE mb.member.id = :memberId
             """)
-    Page<MemberBookResponse> findMemberBookPage(@Param("memberId") Long memberId, Pageable pageable);
+    Page<ReadingResponse> findReadingPage(@Param("memberId") Long memberId, Pageable pageable);
 
     @Query("""
             SELECT COUNT(mb)
-            FROM MemberBook mb
+            FROM Reading mb
             WHERE mb.status = :status
             AND mb.member.id = :memberId
             """)
     int countByStatusAndMember(@Param("status") BookStatus status, @Param("memberId") Long memberId);
 
     @Query("""
-                SELECT mb FROM MemberBook mb
+                SELECT mb FROM Reading mb
                 WHERE mb.book.id = :bookId AND mb.member.id = :memberId
             """)
-    Optional<MemberBook> findByMemberAndBook(@Param("memberId") Long memberId,
-                                             @Param("bookId") Long bookId);
+    Optional<Reading> findByMemberAndBook(@Param("memberId") Long memberId,
+                                          @Param("bookId") Long bookId);
 
     @Query("""
-                    SELECT mb FROM MemberBook mb
+                    SELECT mb FROM Reading mb
                     WHERE mb.member.id = :memberId
                         AND mb.book.title = :title
                         AND mb.book.author = :author
             """)
-    Optional<MemberBook> findByAuthorAndTitle(@Param("memberId") Long memberId,
-                                              @Param("title") String title, @Param("author") String author);
+    Optional<Reading> findByAuthorAndTitle(@Param("memberId") Long memberId,
+                                           @Param("title") String title, @Param("author") String author);
 }

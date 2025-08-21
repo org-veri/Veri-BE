@@ -1,8 +1,8 @@
-package org.goorm.veri.veribe.domain.book.dto.memberBook;
+package org.goorm.veri.veribe.domain.book.dto.reading;
 
 import java.time.LocalDateTime;
 
-public record MemberBookAddResponse (
+public record ReadingAddResponse (
         Long memberBookId,
         LocalDateTime createdAt
 ){}

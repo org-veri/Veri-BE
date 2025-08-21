@@ -1,4 +1,4 @@
-package org.goorm.veri.veribe.domain.book.dto.memberBook;
+package org.goorm.veri.veribe.domain.book.dto.reading;
 
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Digits;
@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Min;
 
 import java.math.BigDecimal;
 
-public record MemberBookScoreRequest (
+public record ReadingScoreRequest (
         @Min(0)
         @Max(5) //최소 0점 ~ 최고 5점
         @Digits(integer = 1, fraction = 1)

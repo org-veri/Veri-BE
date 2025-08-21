@@ -3,7 +3,7 @@ package org.goorm.veri.veribe.domain.card.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.goorm.veri.veribe.domain.book.entity.MemberBook;
+import org.goorm.veri.veribe.domain.book.entity.Reading;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.goorm.veri.veribe.global.entity.BaseEntity;
 
@@ -38,7 +38,7 @@ public class Card extends BaseEntity {
                                     "ON DELETE SET NULL"
             )
     )
-    private MemberBook memberBook;
+    private Reading reading;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -47,4 +47,12 @@ public class Card extends BaseEntity {
     @Builder.Default
     @Column(name = "is_public", nullable = false)
     private boolean isPublic = false;
+
+    public void setPublic() {
+        this.isPublic = true;
+    }
+
+    public void setPrivate() {
+        this.isPublic = false;
+    }
 }

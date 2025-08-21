@@ -1,19 +1,18 @@
 package org.goorm.veri.veribe.domain.book.service;
 
 import lombok.RequiredArgsConstructor;
-import org.goorm.veri.veribe.domain.book.controller.enums.MemberBookSortType;
+import org.goorm.veri.veribe.domain.book.controller.enums.ReadingSortType;
 import org.goorm.veri.veribe.domain.book.dto.book.BookPopularResponse;
-import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookConverter;
-import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookDetailResponse;
-import org.goorm.veri.veribe.domain.book.dto.memberBook.MemberBookResponse;
+import org.goorm.veri.veribe.domain.book.dto.reading.ReadingConverter;
+import org.goorm.veri.veribe.domain.book.dto.reading.ReadingDetailResponse;
+import org.goorm.veri.veribe.domain.book.dto.reading.ReadingResponse;
 import org.goorm.veri.veribe.domain.book.entity.Book;
-import org.goorm.veri.veribe.domain.book.entity.MemberBook;
+import org.goorm.veri.veribe.domain.book.entity.Reading;
 import org.goorm.veri.veribe.domain.book.entity.enums.BookStatus;
 import org.goorm.veri.veribe.domain.book.exception.BookErrorInfo;
 import org.goorm.veri.veribe.global.exception.http.BadRequestException;
-import org.goorm.veri.veribe.global.exception.http.ConflictException;
 import org.goorm.veri.veribe.domain.book.repository.BookRepository;
-import org.goorm.veri.veribe.domain.book.repository.MemberBookRepository;
+import org.goorm.veri.veribe.domain.book.repository.ReadingRepository;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,21 +33,21 @@ import static org.goorm.veri.veribe.domain.book.entity.enums.BookStatus.*;
 @RequiredArgsConstructor
 public class BookshelfServiceImpl implements BookshelfService {
 
-    private final MemberBookRepository memberBookRepository;
+    private final ReadingRepository memberBookRepository;
     private final BookRepository bookRepository;
 
     @Override
-    public MemberBook addToBookshelf(Member member, Long bookId) {
+    public Reading addToBookshelf(Member member, Long bookId) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new BadRequestException(BookErrorInfo.BAD_REQUEST));
 
-        //MemberBook 중복 저장 방지 로직 추가 -> 기존 책을 응답
-        Optional<MemberBook> findMemberBook = memberBookRepository.findByMemberAndBook(member.getId(), bookId);
-        if (findMemberBook.isPresent()) {
-            return findMemberBook.get();
+        //Reading 중복 저장 방지 로직 추가 -> 기존 책을 응답
+        Optional<Reading> findReading = memberBookRepository.findByMemberAndBook(member.getId(), bookId);
+        if (findReading.isPresent()) {
+            return findReading.get();
         }
 
-        MemberBook memberBook = MemberBook.builder()
+        Reading reading = Reading.builder()
                 .member(member)
                 .book(book)
                 .score(null)
@@ -58,24 +57,24 @@ public class BookshelfServiceImpl implements BookshelfService {
                 .cards(new ArrayList<>())
                 .build();
 
-        return memberBookRepository.save(memberBook);
+        return memberBookRepository.save(reading);
     }
 
     @Override
-    public Page<MemberBookResponse> searchAll(Long memberId, int page, int size, MemberBookSortType sortType) {
+    public Page<ReadingResponse> searchAll(Long memberId, int page, int size, ReadingSortType sortType) {
         Pageable pageRequest = PageRequest.of(page, size, sortType.getSort());
 
-        Page<MemberBookResponse> responses = memberBookRepository.findMemberBookPage(memberId, pageRequest);
+        Page<ReadingResponse> responses = memberBookRepository.findReadingPage(memberId, pageRequest);
 
         return responses;
     }
 
     @Override
-    public MemberBookDetailResponse searchDetail(Long memberBookId) {
-        MemberBook memberBook = memberBookRepository.findByIdWithCardsAndBook(memberBookId)
+    public ReadingDetailResponse searchDetail(Long memberBookId) {
+        Reading reading = memberBookRepository.findByIdWithCardsAndBook(memberBookId)
                 .orElseThrow(() -> new BadRequestException(BookErrorInfo.BAD_REQUEST));
 
-        MemberBookDetailResponse dto = MemberBookConverter.toMemberBookDetailResponse(memberBook);
+        ReadingDetailResponse dto = ReadingConverter.toReadingDetailResponse(reading);
 
         return dto;
     }
@@ -100,19 +99,19 @@ public class BookshelfServiceImpl implements BookshelfService {
 
     @Override
     public Long searchByTitleAndAuthor(Long memberId, String title, String author) {
-        Optional<MemberBook> memberBookOPT = memberBookRepository.findByAuthorAndTitle(memberId, title, author);
+        Optional<Reading> memberBookOPT = memberBookRepository.findByAuthorAndTitle(memberId, title, author);
 
-        return memberBookOPT.map(MemberBook::getId).orElse(null);
+        return memberBookOPT.map(Reading::getId).orElse(null);
     }
 
     @Override
     public void modifyBook(Double score, LocalDateTime startedAt, LocalDateTime endedAt, Long memberBookId) {
-        MemberBook memberBook = memberBookRepository.findById(memberBookId)
+        Reading reading = memberBookRepository.findById(memberBookId)
                 .orElseThrow(() -> new BadRequestException(BookErrorInfo.BAD_REQUEST));
 
         BookStatus updateStatus = decideStatus(startedAt, endedAt);
 
-        MemberBook updated = memberBook.toBuilder()
+        Reading updated = reading.toBuilder()
                 .score(score)
                 .startedAt(startedAt)
                 .endedAt(endedAt)
@@ -136,17 +135,17 @@ public class BookshelfServiceImpl implements BookshelfService {
 
     @Override
     public void rateScore(Double score, Long memberBookId) {
-        MemberBook memberBook = memberBookRepository.findById(memberBookId)
+        Reading reading = memberBookRepository.findById(memberBookId)
                 .orElseThrow(() -> new BadRequestException(BookErrorInfo.BAD_REQUEST));
 
-        MemberBook updated = memberBook.toBuilder().score(score).build();
+        Reading updated = reading.toBuilder().score(score).build();
 
         memberBookRepository.save(updated);
     }
 
     @Override
     public void readStart(Long memberBookId) {
-        MemberBook memberBook = memberBookRepository.findById(memberBookId)
+        Reading reading = memberBookRepository.findById(memberBookId)
                 .orElseThrow(() -> new BadRequestException(BookErrorInfo.BAD_REQUEST));
 
         LocalDateTime now = LocalDateTime.now();
@@ -158,7 +157,7 @@ public class BookshelfServiceImpl implements BookshelfService {
                 0,
                 0);
 
-        MemberBook updated = memberBook.toBuilder()
+        Reading updated = reading.toBuilder()
                 .startedAt(startedTime)
                 .status(READING)
                 .build();
@@ -168,7 +167,7 @@ public class BookshelfServiceImpl implements BookshelfService {
 
     @Override
     public void readOver(Long memberBookId) {
-        MemberBook memberBook = memberBookRepository.findById(memberBookId)
+        Reading reading = memberBookRepository.findById(memberBookId)
                 .orElseThrow(() -> new BadRequestException(BookErrorInfo.BAD_REQUEST));
 
         LocalDateTime now = LocalDateTime.now();
@@ -180,7 +179,7 @@ public class BookshelfServiceImpl implements BookshelfService {
                 0,
                 0);
 
-        MemberBook updated = memberBook.toBuilder()
+        Reading updated = reading.toBuilder()
                 .endedAt(endedTime)
                 .status(DONE)
                 .build();
@@ -190,10 +189,10 @@ public class BookshelfServiceImpl implements BookshelfService {
 
     @Override
     public void deleteBook(Long memberBookId) {
-        MemberBook memberBook = memberBookRepository.findById(memberBookId)
+        Reading reading = memberBookRepository.findById(memberBookId)
                 .orElseThrow(() -> new BadRequestException(BookErrorInfo.BAD_REQUEST));
 
-        memberBookRepository.delete(memberBook);
+        memberBookRepository.delete(reading);
     }
 
 }

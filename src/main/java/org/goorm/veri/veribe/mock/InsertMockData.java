@@ -3,7 +3,7 @@ package org.goorm.veri.veribe.mock;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.book.entity.Book;
-import org.goorm.veri.veribe.domain.book.entity.MemberBook;
+import org.goorm.veri.veribe.domain.book.entity.Reading;
 import org.goorm.veri.veribe.domain.card.entity.Card;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.goorm.veri.veribe.domain.member.entity.enums.ProviderType;
@@ -47,18 +47,18 @@ public class InsertMockData {
 
         em.persist(book);
 
-        MemberBook memberBook = MemberBook.builder()
+        Reading reading = Reading.builder()
                 .member(member)
                 .book(book)
                 .build();
 
-        em.persist(memberBook);
+        em.persist(reading);
 
         for (int i = 0; i < 5; i++) {
             Card card = Card.builder()
                     .image("https://example.com/card-image-" + i + ".jpg")
                     .content("테스트 카드 내용 " + i)
-                    .memberBook(memberBook)
+                    .reading(reading)
                     .member(member)
                     .build();
             em.persist(card);
@@ -68,7 +68,7 @@ public class InsertMockData {
             Card card = Card.builder()
                     .image("https://example.com/card-image-" + i + ".jpg")
                     .content("테스트 카드 내용 " + i)
-                    .memberBook(memberBook)
+                    .reading(reading)
                     .member(member)
                     .isPublic(true)
                     .build();

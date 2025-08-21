@@ -16,7 +16,7 @@ public class CardConverter {
                 card.getContent(),
                 card.getImage(),
                 card.getCreatedAt(),
-                CardDetailResponse.BookInfo.from(card.getMemberBook()),
+                CardDetailResponse.BookInfo.from(card.getReading()),
                 card.isPublic()
         );
     }
@@ -28,7 +28,7 @@ public class CardConverter {
                 card.getImage(),
                 card.getCreatedAt(),
                 card.getUpdatedAt(),
-                CardDetailResponse.BookInfo.from(card.getMemberBook())
+                CardDetailResponse.BookInfo.from(card.getReading())
         );
     }
 }

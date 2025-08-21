@@ -6,13 +6,13 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.auth.annotation.AuthenticatedMember;
-import org.goorm.veri.veribe.domain.book.controller.enums.MemberBookSortType;
+import org.goorm.veri.veribe.domain.book.controller.enums.ReadingSortType;
 import org.goorm.veri.veribe.domain.book.dto.book.BookPopularListResponseV2;
 import org.goorm.veri.veribe.domain.book.dto.book.BookPopularResponse;
 import org.goorm.veri.veribe.domain.book.dto.book.BookRequest;
 import org.goorm.veri.veribe.domain.book.dto.book.BookSearchResponse;
-import org.goorm.veri.veribe.domain.book.dto.memberBook.*;
-import org.goorm.veri.veribe.domain.book.entity.MemberBook;
+import org.goorm.veri.veribe.domain.book.dto.reading.*;
+import org.goorm.veri.veribe.domain.book.entity.Reading;
 import org.goorm.veri.veribe.domain.book.service.BookService;
 import org.goorm.veri.veribe.domain.book.service.BookshelfService;
 import org.goorm.veri.veribe.domain.member.entity.Member;
@@ -31,7 +31,7 @@ public class BookshelfControllerV2 {
 
     @Operation(summary = "책장에 책 추가", description = "신규 도서를 등록하고 내 책장에 추가합니다.")
     @PostMapping
-    public ApiResponse<MemberBookAddResponse> addBook(@RequestBody BookRequest request, @AuthenticatedMember Member member) {
+    public ApiResponse<ReadingAddResponse> addBook(@RequestBody BookRequest request, @AuthenticatedMember Member member) {
 
         Long bookId = bookService.addBook(
                 request.title(),
@@ -40,29 +40,29 @@ public class BookshelfControllerV2 {
                 request.publisher(),
                 request.isbn());
 
-        MemberBook memberBook = bookshelfService.addToBookshelf(member, bookId);
+        Reading reading = bookshelfService.addToBookshelf(member, bookId);
 
-        return ApiResponse.created(new MemberBookAddResponse(memberBook.getId(), memberBook.getCreatedAt()));
+        return ApiResponse.created(new ReadingAddResponse(reading.getId(), reading.getCreatedAt()));
     }
 
     @Operation(summary = "내 책장 전체 조회", description = "내 책장에 등록된 모든 책을 페이지네이션과 정렬 기준으로 조회합니다.")
     @GetMapping("/my")
-    public ApiResponse<MemberBookListResponse> getAllBooks(
+    public ApiResponse<ReadingListResponse> getAllBooks(
             @RequestParam(defaultValue = "1") @Min(1) int page,
             @RequestParam(defaultValue = "10") @Min(1) int size,
             @RequestParam(defaultValue = "newest") String sort,
             @AuthenticatedMember Member member
     ) {
-        MemberBookSortType sortType = MemberBookSortType.from(sort);
-        Page<MemberBookResponse> pageData = bookshelfService.searchAll(member.getId(), page - 1, size, sortType);
+        ReadingSortType sortType = ReadingSortType.from(sort);
+        Page<ReadingResponse> pageData = bookshelfService.searchAll(member.getId(), page - 1, size, sortType);
 
-        return ApiResponse.ok(new MemberBookListResponse(pageData));
+        return ApiResponse.ok(new ReadingListResponse(pageData));
     }
 
     @Operation(summary = "책장 상세 조회", description = "memberBookId로 책장에 등록된 책의 상세 정보를 조회합니다.")
     @GetMapping("/{memberBookId}")
-    public ApiResponse<MemberBookDetailResponse> getBookDetail(@PathVariable Long memberBookId) {
-        MemberBookDetailResponse result = bookshelfService.searchDetail(memberBookId);
+    public ApiResponse<ReadingDetailResponse> getBookDetail(@PathVariable Long memberBookId) {
+        ReadingDetailResponse result = bookshelfService.searchDetail(memberBookId);
 
         return ApiResponse.ok(result);
     }
@@ -109,7 +109,7 @@ public class BookshelfControllerV2 {
     @Operation(summary = "책장 도서 내용 전체 수정", description = "책장에 등록된 책의 별점, 독서 시작 시간, 독서 완료 시간, 독서 상태를 변경합니다")
     @PatchMapping("/{memberBookId}/modify")
     public ApiResponse<Void> modifyBook(
-            @RequestBody @Valid MemberBookModifyRequest request,
+            @RequestBody @Valid ReadingModifyRequest request,
             @PathVariable Long memberBookId
     ) {
         bookshelfService.modifyBook(request.score(), request.startedAt(), request.endedAt(), memberBookId);
@@ -120,7 +120,7 @@ public class BookshelfControllerV2 {
     @Operation(summary = "책 평점 등록/수정", description = "책장에 등록된 책의 평점을 등록 또는 수정합니다.")
     @PatchMapping("/{memberBookId}/rate")
     public ApiResponse<Void> rateBook(
-            @RequestBody @Valid MemberBookScoreRequest request,
+            @RequestBody @Valid ReadingScoreRequest request,
             @PathVariable Long memberBookId) {
         bookshelfService.rateScore(request.score(), memberBookId);
 
