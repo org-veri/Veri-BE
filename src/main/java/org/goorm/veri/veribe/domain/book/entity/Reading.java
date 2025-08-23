@@ -4,9 +4,11 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.goorm.veri.veribe.domain.book.entity.enums.BookStatus;
+import org.goorm.veri.veribe.domain.book.exception.ReadingErrorInfo;
 import org.goorm.veri.veribe.domain.card.entity.Card;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.goorm.veri.veribe.global.entity.BaseEntity;
+import org.goorm.veri.veribe.global.exception.http.ForbiddenException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -63,5 +65,11 @@ public class Reading extends BaseEntity {
     public void setPrivate() {
         this.isPublic = false;
         this.cards.forEach(Card::setPrivate);
+    }
+
+    public void authorizeMember(Long memberId) {
+        if (!this.member.getId().equals(memberId)) {
+            throw new ForbiddenException(ReadingErrorInfo.FORBIDDEN);
+        }
     }
 }

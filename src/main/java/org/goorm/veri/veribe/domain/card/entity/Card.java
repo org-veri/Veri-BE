@@ -55,4 +55,10 @@ public class Card extends BaseEntity {
     public void setPrivate() {
         this.isPublic = false;
     }
+
+    public void authorizeMember(Long memberId) {
+        if (!this.member.getId().equals(memberId)) {
+            throw new BadRequestException(CardErrorInfo.FORBIDDEN);
+        }
+    }
 }
