@@ -10,6 +10,8 @@ import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.goorm.veri.veribe.domain.post.entity.Post;
 import org.goorm.veri.veribe.global.entity.BaseEntity;
 
+import java.util.List;
+
 @Getter
 @SuperBuilder(toBuilder = true)
 @Entity
@@ -37,6 +39,9 @@ public class Comment extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private Comment parent;
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> replies;
 
     public boolean isRoot() {
         return parent == null;

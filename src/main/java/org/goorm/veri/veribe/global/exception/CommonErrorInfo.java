@@ -30,9 +30,6 @@ public enum CommonErrorInfo implements ErrorInfo {
     // member context
     NOT_FOUND_TOKEN_MEMBER_CONTEXT("TokenMemberContext가 설정되지 않았습니다.", "A10008"),
 
-    // email
-    SES_ILLEGAL_PARAMETER("SES에 잘못된 파라미터가 있습니다", "10009"),
-
     RESOURCE_NOT_FOUND("요청한 리소스를 찾을 수 없습니다", "10010");
 
     private final String message;
