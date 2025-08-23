@@ -1,7 +1,0 @@
-package org.goorm.veri.veribe.domain.card.controller.dto;
-
-public record CardCreateResponse(
-        Long cardId
-) {
-}
-

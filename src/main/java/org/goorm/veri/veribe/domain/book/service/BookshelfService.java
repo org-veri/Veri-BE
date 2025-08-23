@@ -109,6 +109,7 @@ public class BookshelfService {
     @Transactional
     public void modifyBook(Double score, LocalDateTime startedAt, LocalDateTime endedAt, Long memberBookId) {
         Reading reading = getReadingById(memberBookId);
+        reading.authorizeMember(AuthUtil.getCurrentMember().getId());
 
         BookStatus updateStatus = decideStatus(startedAt, endedAt);
 
@@ -137,6 +138,7 @@ public class BookshelfService {
     @Transactional
     public void rateScore(Double score, Long memberBookId) {
         Reading reading = getReadingById(memberBookId);
+        reading.authorizeMember(AuthUtil.getCurrentMember().getId());
 
         Reading updated = reading.toBuilder().score(score).build();
 
@@ -146,6 +148,7 @@ public class BookshelfService {
     @Transactional
     public void readStart(Long memberBookId) {
         Reading reading = getReadingById(memberBookId);
+        reading.authorizeMember(AuthUtil.getCurrentMember().getId());
 
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startedTime = LocalDateTime.of(now.getYear(),
@@ -167,6 +170,7 @@ public class BookshelfService {
     @Transactional
     public void readOver(Long memberBookId) {
         Reading reading = getReadingById(memberBookId);
+        reading.authorizeMember(AuthUtil.getCurrentMember().getId());
 
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime endedTime = LocalDateTime.of(now.getYear(),

@@ -1,4 +1,4 @@
-package org.goorm.veri.veribe.domain.card.controller.dto;
+package org.goorm.veri.veribe.domain.card.controller.dto.response;
 
 import org.goorm.veri.veribe.domain.card.repository.dto.CardListItem;
 import org.goorm.veri.veribe.domain.card.repository.dto.CardFeedItem;

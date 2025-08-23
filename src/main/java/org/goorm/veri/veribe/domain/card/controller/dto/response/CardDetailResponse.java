@@ -1,4 +1,4 @@
-package org.goorm.veri.veribe.domain.card.controller.dto;
+package org.goorm.veri.veribe.domain.card.controller.dto.response;
 
 import org.goorm.veri.veribe.domain.book.entity.Reading;
 import org.goorm.veri.veribe.domain.common.dto.MemberProfile;
@@ -15,7 +15,7 @@ public record CardDetailResponse(
         Boolean isPublic
 ) {
 
-    record BookInfo(
+    public record BookInfo(
             Long id,
             String title,
             String coverImageUrl,

@@ -1,4 +1,4 @@
-package org.goorm.veri.veribe.domain.card.controller.dto;
+package org.goorm.veri.veribe.domain.card.controller.dto.request;
 
 
 import jakarta.validation.constraints.NotNull;

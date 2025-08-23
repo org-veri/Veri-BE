@@ -6,6 +6,9 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.auth.annotation.AuthenticatedMember;
 import org.goorm.veri.veribe.domain.card.controller.dto.*;
+import org.goorm.veri.veribe.domain.card.controller.dto.request.CardCreateRequest;
+import org.goorm.veri.veribe.domain.card.controller.dto.request.CardUpdateRequest;
+import org.goorm.veri.veribe.domain.card.controller.dto.response.*;
 import org.goorm.veri.veribe.domain.card.controller.enums.CardSortType;
 import org.goorm.veri.veribe.domain.card.entity.Card;
 import org.goorm.veri.veribe.domain.card.service.CardCommandService;
@@ -84,10 +87,9 @@ public class CardController {
     @PatchMapping("/{cardId}")
     public ApiResponse<CardUpdateResponse> updateCard(
             @PathVariable Long cardId,
-            @RequestBody CardUpdateRequest request,
-            @AuthenticatedMember Member member) {
+            @RequestBody CardUpdateRequest request
+    ) {
         Card response = cardCommandService.updateCard(
-                member.getId(),
                 cardId,
                 request.content()
         );
@@ -96,9 +98,8 @@ public class CardController {
 
     @Operation(summary = "카드 삭제", description = "카드 ID로 카드를 삭제합니다. 본인 소유 카드만 삭제할 수 있습니다.")
     @DeleteMapping("/{cardId}")
-    public ApiResponse<Void> deleteCard(@PathVariable Long cardId,
-                                        @AuthenticatedMember Member member) {
-        cardCommandService.deleteCard(member.getId(), cardId);
+    public ApiResponse<Void> deleteCard(@PathVariable Long cardId) {
+        cardCommandService.deleteCard(cardId);
         return ApiResponse.noContent();
     }
 
