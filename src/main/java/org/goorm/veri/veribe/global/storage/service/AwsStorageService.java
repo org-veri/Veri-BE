@@ -28,6 +28,13 @@ public class AwsStorageService implements StorageService {
     private final ExtendedS3Presigner extendedS3Presigner;
 
     @Override
+    public PresignedUrlResponse generatePresignedUrlOfDefault(String contentType, long contentLength) {
+        String prefix = "public";
+        Duration duration = Duration.ofMinutes(5);
+        return generatePresignedUrl(contentType, contentLength, prefix, duration);
+    }
+
+    @Override
     public PresignedUrlResponse generatePresignedUrl(
             String contentType,
             long contentLength,

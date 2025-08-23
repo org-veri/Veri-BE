@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("SELECT new org.goorm.veri.veribe.domain.post.repository.dto.PostDetailQueryResponse(" +
@@ -15,7 +17,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "(CASE WHEN EXISTS (SELECT l2 FROM LikePost l2 WHERE l2.post = p AND l2.member = :currentUser) THEN true ELSE false END)) " +
             "FROM Post p " +
             "WHERE p.id = :postId")
-    PostDetailQueryResponse findPostDetailsById(
+    Optional<PostDetailQueryResponse> findPostDetailsById(
             @Param("postId") Long postId,
             @Param("currentUser") Member currentUser
     );

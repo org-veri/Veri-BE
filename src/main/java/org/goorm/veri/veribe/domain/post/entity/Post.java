@@ -6,6 +6,8 @@ import lombok.experimental.SuperBuilder;
 import org.goorm.veri.veribe.domain.comment.entity.Comment;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.goorm.veri.veribe.global.entity.BaseEntity;
+import org.goorm.veri.veribe.global.exception.CommonErrorInfo;
+import org.goorm.veri.veribe.global.exception.http.ForbiddenException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,5 +48,11 @@ public class Post extends BaseEntity {
 
     public int getCommentCount() {
         return comments.size();
+    }
+
+    public void authorizeMember(Long id) {
+        if (!this.author.getId().equals(id)) {
+            throw new ForbiddenException(CommonErrorInfo.DOES_NOT_HAVE_PERMISSION);
+        }
     }
 }
