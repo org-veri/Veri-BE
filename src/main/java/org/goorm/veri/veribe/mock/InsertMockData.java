@@ -35,7 +35,16 @@ public class InsertMockData {
                 .providerType(ProviderType.KAKAO)
                 .build();
 
+        Member member2 = Member.builder()
+                .email("d")
+                .nickname("d")
+                .profileImageUrl("https://example.com/image.jpg")
+                .providerId("d")
+                .providerType(ProviderType.KAKAO)
+                .build();
+
         em.persist(member);
+        em.persist(member2);
 
         Book book = Book.builder()
                 .title("테스트 책")
@@ -52,7 +61,13 @@ public class InsertMockData {
                 .book(book)
                 .build();
 
+        Reading reading2 = Reading.builder()
+                .member(member2)
+                .book(book)
+                .build();
+
         em.persist(reading);
+        em.persist(reading2);
 
         for (int i = 0; i < 5; i++) {
             Card card = Card.builder()
@@ -62,6 +77,14 @@ public class InsertMockData {
                     .member(member)
                     .build();
             em.persist(card);
+
+            Card card2 = Card.builder()
+                    .image("https://example.com/card-image-" + i + ".jpg")
+                    .content("테스트 카드 내용 " + i)
+                    .reading(reading2)
+                    .member(member2)
+                    .build();
+            em.persist(card2);
         }
 
         for (int i = 5; i < 10; i++) {
@@ -73,6 +96,15 @@ public class InsertMockData {
                     .isPublic(true)
                     .build();
             em.persist(card);
+
+            Card card2 = Card.builder()
+                    .image("https://example.com/card-image-" + i + ".jpg")
+                    .content("테스트 카드 내용 " + i)
+                    .reading(reading2)
+                    .member(member2)
+                    .isPublic(true)
+                    .build();
+            em.persist(card2);
         }
     }
 }
