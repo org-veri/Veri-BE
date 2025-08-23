@@ -41,7 +41,7 @@ public class CardCommandService {
                 .content(content)
                 .image(imageUrl)
                 .reading(reading)
-                .isPublic(reading.isPublic() && isPublic) // 독서가 비공개면 카드도 무조건 비공개
+                .isPublic(reading.getIsPublic() && isPublic) // 독서가 비공개면 카드도 무조건 비공개
                 .build();
 
         cardRepository.save(card);
@@ -77,7 +77,7 @@ public class CardCommandService {
         }
 
         cardRepository.save(card);
-        return new CardVisibilityUpdateResponse(card.getId(), card.isPublic());
+        return new CardVisibilityUpdateResponse(card.getId(), card.getIsPublic());
     }
 
     @Transactional

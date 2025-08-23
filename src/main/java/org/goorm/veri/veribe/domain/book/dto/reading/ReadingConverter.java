@@ -12,7 +12,7 @@ public class ReadingConverter {
     public static ReadingDetailResponse toReadingDetailResponse(Reading reading) {
 
         List<ReadingDetailResponse.CardSummaryResponse> summaries = reading.getCards().stream()
-                .map(card -> new ReadingDetailResponse.CardSummaryResponse(card.getId(), card.getImage(), card.isPublic()))
+                .map(card -> new ReadingDetailResponse.CardSummaryResponse(card.getId(), card.getImage(), card.getIsPublic()))
                 .toList();
 
         // 독서 상세 조회시 본인 외에는 공개된 카드 요약 정보만 노출

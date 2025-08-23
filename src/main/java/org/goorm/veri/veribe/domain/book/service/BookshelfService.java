@@ -77,7 +77,7 @@ public class BookshelfService {
         Reading reading = readingRepository.findByIdWithCardsAndBook(memberBookId)
                 .orElseThrow(() -> new BadRequestException(BookErrorInfo.BAD_REQUEST));
 
-        if (!reading.isPublic()) {
+        if (!reading.getIsPublic()) {
             reading.authorizeMember(AuthUtil.getCurrentMember().getId());
         }
 
@@ -214,7 +214,7 @@ public class BookshelfService {
         }
 
         readingRepository.save(reading);
-        return new ReadingVisibilityUpdateResponse(reading.getId(), reading.isPublic());
+        return new ReadingVisibilityUpdateResponse(reading.getId(), reading.getIsPublic());
     }
 
     private Reading getReadingById(Long readingId) {

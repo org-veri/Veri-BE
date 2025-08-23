@@ -49,7 +49,7 @@ public class Reading extends BaseEntity {
 
     @Builder.Default
     @Column(name = "is_public")
-    private boolean isPublic = false;
+    private Boolean isPublic = false;
 
     @Builder.Default
     @OneToMany(mappedBy = "reading")

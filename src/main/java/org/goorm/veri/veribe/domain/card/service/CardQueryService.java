@@ -34,7 +34,7 @@ public class CardQueryService {
     public CardDetailResponse getCardDetail(Long cardId) {
         Card card = getCardById(cardId);
 
-        if (!card.isPublic()) {
+        if (!card.getIsPublic()) {
             card.authorizeMember(AuthUtil.getCurrentMember().getId());
         }
 

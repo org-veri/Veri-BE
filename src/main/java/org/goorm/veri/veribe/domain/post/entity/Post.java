@@ -42,7 +42,7 @@ public class Post extends BaseEntity {
     private List<Comment> comments = new ArrayList<>();
 
     @Builder.Default
-    private boolean isPublic = true;
+    private Boolean isPublic = true;
 
     public int getCommentCount() {
         return comments.size();

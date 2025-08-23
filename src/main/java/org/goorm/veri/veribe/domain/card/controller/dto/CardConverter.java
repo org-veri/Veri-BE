@@ -19,7 +19,7 @@ public class CardConverter {
                 card.getImage(),
                 card.getCreatedAt(),
                 CardDetailResponse.BookInfo.from(card.getReading()),
-                card.isPublic()
+                card.getIsPublic()
         );
     }
 

@@ -48,10 +48,10 @@ public class Card extends BaseEntity {
 
     @Builder.Default
     @Column(name = "is_public", nullable = false)
-    private boolean isPublic = false;
+    private Boolean isPublic = false;
 
     public void setPublic() {
-        if (!this.reading.isPublic()) {
+        if (!this.reading.getIsPublic()) {
             throw new BadRequestException(CardErrorInfo.READING_MS_NOT_PUBLIC);
         }
         this.isPublic = true;
