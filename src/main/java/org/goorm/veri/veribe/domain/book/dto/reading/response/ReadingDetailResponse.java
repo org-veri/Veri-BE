@@ -9,7 +9,6 @@ import java.util.List;
 
 @Builder
 public record ReadingDetailResponse(
-        // Todo. 책 ID 추가해서 내책장으로 가져가기?
         Long memberBookId,
         MemberProfile member,
         String title,
@@ -23,7 +22,8 @@ public record ReadingDetailResponse(
 ) {
     public record CardSummaryResponse(
             Long cardId,
-            String cardImage
+            String cardImage,
+            boolean isPublic
     ) {
     }
 }

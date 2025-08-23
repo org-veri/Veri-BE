@@ -32,7 +32,7 @@ public class CardCommandService {
     private final StorageService storageService;
 
     @Transactional
-    public Long createCard(Member member, String content, String imageUrl, Long memberBookId) {
+    public Long createCard(Member member, String content, String imageUrl, Long memberBookId, Boolean isPublic) {
         Reading reading = readingRepository.findById(memberBookId)
                 .orElseThrow(() -> new BadRequestException(CardErrorInfo.BAD_REQUEST));
 
@@ -41,6 +41,7 @@ public class CardCommandService {
                 .content(content)
                 .image(imageUrl)
                 .reading(reading)
+                .isPublic(reading.isPublic() && isPublic) // 독서가 비공개면 카드도 무조건 비공개
                 .build();
 
         cardRepository.save(card);

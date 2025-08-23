@@ -1,6 +1,9 @@
 package org.goorm.veri.veribe.domain.card.service;
 
 import lombok.RequiredArgsConstructor;
+import org.goorm.veri.veribe.domain.auth.service.AuthUtil;
+import org.goorm.veri.veribe.domain.card.controller.dto.CardConverter;
+import org.goorm.veri.veribe.domain.card.controller.dto.response.CardDetailResponse;
 import org.goorm.veri.veribe.domain.card.controller.enums.CardSortType;
 import org.goorm.veri.veribe.domain.card.entity.Card;
 import org.goorm.veri.veribe.domain.card.exception.CardErrorInfo;
@@ -26,6 +29,16 @@ public class CardQueryService {
 
         Page<CardListItem> cards = cardRepository.findAllByMemberId(memberId, pageRequest);
         return cards;
+    }
+
+    public CardDetailResponse getCardDetail(Long cardId) {
+        Card card = getCardById(cardId);
+
+        if (!card.isPublic()) {
+            card.authorizeMember(AuthUtil.getCurrentMember().getId());
+        }
+
+        return CardConverter.toCardDetailResponse(card);
     }
 
     public Card getCardById(Long cardId) {

@@ -12,7 +12,7 @@ import org.goorm.veri.veribe.domain.book.dto.reading.request.ReadingScoreRequest
 import org.goorm.veri.veribe.domain.book.dto.reading.response.*;
 import org.goorm.veri.veribe.domain.book.dto.book.BookPopularListResponseV2;
 import org.goorm.veri.veribe.domain.book.dto.book.BookPopularResponse;
-import org.goorm.veri.veribe.domain.book.dto.book.BookRequest;
+import org.goorm.veri.veribe.domain.book.dto.book.AddBookRequest;
 import org.goorm.veri.veribe.domain.book.dto.book.BookSearchResponse;
 import org.goorm.veri.veribe.domain.book.entity.Reading;
 import org.goorm.veri.veribe.domain.book.service.BookService;
@@ -33,7 +33,7 @@ public class BookshelfControllerV2 {
 
     @Operation(summary = "책장에 책 추가", description = "신규 도서를 등록하고 내 책장에 추가합니다.")
     @PostMapping
-    public ApiResponse<ReadingAddResponse> addBook(@RequestBody BookRequest request, @AuthenticatedMember Member member) {
+    public ApiResponse<ReadingAddResponse> addBook(@RequestBody AddBookRequest request, @AuthenticatedMember Member member) {
 
         Long bookId = bookService.addBook(
                 request.title(),
@@ -42,7 +42,7 @@ public class BookshelfControllerV2 {
                 request.publisher(),
                 request.isbn());
 
-        Reading reading = bookshelfService.addToBookshelf(member, bookId);
+        Reading reading = bookshelfService.addToBookshelf(member, bookId, request.isPublic());
 
         return ApiResponse.created(new ReadingAddResponse(reading.getId(), reading.getCreatedAt()));
     }
@@ -56,7 +56,7 @@ public class BookshelfControllerV2 {
             @AuthenticatedMember Member member
     ) {
         ReadingSortType sortType = ReadingSortType.from(sort);
-        Page<ReadingResponse> pageData = bookshelfService.searchAll(member.getId(), page - 1, size, sortType);
+        Page<ReadingResponse> pageData = bookshelfService.searchAllReadingOfMember(member.getId(), page - 1, size, sortType);
 
         return ApiResponse.ok(new ReadingListResponse(pageData));
     }

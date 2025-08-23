@@ -14,6 +14,8 @@ public record ReadingResponse (
         String imageUrl,
         Double score,
         LocalDateTime startedAt,
-        BookStatus status)
+        BookStatus status,
+        boolean isPublic
+)
 {}
 

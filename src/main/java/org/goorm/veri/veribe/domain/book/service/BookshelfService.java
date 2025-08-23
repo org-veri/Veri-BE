@@ -3,11 +3,11 @@ package org.goorm.veri.veribe.domain.book.service;
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.auth.service.AuthUtil;
 import org.goorm.veri.veribe.domain.book.controller.enums.ReadingSortType;
-import org.goorm.veri.veribe.domain.book.dto.reading.response.ReadingVisibilityUpdateResponse;
 import org.goorm.veri.veribe.domain.book.dto.book.BookPopularResponse;
 import org.goorm.veri.veribe.domain.book.dto.reading.ReadingConverter;
 import org.goorm.veri.veribe.domain.book.dto.reading.response.ReadingDetailResponse;
 import org.goorm.veri.veribe.domain.book.dto.reading.response.ReadingResponse;
+import org.goorm.veri.veribe.domain.book.dto.reading.response.ReadingVisibilityUpdateResponse;
 import org.goorm.veri.veribe.domain.book.entity.Book;
 import org.goorm.veri.veribe.domain.book.entity.Reading;
 import org.goorm.veri.veribe.domain.book.entity.enums.BookStatus;
@@ -39,7 +39,7 @@ public class BookshelfService {
     private final BookRepository bookRepository;
 
     @Transactional
-    public Reading addToBookshelf(Member member, Long bookId) {
+    public Reading addToBookshelf(Member member, Long bookId, boolean isPublic) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new BadRequestException(BookErrorInfo.BAD_REQUEST));
 
@@ -57,13 +57,14 @@ public class BookshelfService {
                 .endedAt(null)
                 .status(NOT_START)
                 .cards(new ArrayList<>())
+                .isPublic(isPublic)
                 .build();
 
         return readingRepository.save(reading);
     }
 
     @Transactional(readOnly = true)
-    public Page<ReadingResponse> searchAll(Long memberId, int page, int size, ReadingSortType sortType) {
+    public Page<ReadingResponse> searchAllReadingOfMember(Long memberId, int page, int size, ReadingSortType sortType) {
         Pageable pageRequest = PageRequest.of(page, size, sortType.getSort());
 
         Page<ReadingResponse> responses = readingRepository.findReadingPage(memberId, pageRequest);
@@ -75,6 +76,10 @@ public class BookshelfService {
     public ReadingDetailResponse searchDetail(Long memberBookId) {
         Reading reading = readingRepository.findByIdWithCardsAndBook(memberBookId)
                 .orElseThrow(() -> new BadRequestException(BookErrorInfo.BAD_REQUEST));
+
+        if (!reading.isPublic()) {
+            reading.authorizeMember(AuthUtil.getCurrentMember().getId());
+        }
 
         ReadingDetailResponse dto = ReadingConverter.toReadingDetailResponse(reading);
 

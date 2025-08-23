@@ -50,7 +50,8 @@ public interface ReadingRepository extends JpaRepository<Reading, Long> {
             mb.book.image,
             mb.score,
             mb.startedAt,
-            mb.status)
+            mb.status,
+            mb.isPublic)
             FROM Reading mb
             WHERE mb.member.id = :memberId
             """)

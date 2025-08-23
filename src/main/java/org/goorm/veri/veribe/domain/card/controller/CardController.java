@@ -28,7 +28,7 @@ public class CardController {
     private final CardCommandService cardCommandService;
     private final CardQueryService cardQueryService;
 
-    @Operation(summary = "카드 생성", description = "카드를 새로 생성합니다.")
+    @Operation(summary = "카드 생성", description = "카드를 새로 생성합니다. 독서가 비공개 상태라면 카드는 무조건 비공개로 생성됩니다.")
     @PostMapping
     public ApiResponse<CardCreateResponse> createCard(
             @RequestBody CardCreateRequest request,
@@ -37,7 +37,8 @@ public class CardController {
                 member,
                 request.content(),
                 request.imageUrl(),
-                request.memberBookId()
+                request.memberBookId(),
+                request.isPublic()
         );
         return ApiResponse.created(new CardCreateResponse(cardId));
     }
@@ -63,7 +64,7 @@ public class CardController {
         );
     }
 
-    @Operation(summary = "카드 목록 조회", description = "카드 목록을 페이지네이션과 정렬 기준으로 조회합니다.")
+    @Operation(summary = "전체 카드 목록 조회", description = "모든 사용자의 공개된 카드 목록을 페이지네이션과 정렬 기준으로 조회합니다.")
     @GetMapping()
     public ApiResponse<CardListResponse> getCards(
             @RequestParam(defaultValue = "1") @Min(1) int page,
@@ -79,8 +80,7 @@ public class CardController {
     @Operation(summary = "카드 상세 조회", description = "카드 ID로 카드의 상세 정보를 조회합니다.")
     @GetMapping("/{cardId}")
     public ApiResponse<CardDetailResponse> getCard(@PathVariable Long cardId) {
-        Card card = cardQueryService.getCardById(cardId);
-        return ApiResponse.ok(CardConverter.toCardDetailResponse(card));
+        return ApiResponse.ok(cardQueryService.getCardDetail(cardId));
     }
 
     @Operation(summary = "카드 수정", description = "카드 ID로 카드를 수정합니다. 본인 소유 카드만 수정할 수 있습니다.")
