@@ -145,6 +145,15 @@ public class BookshelfControllerV2 {
         return ApiResponse.noContent();
     }
 
+    @Operation(summary = "독서 공개 여부 수정", description = "비공개시 해당 독서에 대한 모든 독서카드도 비공개로 설정됩니다.")
+    @PatchMapping("/{readingId}/visibility")
+    public ApiResponse<ReadingVisibilityUpdateResponse> modifyVisibility(
+            @PathVariable Long readingId,
+            @RequestParam boolean isPublic
+    ) {
+        return ApiResponse.ok(bookshelfService.modifyVisibility(readingId, isPublic));
+    }
+
     @Operation(summary = "독서 삭제", description = "책장에 등록된 책을 삭제합니다.")
     @DeleteMapping("/{readingId}")
     public ApiResponse<Void> deleteFromBookshelf(@PathVariable Long readingId) {

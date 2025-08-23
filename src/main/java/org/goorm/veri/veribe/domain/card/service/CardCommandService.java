@@ -2,14 +2,15 @@ package org.goorm.veri.veribe.domain.card.service;
 
 import io.github.miensoap.s3.core.post.dto.PresignedPostForm;
 import lombok.RequiredArgsConstructor;
+import org.goorm.veri.veribe.domain.auth.service.AuthUtil;
 import org.goorm.veri.veribe.domain.book.entity.Reading;
 import org.goorm.veri.veribe.domain.book.repository.ReadingRepository;
+import org.goorm.veri.veribe.domain.card.controller.dto.response.CardVisibilityUpdateResponse;
 import org.goorm.veri.veribe.domain.card.entity.Card;
 import org.goorm.veri.veribe.domain.card.exception.CardErrorInfo;
 import org.goorm.veri.veribe.domain.card.repository.CardRepository;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.goorm.veri.veribe.global.exception.http.BadRequestException;
-import org.goorm.veri.veribe.global.exception.http.ForbiddenException;
 import org.goorm.veri.veribe.global.exception.http.NotFoundException;
 import org.goorm.veri.veribe.global.storage.dto.PresignedUrlRequest;
 import org.goorm.veri.veribe.global.storage.dto.PresignedUrlResponse;
@@ -47,12 +48,41 @@ public class CardCommandService {
     }
 
     @Transactional
-    public void deleteCard(Long memberId, Long cardId) {
-        Card card = getCard(cardId);
+    public Card updateCard(Long cardId, String content) {
+        Card card = this.getCard(cardId);
+        card.authorizeMember(AuthUtil.getCurrentMember().getId());
 
-        if (!card.getMember().getId().equals(memberId)) {
-            throw new ForbiddenException(CardErrorInfo.FORBIDDEN);
+        Card updatedCard = card.toBuilder()
+                .content(content)
+                .build();
+
+        return cardRepository.save(updatedCard);
+    }
+
+    public Card getCard(Long cardId) {
+        return cardRepository.findById(cardId)
+                .orElseThrow(() -> new NotFoundException(CardErrorInfo.NOT_FOUND));
+    }
+
+    @Transactional
+    public CardVisibilityUpdateResponse modifyVisibility(Long cardId, boolean isPublic) {
+        Card card = this.getCard(cardId);
+        card.authorizeMember(AuthUtil.getCurrentMember().getId());
+
+        if (isPublic) {
+            card.setPublic();
+        } else {
+            card.setPrivate();
         }
+
+        cardRepository.save(card);
+        return new CardVisibilityUpdateResponse(card.getId(), card.isPublic());
+    }
+
+    @Transactional
+    public void deleteCard(Long cardId) {
+        Card card = getCard(cardId);
+        card.authorizeMember(AuthUtil.getCurrentMember().getId());
 
         cardRepository.deleteById(cardId);
     }
@@ -107,24 +137,5 @@ public class CardCommandService {
                 prefix,
                 Duration.ofMinutes(expirationMinutes)
         );
-    }
-
-    @Transactional
-    public Card updateCard(Long id, Long cardId, String content) {
-        Card card = this.getCard(cardId);
-        if (!card.getMember().getId().equals(id)) {
-            throw new ForbiddenException(CardErrorInfo.FORBIDDEN);
-        }
-
-        Card updatedCard = card.toBuilder()
-                .content(content)
-                .build();
-
-        return cardRepository.save(updatedCard);
-    }
-
-    public Card getCard(Long cardId) {
-        return cardRepository.findById(cardId)
-                .orElseThrow(() -> new NotFoundException(CardErrorInfo.NOT_FOUND));
     }
 }

@@ -197,8 +197,19 @@ public class BookshelfService {
         readingRepository.delete(reading);
     }
 
+    @Transactional
+    public ReadingVisibilityUpdateResponse modifyVisibility(Long readingId, boolean isPublic) {
+        Reading reading = getReadingById(readingId);
+        reading.authorizeMember(AuthUtil.getCurrentMember().getId());
 
-        memberBookRepository.delete(reading);
+        if (isPublic) {
+            reading.setPublic();
+        } else {
+            reading.setPrivate();
+        }
+
+        readingRepository.save(reading);
+        return new ReadingVisibilityUpdateResponse(reading.getId(), reading.isPublic());
     }
 
     private Reading getReadingById(Long readingId) {

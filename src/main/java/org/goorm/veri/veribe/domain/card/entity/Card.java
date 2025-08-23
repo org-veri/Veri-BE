@@ -4,8 +4,10 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.goorm.veri.veribe.domain.book.entity.Reading;
+import org.goorm.veri.veribe.domain.card.exception.CardErrorInfo;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.goorm.veri.veribe.global.entity.BaseEntity;
+import org.goorm.veri.veribe.global.exception.http.BadRequestException;
 
 @Getter
 @SuperBuilder(toBuilder = true)
@@ -49,6 +51,9 @@ public class Card extends BaseEntity {
     private boolean isPublic = false;
 
     public void setPublic() {
+        if (!this.reading.isPublic()) {
+            throw new BadRequestException(CardErrorInfo.READING_MS_NOT_PUBLIC);
+        }
         this.isPublic = true;
     }
 

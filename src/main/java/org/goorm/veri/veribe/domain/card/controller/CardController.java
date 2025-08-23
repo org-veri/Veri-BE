@@ -96,6 +96,15 @@ public class CardController {
         return ApiResponse.ok(CardConverter.toCardUpdateResponse(response));
     }
 
+    @Operation(summary = "카드 공개 여부 수정", description = "독서가 비공개 상태라면 카드는 공개할 수 없습니다.")
+    @PatchMapping("/{cardId}/visibility")
+    public ApiResponse<CardVisibilityUpdateResponse> modifyVisibility(
+            @PathVariable Long cardId,
+            @RequestParam boolean isPublic
+    ) {
+        return ApiResponse.ok(cardCommandService.modifyVisibility(cardId, isPublic));
+    }
+
     @Operation(summary = "카드 삭제", description = "카드 ID로 카드를 삭제합니다. 본인 소유 카드만 삭제할 수 있습니다.")
     @DeleteMapping("/{cardId}")
     public ApiResponse<Void> deleteCard(@PathVariable Long cardId) {
