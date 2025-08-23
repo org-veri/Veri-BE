@@ -4,12 +4,18 @@ import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.auth.service.AuthUtil;
 import org.goorm.veri.veribe.domain.comment.service.CommentQueryService;
 import org.goorm.veri.veribe.domain.member.entity.Member;
+import org.goorm.veri.veribe.domain.post.controller.enums.PostSortType;
 import org.goorm.veri.veribe.domain.post.dto.response.PostDetailResponse;
+import org.goorm.veri.veribe.domain.post.dto.response.PostFeedResponseItem;
 import org.goorm.veri.veribe.domain.post.entity.Post;
 import org.goorm.veri.veribe.domain.post.repository.PostRepository;
 import org.goorm.veri.veribe.domain.post.repository.dto.PostDetailQueryResult;
+import org.goorm.veri.veribe.domain.post.repository.dto.PostFeedQueryResult;
 import org.goorm.veri.veribe.global.exception.CommonErrorInfo;
 import org.goorm.veri.veribe.global.exception.http.NotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +28,17 @@ public class PostQueryService {
 
     private final PostRepository postRepository;
     private final CommentQueryService commentQueryService;
+
+    public Page<PostFeedQueryResult> getPostFeeds(
+            int page, int size, PostSortType sortType
+    ) {
+        Pageable pageRequest = PageRequest.of(page, size, sortType.getSort());
+        return postRepository.getPostFeeds(pageRequest);
+    }
+
+    public List<PostFeedResponseItem> getPostsOfMember(Long memberId) {
+        return postRepository.findAllByAuthorId(memberId).stream().map(PostFeedResponseItem::from).toList();
+    }
 
     public Post getPosById(Long postId) {
         return postRepository.findById(postId)

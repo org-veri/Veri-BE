@@ -1,29 +1,24 @@
 package org.goorm.veri.veribe.domain.post.dto.response;
 
-import org.goorm.veri.veribe.domain.common.dto.MemberProfile;
 import org.goorm.veri.veribe.domain.post.repository.dto.PostFeedQueryResult;
+import org.springframework.data.domain.Page;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 public record PostFeedResponse(
-        Long postId,
-        String title,
-        String content,
-        MemberProfile author,
-        long likeCount,
-        long commentCount,
-        LocalDateTime createdAt
+        List<PostFeedResponseItem> posts,
+        int page,
+        int size,
+        long totalElements,
+        int totalPages
 ) {
-
-    public static PostFeedResponse from(PostFeedQueryResult post) {
-        return new PostFeedResponse(
-                post.postId(),
-                post.title(),
-                post.content(),
-                MemberProfile.from(post.author()),
-                post.likeCount(),
-                post.commentCount(),
-                post.createdAt()
+    public PostFeedResponse(Page<PostFeedQueryResult> pageData) {
+        this(
+                pageData.getContent().stream().map(PostFeedResponseItem::from).toList(),
+                pageData.getNumber() + 1,
+                pageData.getSize(),
+                pageData.getTotalElements(),
+                pageData.getTotalPages()
         );
     }
 }

@@ -2,11 +2,15 @@ package org.goorm.veri.veribe.domain.post.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.auth.annotation.AuthenticatedMember;
 import org.goorm.veri.veribe.domain.member.entity.Member;
+import org.goorm.veri.veribe.domain.post.controller.enums.PostSortType;
 import org.goorm.veri.veribe.domain.post.dto.request.PostCreateRequest;
 import org.goorm.veri.veribe.domain.post.dto.response.PostDetailResponse;
+import org.goorm.veri.veribe.domain.post.dto.response.PostFeedResponse;
+import org.goorm.veri.veribe.domain.post.dto.response.PostListResponse;
 import org.goorm.veri.veribe.domain.post.service.PostCommandService;
 import org.goorm.veri.veribe.domain.post.service.PostQueryService;
 import org.goorm.veri.veribe.global.response.ApiResponse;
@@ -34,15 +38,21 @@ public class PostController {
     }
 
     @GetMapping("/my")
-    public ApiResponse<Void> getMyPosts(@AuthenticatedMember Member member) {
-        // Todo.
-        return ApiResponse.ok(null);
+    public ApiResponse<PostListResponse> getMyPosts(@AuthenticatedMember Member member) {
+        return ApiResponse.ok(PostListResponse.from(postQueryService.getPostsOfMember(member.getId())));
     }
 
-    @GetMapping
-    public ApiResponse<Void> getPostList() {
-        // Todo.
-        return ApiResponse.ok(null);
+    @Operation(summary = "전체 게시글 목록 조회")
+    @GetMapping()
+    public ApiResponse<PostFeedResponse> getCards(
+            @RequestParam(defaultValue = "1") @Min(1) int page,
+            @RequestParam(defaultValue = "10") @Min(1) int size,
+            @RequestParam(defaultValue = "newest") String sort
+    ) {
+        PostSortType sortType = PostSortType.from(sort);
+        return ApiResponse.ok(
+                new PostFeedResponse(postQueryService.getPostFeeds(page - 1, size, sortType))
+        );
     }
 
     @GetMapping("/{postId}")
