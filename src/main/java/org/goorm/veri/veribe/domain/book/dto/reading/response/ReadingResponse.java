@@ -1,4 +1,4 @@
-package org.goorm.veri.veribe.domain.book.dto.reading;
+package org.goorm.veri.veribe.domain.book.dto.reading.response;
 
 import lombok.Builder;
 

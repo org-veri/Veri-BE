@@ -1,4 +1,4 @@
-package org.goorm.veri.veribe.domain.book.dto.reading;
+package org.goorm.veri.veribe.domain.book.dto.reading.request;
 
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Digits;

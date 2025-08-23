@@ -11,7 +11,11 @@ import org.goorm.veri.veribe.domain.book.dto.book.BookPopularListResponse;
 import org.goorm.veri.veribe.domain.book.dto.book.BookPopularResponse;
 import org.goorm.veri.veribe.domain.book.dto.book.BookRequest;
 import org.goorm.veri.veribe.domain.book.dto.book.BookSearchResponse;
-import org.goorm.veri.veribe.domain.book.dto.reading.*;
+import org.goorm.veri.veribe.domain.book.dto.reading.request.ReadingScoreRequest;
+import org.goorm.veri.veribe.domain.book.dto.reading.response.ReadingAddResponse;
+import org.goorm.veri.veribe.domain.book.dto.reading.response.ReadingDetailResponse;
+import org.goorm.veri.veribe.domain.book.dto.reading.response.ReadingListResponse;
+import org.goorm.veri.veribe.domain.book.dto.reading.response.ReadingResponse;
 import org.goorm.veri.veribe.domain.book.entity.Reading;
 import org.goorm.veri.veribe.domain.book.service.BookService;
 import org.goorm.veri.veribe.domain.book.service.BookshelfService;
@@ -20,6 +24,7 @@ import org.goorm.veri.veribe.global.response.ApiResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+@Deprecated
 @Tag(name = "책장 API", description = "책장(내 서재) 관련 API")
 @RequestMapping("/api/v0/bookshelf")
 @RestController

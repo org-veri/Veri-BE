@@ -7,11 +7,13 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.auth.annotation.AuthenticatedMember;
 import org.goorm.veri.veribe.domain.book.controller.enums.ReadingSortType;
+import org.goorm.veri.veribe.domain.book.dto.reading.request.ReadingModifyRequest;
+import org.goorm.veri.veribe.domain.book.dto.reading.request.ReadingScoreRequest;
+import org.goorm.veri.veribe.domain.book.dto.reading.response.*;
 import org.goorm.veri.veribe.domain.book.dto.book.BookPopularListResponseV2;
 import org.goorm.veri.veribe.domain.book.dto.book.BookPopularResponse;
 import org.goorm.veri.veribe.domain.book.dto.book.BookRequest;
 import org.goorm.veri.veribe.domain.book.dto.book.BookSearchResponse;
-import org.goorm.veri.veribe.domain.book.dto.reading.*;
 import org.goorm.veri.veribe.domain.book.entity.Reading;
 import org.goorm.veri.veribe.domain.book.service.BookService;
 import org.goorm.veri.veribe.domain.book.service.BookshelfService;
@@ -59,10 +61,10 @@ public class BookshelfControllerV2 {
         return ApiResponse.ok(new ReadingListResponse(pageData));
     }
 
-    @Operation(summary = "책장 상세 조회", description = "memberBookId로 책장에 등록된 책의 상세 정보를 조회합니다.")
-    @GetMapping("/{memberBookId}")
-    public ApiResponse<ReadingDetailResponse> getBookDetail(@PathVariable Long memberBookId) {
-        ReadingDetailResponse result = bookshelfService.searchDetail(memberBookId);
+    @Operation(summary = "독서 상세 조회", description = "memberBookId로 책장에 등록된 책의 상세 정보를 조회합니다.")
+    @GetMapping("/{readingId}")
+    public ApiResponse<ReadingDetailResponse> getBookDetail(@PathVariable Long readingId) {
+        ReadingDetailResponse result = bookshelfService.searchDetail(readingId);
 
         return ApiResponse.ok(result);
     }
@@ -107,46 +109,46 @@ public class BookshelfControllerV2 {
     }
 
     @Operation(summary = "책장 도서 내용 전체 수정", description = "책장에 등록된 책의 별점, 독서 시작 시간, 독서 완료 시간, 독서 상태를 변경합니다")
-    @PatchMapping("/{memberBookId}/modify")
+    @PatchMapping("/{readingId}/modify")
     public ApiResponse<Void> modifyBook(
             @RequestBody @Valid ReadingModifyRequest request,
-            @PathVariable Long memberBookId
+            @PathVariable Long readingId
     ) {
-        bookshelfService.modifyBook(request.score(), request.startedAt(), request.endedAt(), memberBookId);
+        bookshelfService.modifyBook(request.score(), request.startedAt(), request.endedAt(), readingId);
 
         return ApiResponse.noContent();
     }
 
     @Operation(summary = "책 평점 등록/수정", description = "책장에 등록된 책의 평점을 등록 또는 수정합니다.")
-    @PatchMapping("/{memberBookId}/rate")
+    @PatchMapping("/{readingId}/rate")
     public ApiResponse<Void> rateBook(
             @RequestBody @Valid ReadingScoreRequest request,
-            @PathVariable Long memberBookId) {
-        bookshelfService.rateScore(request.score(), memberBookId);
+            @PathVariable Long readingId) {
+        bookshelfService.rateScore(request.score(), readingId);
 
         return ApiResponse.noContent();
     }
 
     @Operation(summary = "독서 시작 상태 변경", description = "책장에 등록된 책의 상태를 '읽는 중'으로 변경합니다.")
-    @PatchMapping("/{memberBookId}/status/start")
-    public ApiResponse<Void> startReading(@PathVariable Long memberBookId) {
-        bookshelfService.readStart(memberBookId);
+    @PatchMapping("/{readingId}/status/start")
+    public ApiResponse<Void> startReading(@PathVariable Long readingId) {
+        bookshelfService.readStart(readingId);
 
         return ApiResponse.noContent();
     }
 
     @Operation(summary = "독서 완료 상태 변경", description = "책장에 등록된 책의 상태를 '완독'으로 변경합니다.")
-    @PatchMapping("/{memberBookId}/status/over")
-    public ApiResponse<Void> finishReading(@PathVariable Long memberBookId) {
-        bookshelfService.readOver(memberBookId);
+    @PatchMapping("/{readingId}/status/over")
+    public ApiResponse<Void> finishReading(@PathVariable Long readingId) {
+        bookshelfService.readOver(readingId);
 
         return ApiResponse.noContent();
     }
 
-    @Operation(summary = "책장 도서 삭제", description = "책장에 등록된 책을 삭제합니다.")
-    @DeleteMapping("/{memberBookId}")
-    public ApiResponse<Void> deleteFromBookshelf(@PathVariable Long memberBookId) {
-        bookshelfService.deleteBook(memberBookId);
+    @Operation(summary = "독서 삭제", description = "책장에 등록된 책을 삭제합니다.")
+    @DeleteMapping("/{readingId}")
+    public ApiResponse<Void> deleteFromBookshelf(@PathVariable Long readingId) {
+        bookshelfService.deleteBook(readingId);
 
         return ApiResponse.noContent();
     }

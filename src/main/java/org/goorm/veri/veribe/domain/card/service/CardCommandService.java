@@ -27,12 +27,12 @@ import static org.goorm.veri.veribe.global.storage.service.StorageConstants.MB;
 public class CardCommandService {
 
     private final CardRepository cardRepository;
-    private final ReadingRepository memberBookRepository;
+    private final ReadingRepository readingRepository;
     private final StorageService storageService;
 
     @Transactional
     public Long createCard(Member member, String content, String imageUrl, Long memberBookId) {
-        Reading reading = memberBookRepository.findById(memberBookId)
+        Reading reading = readingRepository.findById(memberBookId)
                 .orElseThrow(() -> new BadRequestException(CardErrorInfo.BAD_REQUEST));
 
         Card card = Card.builder()

@@ -1,7 +1,7 @@
 package org.goorm.veri.veribe.domain.book.repository;
 
 import org.goorm.veri.veribe.domain.book.dto.book.BookPopularResponse;
-import org.goorm.veri.veribe.domain.book.dto.reading.ReadingResponse;
+import org.goorm.veri.veribe.domain.book.dto.reading.response.ReadingResponse;
 import org.goorm.veri.veribe.domain.book.entity.Reading;
 import org.goorm.veri.veribe.domain.book.entity.enums.BookStatus;
 import org.goorm.veri.veribe.domain.member.entity.Member;
@@ -43,7 +43,7 @@ public interface ReadingRepository extends JpaRepository<Reading, Long> {
     );
 
     @Query("""
-            SELECT new org.goorm.veri.veribe.domain.book.dto.reading.ReadingResponse(
+            SELECT new org.goorm.veri.veribe.domain.book.dto.reading.response.ReadingResponse(
             mb.id,
             mb.book.title,
             mb.book.author,

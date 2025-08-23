@@ -1,11 +1,13 @@
 package org.goorm.veri.veribe.domain.book.service;
 
 import lombok.RequiredArgsConstructor;
+import org.goorm.veri.veribe.domain.auth.service.AuthUtil;
 import org.goorm.veri.veribe.domain.book.controller.enums.ReadingSortType;
+import org.goorm.veri.veribe.domain.book.dto.reading.response.ReadingVisibilityUpdateResponse;
 import org.goorm.veri.veribe.domain.book.dto.book.BookPopularResponse;
 import org.goorm.veri.veribe.domain.book.dto.reading.ReadingConverter;
-import org.goorm.veri.veribe.domain.book.dto.reading.ReadingDetailResponse;
-import org.goorm.veri.veribe.domain.book.dto.reading.ReadingResponse;
+import org.goorm.veri.veribe.domain.book.dto.reading.response.ReadingDetailResponse;
+import org.goorm.veri.veribe.domain.book.dto.reading.response.ReadingResponse;
 import org.goorm.veri.veribe.domain.book.entity.Book;
 import org.goorm.veri.veribe.domain.book.entity.Reading;
 import org.goorm.veri.veribe.domain.book.entity.enums.BookStatus;
@@ -33,15 +35,16 @@ import static org.goorm.veri.veribe.domain.book.entity.enums.BookStatus.*;
 @RequiredArgsConstructor
 public class BookshelfService {
 
-    private final ReadingRepository memberBookRepository;
+    private final ReadingRepository readingRepository;
     private final BookRepository bookRepository;
 
+    @Transactional
     public Reading addToBookshelf(Member member, Long bookId) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new BadRequestException(BookErrorInfo.BAD_REQUEST));
 
         //Reading 중복 저장 방지 로직 추가 -> 기존 책을 응답
-        Optional<Reading> findReading = memberBookRepository.findByMemberAndBook(member.getId(), bookId);
+        Optional<Reading> findReading = readingRepository.findByMemberAndBook(member.getId(), bookId);
         if (findReading.isPresent()) {
             return findReading.get();
         }
@@ -56,19 +59,21 @@ public class BookshelfService {
                 .cards(new ArrayList<>())
                 .build();
 
-        return memberBookRepository.save(reading);
+        return readingRepository.save(reading);
     }
 
+    @Transactional(readOnly = true)
     public Page<ReadingResponse> searchAll(Long memberId, int page, int size, ReadingSortType sortType) {
         Pageable pageRequest = PageRequest.of(page, size, sortType.getSort());
 
-        Page<ReadingResponse> responses = memberBookRepository.findReadingPage(memberId, pageRequest);
+        Page<ReadingResponse> responses = readingRepository.findReadingPage(memberId, pageRequest);
 
         return responses;
     }
 
+    @Transactional(readOnly = true)
     public ReadingDetailResponse searchDetail(Long memberBookId) {
-        Reading reading = memberBookRepository.findByIdWithCardsAndBook(memberBookId)
+        Reading reading = readingRepository.findByIdWithCardsAndBook(memberBookId)
                 .orElseThrow(() -> new BadRequestException(BookErrorInfo.BAD_REQUEST));
 
         ReadingDetailResponse dto = ReadingConverter.toReadingDetailResponse(reading);
@@ -76,6 +81,7 @@ public class BookshelfService {
         return dto;
     }
 
+    @Transactional(readOnly = true)
     public Page<BookPopularResponse> searchPopular(int page, int size) {
         LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
         LocalDateTime startOfWeek = now.with(DayOfWeek.MONDAY).toLocalDate().atStartOfDay();
@@ -83,24 +89,26 @@ public class BookshelfService {
 
         Pageable pageRequest = PageRequest.of(page, size);
 
-        Page<BookPopularResponse> responses = memberBookRepository.findMostPopularBook(startOfWeek, startOfNextWeek, pageRequest);
+        Page<BookPopularResponse> responses = readingRepository.findMostPopularBook(startOfWeek, startOfNextWeek, pageRequest);
 
         return responses;
     }
 
+    @Transactional(readOnly = true)
     public int searchMyReadingDoneCount(Long memberId) {
-        return memberBookRepository.countByStatusAndMember(DONE, memberId);
+        return readingRepository.countByStatusAndMember(DONE, memberId);
     }
 
+    @Transactional(readOnly = true)
     public Long searchByTitleAndAuthor(Long memberId, String title, String author) {
-        Optional<Reading> memberBookOPT = memberBookRepository.findByAuthorAndTitle(memberId, title, author);
+        Optional<Reading> memberBookOPT = readingRepository.findByAuthorAndTitle(memberId, title, author);
 
         return memberBookOPT.map(Reading::getId).orElse(null);
     }
 
+    @Transactional
     public void modifyBook(Double score, LocalDateTime startedAt, LocalDateTime endedAt, Long memberBookId) {
-        Reading reading = memberBookRepository.findById(memberBookId)
-                .orElseThrow(() -> new BadRequestException(BookErrorInfo.BAD_REQUEST));
+        Reading reading = getReadingById(memberBookId);
 
         BookStatus updateStatus = decideStatus(startedAt, endedAt);
 
@@ -111,7 +119,7 @@ public class BookshelfService {
                 .status(updateStatus)
                 .build();
 
-        memberBookRepository.save(updated);
+        readingRepository.save(updated);
     }
 
     private BookStatus decideStatus(LocalDateTime updateStart, LocalDateTime updateEnd) {
@@ -126,18 +134,18 @@ public class BookshelfService {
         return NOT_START; //그 이외는 독서 시작 & 완료 모두 null 이므로 NOT_START
     }
 
+    @Transactional
     public void rateScore(Double score, Long memberBookId) {
-        Reading reading = memberBookRepository.findById(memberBookId)
-                .orElseThrow(() -> new BadRequestException(BookErrorInfo.BAD_REQUEST));
+        Reading reading = getReadingById(memberBookId);
 
         Reading updated = reading.toBuilder().score(score).build();
 
-        memberBookRepository.save(updated);
+        readingRepository.save(updated);
     }
 
+    @Transactional
     public void readStart(Long memberBookId) {
-        Reading reading = memberBookRepository.findById(memberBookId)
-                .orElseThrow(() -> new BadRequestException(BookErrorInfo.BAD_REQUEST));
+        Reading reading = getReadingById(memberBookId);
 
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startedTime = LocalDateTime.of(now.getYear(),
@@ -153,12 +161,12 @@ public class BookshelfService {
                 .status(READING)
                 .build();
 
-        memberBookRepository.save(updated);
+        readingRepository.save(updated);
     }
 
+    @Transactional
     public void readOver(Long memberBookId) {
-        Reading reading = memberBookRepository.findById(memberBookId)
-                .orElseThrow(() -> new BadRequestException(BookErrorInfo.BAD_REQUEST));
+        Reading reading = getReadingById(memberBookId);
 
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime endedTime = LocalDateTime.of(now.getYear(),
@@ -174,14 +182,23 @@ public class BookshelfService {
                 .status(DONE)
                 .build();
 
-        memberBookRepository.save(updated);
+        readingRepository.save(updated);
     }
 
+    @Transactional
     public void deleteBook(Long memberBookId) {
-        Reading reading = memberBookRepository.findById(memberBookId)
-                .orElseThrow(() -> new BadRequestException(BookErrorInfo.BAD_REQUEST));
+        Reading reading = getReadingById(memberBookId);
+        reading.authorizeMember(AuthUtil.getCurrentMember().getId());
+
+        readingRepository.delete(reading);
+    }
+
 
         memberBookRepository.delete(reading);
     }
 
+    private Reading getReadingById(Long readingId) {
+        return readingRepository.findById(readingId)
+                .orElseThrow(() -> new BadRequestException(BookErrorInfo.BAD_REQUEST));
+    }
 }
