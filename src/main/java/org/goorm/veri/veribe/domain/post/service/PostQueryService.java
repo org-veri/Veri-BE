@@ -8,8 +8,9 @@ import org.goorm.veri.veribe.domain.post.controller.enums.PostSortType;
 import org.goorm.veri.veribe.domain.post.dto.response.PostDetailResponse;
 import org.goorm.veri.veribe.domain.post.dto.response.PostFeedResponseItem;
 import org.goorm.veri.veribe.domain.post.entity.Post;
+import org.goorm.veri.veribe.domain.post.repository.LikePostRepository;
 import org.goorm.veri.veribe.domain.post.repository.PostRepository;
-import org.goorm.veri.veribe.domain.post.repository.dto.PostDetailQueryResult;
+import org.goorm.veri.veribe.domain.post.repository.dto.LikeInfoQueryResult;
 import org.goorm.veri.veribe.domain.post.repository.dto.PostFeedQueryResult;
 import org.goorm.veri.veribe.global.exception.CommonErrorInfo;
 import org.goorm.veri.veribe.global.exception.http.NotFoundException;
@@ -27,6 +28,7 @@ import java.util.List;
 public class PostQueryService {
 
     private final PostRepository postRepository;
+    private final LikePostRepository likePostRepository;
     private final CommentQueryService commentQueryService;
 
     public Page<PostFeedQueryResult> getPostFeeds(
@@ -40,7 +42,7 @@ public class PostQueryService {
         return postRepository.findAllByAuthorId(memberId).stream().map(PostFeedResponseItem::from).toList();
     }
 
-    public Post getPosById(Long postId) {
+    public Post getPostById(Long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new NotFoundException(CommonErrorInfo.RESOURCE_NOT_FOUND));
     }
@@ -48,11 +50,10 @@ public class PostQueryService {
     public PostDetailResponse getPostDetail(Long postId) {
         Member requester = AuthUtil.getCurrentMember();
 
-        PostDetailQueryResult postDetail = postRepository.findPostDetailsById(postId, requester)
-                .orElseThrow(() -> new NotFoundException(CommonErrorInfo.RESOURCE_NOT_FOUND));
-
+        Post post = getPostById(postId);
+        LikeInfoQueryResult likeInfo = likePostRepository.getLikeInfoOfPost(postId, requester.getId());
         List<PostDetailResponse.CommentResponse> comments = commentQueryService.getCommentsByPostId(postId);
 
-        return PostDetailResponse.from(postDetail, comments);
+        return PostDetailResponse.from(post, likeInfo, comments);
     }
 }

@@ -26,4 +26,7 @@ public class PostImage {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
+
+    @Column(name = "display_order", nullable = false)
+    private Long displayOrder;
 }

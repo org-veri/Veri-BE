@@ -1,16 +1,21 @@
 package org.goorm.veri.veribe.domain.post.dto.response;
 
+import lombok.Builder;
 import org.goorm.veri.veribe.domain.comment.entity.Comment;
 import org.goorm.veri.veribe.domain.common.dto.MemberProfile;
-import org.goorm.veri.veribe.domain.post.repository.dto.PostDetailQueryResult;
+import org.goorm.veri.veribe.domain.post.entity.Post;
+import org.goorm.veri.veribe.domain.post.entity.PostImage;
+import org.goorm.veri.veribe.domain.post.repository.dto.LikeInfoQueryResult;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Builder
 public record PostDetailResponse(
         Long postId,
         String title,
         String content,
+        List<String> images,
         MemberProfile author,
         long likeCount,
         boolean isLiked,
@@ -20,19 +25,23 @@ public record PostDetailResponse(
 
         // Todo. 태그된 책 정보
 ) {
+    public static PostDetailResponse from(Post post, LikeInfoQueryResult likeInfo, List<CommentResponse> comments) {
+        List<String> imageUrls = post.getImages().stream()
+                .map(PostImage::getImageUrl)
+                .toList();
 
-    public static PostDetailResponse from(PostDetailQueryResult result, List<CommentResponse> comments) {
-        return new PostDetailResponse(
-                result.postId(),
-                result.title(),
-                result.content(),
-                MemberProfile.from(result.author()),
-                result.likeCount(),
-                result.isLiked(),
-                comments,
-                comments.size(),
-                result.createdAt()
-        );
+        return PostDetailResponse.builder()
+                .postId(post.getId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .images(imageUrls)
+                .author(MemberProfile.from(post.getAuthor()))
+                .likeCount(likeInfo.likeCount())
+                .isLiked(likeInfo.isLiked())
+                .comments(comments)
+                .commentCount(post.getCommentCount())
+                .createdAt(post.getCreatedAt())
+                .build();
     }
 
     public record CommentResponse(

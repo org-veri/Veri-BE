@@ -8,6 +8,7 @@ public record PostFeedQueryResult(
         Long postId,
         String title,
         String content,
+        String thumbnailImageUrl,
         Member author,
         long likeCount,
         long commentCount,

@@ -8,6 +8,7 @@ import org.goorm.veri.veribe.domain.auth.annotation.AuthenticatedMember;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.goorm.veri.veribe.domain.post.controller.enums.PostSortType;
 import org.goorm.veri.veribe.domain.post.dto.request.PostCreateRequest;
+import org.goorm.veri.veribe.domain.post.dto.response.LikeInfoResponse;
 import org.goorm.veri.veribe.domain.post.dto.response.PostDetailResponse;
 import org.goorm.veri.veribe.domain.post.dto.response.PostFeedResponse;
 import org.goorm.veri.veribe.domain.post.dto.response.PostListResponse;
@@ -29,12 +30,11 @@ public class PostController {
 
 
     @PostMapping
-    public ApiResponse<Void> createPost(
+    public ApiResponse<Long> createPost(
             @RequestBody PostCreateRequest request,
             @AuthenticatedMember Member member
     ) {
-        // Todo.
-        return ApiResponse.created(null);
+        return ApiResponse.created(this.postCommandService.createPost(request, member));
     }
 
     @GetMapping("/my")
@@ -66,6 +66,22 @@ public class PostController {
     ) {
         this.postCommandService.deletePost(postId);
         return ApiResponse.noContent();
+    }
+
+    @PostMapping("/like/{postId}")
+    public ApiResponse<LikeInfoResponse> likePost(
+            @PathVariable Long postId,
+            @AuthenticatedMember Member member
+    ) {
+        return ApiResponse.ok(this.postCommandService.likePost(postId, member));
+    }
+
+    @PostMapping("/unlike/{postId}")
+    public ApiResponse<LikeInfoResponse> unlikePost(
+            @PathVariable Long postId,
+            @AuthenticatedMember Member member
+    ) {
+        return ApiResponse.ok(this.postCommandService.unlikePost(postId, member));
     }
 
     @Operation(summary = "이미지 presigned URL 발급")
