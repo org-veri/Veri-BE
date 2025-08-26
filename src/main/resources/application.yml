@@ -1,3 +1,33 @@
 logging:
   level:
     root: info
+    io.micrometer.tracing: DEBUG
+
+spring:
+  application:
+    name: veri
+  jpa:
+    open-in-view: false
+
+jdbc:
+  datasource-proxy:
+    include-parameter-values: true
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      enabled: true
+
+
