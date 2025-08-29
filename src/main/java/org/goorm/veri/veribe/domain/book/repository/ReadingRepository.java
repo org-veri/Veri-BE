@@ -32,8 +32,8 @@ public interface ReadingRepository extends JpaRepository<Reading, Long> {
             mb.book.publisher,
             mb.book.isbn)
             FROM Reading mb
-            WHERE mb.startedAt >= :startOfWeek
-            AND mb.startedAt < :startOfNextWeek
+            WHERE mb.createdAt >= :startOfWeek
+            AND mb.createdAt < :startOfNextWeek
             GROUP BY mb.book
             ORDER BY COUNT(mb) DESC
             """)

@@ -87,7 +87,7 @@ public class BookshelfService {
     }
 
     @Transactional(readOnly = true)
-    public Page<BookPopularResponse> searchPopular(int page, int size) {
+    public Page<BookPopularResponse> searchWeeklyPopular(int page, int size) {
         LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
         LocalDateTime startOfWeek = now.with(DayOfWeek.MONDAY).toLocalDate().atStartOfDay();
         LocalDateTime startOfNextWeek = startOfWeek.plusWeeks(1);
