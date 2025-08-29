@@ -38,12 +38,9 @@ public class SecurityConfig {
     private final ClientRegistrationRepository clientRegistrationRepository;
 
     String[] allowUrl = {
-            "/swagger-ui/**",
-            "/swagger-resources/**",
-            "/v3/api-docs/**",
+            "/resources/**",
             "/api/v1/oauth2/**",
             "/api/v1/auth/**",
-            "/health-check"
     };
 
     @Bean

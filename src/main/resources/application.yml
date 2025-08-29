@@ -1,3 +1,14 @@
+spring:
+  web:
+    resources:
+      add-mappings: false
+
+springdoc:
+  swagger-ui:
+    path: /resources/docs/swagger
+  api-docs:
+    path: /resources/docs/v3/api-docs
+
 logging:
   level:
     root: info

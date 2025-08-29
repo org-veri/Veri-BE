@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.auth.annotation.resolver.AuthenticatedMemberResolver;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
@@ -17,5 +18,14 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(authenticatedMemberResolver);
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+      registry.addResourceHandler("/resources/docs/**")
+          .addResourceLocations(
+              "classpath:/docs/"
+          )
+          .setCachePeriod(3600);
     }
 }
