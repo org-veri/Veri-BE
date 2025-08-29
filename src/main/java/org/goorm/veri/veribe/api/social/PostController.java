@@ -31,6 +31,7 @@ public class PostController {
 
 
     @PostMapping
+    @Operation(summary = "게시글 작성", description = "새로운 게시글을 작성합니다.")
     public ApiResponse<Long> createPost(
             @RequestBody PostCreateRequest request,
             @AuthenticatedMember Member member
@@ -39,11 +40,12 @@ public class PostController {
     }
 
     @GetMapping("/my")
+    @Operation(summary = "내 게시글 목록 조회", description = "로그인한 사용자의 게시글 목록을 조회합니다.")
     public ApiResponse<PostListResponse> getMyPosts(@AuthenticatedMember Member member) {
         return ApiResponse.ok(PostListResponse.from(postQueryService.getPostsOfMember(member.getId())));
     }
 
-    @Operation(summary = "전체 게시글 목록 조회")
+    @Operation(summary = "전체 게시글 목록 조회", description = "모든 사용자의 게시글 목록을 페이지네이션과 정렬 기준으로 조회합니다.")
     @GetMapping()
     public ApiResponse<PostFeedResponse> getCards(
             @RequestParam(defaultValue = "1") @Min(1) int page,
@@ -57,11 +59,13 @@ public class PostController {
     }
 
     @GetMapping("/{postId}")
+    @Operation(summary = "게시글 상세 조회", description = "게시글 ID로 게시글의 상세 정보를 조회합니다.")
     public ApiResponse<PostDetailResponse> getPostDetail(@PathVariable Long postId) {
         return ApiResponse.ok(this.postQueryService.getPostDetail(postId));
     }
 
     @DeleteMapping("/{postId}")
+    @Operation(summary = "게시글 삭제", description = "게시글을 삭제합니다.")
     public ApiResponse<Void> deletePost(
             @PathVariable Long postId
     ) {
@@ -70,6 +74,7 @@ public class PostController {
     }
 
     @PostMapping("/like/{postId}")
+    @Operation(summary = "게시글 좋아요", description = "게시글에 좋아요를 추가합니다.")
     public ApiResponse<LikeInfoResponse> likePost(
             @PathVariable Long postId,
             @AuthenticatedMember Member member
@@ -78,6 +83,7 @@ public class PostController {
     }
 
     @PostMapping("/unlike/{postId}")
+    @Operation(summary = "게시글 좋아요 취소", description = "게시글의 좋아요를 취소합니다.")
     public ApiResponse<LikeInfoResponse> unlikePost(
             @PathVariable Long postId,
             @AuthenticatedMember Member member
@@ -85,7 +91,7 @@ public class PostController {
         return ApiResponse.ok(this.postCommandService.unlikePost(postId, member));
     }
 
-    @Operation(summary = "이미지 presigned URL 발급")
+    @Operation(summary = "게시글 이미지 presigned URL 발급", description = "게시글 이미지 업로드를 위한 presigned URL을 발급합니다.")
     @PostMapping("/image")
     public ApiResponse<PresignedUrlResponse> uploadCardImage(@RequestBody PresignedUrlRequest request) {
         return ApiResponse.ok(postCommandService.getPresignedUrl(request));

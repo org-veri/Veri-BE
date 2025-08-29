@@ -6,6 +6,8 @@ spring:
 springdoc:
   swagger-ui:
     path: /resources/docs/swagger
+    tags-sorter: alpha
+    operations-sorter: alpha
   api-docs:
     path: /resources/docs/v3/api-docs
 

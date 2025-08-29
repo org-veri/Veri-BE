@@ -12,7 +12,7 @@ import org.goorm.veri.veribe.global.response.ApiResponse;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "소셜")
-@Tag(name = "카드")
+@Tag(name = "독서 카드")
 @RequestMapping("/api/v1/cards")
 @RestController
 @RequiredArgsConstructor
