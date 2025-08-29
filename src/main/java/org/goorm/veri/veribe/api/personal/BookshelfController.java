@@ -1,4 +1,4 @@
-package org.goorm.veri.veribe.domain.book.controller;
+package org.goorm.veri.veribe.api.personal;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -7,26 +7,35 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.auth.annotation.AuthenticatedMember;
 import org.goorm.veri.veribe.domain.book.controller.enums.ReadingSortType;
-import org.goorm.veri.veribe.domain.book.dto.reading.request.ReadingModifyRequest;
-import org.goorm.veri.veribe.domain.book.dto.reading.request.ReadingScoreRequest;
-import org.goorm.veri.veribe.domain.book.dto.reading.response.*;
-import org.goorm.veri.veribe.domain.book.dto.book.BookPopularListResponseV2;
-import org.goorm.veri.veribe.domain.book.dto.book.BookPopularResponse;
 import org.goorm.veri.veribe.domain.book.dto.book.AddBookRequest;
 import org.goorm.veri.veribe.domain.book.dto.book.BookSearchResponse;
+import org.goorm.veri.veribe.domain.book.dto.reading.request.ReadingModifyRequest;
+import org.goorm.veri.veribe.domain.book.dto.reading.request.ReadingScoreRequest;
+import org.goorm.veri.veribe.domain.book.dto.reading.response.ReadingAddResponse;
+import org.goorm.veri.veribe.domain.book.dto.reading.response.ReadingListResponse;
+import org.goorm.veri.veribe.domain.book.dto.reading.response.ReadingResponse;
+import org.goorm.veri.veribe.domain.book.dto.reading.response.ReadingVisibilityUpdateResponse;
 import org.goorm.veri.veribe.domain.book.entity.Reading;
 import org.goorm.veri.veribe.domain.book.service.BookService;
 import org.goorm.veri.veribe.domain.book.service.BookshelfService;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.goorm.veri.veribe.global.response.ApiResponse;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "책장 API V2")
+@Tag(name = "책장")
 @RequestMapping("/api/v2/bookshelf")
 @RestController
 @RequiredArgsConstructor
-public class BookshelfControllerV2 {
+public class BookshelfController {
 
     private final BookshelfService bookshelfService;
     private final BookService bookService;
@@ -61,14 +70,6 @@ public class BookshelfControllerV2 {
         return ApiResponse.ok(new ReadingListResponse(pageData));
     }
 
-    @Operation(summary = "독서 상세 조회", description = "memberBookId로 책장에 등록된 책의 상세 정보를 조회합니다.")
-    @GetMapping("/{readingId}")
-    public ApiResponse<ReadingDetailResponse> getBookDetail(@PathVariable Long readingId) {
-        ReadingDetailResponse result = bookshelfService.searchDetail(readingId);
-
-        return ApiResponse.ok(result);
-    }
-
     @Operation(summary = "도서 검색", description = "검색어로 도서를 검색합니다.")
     @GetMapping("/search")
     public ApiResponse<BookSearchResponse> searchBooks(
@@ -81,13 +82,6 @@ public class BookshelfControllerV2 {
         return ApiResponse.ok(bookResponses);
     }
 
-    @Operation(summary = "인기 도서 조회", description = "인기 도서 상위 10개를 조회합니다.")
-    @GetMapping("/popular")
-    public ApiResponse<BookPopularListResponseV2> getPopularBooks() {
-        Page<BookPopularResponse> pageData = bookshelfService.searchPopular(0, 10); // 상위 10개
-
-        return ApiResponse.ok(new BookPopularListResponseV2(pageData.getContent()));
-    }
 
     @Operation(summary = "내 완독 책 개수 조회", description = "내가 완독한 책의 개수를 조회합니다.")
     @GetMapping("/my/count")

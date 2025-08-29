@@ -1,4 +1,4 @@
-package org.goorm.veri.veribe.domain.image.controller;
+package org.goorm.veri.veribe.api.personal;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "이미지 API")
+@Tag(name = "이미지")
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor

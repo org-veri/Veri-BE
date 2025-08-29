@@ -1,4 +1,4 @@
-package org.goorm.veri.veribe.domain.card.controller;
+package org.goorm.veri.veribe.api.personal;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,7 +19,7 @@ import org.goorm.veri.veribe.global.storage.dto.PresignedUrlRequest;
 import org.goorm.veri.veribe.global.storage.dto.PresignedUrlResponse;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "독서 카드 API")
+@Tag(name = "독서 카드")
 @RequestMapping("/api/v1/cards")
 @RestController
 @RequiredArgsConstructor
@@ -64,19 +64,6 @@ public class CardController {
         );
     }
 
-    @Operation(summary = "전체 카드 목록 조회", description = "모든 사용자의 공개된 카드 목록을 페이지네이션과 정렬 기준으로 조회합니다.")
-    @GetMapping()
-    public ApiResponse<CardListResponse> getCards(
-            @RequestParam(defaultValue = "1") @Min(1) int page,
-            @RequestParam(defaultValue = "10") @Min(1) int size,
-            @RequestParam(defaultValue = "newest") String sort
-    ) {
-        CardSortType sortType = CardSortType.from(sort);
-        return ApiResponse.ok(
-                new CardListResponse(cardQueryService.getAllCards(page - 1, size, sortType))
-        );
-    }
-
     @Operation(summary = "카드 상세 조회", description = "카드 ID로 카드의 상세 정보를 조회합니다.")
     @GetMapping("/{cardId}")
     public ApiResponse<CardDetailResponse> getCard(@PathVariable Long cardId) {
@@ -94,15 +81,6 @@ public class CardController {
                 request.content()
         );
         return ApiResponse.ok(CardConverter.toCardUpdateResponse(response));
-    }
-
-    @Operation(summary = "카드 공개 여부 수정", description = "독서가 비공개 상태라면 카드는 공개할 수 없습니다.")
-    @PatchMapping("/{cardId}/visibility")
-    public ApiResponse<CardVisibilityUpdateResponse> modifyVisibility(
-            @PathVariable Long cardId,
-            @RequestParam boolean isPublic
-    ) {
-        return ApiResponse.ok(cardCommandService.modifyVisibility(cardId, isPublic));
     }
 
     @Operation(summary = "카드 삭제", description = "카드 ID로 카드를 삭제합니다. 본인 소유 카드만 삭제할 수 있습니다.")

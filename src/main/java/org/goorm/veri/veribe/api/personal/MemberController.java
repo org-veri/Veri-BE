@@ -1,4 +1,4 @@
-package org.goorm.veri.veribe.domain.member.controller;
+package org.goorm.veri.veribe.api.personal;
 
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.auth.annotation.AuthenticatedMember;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "멤버 API")
+@Tag(name = "사용자")
 @RestController
 @RequestMapping("/api/v1/members")
 @RequiredArgsConstructor

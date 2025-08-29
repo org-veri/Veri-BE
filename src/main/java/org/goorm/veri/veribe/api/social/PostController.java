@@ -1,4 +1,4 @@
-package org.goorm.veri.veribe.domain.post.controller;
+package org.goorm.veri.veribe.api.social;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,7 +19,8 @@ import org.goorm.veri.veribe.global.storage.dto.PresignedUrlRequest;
 import org.goorm.veri.veribe.global.storage.dto.PresignedUrlResponse;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "게시글 API")
+@Tag(name = "소셜")
+@Tag(name = "게시글")
 @RequestMapping("/api/v1/posts")
 @RestController
 @RequiredArgsConstructor

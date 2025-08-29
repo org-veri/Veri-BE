@@ -1,4 +1,4 @@
-package org.goorm.veri.veribe.domain.auth.controller;
+package org.goorm.veri.veribe.api.personal;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "로그인 API")
+@Tag(name = "인증")
 public class AuthController {
 
     private final AuthService authService;

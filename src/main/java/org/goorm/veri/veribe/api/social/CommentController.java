@@ -1,4 +1,4 @@
-package org.goorm.veri.veribe.domain.comment.controller;
+package org.goorm.veri.veribe.api.social;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +9,8 @@ import org.goorm.veri.veribe.domain.comment.service.CommentCommandService;
 import org.goorm.veri.veribe.global.response.ApiResponse;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "댓글 API")
+@Tag(name = "소셜")
+@Tag(name = "댓글")
 @RequestMapping("/api/v1/comments")
 @RestController
 @RequiredArgsConstructor

@@ -1,4 +1,4 @@
-package org.goorm.veri.veribe.domain.card.controller;
+package org.goorm.veri.veribe.api.personal;
 
 import io.github.miensoap.s3.core.post.dto.PresignedPostForm;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "카드 API V2")
+@Tag(name = "독서 카드")
 @RequestMapping("/api/v2/cards")
 @RestController
 @RequiredArgsConstructor
