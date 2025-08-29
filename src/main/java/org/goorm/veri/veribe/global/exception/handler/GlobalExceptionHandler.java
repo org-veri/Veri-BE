@@ -2,6 +2,7 @@ package org.goorm.veri.veribe.global.exception.handler;
 
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.goorm.veri.veribe.global.exception.ApplicationException;
 import org.goorm.veri.veribe.global.exception.CommonErrorInfo;
@@ -17,9 +18,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-
-import java.util.Map;
 
 @RestControllerAdvice
 @Slf4j
@@ -45,10 +45,13 @@ public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NoResourceFoundException.class)
-    public ApiResponse<Map<?, ?>> handleNoResourceFoundException(NoResourceFoundException e,
-                                                                 HttpServletRequest request) {
-        log.debug("Resource '{}' Not Found. Request IP : {}", request.getRequestURI(),
-                request.getAttribute(InjectIPAddressInterceptor.IP));
+    public ApiResponse<Map<?, ?>> handleNoResourceFoundException(NoResourceFoundException e) {
+        return ApiResponse.error(CommonErrorInfo.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ApiResponse<Map<?, ?>> handleNoHandlerFoundException(NoHandlerFoundException e) {
         return ApiResponse.error(CommonErrorInfo.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
@@ -94,7 +97,8 @@ public class GlobalExceptionHandler {
         log.debug(e.getMessage());
         return ApiResponse.error(CommonErrorInfo.INVALID_REQUEST, HttpStatus.BAD_REQUEST);
     }
-
+    
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(UnrecognizedPropertyException.class)
     public ApiResponse<Map<?, ?>> handleUnrecognizedPropertyException(
             UnrecognizedPropertyException e,
