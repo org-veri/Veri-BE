@@ -16,8 +16,8 @@ public record PostCreateRequest(
 
         @NotNull
         @Size(max = 10)
-        List<String> images
-//        Long memberBookId,
-//        Boolean isPublic
+        List<String> images,
+
+        Long bookId
 ) {
 }

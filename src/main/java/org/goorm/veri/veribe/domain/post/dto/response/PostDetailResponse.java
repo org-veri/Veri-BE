@@ -1,6 +1,7 @@
 package org.goorm.veri.veribe.domain.post.dto.response;
 
 import lombok.Builder;
+import org.goorm.veri.veribe.domain.book.dto.book.BookResponse;
 import org.goorm.veri.veribe.domain.comment.entity.Comment;
 import org.goorm.veri.veribe.domain.common.dto.MemberProfile;
 import org.goorm.veri.veribe.domain.post.entity.Post;
@@ -17,13 +18,12 @@ public record PostDetailResponse(
         String content,
         List<String> images,
         MemberProfile author,
+        BookResponse book,
         long likeCount,
         boolean isLiked,
         List<CommentResponse> comments,
         long commentCount,
         LocalDateTime createdAt
-
-        // Todo. 태그된 책 정보
 ) {
     public static PostDetailResponse from(Post post, LikeInfoQueryResult likeInfo, List<CommentResponse> comments) {
         List<String> imageUrls = post.getImages().stream()
@@ -36,6 +36,7 @@ public record PostDetailResponse(
                 .content(post.getContent())
                 .images(imageUrls)
                 .author(MemberProfile.from(post.getAuthor()))
+                .book(BookResponse.from(post.getBook()))
                 .likeCount(likeInfo.likeCount())
                 .isLiked(likeInfo.isLiked())
                 .comments(comments)

@@ -3,13 +3,13 @@ package org.goorm.veri.veribe.domain.post.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.goorm.veri.veribe.domain.book.entity.Book;
 import org.goorm.veri.veribe.domain.comment.entity.Comment;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.goorm.veri.veribe.global.entity.Authorizable;
 import org.goorm.veri.veribe.global.entity.BaseEntity;
 import org.goorm.veri.veribe.global.exception.CommonErrorInfo;
 import org.goorm.veri.veribe.global.exception.http.ForbiddenException;
-import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +36,9 @@ public class Post extends BaseEntity implements Authorizable {
 
     @Column(name = "content", nullable = false, columnDefinition = "TEXT")
     private String content;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Book book;
 
     @Builder.Default
     @OrderBy("displayOrder ASC")

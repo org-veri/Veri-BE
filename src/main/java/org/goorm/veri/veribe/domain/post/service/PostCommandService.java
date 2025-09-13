@@ -2,6 +2,8 @@ package org.goorm.veri.veribe.domain.post.service;
 
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.auth.service.AuthUtil;
+import org.goorm.veri.veribe.domain.book.entity.Book;
+import org.goorm.veri.veribe.domain.book.service.BookService;
 import org.goorm.veri.veribe.domain.card.exception.CardErrorInfo;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.goorm.veri.veribe.domain.post.dto.request.PostCreateRequest;
@@ -26,15 +28,19 @@ public class PostCommandService {
 
     private final PostRepository postRepository;
     private final PostQueryService postQueryService;
+    private final BookService bookService;
     private final StorageService storageService;
     private final LikePostRepository likePostRepository;
 
     @Transactional
     public Long createPost(PostCreateRequest request, Member member) {
+        Book book = this.bookService.getBookById(request.bookId());
+
         Post post = Post.builder()
                 .title(request.title())
                 .content(request.content())
                 .author(member)
+                .book(book)
                 .build();
 
         for (int i = 0; i < request.images().size(); i++) {

@@ -1,5 +1,6 @@
 package org.goorm.veri.veribe.domain.post.dto.response;
 
+import org.goorm.veri.veribe.domain.book.dto.book.BookResponse;
 import org.goorm.veri.veribe.domain.common.dto.MemberProfile;
 import org.goorm.veri.veribe.domain.post.repository.dto.PostFeedQueryResult;
 
@@ -11,6 +12,7 @@ public record PostFeedResponseItem(
         String content,
         String thumbnail,
         MemberProfile author,
+        BookResponse book,
         long likeCount,
         long commentCount,
         LocalDateTime createdAt
@@ -23,6 +25,7 @@ public record PostFeedResponseItem(
                 post.content(),
                 post.thumbnailImageUrl(),
                 MemberProfile.from(post.author()),
+                BookResponse.from(post.book()),
                 post.likeCount(),
                 post.commentCount(),
                 post.createdAt()

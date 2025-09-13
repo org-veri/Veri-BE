@@ -10,7 +10,9 @@ import org.goorm.veri.veribe.domain.book.dto.book.NaverBookResponse;
 import org.goorm.veri.veribe.domain.book.entity.Book;
 import org.goorm.veri.veribe.domain.book.exception.BookErrorInfo;
 import org.goorm.veri.veribe.domain.book.repository.BookRepository;
+import org.goorm.veri.veribe.global.exception.CommonErrorInfo;
 import org.goorm.veri.veribe.global.exception.http.BadRequestException;
+import org.goorm.veri.veribe.global.exception.http.NotFoundException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -90,5 +92,11 @@ public class BookService {
         } catch (JsonProcessingException e) {
             throw new BadRequestException(BookErrorInfo.BAD_REQUEST);
         }
+    }
+
+    public Book getBookById(Long bookId) {
+        if (bookId == null) return null;
+        return bookRepository.findById(bookId)
+                .orElseThrow(() -> new NotFoundException(CommonErrorInfo.RESOURCE_NOT_FOUND));
     }
 }
