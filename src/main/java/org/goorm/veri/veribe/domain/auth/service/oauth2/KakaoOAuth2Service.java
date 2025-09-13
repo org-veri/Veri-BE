@@ -1,6 +1,7 @@
 package org.goorm.veri.veribe.domain.auth.service.oauth2;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.goorm.veri.veribe.domain.auth.dto.AuthRequest;
 import org.goorm.veri.veribe.domain.auth.dto.KakaoOAuth2DTO;
@@ -8,6 +9,7 @@ import org.goorm.veri.veribe.domain.auth.exception.AuthErrorInfo;
 import org.goorm.veri.veribe.domain.auth.service.TokenCommandService;
 import org.goorm.veri.veribe.domain.member.entity.enums.ProviderType;
 import org.goorm.veri.veribe.domain.member.repository.MemberRepository;
+import org.goorm.veri.veribe.domain.member.service.MemberQueryService;
 import org.goorm.veri.veribe.global.data.KakaoOAuth2ConfigData;
 import org.goorm.veri.veribe.global.exception.http.ExternalApiException;
 import org.springframework.http.HttpEntity;
@@ -27,10 +29,11 @@ public class KakaoOAuth2Service extends AbstractOAuth2Service {
     private final KakaoOAuth2ConfigData kakaoOAuth2ConfigData;
 
     public KakaoOAuth2Service(MemberRepository memberRepository,
+                              MemberQueryService memberQueryService,
                               TokenCommandService tokenCommandService,
                               KakaoOAuth2ConfigData kakaoOAuth2ConfigData
     ) {
-        super(ProviderType.KAKAO, memberRepository, tokenCommandService);
+        super(ProviderType.KAKAO, memberRepository, memberQueryService, tokenCommandService);
         this.kakaoOAuth2ConfigData = kakaoOAuth2ConfigData;
     }
 

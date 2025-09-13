@@ -7,7 +7,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.goorm.veri.veribe.domain.member.entity.enums.ProviderType;
+import org.goorm.veri.veribe.global.entity.Authorizable;
 import org.goorm.veri.veribe.global.entity.BaseEntity;
+import org.goorm.veri.veribe.global.exception.CommonErrorInfo;
+import org.goorm.veri.veribe.global.exception.http.ForbiddenException;
 
 @Getter
 @SuperBuilder
@@ -15,7 +18,7 @@ import org.goorm.veri.veribe.global.entity.BaseEntity;
 @Table(name = "member")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class Member extends BaseEntity {
+public class Member extends BaseEntity implements Authorizable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +42,14 @@ public class Member extends BaseEntity {
     private ProviderType providerType;
 
     public void updateInfo(String nickname, String profileImageUrl) {
-        this.nickname = nickname;
-        this.profileImageUrl = profileImageUrl;
+        this.nickname = nickname == null ? nickname : this.nickname;
+        this.profileImageUrl = profileImageUrl == null ? profileImageUrl : this.profileImageUrl;
+    }
+
+    @Override
+    public void authorizeMember(Long memberId) {
+        if (!this.id.equals(memberId)) {
+            throw new ForbiddenException(CommonErrorInfo.DOES_NOT_HAVE_PERMISSION);
+        }
     }
 }
