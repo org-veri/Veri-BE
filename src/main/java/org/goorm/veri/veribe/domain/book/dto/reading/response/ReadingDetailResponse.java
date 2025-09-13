@@ -1,7 +1,7 @@
 package org.goorm.veri.veribe.domain.book.dto.reading.response;
 
 import lombok.Builder;
-import org.goorm.veri.veribe.domain.book.entity.enums.BookStatus;
+import org.goorm.veri.veribe.domain.book.entity.enums.ReadingStatus;
 import org.goorm.veri.veribe.domain.common.dto.MemberProfile;
 
 import java.time.LocalDateTime;
@@ -14,7 +14,7 @@ public record ReadingDetailResponse(
         String title,
         String author,
         String imageUrl,
-        BookStatus status,
+        ReadingStatus status,
         Double score,
         LocalDateTime startedAt,
         LocalDateTime endedAt,

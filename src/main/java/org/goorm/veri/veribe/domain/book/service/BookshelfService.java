@@ -10,7 +10,7 @@ import org.goorm.veri.veribe.domain.book.dto.reading.response.ReadingResponse;
 import org.goorm.veri.veribe.domain.book.dto.reading.response.ReadingVisibilityUpdateResponse;
 import org.goorm.veri.veribe.domain.book.entity.Book;
 import org.goorm.veri.veribe.domain.book.entity.Reading;
-import org.goorm.veri.veribe.domain.book.entity.enums.BookStatus;
+import org.goorm.veri.veribe.domain.book.entity.enums.ReadingStatus;
 import org.goorm.veri.veribe.domain.book.exception.BookErrorInfo;
 import org.goorm.veri.veribe.domain.book.repository.BookRepository;
 import org.goorm.veri.veribe.domain.book.repository.ReadingRepository;
@@ -26,9 +26,10 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
-import static org.goorm.veri.veribe.domain.book.entity.enums.BookStatus.*;
+import static org.goorm.veri.veribe.domain.book.entity.enums.ReadingStatus.*;
 
 @Service
 @Transactional
@@ -64,12 +65,18 @@ public class BookshelfService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ReadingResponse> searchAllReadingOfMember(Long memberId, int page, int size, ReadingSortType sortType) {
+    public Page<ReadingResponse> searchAllReadingOfMember(
+            Long memberId,
+            List<ReadingStatus> statuses,
+            int page, int size, ReadingSortType sortType
+    ) {
         Pageable pageRequest = PageRequest.of(page, size, sortType.getSort());
 
-        Page<ReadingResponse> responses = readingRepository.findReadingPage(memberId, pageRequest);
-
-        return responses;
+        return readingRepository.findReadingPage(
+                memberId,
+                statuses,
+                pageRequest
+        );
     }
 
     @Transactional(readOnly = true)
@@ -116,7 +123,7 @@ public class BookshelfService {
         Reading reading = getReadingById(memberBookId);
         reading.authorizeMember(AuthUtil.getCurrentMember().getId());
 
-        BookStatus updateStatus = decideStatus(startedAt, endedAt);
+        ReadingStatus updateStatus = decideStatus(startedAt, endedAt);
 
         Reading updated = reading.toBuilder()
                 .score(score)
@@ -128,7 +135,7 @@ public class BookshelfService {
         readingRepository.save(updated);
     }
 
-    private BookStatus decideStatus(LocalDateTime updateStart, LocalDateTime updateEnd) {
+    private ReadingStatus decideStatus(LocalDateTime updateStart, LocalDateTime updateEnd) {
         if (updateEnd != null) { //독서 완료 시간이 존재 시 DONE
             return DONE;
         }

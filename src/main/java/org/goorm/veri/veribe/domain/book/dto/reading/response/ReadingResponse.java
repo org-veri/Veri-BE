@@ -2,7 +2,7 @@ package org.goorm.veri.veribe.domain.book.dto.reading.response;
 
 import lombok.Builder;
 
-import org.goorm.veri.veribe.domain.book.entity.enums.BookStatus;
+import org.goorm.veri.veribe.domain.book.entity.enums.ReadingStatus;
 
 import java.time.LocalDateTime;
 
@@ -14,7 +14,7 @@ public record ReadingResponse (
         String imageUrl,
         Double score,
         LocalDateTime startedAt,
-        BookStatus status,
+        ReadingStatus status,
         boolean isPublic
 )
 {}

@@ -3,7 +3,7 @@ package org.goorm.veri.veribe.domain.book.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.goorm.veri.veribe.domain.book.entity.enums.BookStatus;
+import org.goorm.veri.veribe.domain.book.entity.enums.ReadingStatus;
 import org.goorm.veri.veribe.domain.book.exception.ReadingErrorInfo;
 import org.goorm.veri.veribe.domain.card.entity.Card;
 import org.goorm.veri.veribe.domain.member.entity.Member;
@@ -45,7 +45,7 @@ public class Reading extends BaseEntity {
     private Book book;
 
     @Column(name = "status")
-    private BookStatus status;
+    private ReadingStatus status;
 
     @Builder.Default
     @Column(name = "is_public")
