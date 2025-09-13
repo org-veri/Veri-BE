@@ -9,8 +9,8 @@ import org.goorm.veri.veribe.global.entity.Authorizable;
 import org.goorm.veri.veribe.global.entity.BaseEntity;
 import org.goorm.veri.veribe.global.exception.CommonErrorInfo;
 import org.goorm.veri.veribe.global.exception.http.ForbiddenException;
-import org.hibernate.annotations.SQLRestriction;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +47,9 @@ public class Comment extends BaseEntity implements Authorizable {
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> replies = new ArrayList<>();
 
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     public boolean isRoot() {
         return parent == null;
     }
@@ -59,6 +62,14 @@ public class Comment extends BaseEntity implements Authorizable {
     public Comment editContent(String content) {
         this.content = content;
         return this;
+    }
+
+    public void delete() {
+        this.deletedAt = LocalDateTime.now();
+    }
+
+    public boolean isDeleted() {
+        return this.deletedAt != null;
     }
 
     @Override

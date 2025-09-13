@@ -49,7 +49,8 @@ public record PostDetailResponse(
             String content,
             MemberProfile author,
             List<CommentResponse> replies,
-            LocalDateTime createdAt
+            LocalDateTime createdAt,
+            boolean isDeleted
     ) {
 
         public static CommentResponse fromEntity(Comment comment) {
@@ -57,12 +58,15 @@ public record PostDetailResponse(
                     .map(CommentResponse::fromEntity)
                     .toList();
 
+            boolean isDeleted = comment.isDeleted(); // 삭제 댓글은 작성자/내용 마스킹
+
             return new CommentResponse(
-                    comment.getId(),
-                    comment.getContent(),
-                    MemberProfile.from(comment.getAuthor()),
+                    isDeleted ? comment.getId() : null,
+                    isDeleted ? comment.getContent() : "삭제된 댓글입니다.",
+                    isDeleted ? MemberProfile.from(comment.getAuthor()) : null,
                     replies,
-                    comment.getCreatedAt()
+                    comment.getCreatedAt(),
+                    isDeleted
             );
         }
     }

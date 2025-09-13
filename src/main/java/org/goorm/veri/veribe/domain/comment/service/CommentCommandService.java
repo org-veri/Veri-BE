@@ -65,6 +65,7 @@ public class CommentCommandService {
         Comment comment = commentQueryService.getCommentById(commentId);
         comment.authorizeMember(member.getId());
 
-        commentRepository.delete(comment);
+        comment.delete();
+        commentRepository.save(comment);
     }
 }
