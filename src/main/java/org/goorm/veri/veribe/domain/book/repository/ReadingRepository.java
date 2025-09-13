@@ -3,7 +3,7 @@ package org.goorm.veri.veribe.domain.book.repository;
 import org.goorm.veri.veribe.domain.book.dto.book.BookPopularResponse;
 import org.goorm.veri.veribe.domain.book.dto.reading.response.ReadingResponse;
 import org.goorm.veri.veribe.domain.book.entity.Reading;
-import org.goorm.veri.veribe.domain.book.entity.enums.BookStatus;
+import org.goorm.veri.veribe.domain.book.entity.enums.ReadingStatus;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface ReadingRepository extends JpaRepository<Reading, Long> {
@@ -54,8 +55,13 @@ public interface ReadingRepository extends JpaRepository<Reading, Long> {
             mb.isPublic)
             FROM Reading mb
             WHERE mb.member.id = :memberId
+            AND mb.status IN (:statuses)
             """)
-    Page<ReadingResponse> findReadingPage(@Param("memberId") Long memberId, Pageable pageable);
+    Page<ReadingResponse> findReadingPage(
+            @Param("memberId") Long memberId,
+            @Param("statuses") List<ReadingStatus> statuses,
+            Pageable pageable
+    );
 
     @Query("""
             SELECT COUNT(mb)
@@ -63,7 +69,7 @@ public interface ReadingRepository extends JpaRepository<Reading, Long> {
             WHERE mb.status = :status
             AND mb.member.id = :memberId
             """)
-    int countByStatusAndMember(@Param("status") BookStatus status, @Param("memberId") Long memberId);
+    int countByStatusAndMember(@Param("status") ReadingStatus status, @Param("memberId") Long memberId);
 
     @Query("""
                 SELECT mb FROM Reading mb

@@ -6,10 +6,10 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.goorm.veri.veribe.domain.auth.annotation.AuthenticatedMember;
-import org.goorm.veri.veribe.domain.book.controller.enums.ReadingSortType;
 import org.goorm.veri.veribe.domain.book.dto.book.AddBookRequest;
 import org.goorm.veri.veribe.domain.book.dto.book.BookSearchResponse;
 import org.goorm.veri.veribe.domain.book.dto.reading.request.ReadingModifyRequest;
+import org.goorm.veri.veribe.domain.book.dto.reading.request.ReadingPageRequest;
 import org.goorm.veri.veribe.domain.book.dto.reading.request.ReadingScoreRequest;
 import org.goorm.veri.veribe.domain.book.dto.reading.response.ReadingAddResponse;
 import org.goorm.veri.veribe.domain.book.dto.reading.response.ReadingListResponse;
@@ -21,15 +21,7 @@ import org.goorm.veri.veribe.domain.book.service.BookshelfService;
 import org.goorm.veri.veribe.domain.member.entity.Member;
 import org.goorm.veri.veribe.global.response.ApiResponse;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "책장")
 @RequestMapping("/api/v2/bookshelf")
@@ -39,6 +31,25 @@ public class BookshelfController {
 
     private final BookshelfService bookshelfService;
     private final BookService bookService;
+
+    @Operation(summary = "내 책장 전체 조회",
+            description = "내 책장에 등록된 모든 책을 페이지네이션과 정렬 기준으로 조회합니다.\n"
+                    + "정렬 기준은 'NEWEST', 'OLDEST', 'SCORE' 가 있습니다. (기본값 'NEWEST')\n"
+                    + "상태 목록으로 조회할 상태를 지정할 수 있습니다.\n"
+                    + "독서 상태는 'NOT_START', 'READING', 'DONE' 가 있습니다. (기본값 전체)"
+    )
+    @GetMapping("/my")
+    public ApiResponse<ReadingListResponse> getAllBooks(
+            @ModelAttribute ReadingPageRequest request,
+            @AuthenticatedMember Member member
+    ) {
+        Page<ReadingResponse> pageData = bookshelfService.searchAllReadingOfMember(
+                member.getId(),
+                request.getStatuses(),
+                request.getPage() - 1, request.getSize(), request.getSortType());
+
+        return ApiResponse.ok(new ReadingListResponse(pageData));
+    }
 
     @Operation(summary = "책장에 책 추가", description = "신규 도서를 등록하고 내 책장에 추가합니다.")
     @PostMapping
@@ -54,20 +65,6 @@ public class BookshelfController {
         Reading reading = bookshelfService.addToBookshelf(member, bookId, request.isPublic());
 
         return ApiResponse.created(new ReadingAddResponse(reading.getId(), reading.getCreatedAt()));
-    }
-
-    @Operation(summary = "내 책장 전체 조회", description = "내 책장에 등록된 모든 책을 페이지네이션과 정렬 기준으로 조회합니다.")
-    @GetMapping("/my")
-    public ApiResponse<ReadingListResponse> getAllBooks(
-            @RequestParam(defaultValue = "1") @Min(1) int page,
-            @RequestParam(defaultValue = "10") @Min(1) int size,
-            @RequestParam(defaultValue = "newest") String sort,
-            @AuthenticatedMember Member member
-    ) {
-        ReadingSortType sortType = ReadingSortType.from(sort);
-        Page<ReadingResponse> pageData = bookshelfService.searchAllReadingOfMember(member.getId(), page - 1, size, sortType);
-
-        return ApiResponse.ok(new ReadingListResponse(pageData));
     }
 
     @Operation(summary = "도서 검색", description = "검색어로 도서를 검색합니다.")
