@@ -58,6 +58,21 @@ public class PostCommandService {
         this.postRepository.deleteById(postId);
     }
 
+    @Transactional
+    public void publishPost(Long postId) {
+        Post post = this.postQueryService.getPostById(postId);
+        post.authorizeMember(AuthUtil.getCurrentMember().getId());
+        post.setIsPublic(true);
+        postRepository.save(post);
+    }
+
+    @Transactional
+    public void unPublishPost(Long postId) {
+        Post post = this.postQueryService.getPostById(postId);
+        post.authorizeMember(AuthUtil.getCurrentMember().getId());
+        post.setIsPublic(false);
+        postRepository.save(post);
+    }
 
     public PresignedUrlResponse getPresignedUrl(PresignedUrlRequest request) {
         if (request.contentLength() > MB) {

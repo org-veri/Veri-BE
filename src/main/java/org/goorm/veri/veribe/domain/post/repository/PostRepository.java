@@ -21,10 +21,12 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                 p.book,
                 (SELECT COUNT(l) FROM LikePost l WHERE l.post = p),
                 (SELECT COUNT(c) FROM Comment c WHERE c.post = p AND c.parent = null),
-                p.createdAt
+                p.createdAt,
+                p.isPublic
             )
             FROM Post p
             LEFT JOIN PostImage pi ON pi.post = p AND pi.displayOrder = 1
+            WHERE p.isPublic = true
             """
     )
     Page<PostFeedQueryResult> getPostFeeds(Pageable pageable);
@@ -38,7 +40,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                 p.book,
                 (SELECT COUNT(l) FROM LikePost l WHERE l.post = p),
                 (SELECT COUNT(c) FROM Comment c WHERE c.post = p AND c.parent = null),
-                p.createdAt
+                p.createdAt,
+                p.isPublic
             )
             FROM Post p
             LEFT JOIN PostImage pi ON pi.post = p AND pi.displayOrder = 1

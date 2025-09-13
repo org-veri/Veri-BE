@@ -15,7 +15,8 @@ public record PostFeedResponseItem(
         BookResponse book,
         long likeCount,
         long commentCount,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        boolean isPublic
 ) {
 
     public static PostFeedResponseItem from(PostFeedQueryResult post) {
@@ -28,7 +29,8 @@ public record PostFeedResponseItem(
                 BookResponse.from(post.book()),
                 post.likeCount(),
                 post.commentCount(),
-                post.createdAt()
+                post.createdAt(),
+                post.isPublic()
         );
     }
 }

@@ -50,6 +50,7 @@ public class Post extends BaseEntity implements Authorizable {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
+    @Setter
     @Builder.Default
     private Boolean isPublic = true;
 

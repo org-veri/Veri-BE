@@ -73,6 +73,24 @@ public class PostController {
         return ApiResponse.noContent();
     }
 
+    @PostMapping("/{postId}/publish")
+    @Operation(summary = "게시글 공개", description = "게시글을 공개합니다.")
+    public ApiResponse<Void> publishPost(
+            @PathVariable Long postId
+    ) {
+        this.postCommandService.publishPost(postId);
+        return ApiResponse.noContent();
+    }
+
+    @PostMapping("/{postId}/unpublish")
+    @Operation(summary = "게시글 비공개", description = "게시글을 비공개합니다.")
+    public ApiResponse<Void> unPublishPost(
+            @PathVariable Long postId
+    ) {
+        this.postCommandService.unPublishPost(postId);
+        return ApiResponse.noContent();
+    }
+
     @PostMapping("/like/{postId}")
     @Operation(summary = "게시글 좋아요", description = "게시글에 좋아요를 추가합니다.")
     public ApiResponse<LikeInfoResponse> likePost(

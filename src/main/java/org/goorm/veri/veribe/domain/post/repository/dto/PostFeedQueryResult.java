@@ -14,6 +14,7 @@ public record PostFeedQueryResult(
         Book book,
         long likeCount,
         long commentCount,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        boolean isPublic
 ) {
 }
