@@ -62,9 +62,9 @@ public record PostDetailResponse(
             boolean isDeleted = comment.isDeleted(); // 삭제 댓글은 작성자/내용 마스킹
 
             return new CommentResponse(
-                    isDeleted ? comment.getId() : null,
-                    isDeleted ? comment.getContent() : "삭제된 댓글입니다.",
-                    isDeleted ? MemberProfile.from(comment.getAuthor()) : null,
+                    isDeleted ? null : comment.getId(),
+                    isDeleted ? "삭제된 댓글입니다." : comment.getContent(),
+                    isDeleted ? null : MemberProfile.from(comment.getAuthor()),
                     replies,
                     comment.getCreatedAt(),
                     isDeleted
