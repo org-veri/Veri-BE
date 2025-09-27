@@ -37,6 +37,7 @@ public class Post extends BaseEntity implements Authorizable {
     @Column(name = "content", nullable = false, columnDefinition = "TEXT")
     private String content;
 
+    @JoinColumn(name = "book_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Book book;
 

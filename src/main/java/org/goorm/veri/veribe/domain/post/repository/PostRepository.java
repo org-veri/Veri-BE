@@ -25,6 +25,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                 p.isPublic
             )
             FROM Post p
+            LEFT JOIN p.book b
             LEFT JOIN PostImage pi ON pi.post = p AND pi.displayOrder = 1
             WHERE p.isPublic = true
             """
@@ -44,6 +45,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                 p.isPublic
             )
             FROM Post p
+            LEFT JOIN p.book b
             LEFT JOIN PostImage pi ON pi.post = p AND pi.displayOrder = 1
             WHERE p.author.id = :memberId
             """
