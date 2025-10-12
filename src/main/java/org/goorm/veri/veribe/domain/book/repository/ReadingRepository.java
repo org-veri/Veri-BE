@@ -45,6 +45,7 @@ public interface ReadingRepository extends JpaRepository<Reading, Long> {
 
     @Query("""
             SELECT new org.goorm.veri.veribe.domain.book.dto.reading.response.ReadingResponse(
+            mb.book.id,
             mb.id,
             mb.book.title,
             mb.book.author,
