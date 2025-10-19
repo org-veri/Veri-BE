@@ -9,7 +9,6 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
-import software.amazon.awssdk.services.textract.TextractClient;
 
 @Configuration
 public class AwsConfig {
@@ -31,14 +30,6 @@ public class AwsConfig {
     public StaticCredentialsProvider staticCredentialsProvider() {
         return StaticCredentialsProvider.create(
                 AwsBasicCredentials.create(accessKey, secretKey));
-    }
-
-    @Bean
-    public TextractClient textractClient(StaticCredentialsProvider credentialsProvider) {
-        return TextractClient.builder()
-                .region(Region.of(awsRegion))
-                .credentialsProvider(credentialsProvider)
-                .build();
     }
 
     @Bean
