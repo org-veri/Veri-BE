@@ -1,0 +1,5 @@
+package org.veri.be.domain.book.entity.enums;
+
+public enum ReadingStatus {
+    NOT_START, READING, DONE
+}

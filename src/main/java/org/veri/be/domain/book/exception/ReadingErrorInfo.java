@@ -1,0 +1,17 @@
+package org.veri.be.domain.book.exception;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.veri.be.global.exception.ErrorInfo;
+
+@AllArgsConstructor
+@Getter
+public enum ReadingErrorInfo implements ErrorInfo {
+    BAD_REQUEST("잘못된 요청입니다.", "MB1001"),
+    FORBIDDEN("권한이 없습니다.", "MB1002"),
+    ALREADY_EXIST("이미 등록된 책입니다.", "MB1002");
+
+    private final String message;
+    private final String code;
+}
+
