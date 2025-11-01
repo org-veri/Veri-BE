@@ -3,6 +3,8 @@ package org.veri.be.global.util;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 public abstract class UrlUtil {
@@ -26,7 +28,7 @@ public abstract class UrlUtil {
 
         // Referer 헤더의 baseUri
         try {
-            URL refererUrl = new URL(referer);
+            URL refererUrl = (new URI(referer)).toURL();
             String protocol = refererUrl.getProtocol();
             String host = refererUrl.getHost();
             int port = refererUrl.getPort();
@@ -40,7 +42,7 @@ public abstract class UrlUtil {
 
             return baseUri;
 
-        } catch (MalformedURLException e) {
+        } catch (MalformedURLException | URISyntaxException e) {
             return null;
         }
     }

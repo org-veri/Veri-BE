@@ -1,4 +1,4 @@
-package org.veri.be.global.config; // 경로는 프로젝트 구조에 맞게 수정하세요.
+package org.veri.be.global.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
