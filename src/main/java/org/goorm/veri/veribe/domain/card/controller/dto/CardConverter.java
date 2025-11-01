@@ -3,7 +3,7 @@ package org.goorm.veri.veribe.domain.card.controller.dto;
 import org.goorm.veri.veribe.domain.card.controller.dto.response.CardDetailResponse;
 import org.goorm.veri.veribe.domain.card.controller.dto.response.CardUpdateResponse;
 import org.goorm.veri.veribe.domain.card.entity.Card;
-import org.goorm.veri.veribe.domain.common.dto.MemberProfile;
+import org.goorm.veri.veribe.domain.common.dto.MemberProfileResponse;
 
 public class CardConverter {
 
@@ -14,7 +14,7 @@ public class CardConverter {
 
         return new CardDetailResponse(
                 card.getId(),
-                MemberProfile.from(card.getMember()),
+                MemberProfileResponse.from(card.getMember()),
                 card.getContent(),
                 card.getImage(),
                 card.getCreatedAt(),

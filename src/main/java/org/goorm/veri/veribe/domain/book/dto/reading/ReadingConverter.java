@@ -3,7 +3,7 @@ package org.goorm.veri.veribe.domain.book.dto.reading;
 import org.goorm.veri.veribe.domain.auth.service.AuthUtil;
 import org.goorm.veri.veribe.domain.book.dto.reading.response.ReadingDetailResponse;
 import org.goorm.veri.veribe.domain.book.entity.Reading;
-import org.goorm.veri.veribe.domain.common.dto.MemberProfile;
+import org.goorm.veri.veribe.domain.common.dto.MemberProfileResponse;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class ReadingConverter {
 
         return ReadingDetailResponse.builder()
                 .memberBookId(reading.getId())
-                .member(MemberProfile.from(reading.getMember()))
+                .member(MemberProfileResponse.from(reading.getMember()))
                 .title(reading.getBook().getTitle())
                 .imageUrl(reading.getBook().getImage())
                 .status(reading.getStatus())

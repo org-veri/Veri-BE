@@ -1,13 +1,13 @@
 package org.goorm.veri.veribe.domain.card.controller.dto.response;
 
 import org.goorm.veri.veribe.domain.book.entity.Reading;
-import org.goorm.veri.veribe.domain.common.dto.MemberProfile;
+import org.goorm.veri.veribe.domain.common.dto.MemberProfileResponse;
 
 import java.time.LocalDateTime;
 
 public record CardDetailResponse(
         Long id,
-        MemberProfile memberProfile,
+        MemberProfileResponse memberProfileResponse,
         String content,
         String imageUrl,
         LocalDateTime createdAt,

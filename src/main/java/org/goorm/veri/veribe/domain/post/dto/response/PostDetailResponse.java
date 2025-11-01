@@ -3,7 +3,7 @@ package org.goorm.veri.veribe.domain.post.dto.response;
 import lombok.Builder;
 import org.goorm.veri.veribe.domain.book.dto.book.BookResponse;
 import org.goorm.veri.veribe.domain.comment.entity.Comment;
-import org.goorm.veri.veribe.domain.common.dto.MemberProfile;
+import org.goorm.veri.veribe.domain.common.dto.MemberProfileResponse;
 import org.goorm.veri.veribe.domain.post.entity.Post;
 import org.goorm.veri.veribe.domain.post.entity.PostImage;
 import org.goorm.veri.veribe.domain.post.repository.dto.LikeInfoQueryResult;
@@ -17,7 +17,7 @@ public record PostDetailResponse(
         String title,
         String content,
         List<String> images,
-        MemberProfile author,
+        MemberProfileResponse author,
         BookResponse book,
         long likeCount,
         boolean isLiked,
@@ -48,7 +48,7 @@ public record PostDetailResponse(
     public record CommentResponse(
             Long commentId,
             String content,
-            MemberProfile author,
+            MemberProfileResponse author,
             List<CommentResponse> replies,
             LocalDateTime createdAt,
             boolean isDeleted
@@ -64,7 +64,7 @@ public record PostDetailResponse(
             return new CommentResponse(
                     isDeleted ? null : comment.getId(),
                     isDeleted ? "삭제된 댓글입니다." : comment.getContent(),
-                    isDeleted ? null : MemberProfile.from(comment.getAuthor()),
+                    isDeleted ? null : MemberProfileResponse.from(comment.getAuthor()),
                     replies,
                     comment.getCreatedAt(),
                     isDeleted
