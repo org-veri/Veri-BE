@@ -6,7 +6,7 @@ import org.goorm.veri.veribe.domain.comment.entity.Comment;
 import org.goorm.veri.veribe.domain.common.dto.MemberProfileResponse;
 import org.goorm.veri.veribe.domain.post.entity.Post;
 import org.goorm.veri.veribe.domain.post.entity.PostImage;
-import org.goorm.veri.veribe.domain.post.repository.dto.LikeInfoQueryResult;
+import org.goorm.veri.veribe.domain.post.repository.dto.DetailLikeInfoQueryResult;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,11 +21,12 @@ public record PostDetailResponse(
         BookResponse book,
         long likeCount,
         boolean isLiked,
+        List<MemberProfileResponse> likedMembers,
         List<CommentResponse> comments,
         long commentCount,
         LocalDateTime createdAt
 ) {
-    public static PostDetailResponse from(Post post, LikeInfoQueryResult likeInfo, List<CommentResponse> comments) {
+    public static PostDetailResponse from(Post post, DetailLikeInfoQueryResult likeInfo, List<CommentResponse> comments) {
         List<String> imageUrls = post.getImages().stream()
                 .map(PostImage::getImageUrl)
                 .toList();
@@ -35,10 +36,13 @@ public record PostDetailResponse(
                 .title(post.getTitle())
                 .content(post.getContent())
                 .images(imageUrls)
-                .author(MemberProfile.from(post.getAuthor()))
+                .author(MemberProfileResponse.from(post.getAuthor()))
                 .book(BookResponse.from(post.getBook()))
                 .likeCount(likeInfo.likeCount())
                 .isLiked(likeInfo.isLiked())
+                .likedMembers(likeInfo.likedMembers().stream()
+                        .map(MemberProfileResponse::from)
+                        .toList())
                 .comments(comments)
                 .commentCount(post.getCommentCount())
                 .createdAt(post.getCreatedAt())

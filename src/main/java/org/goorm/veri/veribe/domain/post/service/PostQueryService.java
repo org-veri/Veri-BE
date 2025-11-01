@@ -10,6 +10,7 @@ import org.goorm.veri.veribe.domain.post.dto.response.PostFeedResponseItem;
 import org.goorm.veri.veribe.domain.post.entity.Post;
 import org.goorm.veri.veribe.domain.post.repository.LikePostRepository;
 import org.goorm.veri.veribe.domain.post.repository.PostRepository;
+import org.goorm.veri.veribe.domain.post.repository.dto.DetailLikeInfoQueryResult;
 import org.goorm.veri.veribe.domain.post.repository.dto.LikeInfoQueryResult;
 import org.goorm.veri.veribe.domain.post.repository.dto.PostFeedQueryResult;
 import org.goorm.veri.veribe.global.exception.CommonErrorInfo;
@@ -51,7 +52,7 @@ public class PostQueryService {
         Member requester = AuthUtil.getCurrentMember();
 
         Post post = getPostById(postId);
-        LikeInfoQueryResult likeInfo = likePostRepository.getLikeInfoOfPost(postId, requester.getId());
+        DetailLikeInfoQueryResult likeInfo = likePostRepository.getDetailLikeInfoOfPost(postId, requester.getId());
         List<PostDetailResponse.CommentResponse> comments = commentQueryService.getCommentsByPostId(postId);
 
         return PostDetailResponse.from(post, likeInfo, comments);
