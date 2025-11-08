@@ -7,7 +7,7 @@ import org.veri.be.domain.book.entity.Reading;
 import org.veri.be.domain.card.exception.CardErrorInfo;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.global.entity.BaseEntity;
-import org.veri.be.global.exception.http.BadRequestException;
+import org.veri.be.lib.exception.http.BadRequestException;
 
 @Getter
 @SuperBuilder(toBuilder = true)

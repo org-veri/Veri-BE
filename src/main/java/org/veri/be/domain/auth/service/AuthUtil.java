@@ -3,7 +3,7 @@ package org.veri.be.domain.auth.service;
 
 import org.veri.be.domain.auth.exception.AuthErrorInfo;
 import org.veri.be.domain.member.entity.Member;
-import org.veri.be.global.exception.http.UnAuthorizedException;
+import org.veri.be.lib.exception.http.UnAuthorizedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 

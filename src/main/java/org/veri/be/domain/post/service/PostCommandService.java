@@ -12,7 +12,7 @@ import org.veri.be.domain.post.entity.LikePost;
 import org.veri.be.domain.post.entity.Post;
 import org.veri.be.domain.post.repository.LikePostRepository;
 import org.veri.be.domain.post.repository.PostRepository;
-import org.veri.be.global.exception.http.BadRequestException;
+import org.veri.be.lib.exception.http.BadRequestException;
 import org.veri.be.global.storage.dto.PresignedUrlRequest;
 import org.veri.be.global.storage.dto.PresignedUrlResponse;
 import org.veri.be.global.storage.service.StorageService;

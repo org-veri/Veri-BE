@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.veri.be.domain.auth.converter.AuthConverter;
 import org.veri.be.domain.auth.dto.AuthResponse;
 import org.veri.be.domain.member.entity.Member;
-import org.veri.be.global.data.JwtConfigData;
-import org.veri.be.global.jwt.JwtProvider;
+import org.veri.be.lib.auth.jwt.JwtConfigData;
+import org.veri.be.lib.auth.jwt.JwtProvider;
 import org.springframework.stereotype.Service;
 
 @Service

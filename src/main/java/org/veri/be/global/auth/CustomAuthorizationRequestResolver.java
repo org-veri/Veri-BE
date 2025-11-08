@@ -1,7 +1,7 @@
 package org.veri.be.global.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.veri.be.global.util.UrlUtil;
+import org.veri.be.lib.auth.util.UrlUtil;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;

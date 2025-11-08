@@ -9,7 +9,7 @@ import org.veri.be.domain.member.dto.UpdateMemberInfoRequest;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.service.MemberCommandService;
 import org.veri.be.domain.member.service.MemberQueryService;
-import org.veri.be.global.response.ApiResponse;
+import org.veri.be.lib.response.ApiResponse;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "사용자")

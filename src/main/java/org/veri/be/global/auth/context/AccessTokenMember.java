@@ -4,7 +4,7 @@ package org.veri.be.global.auth.context;
 import io.jsonwebtoken.Claims;
 import lombok.Builder;
 
-import static org.veri.be.global.jwt.JwtClaim.*;
+import static org.veri.be.lib.auth.jwt.JwtClaim.*;
 
 @Builder
 public record AccessTokenMember(

@@ -10,7 +10,7 @@ import org.veri.be.domain.card.exception.CardErrorInfo;
 import org.veri.be.domain.card.repository.CardRepository;
 import org.veri.be.domain.card.repository.dto.CardListItem;
 import org.veri.be.domain.card.repository.dto.CardFeedItem;
-import org.veri.be.global.exception.http.NotFoundException;
+import org.veri.be.lib.exception.http.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

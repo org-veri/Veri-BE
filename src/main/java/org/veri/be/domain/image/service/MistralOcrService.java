@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.veri.be.domain.image.exception.ImageErrorInfo;
 import org.veri.be.domain.image.repository.OcrResultRepository;
-import org.veri.be.global.exception.http.InternalServerException;
+import org.veri.be.lib.exception.http.InternalServerException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

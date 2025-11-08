@@ -6,12 +6,12 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.veri.be.global.exception.ApplicationException;
-import org.veri.be.global.exception.CommonErrorInfo;
-import org.veri.be.global.response.ApiResponse;
+import org.veri.be.lib.exception.ApplicationException;
+import org.veri.be.lib.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.veri.be.lib.auth.jwt.TokenErrorInfo;
 
 import java.io.IOException;
 
@@ -46,7 +46,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         ApiResponse<?> apiResponse = ApiResponse.error(
-                CommonErrorInfo.INVALID_TOKEN,
+                TokenErrorInfo.INVALID_TOKEN,
                 HttpStatus.UNAUTHORIZED
         );
         objectMapper.writeValue(response.getOutputStream(), apiResponse);

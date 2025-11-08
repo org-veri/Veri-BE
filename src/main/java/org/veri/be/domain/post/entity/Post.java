@@ -8,8 +8,8 @@ import org.veri.be.domain.comment.entity.Comment;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.global.entity.Authorizable;
 import org.veri.be.global.entity.BaseEntity;
-import org.veri.be.global.exception.CommonErrorInfo;
-import org.veri.be.global.exception.http.ForbiddenException;
+import org.veri.be.lib.exception.CommonErrorInfo;
+import org.veri.be.lib.exception.http.ForbiddenException;
 
 import java.util.ArrayList;
 import java.util.List;

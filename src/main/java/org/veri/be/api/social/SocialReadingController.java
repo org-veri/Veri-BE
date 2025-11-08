@@ -8,7 +8,7 @@ import org.veri.be.domain.book.dto.book.BookPopularResponse;
 import org.veri.be.domain.book.dto.reading.response.ReadingDetailResponse;
 import org.veri.be.domain.book.service.BookService;
 import org.veri.be.domain.book.service.BookshelfService;
-import org.veri.be.global.response.ApiResponse;
+import org.veri.be.lib.response.ApiResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

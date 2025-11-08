@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.veri.be.domain.auth.dto.AuthRequest;
 import org.veri.be.domain.auth.dto.AuthResponse;
 import org.veri.be.domain.auth.service.AuthService;
-import org.veri.be.global.response.ApiResponse;
-import org.veri.be.global.util.UrlUtil;
+import org.veri.be.lib.response.ApiResponse;
+import org.veri.be.lib.auth.util.UrlUtil;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

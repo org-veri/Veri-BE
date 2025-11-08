@@ -9,7 +9,7 @@ import org.veri.be.domain.image.dto.response.PageResponse;
 import org.veri.be.domain.image.service.ImageCommandService;
 import org.veri.be.domain.image.service.ImageQueryService;
 import org.veri.be.domain.member.entity.Member;
-import org.veri.be.global.response.ApiResponse;
+import org.veri.be.lib.response.ApiResponse;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;

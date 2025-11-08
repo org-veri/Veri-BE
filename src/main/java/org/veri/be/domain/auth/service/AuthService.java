@@ -10,11 +10,11 @@ import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
 import org.veri.be.domain.member.exception.MemberErrorInfo;
 import org.veri.be.domain.member.repository.MemberRepository;
-import org.veri.be.global.exception.http.BadRequestException;
-import org.veri.be.global.exception.http.NotFoundException;
-import org.veri.be.global.jwt.JwtAuthenticator;
-import org.veri.be.global.jwt.JwtExtractor;
-import org.veri.be.global.jwt.JwtProvider;
+import org.veri.be.lib.exception.http.BadRequestException;
+import org.veri.be.lib.exception.http.NotFoundException;
+import org.veri.be.lib.auth.jwt.JwtAuthenticator;
+import org.veri.be.lib.auth.jwt.JwtExtractor;
+import org.veri.be.lib.auth.jwt.JwtProvider;
 import org.springframework.stereotype.Service;
 
 @Service

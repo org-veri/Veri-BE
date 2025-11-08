@@ -14,7 +14,7 @@ import org.veri.be.domain.post.dto.response.PostFeedResponse;
 import org.veri.be.domain.post.dto.response.PostListResponse;
 import org.veri.be.domain.post.service.PostCommandService;
 import org.veri.be.domain.post.service.PostQueryService;
-import org.veri.be.global.response.ApiResponse;
+import org.veri.be.lib.response.ApiResponse;
 import org.veri.be.global.storage.dto.PresignedUrlRequest;
 import org.veri.be.global.storage.dto.PresignedUrlResponse;
 import org.springframework.web.bind.annotation.*;

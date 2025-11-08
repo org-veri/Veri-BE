@@ -19,7 +19,7 @@ import org.veri.be.domain.book.entity.Reading;
 import org.veri.be.domain.book.service.BookService;
 import org.veri.be.domain.book.service.BookshelfService;
 import org.veri.be.domain.member.entity.Member;
-import org.veri.be.global.response.ApiResponse;
+import org.veri.be.lib.response.ApiResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 

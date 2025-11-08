@@ -1,0 +1,61 @@
+package org.veri.be.lib.auth.jwt;
+
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.io.DeserializationException;
+import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.veri.be.lib.exception.http.UnAuthorizedException;
+
+import javax.crypto.SecretKey;
+import java.util.Base64;
+
+@Component
+public class JwtAuthenticator {
+
+    private final SecretKey accessKey;
+    private final SecretKey refreshKey;
+
+    public JwtAuthenticator(
+            @Value("${jwt.access.secret}") String accessSecret,
+            @Value("${jwt.refresh.secret}") String refreshSecret
+    ) {
+        this.refreshKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(refreshSecret.getBytes()));
+        this.accessKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(accessSecret.getBytes()));
+    }
+
+    public void verifyAccessToken(String token) {
+        try {
+            Claims claims = Jwts.parser()
+                    .verifyWith(accessKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (SignatureException | DeserializationException | MalformedJwtException e) {
+            throw new UnAuthorizedException(TokenErrorInfo.INVALID_TOKEN);
+        } catch (ExpiredJwtException e) {
+            throw new UnAuthorizedException(TokenErrorInfo.EXPIRED_TOKEN);
+        }
+    }
+
+    public void verifyRefreshToken(String token) {
+        try {
+            Claims claims = Jwts.parser()
+                    .verifyWith(refreshKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+
+        } catch (SignatureException | DeserializationException | MalformedJwtException e) {
+            throw new UnAuthorizedException(TokenErrorInfo.INVALID_TOKEN);
+        } catch (ExpiredJwtException e) {
+            throw new UnAuthorizedException(TokenErrorInfo.EXPIRED_TOKEN);
+        }
+
+    }
+}
