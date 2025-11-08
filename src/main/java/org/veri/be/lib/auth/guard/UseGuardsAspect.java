@@ -6,7 +6,6 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.veri.be.lib.auth.jwt.utils.MemberExtractor;
 import org.veri.be.lib.exception.ApplicationException;
 import org.veri.be.lib.response.ApiResponse;
 import org.springframework.context.ApplicationContext;
@@ -21,7 +20,6 @@ import java.util.Map;
 public class UseGuardsAspect {
 
     private final ApplicationContext applicationContext;
-    private final MemberExtractor memberExtractor;
 
     @Pointcut(
             "@annotation(org.veri.be.lib.auth.guard.UseGuards) || " +
@@ -33,12 +31,6 @@ public class UseGuardsAspect {
     @Around("useGuardsPointcut()")
     public Object applyGuards(ProceedingJoinPoint joinPoint) throws Throwable {
         UseGuards useGuards = this.getUseGuardsAnnotation(joinPoint);
-
-        try {
-            this.memberExtractor.extractMemberFromToken();
-        } catch (ApplicationException e) {
-            return this.createErrorResponse(e);
-        }
 
         Class<? extends Guard>[] guardClasses = useGuards.value();
 

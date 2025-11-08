@@ -2,7 +2,6 @@ package org.veri.be.domain.card.service;
 
 import io.github.miensoap.s3.core.post.dto.PresignedPostForm;
 import lombok.RequiredArgsConstructor;
-import org.veri.be.domain.auth.service.AuthUtil;
 import org.veri.be.domain.book.entity.Reading;
 import org.veri.be.domain.book.repository.ReadingRepository;
 import org.veri.be.domain.card.controller.dto.response.CardVisibilityUpdateResponse;
@@ -10,6 +9,7 @@ import org.veri.be.domain.card.entity.Card;
 import org.veri.be.domain.card.exception.CardErrorInfo;
 import org.veri.be.domain.card.repository.CardRepository;
 import org.veri.be.domain.member.entity.Member;
+import org.veri.be.global.auth.context.MemberContext;
 import org.veri.be.lib.exception.http.BadRequestException;
 import org.veri.be.lib.exception.http.NotFoundException;
 import org.veri.be.global.storage.dto.PresignedUrlRequest;
@@ -51,7 +51,7 @@ public class CardCommandService {
     @Transactional
     public Card updateCard(Long cardId, String content) {
         Card card = this.getCard(cardId);
-        card.authorizeMember(AuthUtil.getCurrentMember().getId());
+        card.authorizeMember(MemberContext.getMemberOrThrow().getId());
 
         Card updatedCard = card.toBuilder()
                 .content(content)
@@ -68,7 +68,7 @@ public class CardCommandService {
     @Transactional
     public CardVisibilityUpdateResponse modifyVisibility(Long cardId, boolean isPublic) {
         Card card = this.getCard(cardId);
-        card.authorizeMember(AuthUtil.getCurrentMember().getId());
+        card.authorizeMember(MemberContext.getMemberOrThrow().getId());
 
         if (isPublic) {
             card.setPublic();
@@ -83,7 +83,7 @@ public class CardCommandService {
     @Transactional
     public void deleteCard(Long cardId) {
         Card card = getCard(cardId);
-        card.authorizeMember(AuthUtil.getCurrentMember().getId());
+        card.authorizeMember(MemberContext.getMemberOrThrow().getId());
 
         cardRepository.deleteById(cardId);
     }

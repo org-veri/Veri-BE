@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import org.veri.be.domain.auth.annotation.AuthenticatedMember;
+import org.veri.be.global.auth.context.AuthenticatedMember;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.post.controller.enums.PostSortType;
 import org.veri.be.domain.post.dto.request.PostCreateRequest;

@@ -1,7 +1,7 @@
 package org.veri.be.global.config;
 
 import lombok.RequiredArgsConstructor;
-import org.veri.be.domain.auth.annotation.resolver.AuthenticatedMemberResolver;
+import org.veri.be.global.auth.context.AuthenticatedMemberResolver;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;

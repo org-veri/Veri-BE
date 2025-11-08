@@ -1,4 +1,4 @@
-package org.veri.be.domain.auth.annotation;
+package org.veri.be.global.auth.context;
 
 import io.swagger.v3.oas.annotations.Parameter;
 

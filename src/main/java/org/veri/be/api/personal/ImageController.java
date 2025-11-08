@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import org.veri.be.domain.auth.annotation.AuthenticatedMember;
+import org.veri.be.global.auth.context.AuthenticatedMember;
 import org.veri.be.domain.image.dto.response.PageResponse;
 import org.veri.be.domain.image.service.ImageCommandService;
 import org.veri.be.domain.image.service.ImageQueryService;
