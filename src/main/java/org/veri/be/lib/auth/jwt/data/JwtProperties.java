@@ -1,4 +1,4 @@
-package org.veri.be.lib.auth.jwt;
+package org.veri.be.lib.auth.jwt.data;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @Setter
 @Configuration
 @ConfigurationProperties(prefix = "jwt")
-public class JwtConfigData {
+public class JwtProperties {
 
     private TokenConfig access;
     private TokenConfig refresh;
