@@ -1,4 +1,4 @@
-package org.veri.be.lib.auth.oauth2;
+package org.veri.be.global.auth.oauth2;
 
 import lombok.Getter;
 import lombok.Setter;

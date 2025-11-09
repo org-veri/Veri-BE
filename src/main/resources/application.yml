@@ -15,5 +15,8 @@ logging:
   level:
     root: info
 
-jwt:
-  use: ture
+auth:
+  jwt:
+    use: ture
+  oauth2:
+    dynamic-redirect: true

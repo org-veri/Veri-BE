@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.veri.be.lib.auth.jwt.JwtUtil;
 
-@ConditionalOnProperty(name = "jwt.use", havingValue = "true")
+@ConditionalOnProperty(name = "auth.jwt.use", havingValue = "true")
 @Component
 public class JwtKeyInitializer {
 
