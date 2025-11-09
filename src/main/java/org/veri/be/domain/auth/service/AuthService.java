@@ -20,7 +20,7 @@ import org.veri.be.lib.exception.http.NotFoundException;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final OAuth2Service kakaoOAuth2Service;
+    private final OAuth2Service kakaoOAuth2Service; // Todo. List / Map
 
     private final MemberRepository memberRepository;
     private final TokenStorageService tokenStorageService;
