@@ -1,4 +1,4 @@
-package org.veri.be.api.personal;
+package org.veri.be.api.common;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

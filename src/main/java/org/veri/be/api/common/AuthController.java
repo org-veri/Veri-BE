@@ -1,15 +1,15 @@
-package org.veri.be.api.personal;
+package org.veri.be.api.common;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 import org.veri.be.domain.auth.dto.AuthRequest;
 import org.veri.be.domain.auth.dto.AuthResponse;
 import org.veri.be.domain.auth.service.AuthService;
-import org.veri.be.lib.response.ApiResponse;
 import org.veri.be.lib.auth.util.UrlUtil;
-import org.springframework.web.bind.annotation.*;
+import org.veri.be.lib.response.ApiResponse;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,8 +18,11 @@ public class AuthController {
 
     private final AuthService authService;
 
+//    @GetMapping("/oauth2/authorize/{provider}")
+
+
     @GetMapping("/api/v1/oauth2/{provider}")
-    @Operation(summary = "소셜 로그인 API", description = "Provider와 인가코드를 이용하여 로그인")
+    @Operation(summary = "소셜 로그인 콜백", description = "Provider와 인가코드를 이용하여 로그인")
     public ApiResponse<AuthResponse.LoginResponse> login(
             @PathVariable String provider,
             @RequestParam("code") String code,
