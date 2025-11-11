@@ -17,6 +17,7 @@ public class JwtKeyInitializer {
 
     @PostConstruct
     public void init() {
+        System.out.println("Initializing JWT keys...");
         JwtUtil.init(jwtProperties);
     }
 }

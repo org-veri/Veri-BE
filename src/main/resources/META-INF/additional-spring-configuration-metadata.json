@@ -2,7 +2,7 @@
   "properties": [
     {
       "name": "auth.jwt.use",
-      "type": "java.lang.String",
+      "type": "java.lang.Boolean",
       "description": "Description for jwt.use."
     },
     {

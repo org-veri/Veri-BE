@@ -14,9 +14,12 @@ springdoc:
 logging:
   level:
     root: info
+#    org.springframework.security: DEBUG
+#    org.springframework.security.oauth2: TRACE
+#    org.apache.http.wire: DEBUG
 
 auth:
   jwt:
-    use: ture
+    use: true
   oauth2:
     dynamic-redirect: true
