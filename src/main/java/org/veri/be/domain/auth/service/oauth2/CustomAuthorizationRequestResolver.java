@@ -1,7 +1,7 @@
 package org.veri.be.domain.auth.service.oauth2;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
@@ -13,7 +13,7 @@ import org.veri.be.lib.auth.util.UrlUtil;
 /**
  * 요청 Origin 또는 Referer에 따라 redirect URI를 동적으로 설정하는 커스텀 OAuth2AuthorizationRequestResolver.
  */
-@ConditionalOnProperty(name = "auth.oauth2.dynamic-redirect", havingValue = "true")
+@ConditionalOnBooleanProperty(name = "auth.oauth2.dynamic-redirect")
 @Component
 public class CustomAuthorizationRequestResolver implements OAuth2AuthorizationRequestResolver {
 

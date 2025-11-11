@@ -1,6 +1,7 @@
 package org.veri.be.global.config;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +31,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
     }
 
     @Bean
+    @ConditionalOnBooleanProperty(prefix = "auth.jwt", name = "use")
     public FilterRegistrationBean<OncePerRequestFilter> firstFilterRegister() {
         return new FilterRegistrationBean<>(new JwtFilter(
                 memberQueryService, tokenStorageService
