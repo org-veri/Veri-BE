@@ -1,5 +1,7 @@
 package org.veri.be.domain.auth.service.oauth2;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.common.contenttype.ContentType;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +14,7 @@ import org.veri.be.domain.auth.dto.LoginResponse;
 import org.veri.be.domain.auth.service.AuthService;
 import org.veri.be.domain.auth.service.oauth2.dto.CustomOAuth2User;
 import org.veri.be.domain.auth.service.oauth2.dto.OAuth2UserInfo;
+import org.veri.be.lib.response.ApiResponse;
 
 import java.io.IOException;
 
@@ -33,6 +36,9 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
 
         LoginResponse loginResponse = this.authService.loginWithOAuth2(userInfo);
 
-        response.getWriter().write(loginResponse.toString());
+        ObjectMapper objectMapper = new ObjectMapper();
+        response.setContentType(ContentType.APPLICATION_JSON.getType());
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(objectMapper.writeValueAsString(ApiResponse.ok(loginResponse)));
     }
 }

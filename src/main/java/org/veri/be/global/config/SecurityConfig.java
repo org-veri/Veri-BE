@@ -25,6 +25,9 @@ public class SecurityConfig {
                 .anyRequest().permitAll()
         );
         http.oauth2Login(config -> config
+                .redirectionEndpoint(redirection -> redirection
+                        .baseUri("/api/v1/oauth2/*")
+                )
                 .successHandler(customOAuth2SuccessHandler)
                 .failureHandler(customAuthExceptionHandler)
                 .userInfoEndpoint(endpointConfig -> endpointConfig
