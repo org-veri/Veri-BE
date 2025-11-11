@@ -59,6 +59,7 @@ public class CustomAuthorizationRequestResolver implements OAuth2AuthorizationRe
         String provider = (String) req.getAttributes().get(OAuth2ParameterNames.REGISTRATION_ID);
 
         String newRedirectUri = baseUri + "/oauth/callback/" + provider;
+//        String newRedirectUri = baseUri + "/login/oauth2/code/" + provider; // 개발용
         return OAuth2AuthorizationRequest.from(req)
                 .redirectUri(newRedirectUri)
                 .build();

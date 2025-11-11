@@ -1,7 +1,7 @@
 package org.veri.be.domain.auth.converter;
 
 import org.veri.be.domain.auth.exception.AuthErrorInfo;
-import org.veri.be.domain.auth.service.CustomOAuth2User;
+import org.veri.be.domain.auth.service.oauth2.dto.CustomOAuth2User;
 import org.veri.be.domain.auth.service.oauth2.dto.OAuth2UserInfo;
 import org.veri.be.domain.member.entity.enums.ProviderType;
 import org.veri.be.lib.exception.http.BadRequestException;
@@ -32,7 +32,7 @@ public abstract class OAuth2UserInfoMapper {
                 .email((String) account.get("email"))
                 .nickname((String) profile.get("nickname"))
                 .image((String) profile.get("profile_image_url"))
-                .providerId((String) attributes.get("id"))
+                .providerId(attributes.get("id").toString())
                 .providerType(ProviderType.KAKAO)
                 .build();
     }

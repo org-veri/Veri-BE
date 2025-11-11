@@ -1,4 +1,4 @@
-package org.veri.be.domain.auth.service;
+package org.veri.be.domain.auth.service.oauth2;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -9,6 +9,8 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 import org.veri.be.domain.auth.converter.OAuth2UserInfoMapper;
 import org.veri.be.domain.auth.dto.LoginResponse;
+import org.veri.be.domain.auth.service.AuthService;
+import org.veri.be.domain.auth.service.oauth2.dto.CustomOAuth2User;
 import org.veri.be.domain.auth.service.oauth2.dto.OAuth2UserInfo;
 
 import java.io.IOException;
