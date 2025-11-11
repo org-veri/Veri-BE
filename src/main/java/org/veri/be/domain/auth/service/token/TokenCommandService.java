@@ -2,12 +2,11 @@ package org.veri.be.domain.auth.service.token;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.veri.be.domain.auth.converter.AuthConverter;
-import org.veri.be.domain.auth.dto.LoginResponse;
+import org.veri.be.api.common.dto.auth.LoginResponse;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.global.auth.JwtClaimsPayload;
-import org.veri.be.lib.auth.jwt.data.JwtProperties;
 import org.veri.be.lib.auth.jwt.JwtUtil;
+import org.veri.be.lib.auth.jwt.data.JwtProperties;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +19,9 @@ public class TokenCommandService {
         String accessToken = JwtUtil.generateAccessToken(JwtClaimsPayload.from(member));
         String refreshToken = JwtUtil.generateRefreshToken(member.getId());
         tokenStorageService.addRefreshToken(member.getId(), refreshToken, jwtProperties.getRefresh().getValidity());
-        return AuthConverter.toOAuth2LoginResponse(accessToken, refreshToken);
+        return LoginResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 }

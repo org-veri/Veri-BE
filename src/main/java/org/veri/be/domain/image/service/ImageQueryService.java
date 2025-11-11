@@ -1,7 +1,7 @@
 package org.veri.be.domain.image.service;
 
 import lombok.RequiredArgsConstructor;
-import org.veri.be.domain.image.dto.response.PageResponse;
+import org.veri.be.global.response.PageResponse;
 import org.veri.be.domain.image.repository.ImageRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -1,4 +1,4 @@
-package org.veri.be.domain.image.dto.response;
+package org.veri.be.global.response;
 
 import org.springframework.data.domain.Pageable;
 

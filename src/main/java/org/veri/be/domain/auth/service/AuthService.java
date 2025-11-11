@@ -2,10 +2,9 @@ package org.veri.be.domain.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.veri.be.domain.auth.converter.AuthConverter;
-import org.veri.be.domain.auth.dto.AuthReissueRequest;
-import org.veri.be.domain.auth.dto.LoginResponse;
-import org.veri.be.domain.auth.dto.ReissueTokenResponse;
+import org.veri.be.api.common.dto.auth.LoginResponse;
+import org.veri.be.api.common.dto.auth.ReissueTokenRequest;
+import org.veri.be.api.common.dto.auth.ReissueTokenResponse;
 import org.veri.be.domain.auth.service.oauth2.dto.OAuth2UserInfo;
 import org.veri.be.domain.auth.service.token.TokenCommandService;
 import org.veri.be.domain.auth.service.token.TokenStorageService;
@@ -33,17 +32,21 @@ public class AuthService {
         return tokenCommandService.createLoginToken(member);
     }
 
-    public ReissueTokenResponse reissueToken(AuthReissueRequest request) {
+    public ReissueTokenResponse reissueToken(ReissueTokenRequest request) {
         String refreshToken = request.getRefreshToken();
         Long id = (Long) JwtUtil.parseRefreshTokenPayloads(refreshToken).get("id");
 
         Member member = memberRepository.findById(id).orElseThrow(() ->
-                new NotFoundException(MemberErrorInfo.NOT_FOUND));
-        return AuthConverter.toReissueTokenResponse(
-                JwtUtil.generateAccessToken(
-                        new JwtClaimsPayload(member.getId(), member.getEmail(), member.getNickname(), false)
-                )
+                new NotFoundException(MemberErrorInfo.NOT_FOUND)
         );
+
+        String accessToken = JwtUtil.generateAccessToken(
+                new JwtClaimsPayload(member.getId(), member.getEmail(), member.getNickname(), false)
+        );
+
+        return ReissueTokenResponse.builder()
+                .accessToken(accessToken)
+                .build();
     }
 
     public void logout(String accessToken) {
@@ -76,7 +79,7 @@ public class AuthService {
         if (optional.isPresent()) {
             return optional.get();
         } else {
-            Member member = AuthConverter.toMember(request);
+            Member member = request.toMember();
             if (memberQueryService.existsByNickname(member.getNickname())) {
                 member.updateInfo(
                         member.getNickname() + "_" + System.currentTimeMillis(),

@@ -1,7 +1,7 @@
 package org.veri.be.mock;
 
 import lombok.RequiredArgsConstructor;
-import org.veri.be.domain.auth.dto.LoginResponse;
+import org.veri.be.api.common.dto.auth.LoginResponse;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.repository.MemberRepository;
 import org.veri.be.global.auth.JwtClaimsPayload;

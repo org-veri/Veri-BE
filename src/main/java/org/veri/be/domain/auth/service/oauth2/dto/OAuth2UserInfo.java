@@ -2,6 +2,7 @@ package org.veri.be.domain.auth.service.oauth2.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
 
 @Getter
@@ -12,4 +13,14 @@ public class OAuth2UserInfo {
     private String image;
     private String providerId;
     private ProviderType providerType;
+
+    public Member toMember() {
+        return Member.builder()
+                .email(this.getEmail())
+                .nickname(this.getNickname())
+                .profileImageUrl(this.getImage())
+                .providerId(this.getProviderId())
+                .providerType(this.getProviderType())
+                .build();
+    }
 }

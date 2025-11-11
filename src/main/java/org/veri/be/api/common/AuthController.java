@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.veri.be.domain.auth.dto.AuthReissueRequest;
-import org.veri.be.domain.auth.dto.ReissueTokenResponse;
+import org.veri.be.api.common.dto.auth.ReissueTokenRequest;
+import org.veri.be.api.common.dto.auth.ReissueTokenResponse;
 import org.veri.be.domain.auth.service.AuthService;
 import org.veri.be.lib.response.ApiResponse;
 
@@ -21,7 +21,7 @@ public class AuthController {
 
     @PostMapping("/api/v1/auth/reissue")
     @Operation(summary = "토큰 재발급", description = "리프레시 토큰을 이용하여 액세스 토큰을 재발급합니다.")
-    public ApiResponse<ReissueTokenResponse> reissueToken(@RequestBody AuthReissueRequest request) {
+    public ApiResponse<ReissueTokenResponse> reissueToken(@RequestBody ReissueTokenRequest request) {
         ReissueTokenResponse response = authService.reissueToken(request);
         return ApiResponse.ok(response);
     }
