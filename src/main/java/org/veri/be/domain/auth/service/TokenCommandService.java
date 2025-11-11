@@ -3,7 +3,7 @@ package org.veri.be.domain.auth.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.veri.be.domain.auth.converter.AuthConverter;
-import org.veri.be.domain.auth.dto.AuthResponse;
+import org.veri.be.domain.auth.dto.LoginResponse;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.global.auth.JwtClaimsPayload;
 import org.veri.be.lib.auth.jwt.data.JwtProperties;
@@ -16,7 +16,7 @@ public class TokenCommandService {
     private final TokenStorageService tokenStorageService;
     private final JwtProperties jwtProperties;
 
-    public AuthResponse.LoginResponse createLoginToken(Member member) {
+    public LoginResponse createLoginToken(Member member) {
         String accessToken = JwtUtil.generateAccessToken(JwtClaimsPayload.from(member));
         String refreshToken = JwtUtil.generateRefreshToken(member.getId());
         tokenStorageService.addRefreshToken(member.getId(), refreshToken, jwtProperties.getRefresh().getValidity());

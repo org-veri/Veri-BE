@@ -1,7 +1,7 @@
 package org.veri.be.mock;
 
 import lombok.RequiredArgsConstructor;
-import org.veri.be.domain.auth.dto.AuthResponse;
+import org.veri.be.domain.auth.dto.LoginResponse;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.repository.MemberRepository;
 import org.veri.be.global.auth.JwtClaimsPayload;
@@ -19,11 +19,11 @@ public class MockTokenController {
     private final MemberRepository memberRepository;
 
     @GetMapping("/api/v1/oauth2/mock/{memberId}")
-    public AuthResponse.LoginResponse getMockToken(@PathVariable Long memberId) {
+    public LoginResponse getMockToken(@PathVariable Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("Member not found with ID: " + memberId));
 
-        return AuthResponse.LoginResponse.builder()
+        return LoginResponse.builder()
                 .accessToken(JwtUtil.generateAccessToken(JwtClaimsPayload.from(member)))
                 .refreshToken(JwtUtil.generateRefreshToken(member.getId()))
                 .build();

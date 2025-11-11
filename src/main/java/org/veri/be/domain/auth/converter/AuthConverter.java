@@ -1,14 +1,15 @@
 package org.veri.be.domain.auth.converter;
 
-import org.veri.be.domain.auth.dto.AuthRequest;
-import org.veri.be.domain.auth.dto.AuthResponse;
+import org.veri.be.domain.auth.dto.LoginResponse;
+import org.veri.be.domain.auth.service.oauth2.dto.OAuth2UserInfo;
+import org.veri.be.domain.auth.dto.ReissueTokenResponse;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
 
 public class AuthConverter {
 
-    public static AuthRequest.OAuth2LoginUserInfo toOAuth2LoginRequest(String email, String nickname, String image, String providerId, ProviderType providerType) {
-        return AuthRequest.OAuth2LoginUserInfo.builder()
+    public static OAuth2UserInfo toOAuth2LoginRequest(String email, String nickname, String image, String providerId, ProviderType providerType) {
+        return OAuth2UserInfo.builder()
                 .email(email)
                 .nickname(nickname)
                 .image(image)
@@ -17,7 +18,7 @@ public class AuthConverter {
                 .build();
     }
 
-    public static Member toMember(AuthRequest.OAuth2LoginUserInfo request) {
+    public static Member toMember(OAuth2UserInfo request) {
         return Member.builder()
                 .email(request.getEmail())
                 .nickname(request.getNickname())
@@ -27,15 +28,15 @@ public class AuthConverter {
                 .build();
     }
 
-    public static AuthResponse.LoginResponse toOAuth2LoginResponse(String access, String refresh) {
-        return AuthResponse.LoginResponse.builder()
+    public static LoginResponse toOAuth2LoginResponse(String access, String refresh) {
+        return LoginResponse.builder()
                 .accessToken(access)
                 .refreshToken(refresh)
                 .build();
     }
 
-    public static AuthResponse.ReissueTokenResponse toReissueTokenResponse(String access) {
-        return AuthResponse.ReissueTokenResponse.builder()
+    public static ReissueTokenResponse toReissueTokenResponse(String access) {
+        return ReissueTokenResponse.builder()
                 .accessToken(access)
                 .build();
     }

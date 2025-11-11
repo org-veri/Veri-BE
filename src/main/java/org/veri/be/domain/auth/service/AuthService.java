@@ -3,8 +3,9 @@ package org.veri.be.domain.auth.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.veri.be.domain.auth.converter.AuthConverter;
-import org.veri.be.domain.auth.dto.AuthRequest;
-import org.veri.be.domain.auth.dto.AuthResponse;
+import org.veri.be.domain.auth.dto.AuthReissueRequest;
+import org.veri.be.domain.auth.dto.LoginResponse;
+import org.veri.be.domain.auth.dto.ReissueTokenResponse;
 import org.veri.be.domain.auth.exception.AuthErrorInfo;
 import org.veri.be.domain.auth.service.oauth2.OAuth2Service;
 import org.veri.be.domain.member.entity.Member;
@@ -25,7 +26,7 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final TokenStorageService tokenStorageService;
 
-    public AuthResponse.LoginResponse login(String provider, String code, String origin) {
+    public LoginResponse login(String provider, String code, String origin) {
         if (provider.equalsIgnoreCase(ProviderType.KAKAO.name())) {
             return kakaoOAuth2Service.login(code, origin);
         } else {
@@ -33,7 +34,7 @@ public class AuthService {
         }
     }
 
-    public AuthResponse.ReissueTokenResponse reissueToken(AuthRequest.AuthReissueRequest request) {
+    public ReissueTokenResponse reissueToken(AuthReissueRequest request) {
         String refreshToken = request.getRefreshToken();
         Long id = (Long) JwtUtil.parseRefreshTokenPayloads(refreshToken).get("id");
 

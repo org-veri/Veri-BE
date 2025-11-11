@@ -13,8 +13,8 @@ import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
-import org.veri.be.domain.auth.dto.AuthRequest;
-import org.veri.be.domain.auth.dto.KakaoOAuth2DTO;
+import org.veri.be.domain.auth.service.oauth2.dto.KakaoOAuth2DTO;
+import org.veri.be.domain.auth.service.oauth2.dto.OAuth2UserInfo;
 import org.veri.be.domain.auth.exception.AuthErrorInfo;
 import org.veri.be.domain.auth.service.TokenCommandService;
 import org.veri.be.domain.member.entity.enums.ProviderType;
@@ -62,10 +62,10 @@ public class KakaoOAuth2Service extends AbstractOAuth2Service {
     }
 
     @Override
-    protected AuthRequest.OAuth2LoginUserInfo getUserInfo(String token) {
+    protected OAuth2UserInfo getUserInfo(String token) {
         try {
             KakaoOAuth2DTO.KakaoProfile kakaoProfile = kakaoApi.getUserInfo("Bearer " + token);
-            return AuthRequest.OAuth2LoginUserInfo.builder()
+            return OAuth2UserInfo.builder()
                     .email(kakaoProfile.getKakao_account().getEmail())
                     .providerId(String.valueOf(kakaoProfile.getId()))
                     .nickname(kakaoProfile.getProperties().getNickname())

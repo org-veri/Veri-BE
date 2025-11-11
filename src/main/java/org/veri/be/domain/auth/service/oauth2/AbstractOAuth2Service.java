@@ -2,8 +2,8 @@ package org.veri.be.domain.auth.service.oauth2;
 
 import lombok.RequiredArgsConstructor;
 import org.veri.be.domain.auth.converter.AuthConverter;
-import org.veri.be.domain.auth.dto.AuthRequest;
-import org.veri.be.domain.auth.dto.AuthResponse;
+import org.veri.be.domain.auth.dto.LoginResponse;
+import org.veri.be.domain.auth.service.oauth2.dto.OAuth2UserInfo;
 import org.veri.be.domain.auth.service.TokenCommandService;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
@@ -21,18 +21,18 @@ public abstract class AbstractOAuth2Service implements OAuth2Service {
     protected final TokenCommandService tokenCommandService;
 
     @Override
-    public AuthResponse.LoginResponse login(String code, String origin) {
+    public LoginResponse login(String code, String origin) {
         String accessToken = getAccessToken(code, getRedirectUri(origin));
-        AuthRequest.OAuth2LoginUserInfo request = getUserInfo(accessToken);
+        OAuth2UserInfo request = getUserInfo(accessToken);
         Member member = saveOrGetMember(request);
         return tokenCommandService.createLoginToken(member);
     }
 
     protected abstract String getAccessToken(String code, String redirectUri);
 
-    protected abstract AuthRequest.OAuth2LoginUserInfo getUserInfo(String token);
+    protected abstract OAuth2UserInfo getUserInfo(String token);
 
-    private Member saveOrGetMember(AuthRequest.OAuth2LoginUserInfo request) {
+    private Member saveOrGetMember(OAuth2UserInfo request) {
         Optional<Member> optional = memberRepository.findByProviderIdAndProviderType(request.getProviderId(), request.getProviderType());
         if (optional.isPresent()) {
             return optional.get();

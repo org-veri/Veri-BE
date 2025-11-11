@@ -1,7 +1,7 @@
 package org.veri.be.domain.auth.service.oauth2;
 
-import org.veri.be.domain.auth.dto.AuthResponse;
+import org.veri.be.domain.auth.dto.LoginResponse;
 
 public interface OAuth2Service {
-    AuthResponse.LoginResponse login(String code, String origin);
+    LoginResponse login(String code, String origin);
 }
