@@ -8,7 +8,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.veri.be.domain.auth.service.TokenStorageService;
+import org.veri.be.domain.auth.service.token.TokenStorageService;
 import org.veri.be.domain.member.service.MemberQueryService;
 import org.veri.be.global.auth.context.AuthenticatedMemberResolver;
 import org.veri.be.global.interceptors.InjectIPAddressInterceptor;

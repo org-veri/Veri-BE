@@ -30,7 +30,7 @@ public class AuthController {
             HttpServletRequest request
     ) {
         String origin = UrlUtil.getRequestingUrl(request);
-        LoginResponse response = authService.login(provider, code, origin);
+        LoginResponse response = authService.loginWithOAuth2(provider, code, origin);
         return ApiResponse.ok(response);
     }
 

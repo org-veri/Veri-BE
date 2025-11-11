@@ -6,32 +6,31 @@ import org.veri.be.domain.auth.converter.AuthConverter;
 import org.veri.be.domain.auth.dto.AuthReissueRequest;
 import org.veri.be.domain.auth.dto.LoginResponse;
 import org.veri.be.domain.auth.dto.ReissueTokenResponse;
-import org.veri.be.domain.auth.exception.AuthErrorInfo;
-import org.veri.be.domain.auth.service.oauth2.OAuth2Service;
+import org.veri.be.domain.auth.service.oauth2.dto.OAuth2UserInfo;
+import org.veri.be.domain.auth.service.token.TokenCommandService;
+import org.veri.be.domain.auth.service.token.TokenStorageService;
 import org.veri.be.domain.member.entity.Member;
-import org.veri.be.domain.member.entity.enums.ProviderType;
 import org.veri.be.domain.member.exception.MemberErrorInfo;
 import org.veri.be.domain.member.repository.MemberRepository;
+import org.veri.be.domain.member.service.MemberQueryService;
 import org.veri.be.global.auth.JwtClaimsPayload;
 import org.veri.be.lib.auth.jwt.JwtUtil;
-import org.veri.be.lib.exception.http.BadRequestException;
 import org.veri.be.lib.exception.http.NotFoundException;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final OAuth2Service kakaoOAuth2Service; // Todo. List / Map
-
+    protected final MemberQueryService memberQueryService;
     private final MemberRepository memberRepository;
+    protected final TokenCommandService tokenCommandService;
     private final TokenStorageService tokenStorageService;
 
-    public LoginResponse login(String provider, String code, String origin) {
-        if (provider.equalsIgnoreCase(ProviderType.KAKAO.name())) {
-            return kakaoOAuth2Service.login(code, origin);
-        } else {
-            throw new BadRequestException(AuthErrorInfo.UNSUPPORTED_OAUTH2_PROVIDER);
-        }
+    public LoginResponse loginWithOAuth2(OAuth2UserInfo userInfo) {
+        Member member = saveOrGetMember(userInfo);
+        return tokenCommandService.createLoginToken(member);
     }
 
     public ReissueTokenResponse reissueToken(AuthReissueRequest request) {
@@ -69,6 +68,21 @@ public class AuthService {
             if (refreshRemainMs > 0) {
                 tokenStorageService.addBlackList(refreshToken, refreshRemainMs);
             }
+        }
+    }
+
+    private Member saveOrGetMember(OAuth2UserInfo request) {
+        Optional<Member> optional = memberRepository.findByProviderIdAndProviderType(request.getProviderId(), request.getProviderType());
+        if (optional.isPresent()) {
+            return optional.get();
+        } else {
+            Member member = AuthConverter.toMember(request);
+            if (memberQueryService.existsByNickname(member.getNickname())) {
+                member.updateInfo(
+                        member.getNickname() + "_" + System.currentTimeMillis(),
+                        member.getProfileImageUrl());
+            }
+            return memberRepository.save(member);
         }
     }
 }

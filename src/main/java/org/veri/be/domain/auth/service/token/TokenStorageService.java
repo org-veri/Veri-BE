@@ -1,4 +1,4 @@
-package org.veri.be.domain.auth.service;
+package org.veri.be.domain.auth.service.token;
 
 public interface TokenStorageService {
     void addBlackList(String token, long expiredAt);
