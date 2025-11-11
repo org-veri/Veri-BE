@@ -26,6 +26,7 @@ public class JwtFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
         String token = AuthorizationHeaderUtil.extractTokenFromAuthorizationHeader(request);
+
         if (token != null && !tokenStorageService.isBlackList(token)) {
             Long id = (Long) JwtUtil.parseRefreshTokenPayloads(token).get("id");
             if (id != null) {

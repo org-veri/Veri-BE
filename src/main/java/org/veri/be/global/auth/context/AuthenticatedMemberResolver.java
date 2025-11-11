@@ -13,7 +13,6 @@ import org.veri.be.domain.member.entity.Member;
 @RequiredArgsConstructor
 public class AuthenticatedMemberResolver implements HandlerMethodArgumentResolver {
 
-
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.hasParameterAnnotation(AuthenticatedMember.class) && parameter.getParameterType().equals(Member.class);
@@ -26,6 +25,6 @@ public class AuthenticatedMemberResolver implements HandlerMethodArgumentResolve
             NativeWebRequest webRequest,
             WebDataBinderFactory binderFactory
     ) {
-        return MemberContext.getMember();
+        return MemberContext.getMemberOrThrow();
     }
 }

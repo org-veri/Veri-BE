@@ -25,6 +25,7 @@ public class MemberContext {
     }
 
     public static Optional<Member> getMember() {
+        if (!member.isBound()) return Optional.empty();
         return Optional.ofNullable(member.get());
     }
 

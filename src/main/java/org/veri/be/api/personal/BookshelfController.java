@@ -5,7 +5,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import org.veri.be.global.auth.context.AuthenticatedMember;
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.*;
 import org.veri.be.domain.book.dto.book.AddBookRequest;
 import org.veri.be.domain.book.dto.book.BookSearchResponse;
 import org.veri.be.domain.book.dto.reading.request.ReadingModifyRequest;
@@ -19,14 +20,16 @@ import org.veri.be.domain.book.entity.Reading;
 import org.veri.be.domain.book.service.BookService;
 import org.veri.be.domain.book.service.BookshelfService;
 import org.veri.be.domain.member.entity.Member;
+import org.veri.be.global.auth.context.AuthenticatedMember;
+import org.veri.be.global.auth.guards.MemberGuard;
+import org.veri.be.lib.auth.guard.UseGuards;
 import org.veri.be.lib.response.ApiResponse;
-import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "책장")
 @RequestMapping("/api/v2/bookshelf")
 @RestController
 @RequiredArgsConstructor
+@UseGuards({MemberGuard.class})
 public class BookshelfController {
 
     private final BookshelfService bookshelfService;
