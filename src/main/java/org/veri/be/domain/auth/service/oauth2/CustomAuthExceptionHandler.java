@@ -19,7 +19,7 @@ public class CustomAuthExceptionHandler implements AuthenticationFailureHandler 
             HttpServletResponse response,
             AuthenticationException exception
     ) {
-        log.error("Authentication Exception", exception);
+        log.debug(exception.getMessage(), exception);
         throw new BadRequestException(AuthErrorInfo.UNAUTHORIZED);
     }
 }

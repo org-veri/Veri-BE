@@ -1,6 +1,7 @@
 package org.veri.be.lib.response;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.common.contenttype.ContentType;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -49,19 +50,13 @@ public class ExceptionHandlingFilter extends OncePerRequestFilter {
             ApiResponse<?> apiResponse
     ) throws IOException {
         response.setStatus(apiResponse.getHttpStatus().value());
-
         response.setContentType(apiResponse.getContentType().toString());
         apiResponse.getHeaders().forEach(header ->
                 response.addHeader(header.name(), header.value())
         );
 
-        Object bodyToWrite;
-        if (apiResponse.getContentType() == MediaType.APPLICATION_JSON) {
-            bodyToWrite = objectMapper.writeValueAsString(apiResponse);
-        } else {
-            bodyToWrite = objectMapper.writeValueAsString(apiResponse.getResult());
-        }
-
-        response.getWriter().write(objectMapper.writeValueAsString(bodyToWrite));
+        ObjectMapper objectMapper = new ObjectMapper();
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(objectMapper.writeValueAsString(apiResponse));
     }
 }
