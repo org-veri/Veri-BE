@@ -1,4 +1,4 @@
-package org.veri.be.domain.auth.service.oauth2;
+package org.veri.be.global.auth.oauth2;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +8,7 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-import org.veri.be.domain.auth.service.oauth2.dto.CustomOAuth2User;
+import org.veri.be.global.auth.oauth2.dto.CustomOAuth2User;
 
 import java.util.List;
 

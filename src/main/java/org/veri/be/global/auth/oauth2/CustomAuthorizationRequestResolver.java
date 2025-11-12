@@ -1,4 +1,4 @@
-package org.veri.be.domain.auth.service.oauth2;
+package org.veri.be.global.auth.oauth2;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;

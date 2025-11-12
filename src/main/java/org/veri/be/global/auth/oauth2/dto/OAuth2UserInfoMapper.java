@@ -1,6 +1,6 @@
-package org.veri.be.domain.auth.service.oauth2.dto;
+package org.veri.be.global.auth.oauth2.dto;
 
-import org.veri.be.domain.auth.exception.AuthErrorInfo;
+import org.veri.be.global.auth.AuthErrorInfo;
 import org.veri.be.domain.member.entity.enums.ProviderType;
 import org.veri.be.lib.exception.http.BadRequestException;
 

@@ -1,4 +1,4 @@
-package org.veri.be.domain.auth.service.oauth2;
+package org.veri.be.global.auth.oauth2;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.common.contenttype.ContentType;
@@ -9,11 +9,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import org.veri.be.domain.auth.service.oauth2.dto.OAuth2UserInfoMapper;
 import org.veri.be.api.common.dto.auth.LoginResponse;
 import org.veri.be.domain.auth.service.AuthService;
-import org.veri.be.domain.auth.service.oauth2.dto.CustomOAuth2User;
-import org.veri.be.domain.auth.service.oauth2.dto.OAuth2UserInfo;
+import org.veri.be.global.auth.oauth2.dto.CustomOAuth2User;
+import org.veri.be.global.auth.oauth2.dto.OAuth2UserInfo;
+import org.veri.be.global.auth.oauth2.dto.OAuth2UserInfoMapper;
 import org.veri.be.lib.response.ApiResponse;
 
 import java.io.IOException;
