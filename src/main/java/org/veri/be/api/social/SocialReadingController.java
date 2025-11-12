@@ -3,17 +3,16 @@ package org.veri.be.api.social;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.veri.be.domain.book.dto.book.BookPopularListResponseV2;
-import org.veri.be.domain.book.dto.book.BookPopularResponse;
-import org.veri.be.domain.book.dto.reading.response.ReadingDetailResponse;
-import org.veri.be.domain.book.service.BookService;
-import org.veri.be.domain.book.service.BookshelfService;
-import org.veri.be.lib.response.ApiResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.veri.be.domain.book.dto.book.BookPopularListResponseV2;
+import org.veri.be.domain.book.dto.book.BookPopularResponse;
+import org.veri.be.domain.book.dto.reading.response.ReadingDetailResponse;
+import org.veri.be.domain.book.service.BookshelfService;
+import org.veri.be.lib.response.ApiResponse;
 
 @Tag(name = "소셜")
 @Tag(name = "독서")
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class SocialReadingController {
 
     private final BookshelfService bookshelfService;
-    private final BookService bookService;
 
     @Operation(summary = "주간 인기 도서 조회", description = "인기 도서 상위 10개를 조회합니다. (책장에 최근 7일간 가장 많이 추가된 책)")
     @GetMapping("/popular")

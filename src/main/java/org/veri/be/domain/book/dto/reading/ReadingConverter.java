@@ -2,7 +2,7 @@ package org.veri.be.domain.book.dto.reading;
 
 import org.veri.be.domain.book.dto.reading.response.ReadingDetailResponse;
 import org.veri.be.domain.book.entity.Reading;
-import org.veri.be.domain.common.dto.MemberProfileResponse;
+import org.veri.be.api.common.dto.MemberProfileResponse;
 import org.veri.be.global.auth.context.MemberContext;
 
 import java.util.List;

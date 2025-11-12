@@ -2,7 +2,7 @@ package org.veri.be.domain.book.dto.reading.response;
 
 import lombok.Builder;
 import org.veri.be.domain.book.entity.enums.ReadingStatus;
-import org.veri.be.domain.common.dto.MemberProfileResponse;
+import org.veri.be.api.common.dto.MemberProfileResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
