@@ -2,9 +2,10 @@ package org.veri.be.domain.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.veri.be.api.common.dto.auth.LoginResponse;
-import org.veri.be.api.common.dto.auth.ReissueTokenRequest;
-import org.veri.be.api.common.dto.auth.ReissueTokenResponse;
+import org.veri.be.global.auth.Authenticator;
+import org.veri.be.global.auth.dto.LoginResponse;
+import org.veri.be.global.auth.dto.ReissueTokenRequest;
+import org.veri.be.global.auth.dto.ReissueTokenResponse;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.repository.MemberRepository;
 import org.veri.be.domain.member.service.MemberQueryService;
@@ -16,7 +17,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class AuthService {
+public class AuthService implements Authenticator {
 
     private final MemberQueryService memberQueryService;
     private final TokenStorageService tokenStorageService;

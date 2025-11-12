@@ -9,8 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import org.veri.be.api.common.dto.auth.LoginResponse;
-import org.veri.be.domain.auth.service.AuthService;
+import org.veri.be.global.auth.dto.LoginResponse;
+import org.veri.be.global.auth.Authenticator;
 import org.veri.be.global.auth.oauth2.dto.CustomOAuth2User;
 import org.veri.be.global.auth.oauth2.dto.OAuth2UserInfo;
 import org.veri.be.global.auth.oauth2.dto.OAuth2UserInfoMapper;
@@ -23,7 +23,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
-    private final AuthService authService;
+    private final Authenticator authService;
 
     @Override
     public void onAuthenticationSuccess(

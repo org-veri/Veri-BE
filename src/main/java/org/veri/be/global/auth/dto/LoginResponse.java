@@ -1,4 +1,4 @@
-package org.veri.be.api.common.dto.auth;
+package org.veri.be.global.auth.dto;
 
 import lombok.Builder;
 import lombok.Getter;

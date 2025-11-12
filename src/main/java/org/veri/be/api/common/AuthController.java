@@ -7,9 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.veri.be.api.common.dto.auth.ReissueTokenRequest;
-import org.veri.be.api.common.dto.auth.ReissueTokenResponse;
 import org.veri.be.domain.auth.service.AuthService;
+import org.veri.be.global.auth.dto.ReissueTokenRequest;
+import org.veri.be.global.auth.dto.ReissueTokenResponse;
 import org.veri.be.lib.response.ApiResponse;
 
 @RestController
