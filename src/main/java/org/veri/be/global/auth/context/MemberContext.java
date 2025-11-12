@@ -1,8 +1,8 @@
 package org.veri.be.global.auth.context;
 
 import lombok.extern.slf4j.Slf4j;
-import org.veri.be.global.auth.AuthErrorInfo;
 import org.veri.be.domain.member.entity.Member;
+import org.veri.be.global.auth.AuthErrorInfo;
 import org.veri.be.lib.exception.http.UnAuthorizedException;
 
 import java.util.Optional;
@@ -10,28 +10,32 @@ import java.util.Optional;
 @Slf4j
 public class MemberContext {
 
-    public static final ScopedValue<Member> member = ScopedValue.newInstance();
-    public static final ScopedValue<String> token = ScopedValue.newInstance();
+    public static final ThreadLocal<Member> currentMember = new ThreadLocal<>();
+    public static final ThreadLocal<String> currentToken = new ThreadLocal<>();
 
-    public static void setToken(String token) {
-        ScopedValue.where(MemberContext.token, token).run(() -> {
-        });
+    public static void setCurrentToken(String token) {
+        currentToken.set(token);
     }
 
-    public static void setMember(Member member) {
-        ScopedValue.where(MemberContext.member, member).run(() -> {
-            log.info("Member set to {}", member);
-        });
+    public static void setCurrentMember(Member member) {
+        currentMember.set(member);
+        log.debug("Member set to {}", member);
     }
 
-    public static Optional<Member> getMember() {
-        if (!member.isBound()) return Optional.empty();
-        return Optional.ofNullable(member.get());
+    public static Optional<Member> getCurrentMember() {
+        return Optional.ofNullable(currentMember.get());
     }
 
     public static Member getMemberOrThrow() {
-        return getMember().orElseThrow(
+        return getCurrentMember().orElseThrow(
                 () -> new UnAuthorizedException(AuthErrorInfo.UNAUTHORIZED)
         );
+    }
+
+    public static void clear() {
+        currentMember.remove();
+        currentToken.remove();
+
+        log.debug("Member cleared");
     }
 }

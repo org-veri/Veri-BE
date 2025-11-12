@@ -16,7 +16,7 @@ public class MemberGuard implements Guard {
 
     @Override
     public void canActivate() {
-        Optional<Member> member = MemberContext.getMember();
+        Optional<Member> member = MemberContext.getCurrentMember();
         if (!checkMemberHasRole(member)) {
             throw new ForbiddenException(CommonErrorInfo.DOES_NOT_HAVE_PERMISSION);
         }

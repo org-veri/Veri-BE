@@ -25,18 +25,24 @@ public class JwtFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-        String token = AuthorizationHeaderUtil.extractTokenFromAuthorizationHeader(request);
+        try {
+            String token = AuthorizationHeaderUtil.extractTokenFromAuthorizationHeader(request);
 
-        if (token != null && !tokenStorageService.isBlackList(token)) {
-            Long id = (Long) JwtUtil.parseRefreshTokenPayloads(token).get("id");
-            if (id != null) {
-                Member member = memberQueryService.findById(id);
+            if (token != null && !tokenStorageService.isBlackList(token)) {
+                Object raw = JwtUtil.parseRefreshTokenPayloads(token).get("id");
+                Long id = raw == null ? null : ((Number) raw).longValue();
 
-                MemberContext.setToken(token);
-                MemberContext.setMember(member);
+                if (id != null) {
+                    Member member = memberQueryService.findById(id);
+
+                    MemberContext.setCurrentToken(token);
+                    MemberContext.setCurrentMember(member);
+                }
             }
+
+            filterChain.doFilter(request, response);
+        } finally {
+            MemberContext.clear();
         }
-        request.setAttribute("token", token);
-        filterChain.doFilter(request, response);
     }
 }
