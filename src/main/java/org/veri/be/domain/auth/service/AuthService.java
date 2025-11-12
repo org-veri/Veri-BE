@@ -5,16 +5,12 @@ import org.springframework.stereotype.Service;
 import org.veri.be.api.common.dto.auth.LoginResponse;
 import org.veri.be.api.common.dto.auth.ReissueTokenRequest;
 import org.veri.be.api.common.dto.auth.ReissueTokenResponse;
-import org.veri.be.domain.auth.service.oauth2.dto.OAuth2UserInfo;
-import org.veri.be.domain.auth.service.token.TokenCommandService;
-import org.veri.be.domain.auth.service.token.TokenStorageService;
 import org.veri.be.domain.member.entity.Member;
-import org.veri.be.domain.member.exception.MemberErrorInfo;
 import org.veri.be.domain.member.repository.MemberRepository;
 import org.veri.be.domain.member.service.MemberQueryService;
 import org.veri.be.global.auth.JwtClaimsPayload;
+import org.veri.be.global.auth.oauth2.dto.OAuth2UserInfo;
 import org.veri.be.lib.auth.jwt.JwtUtil;
-import org.veri.be.lib.exception.http.NotFoundException;
 
 import java.util.Optional;
 
@@ -22,27 +18,29 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AuthService {
 
-    protected final MemberQueryService memberQueryService;
-    private final MemberRepository memberRepository;
-    protected final TokenCommandService tokenCommandService;
+    private final MemberQueryService memberQueryService;
     private final TokenStorageService tokenStorageService;
 
-    public LoginResponse loginWithOAuth2(OAuth2UserInfo userInfo) {
-        Member member = saveOrGetMember(userInfo);
-        return tokenCommandService.createLoginToken(member);
+    private final MemberRepository memberRepository;
+
+    public LoginResponse login(Member member) {
+        JwtUtil.TokenGeneration accessToken = JwtUtil.generateAccessToken(JwtClaimsPayload.from(member));
+        JwtUtil.TokenGeneration refreshToken = JwtUtil.generateRefreshToken(member.getId());
+        tokenStorageService.addRefreshToken(member.getId(), refreshToken.token(), refreshToken.expiredAt());
+        return LoginResponse.builder()
+                .accessToken(accessToken.token())
+                .refreshToken(refreshToken.token())
+                .build();
     }
 
     public ReissueTokenResponse reissueToken(ReissueTokenRequest request) {
         String refreshToken = request.getRefreshToken();
         Long id = (Long) JwtUtil.parseRefreshTokenPayloads(refreshToken).get("id");
 
-        Member member = memberRepository.findById(id).orElseThrow(() ->
-                new NotFoundException(MemberErrorInfo.NOT_FOUND)
-        );
-
+        Member member = memberQueryService.findById(id);
         String accessToken = JwtUtil.generateAccessToken(
                 new JwtClaimsPayload(member.getId(), member.getEmail(), member.getNickname(), false)
-        );
+        ).token();
 
         return ReissueTokenResponse.builder()
                 .accessToken(accessToken)
@@ -72,6 +70,11 @@ public class AuthService {
                 tokenStorageService.addBlackList(refreshToken, refreshRemainMs);
             }
         }
+    }
+
+    public LoginResponse loginWithOAuth2(OAuth2UserInfo userInfo) {
+        Member member = saveOrGetMember(userInfo);
+        return this.login(member);
     }
 
     private Member saveOrGetMember(OAuth2UserInfo request) {
