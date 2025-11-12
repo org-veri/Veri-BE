@@ -14,9 +14,7 @@ springdoc:
 logging:
   level:
     root: info
-#    org.springframework.security: DEBUG
-#    org.springframework.security.oauth2: TRACE
-#    org.apache.http.wire: DEBUG
+    org.springframework.web.servlet: ERROR
 
 auth:
   jwt:

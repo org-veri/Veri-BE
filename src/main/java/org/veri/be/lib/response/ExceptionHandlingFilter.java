@@ -1,7 +1,6 @@
 package org.veri.be.lib.response;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.common.contenttype.ContentType;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -9,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.veri.be.lib.exception.ApplicationException;
@@ -55,7 +53,6 @@ public class ExceptionHandlingFilter extends OncePerRequestFilter {
                 response.addHeader(header.name(), header.value())
         );
 
-        ObjectMapper objectMapper = new ObjectMapper();
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(objectMapper.writeValueAsString(apiResponse));
     }
