@@ -22,8 +22,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String provider = userRequest.getClientRegistration().getRegistrationId();
 
         OAuth2User oauth2User = super.loadUser(userRequest);
-        log.info("oAuth2User: {}", oauth2User);
-
         List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
         return new CustomOAuth2User(authorities, oauth2User.getAttributes(), "id", provider);
     }
