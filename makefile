@@ -2,7 +2,7 @@
 
 # 이미지/플랫폼 설정
 APP_NAME="veri-be"
-IMAGE="ghcr.io/9oormthon-univ-veri/${APP_NAME}"
+IMAGE="ghcr.io/org-veri/${APP_NAME}"
 APP_TAG ?= latest
 TIMESTAMP_TAG := $(shell date +%Y%m%d%H%M%S)
 

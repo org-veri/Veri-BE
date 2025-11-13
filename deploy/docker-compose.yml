@@ -15,7 +15,7 @@ services:
       - mysql_data:/var/lib/mysql
 
   app:
-    image: ghcr.io/9oormthon-univ-veri/veri-be:latest
+    image: ghcr.io/org-veri/veri-be:latest
     container_name: very
     restart: unless-stopped
     ports:
