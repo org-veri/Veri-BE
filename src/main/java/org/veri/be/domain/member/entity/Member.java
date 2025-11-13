@@ -42,8 +42,8 @@ public class Member extends BaseEntity implements Authorizable {
     private ProviderType providerType;
 
     public void updateInfo(String nickname, String profileImageUrl) {
-        this.nickname = nickname == null ? nickname : this.nickname;
-        this.profileImageUrl = profileImageUrl == null ? profileImageUrl : this.profileImageUrl;
+        this.nickname = nickname != null ? nickname : this.nickname;
+        this.profileImageUrl = profileImageUrl != null ? profileImageUrl : this.profileImageUrl;
     }
 
     @Override
