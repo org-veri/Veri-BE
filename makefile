@@ -1,8 +1,8 @@
-.PHONY: build build-and-push run down ensure-builder
+.PHONY: build build-and-push run down ensure-builder build-and-push-dev
 
 # 이미지/플랫폼 설정
-APP_NAME="veri-be"
-IMAGE="ghcr.io/9oormthon-univ-veri/${APP_NAME}"
+APP_NAME=veri-be
+IMAGE=ghcr.io/org-veri/${APP_NAME}
 APP_TAG ?= latest
 TIMESTAMP_TAG := $(shell date +%Y%m%d%H%M%S)
 
@@ -43,9 +43,21 @@ build-and-push: ensure-builder
 	  --push \
 	  $(BUILD_CONTEXT)
 
+build-and-push-dev:
+	./gradlew clean build -x test
+	docker build \
+	  -f $(DOCKERFILE) \
+	  -t $(IMAGE):dev \
+	  -t $(IMAGE):$(TIMESTAMP_TAG) \
+	  --push \
+	  $(BUILD_CONTEXT)
+
 .PHONY: clean clean-images
 
 
-.PHONY: deploy
+.PHONY: deploy deploy-dev
 deploy:
 	@ssh aws-very 'cd veri-be/ && ./deploy.sh'
+
+deploy-dev:
+	@ssh oracle 'cd workspace/app/dev-veri-be/ && ./deploy.sh'
