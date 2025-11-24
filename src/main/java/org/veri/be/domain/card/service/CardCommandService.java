@@ -49,12 +49,13 @@ public class CardCommandService {
     }
 
     @Transactional
-    public Card updateCard(Long cardId, String content) {
+    public Card updateCard(Long cardId, String content, String imageUrl) {
         Card card = this.getCard(cardId);
         card.authorizeMember(MemberContext.getMemberOrThrow().getId());
 
         Card updatedCard = card.toBuilder()
                 .content(content)
+                .image(imageUrl)
                 .build();
 
         return cardRepository.save(updatedCard);
