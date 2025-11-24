@@ -17,14 +17,14 @@ import java.util.List;
 @Getter
 @SuperBuilder(toBuilder = true)
 @Entity
-@Table(name = "member_book")
+@Table(name = "reading")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Reading extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_book_id")
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "score")

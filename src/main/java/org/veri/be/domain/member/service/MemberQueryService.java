@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberQueryService {
 
     private final MemberRepository memberRepository;
-    private final ReadingRepository memberBookRepository;
+    private final ReadingRepository readingRepository;
     private final CardRepository cardRepository;
 
     public Member findById(Long id) {
@@ -27,7 +27,7 @@ public class MemberQueryService {
     }
 
     public MemberResponse.MemberInfoResponse findMyInfo(Member member) {
-        return MemberConverter.toMemberInfoResponse(member, memberBookRepository.countAllByMember(member), cardRepository.countAllByMemberId(member.getId()));
+        return MemberConverter.toMemberInfoResponse(member, readingRepository.countAllByMember(member), cardRepository.countAllByMemberId(member.getId()));
     }
 
     public boolean existsByNickname(String nickname) {

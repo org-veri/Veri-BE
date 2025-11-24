@@ -30,13 +30,13 @@ public class Card extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
-            name = "member_book_id",
+            name = "reading_id",
             foreignKey = @ForeignKey(
-                    name = "fk_card_member_book",
+                    name = "fk_card_reading",
                     value = ConstraintMode.CONSTRAINT,
                     foreignKeyDefinition =
-                            "FOREIGN KEY (member_book_id) " +
-                                    "REFERENCES member_book(member_book_id) " +
+                            "FOREIGN KEY (reading_id) " +
+                                    "REFERENCES reading(id) " +
                                     "ON DELETE SET NULL"
             )
     )
