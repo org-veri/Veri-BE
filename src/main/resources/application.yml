@@ -14,3 +14,10 @@ springdoc:
 logging:
   level:
     root: info
+    org.springframework.web.servlet: ERROR
+
+auth:
+  jwt:
+    use: true
+  oauth2:
+    dynamic-redirect: true

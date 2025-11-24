@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "name": "auth.jwt.use",
+      "type": "java.lang.Boolean",
+      "description": "Description for jwt.use."
+    },
+    {
+      "name": "auth.oauth2.dynamic-redirect",
+      "type": "java.lang.String",
+      "description": "Description for auth.oauth2.dynamic-redirect."
+    }
+  ]
+}

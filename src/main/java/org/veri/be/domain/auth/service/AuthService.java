@@ -1,70 +1,60 @@
 package org.veri.be.domain.auth.service;
 
 import lombok.RequiredArgsConstructor;
-import org.veri.be.domain.auth.converter.AuthConverter;
-import org.veri.be.domain.auth.dto.AuthRequest;
-import org.veri.be.domain.auth.dto.AuthResponse;
-import org.veri.be.domain.auth.exception.AuthErrorInfo;
-import org.veri.be.domain.auth.service.oauth2.OAuth2Service;
-import org.veri.be.domain.member.entity.Member;
-import org.veri.be.domain.member.entity.enums.ProviderType;
-import org.veri.be.domain.member.exception.MemberErrorInfo;
-import org.veri.be.domain.member.repository.MemberRepository;
-import org.veri.be.global.exception.http.BadRequestException;
-import org.veri.be.global.exception.http.NotFoundException;
-import org.veri.be.global.jwt.JwtAuthenticator;
-import org.veri.be.global.jwt.JwtExtractor;
-import org.veri.be.global.jwt.JwtProvider;
 import org.springframework.stereotype.Service;
+import org.veri.be.global.auth.Authenticator;
+import org.veri.be.global.auth.dto.LoginResponse;
+import org.veri.be.global.auth.dto.ReissueTokenRequest;
+import org.veri.be.global.auth.dto.ReissueTokenResponse;
+import org.veri.be.domain.member.entity.Member;
+import org.veri.be.domain.member.repository.MemberRepository;
+import org.veri.be.domain.member.service.MemberQueryService;
+import org.veri.be.global.auth.JwtClaimsPayload;
+import org.veri.be.global.auth.oauth2.dto.OAuth2UserInfo;
+import org.veri.be.lib.auth.jwt.JwtUtil;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class AuthService {
+public class AuthService implements Authenticator {
 
-    private final OAuth2Service kakaoOAuth2Service;
-    private final JwtProvider jwtProvider;
-    private final JwtAuthenticator jwtAuthenticator;
-    private final JwtExtractor jwtExtractor;
-
-    private final MemberRepository memberRepository;
+    private final MemberQueryService memberQueryService;
     private final TokenStorageService tokenStorageService;
 
-    public AuthResponse.LoginResponse login(String provider, String code, String origin) {
-        if (provider.equalsIgnoreCase(ProviderType.KAKAO.name())) {
-            return kakaoOAuth2Service.login(code, origin);
-        } else {
-            throw new BadRequestException(AuthErrorInfo.UNSUPPORTED_OAUTH2_PROVIDER);
-        }
+    private final MemberRepository memberRepository;
+
+    public LoginResponse login(Member member) {
+        JwtUtil.TokenGeneration accessToken = JwtUtil.generateAccessToken(JwtClaimsPayload.from(member));
+        JwtUtil.TokenGeneration refreshToken = JwtUtil.generateRefreshToken(member.getId());
+        tokenStorageService.addRefreshToken(member.getId(), refreshToken.token(), refreshToken.expiredAt());
+        return LoginResponse.builder()
+                .accessToken(accessToken.token())
+                .refreshToken(refreshToken.token())
+                .build();
     }
 
-    public AuthResponse.ReissueTokenResponse reissueToken(AuthRequest.AuthReissueRequest request) {
+    public ReissueTokenResponse reissueToken(ReissueTokenRequest request) {
         String refreshToken = request.getRefreshToken();
-        jwtAuthenticator.verifyRefreshToken(refreshToken);
-        String subject = jwtExtractor.parseRefreshTokenPayloads(refreshToken).getSubject();
-        Long id = null;
-        try {
-            id = Long.valueOf(subject);
-        } catch (Exception e) {
-            throw new NotFoundException(MemberErrorInfo.NOT_FOUND);
-        }
-        Member member = memberRepository.findById(id).orElseThrow(() ->
-                new NotFoundException(MemberErrorInfo.NOT_FOUND));
-        return AuthConverter.toReissueTokenResponse(jwtProvider.generateAccessToken(member.getId(), member.getNickname(), false));
+        Long id = (Long) JwtUtil.parseRefreshTokenPayloads(refreshToken).get("id");
+
+        Member member = memberQueryService.findById(id);
+        String accessToken = JwtUtil.generateAccessToken(
+                new JwtClaimsPayload(member.getId(), member.getEmail(), member.getNickname(), false)
+        ).token();
+
+        return ReissueTokenResponse.builder()
+                .accessToken(accessToken)
+                .build();
     }
 
     public void logout(String accessToken) {
-        String subject = jwtExtractor.parseAccessTokenPayloads(accessToken).getSubject();
-        Long userId = null;
-        try {
-            userId = Long.valueOf(subject);
-        } catch (Exception e) {
-            return;
-        }
-        String refreshToken = tokenStorageService.getRefreshToken(userId);
-        tokenStorageService.deleteRefreshToken(userId);
+        Long id = (Long) JwtUtil.parseAccessTokenPayloads(accessToken).get("id");
+        String refreshToken = tokenStorageService.getRefreshToken(id);
+        tokenStorageService.deleteRefreshToken(id);
 
         // access token 만료시간 계산
-        java.util.Date accessExpDate = jwtExtractor.parseAccessTokenPayloads(accessToken).getExpiration();
+        java.util.Date accessExpDate = JwtUtil.parseAccessTokenPayloads(accessToken).getExpiration();
         java.time.Instant accessExp = accessExpDate != null ? accessExpDate.toInstant() : null;
         long now = java.time.Instant.now().toEpochMilli();
         long accessRemainMs = (accessExp != null) ? accessExp.toEpochMilli() - now : 0L;
@@ -74,12 +64,32 @@ public class AuthService {
 
         // refresh token이 존재하면 만료시간 계산 후 블랙리스트 등록
         if (refreshToken != null) {
-            java.util.Date refreshExpDate = jwtExtractor.parseRefreshTokenPayloads(refreshToken).getExpiration();
+            java.util.Date refreshExpDate = JwtUtil.parseRefreshTokenPayloads(refreshToken).getExpiration();
             java.time.Instant refreshExp = refreshExpDate != null ? refreshExpDate.toInstant() : null;
             long refreshRemainMs = (refreshExp != null) ? refreshExp.toEpochMilli() - now : 0L;
             if (refreshRemainMs > 0) {
                 tokenStorageService.addBlackList(refreshToken, refreshRemainMs);
             }
+        }
+    }
+
+    public LoginResponse loginWithOAuth2(OAuth2UserInfo userInfo) {
+        Member member = saveOrGetMember(userInfo);
+        return this.login(member);
+    }
+
+    private Member saveOrGetMember(OAuth2UserInfo request) {
+        Optional<Member> optional = memberRepository.findByProviderIdAndProviderType(request.getProviderId(), request.getProviderType());
+        if (optional.isPresent()) {
+            return optional.get();
+        } else {
+            Member member = request.toMember();
+            if (memberQueryService.existsByNickname(member.getNickname())) {
+                member.updateInfo(
+                        member.getNickname() + "_" + System.currentTimeMillis(),
+                        member.getProfileImageUrl());
+            }
+            return memberRepository.save(member);
         }
     }
 }

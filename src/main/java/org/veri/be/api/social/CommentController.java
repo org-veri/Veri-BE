@@ -7,7 +7,7 @@ import org.veri.be.domain.comment.dto.request.CommentEditRequest;
 import org.veri.be.domain.comment.dto.request.CommentPostRequest;
 import org.veri.be.domain.comment.dto.request.ReplyPostRequest;
 import org.veri.be.domain.comment.service.CommentCommandService;
-import org.veri.be.global.response.ApiResponse;
+import org.veri.be.lib.response.ApiResponse;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "소셜")

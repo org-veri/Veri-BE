@@ -1,21 +1,21 @@
 package org.veri.be.domain.card.service;
 
 import lombok.RequiredArgsConstructor;
-import org.veri.be.domain.auth.service.AuthUtil;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.veri.be.domain.card.controller.dto.CardConverter;
 import org.veri.be.domain.card.controller.dto.response.CardDetailResponse;
 import org.veri.be.domain.card.controller.enums.CardSortType;
 import org.veri.be.domain.card.entity.Card;
 import org.veri.be.domain.card.exception.CardErrorInfo;
 import org.veri.be.domain.card.repository.CardRepository;
-import org.veri.be.domain.card.repository.dto.CardListItem;
 import org.veri.be.domain.card.repository.dto.CardFeedItem;
-import org.veri.be.global.exception.http.NotFoundException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.veri.be.domain.card.repository.dto.CardListItem;
+import org.veri.be.global.auth.context.MemberContext;
+import org.veri.be.lib.exception.http.NotFoundException;
 
 @Transactional(readOnly = true)
 @Service
@@ -35,7 +35,7 @@ public class CardQueryService {
         Card card = getCardById(cardId);
 
         if (!card.getIsPublic()) {
-            card.authorizeMember(AuthUtil.getCurrentMember().getId());
+            card.authorizeMember(MemberContext.getMemberOrThrow().getId());
         }
 
         return CardConverter.toCardDetailResponse(card);

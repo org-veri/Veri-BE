@@ -1,9 +1,9 @@
 package org.veri.be.domain.book.dto.reading;
 
-import org.veri.be.domain.auth.service.AuthUtil;
 import org.veri.be.domain.book.dto.reading.response.ReadingDetailResponse;
 import org.veri.be.domain.book.entity.Reading;
-import org.veri.be.domain.common.dto.MemberProfileResponse;
+import org.veri.be.api.common.dto.MemberProfileResponse;
+import org.veri.be.global.auth.context.MemberContext;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ public class ReadingConverter {
 
         // 독서 상세 조회시 본인 외에는 공개된 카드 요약 정보만 노출
         // Todo. 엔드포인트 분리의 경우 프론트 수정 필요
-        if (!reading.getMember().getId().equals(AuthUtil.getCurrentMember().getId())) {
+        if (!reading.getMember().getId().equals(MemberContext.getMemberOrThrow().getId())) {
             summaries = summaries.stream()
                     .filter(ReadingDetailResponse.CardSummaryResponse::isPublic)
                     .toList();

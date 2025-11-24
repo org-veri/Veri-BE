@@ -1,7 +1,11 @@
 package org.veri.be.domain.book.service;
 
 import lombok.RequiredArgsConstructor;
-import org.veri.be.domain.auth.service.AuthUtil;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.veri.be.domain.book.controller.enums.ReadingSortType;
 import org.veri.be.domain.book.dto.book.BookPopularResponse;
 import org.veri.be.domain.book.dto.reading.ReadingConverter;
@@ -15,12 +19,8 @@ import org.veri.be.domain.book.exception.BookErrorInfo;
 import org.veri.be.domain.book.repository.BookRepository;
 import org.veri.be.domain.book.repository.ReadingRepository;
 import org.veri.be.domain.member.entity.Member;
-import org.veri.be.global.exception.http.BadRequestException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.veri.be.global.auth.context.MemberContext;
+import org.veri.be.lib.exception.http.BadRequestException;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
@@ -85,7 +85,7 @@ public class BookshelfService {
                 .orElseThrow(() -> new BadRequestException(BookErrorInfo.BAD_REQUEST));
 
         if (!reading.getIsPublic()) {
-            reading.authorizeMember(AuthUtil.getCurrentMember().getId());
+            reading.authorizeMember(MemberContext.getMemberOrThrow().getId());
         }
 
         ReadingDetailResponse dto = ReadingConverter.toReadingDetailResponse(reading);
@@ -121,7 +121,7 @@ public class BookshelfService {
     @Transactional
     public void modifyBook(Double score, LocalDateTime startedAt, LocalDateTime endedAt, Long memberBookId) {
         Reading reading = getReadingById(memberBookId);
-        reading.authorizeMember(AuthUtil.getCurrentMember().getId());
+        reading.authorizeMember(MemberContext.getMemberOrThrow().getId());
 
         ReadingStatus updateStatus = decideStatus(startedAt, endedAt);
 
@@ -150,7 +150,7 @@ public class BookshelfService {
     @Transactional
     public void rateScore(Double score, Long memberBookId) {
         Reading reading = getReadingById(memberBookId);
-        reading.authorizeMember(AuthUtil.getCurrentMember().getId());
+        reading.authorizeMember(MemberContext.getMemberOrThrow().getId());
 
         Reading updated = reading.toBuilder().score(score).build();
 
@@ -160,7 +160,7 @@ public class BookshelfService {
     @Transactional
     public void readStart(Long memberBookId) {
         Reading reading = getReadingById(memberBookId);
-        reading.authorizeMember(AuthUtil.getCurrentMember().getId());
+        reading.authorizeMember(MemberContext.getMemberOrThrow().getId());
 
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startedTime = LocalDateTime.of(now.getYear(),
@@ -182,7 +182,7 @@ public class BookshelfService {
     @Transactional
     public void readOver(Long memberBookId) {
         Reading reading = getReadingById(memberBookId);
-        reading.authorizeMember(AuthUtil.getCurrentMember().getId());
+        reading.authorizeMember(MemberContext.getMemberOrThrow().getId());
 
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime endedTime = LocalDateTime.of(now.getYear(),
@@ -204,7 +204,7 @@ public class BookshelfService {
     @Transactional
     public void deleteBook(Long memberBookId) {
         Reading reading = getReadingById(memberBookId);
-        reading.authorizeMember(AuthUtil.getCurrentMember().getId());
+        reading.authorizeMember(MemberContext.getMemberOrThrow().getId());
 
         readingRepository.delete(reading);
     }
@@ -212,7 +212,7 @@ public class BookshelfService {
     @Transactional
     public ReadingVisibilityUpdateResponse modifyVisibility(Long readingId, boolean isPublic) {
         Reading reading = getReadingById(readingId);
-        reading.authorizeMember(AuthUtil.getCurrentMember().getId());
+        reading.authorizeMember(MemberContext.getMemberOrThrow().getId());
 
         if (isPublic) {
             reading.setPublic();

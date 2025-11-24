@@ -2,7 +2,7 @@ package org.veri.be.domain.book.controller.enums;
 
 import lombok.Getter;
 import org.veri.be.domain.book.exception.BookErrorInfo;
-import org.veri.be.global.exception.http.BadRequestException;
+import org.veri.be.lib.exception.http.BadRequestException;
 import org.springframework.data.domain.Sort;
 
 @Getter

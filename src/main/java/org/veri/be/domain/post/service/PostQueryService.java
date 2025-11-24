@@ -1,7 +1,11 @@
 package org.veri.be.domain.post.service;
 
 import lombok.RequiredArgsConstructor;
-import org.veri.be.domain.auth.service.AuthUtil;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.veri.be.domain.comment.service.CommentQueryService;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.post.controller.enums.PostSortType;
@@ -12,13 +16,9 @@ import org.veri.be.domain.post.repository.LikePostRepository;
 import org.veri.be.domain.post.repository.PostRepository;
 import org.veri.be.domain.post.repository.dto.DetailLikeInfoQueryResult;
 import org.veri.be.domain.post.repository.dto.PostFeedQueryResult;
-import org.veri.be.global.exception.CommonErrorInfo;
-import org.veri.be.global.exception.http.NotFoundException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.veri.be.global.auth.context.MemberContext;
+import org.veri.be.lib.exception.CommonErrorInfo;
+import org.veri.be.lib.exception.http.NotFoundException;
 
 import java.util.List;
 
@@ -48,7 +48,7 @@ public class PostQueryService {
     }
 
     public PostDetailResponse getPostDetail(Long postId) {
-        Member requester = AuthUtil.getCurrentMember();
+        Member requester = MemberContext.getMemberOrThrow();
 
         Post post = getPostById(postId);
         DetailLikeInfoQueryResult likeInfo = likePostRepository.getDetailLikeInfoOfPost(postId, requester.getId());

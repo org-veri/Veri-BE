@@ -1,15 +1,15 @@
 package org.veri.be.domain.comment.service;
 
 import lombok.RequiredArgsConstructor;
-import org.veri.be.domain.auth.service.AuthUtil;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.veri.be.domain.comment.dto.request.CommentPostRequest;
 import org.veri.be.domain.comment.entity.Comment;
 import org.veri.be.domain.comment.repository.CommentRepository;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.post.entity.Post;
 import org.veri.be.domain.post.service.PostQueryService;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.veri.be.global.auth.context.MemberContext;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +21,7 @@ public class CommentCommandService {
 
     @Transactional
     public Long postComment(CommentPostRequest request) {
-        Member member = AuthUtil.getCurrentMember();
+        Member member = MemberContext.getMemberOrThrow();
         Post post = postQueryService.getPostById(request.postId());
 
         Comment comment = Comment.builder()
@@ -36,7 +36,7 @@ public class CommentCommandService {
 
     @Transactional
     public Long postReply(Long parentCommentId, String content) {
-        Member member = AuthUtil.getCurrentMember();
+        Member member = MemberContext.getMemberOrThrow();
         Comment parentComment = commentQueryService.getCommentById(parentCommentId);
 
         Comment reply = Comment.builder()
@@ -51,7 +51,7 @@ public class CommentCommandService {
     }
 
     public void editComment(Long commentId, String content) {
-        Member member = AuthUtil.getCurrentMember();
+        Member member = MemberContext.getMemberOrThrow();
         Comment comment = commentQueryService.getCommentById(commentId);
         comment.authorizeMember(member.getId());
         comment.editContent(content);
@@ -61,7 +61,7 @@ public class CommentCommandService {
 
     @Transactional
     public void deleteComment(Long commentId) {
-        Member member = AuthUtil.getCurrentMember();
+        Member member = MemberContext.getMemberOrThrow();
         Comment comment = commentQueryService.getCommentById(commentId);
         comment.authorizeMember(member.getId());
 

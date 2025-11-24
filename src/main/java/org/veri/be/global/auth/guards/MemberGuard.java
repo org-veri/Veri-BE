@@ -1,11 +1,12 @@
 package org.veri.be.global.auth.guards;
 
 import lombok.RequiredArgsConstructor;
-import org.veri.be.global.auth.context.AccessTokenMember;
-import org.veri.be.global.auth.context.AccessTokenMemberContext;
-import org.veri.be.global.exception.CommonErrorInfo;
-import org.veri.be.global.exception.http.ForbiddenException;
 import org.springframework.stereotype.Component;
+import org.veri.be.domain.member.entity.Member;
+import org.veri.be.global.auth.context.MemberContext;
+import org.veri.be.lib.auth.guard.Guard;
+import org.veri.be.lib.exception.CommonErrorInfo;
+import org.veri.be.lib.exception.http.ForbiddenException;
 
 import java.util.Optional;
 
@@ -14,14 +15,14 @@ import java.util.Optional;
 public class MemberGuard implements Guard {
 
     @Override
-    public void canActivate() throws Exception {
-        Optional<AccessTokenMember> member = AccessTokenMemberContext.getAccessTokenMember();
+    public void canActivate() {
+        Optional<Member> member = MemberContext.getCurrentMember();
         if (!checkMemberHasRole(member)) {
             throw new ForbiddenException(CommonErrorInfo.DOES_NOT_HAVE_PERMISSION);
         }
     }
 
-    private boolean checkMemberHasRole(Optional<AccessTokenMember> member) {
+    private boolean checkMemberHasRole(Optional<Member> member) {
         return member.isPresent();
     }
 }

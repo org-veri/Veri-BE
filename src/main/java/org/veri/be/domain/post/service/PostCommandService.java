@@ -1,7 +1,8 @@
 package org.veri.be.domain.post.service;
 
 import lombok.RequiredArgsConstructor;
-import org.veri.be.domain.auth.service.AuthUtil;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.veri.be.domain.book.entity.Book;
 import org.veri.be.domain.book.service.BookService;
 import org.veri.be.domain.card.exception.CardErrorInfo;
@@ -12,13 +13,12 @@ import org.veri.be.domain.post.entity.LikePost;
 import org.veri.be.domain.post.entity.Post;
 import org.veri.be.domain.post.repository.LikePostRepository;
 import org.veri.be.domain.post.repository.PostRepository;
-import org.veri.be.global.exception.http.BadRequestException;
+import org.veri.be.global.auth.context.MemberContext;
 import org.veri.be.global.storage.dto.PresignedUrlRequest;
 import org.veri.be.global.storage.dto.PresignedUrlResponse;
 import org.veri.be.global.storage.service.StorageService;
 import org.veri.be.global.storage.service.StorageUtil;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.veri.be.lib.exception.http.BadRequestException;
 
 import static org.veri.be.global.storage.service.StorageConstants.MB;
 
@@ -54,14 +54,14 @@ public class PostCommandService {
     @Transactional
     public void deletePost(Long postId) {
         Post post = this.postQueryService.getPostById(postId);
-        post.authorizeMember(AuthUtil.getCurrentMember().getId());
+        post.authorizeMember(MemberContext.getMemberOrThrow().getId());
         this.postRepository.deleteById(postId);
     }
 
     @Transactional
     public void publishPost(Long postId) {
         Post post = this.postQueryService.getPostById(postId);
-        post.authorizeMember(AuthUtil.getCurrentMember().getId());
+        post.authorizeMember(MemberContext.getMemberOrThrow().getId());
         post.setIsPublic(true);
         postRepository.save(post);
     }
@@ -69,7 +69,7 @@ public class PostCommandService {
     @Transactional
     public void unPublishPost(Long postId) {
         Post post = this.postQueryService.getPostById(postId);
-        post.authorizeMember(AuthUtil.getCurrentMember().getId());
+        post.authorizeMember(MemberContext.getMemberOrThrow().getId());
         post.setIsPublic(false);
         postRepository.save(post);
     }

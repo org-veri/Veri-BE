@@ -2,7 +2,7 @@ package org.veri.be.domain.image.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.veri.be.global.exception.ErrorInfo;
+import org.veri.be.lib.exception.ErrorInfo;
 
 @AllArgsConstructor
 @Getter

@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.veri.be.domain.comment.entity.Comment;
 import org.veri.be.domain.comment.repository.CommentRepository;
 import org.veri.be.domain.post.dto.response.PostDetailResponse;
-import org.veri.be.global.exception.CommonErrorInfo;
-import org.veri.be.global.exception.http.NotFoundException;
+import org.veri.be.lib.exception.CommonErrorInfo;
+import org.veri.be.lib.exception.http.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

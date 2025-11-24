@@ -8,7 +8,7 @@ import org.veri.be.domain.book.exception.ReadingErrorInfo;
 import org.veri.be.domain.card.entity.Card;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.global.entity.BaseEntity;
-import org.veri.be.global.exception.http.ForbiddenException;
+import org.veri.be.lib.exception.http.ForbiddenException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
