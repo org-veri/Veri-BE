@@ -1,7 +1,48 @@
+logging:
+  level:
+    root: info
+    org.springframework.web.servlet: ERROR
+
+server:
+  servlet:
+    session:
+      cookie:
+        secure: true
+        same-site: None
+        http-only: true
+
 spring:
   web:
     resources:
       add-mappings: false
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
+
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            authorization-grant-type: authorization_code
+            client-authentication-method: client_secret_post
+            redirect-uri: ${KAKAO_REDIRECT_URI}
+            scope:
+              - profile_nickname
+              - profile_image
+              - account_email
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
 
 springdoc:
   swagger-ui:
@@ -11,13 +52,16 @@ springdoc:
   api-docs:
     path: /resources/docs/v3/api-docs
 
-logging:
-  level:
-    root: info
-    org.springframework.web.servlet: ERROR
-
 auth:
   jwt:
     use: true
   oauth2:
     dynamic-redirect: true
+
+jwt:
+  access:
+    secret: testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
+    validity: 3600000 # 1 hour
+  refresh:
+    secret: testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
+    validity: 2592000000 # 30 days
