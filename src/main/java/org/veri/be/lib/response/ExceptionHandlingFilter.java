@@ -54,7 +54,6 @@ public class ExceptionHandlingFilter extends OncePerRequestFilter {
     }
 
     private boolean isBeforeController(HttpServletRequest request) {
-        System.out.println(request.getAttribute(HandlerMapping.BEST_MATCHING_HANDLER_ATTRIBUTE) == null);
         return request.getAttribute(HandlerMapping.BEST_MATCHING_HANDLER_ATTRIBUTE) == null;
     }
 
