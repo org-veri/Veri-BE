@@ -1,4 +1,4 @@
-.PHONY: build build-and-push run down ensure-builder build-and-push-dev
+.PHONY: build buildx-and-push run down ensure-builder build-and-push-dev
 
 # 이미지/플랫폼 설정
 APP_NAME=veri-be
@@ -27,7 +27,7 @@ ensure-builder:
 	fi
 	@docker buildx inspect --bootstrap >/dev/null
 
-build-and-push: ensure-builder
+buildx-and-push: ensure-builder
 	./gradlew clean build -x test
 	@if [ "$(APP_TAG)" != "latest" ]; then \
 	  EXTRA_TAGS="-t $(IMAGE):latest"; \
@@ -43,21 +43,26 @@ build-and-push: ensure-builder
 	  --push \
 	  $(BUILD_CONTEXT)
 
-build-and-push-dev:
-	./gradlew clean build -x test
-	docker build \
-	  -f $(DOCKERFILE) \
-	  -t $(IMAGE):dev \
-	  -t $(IMAGE):$(TIMESTAMP_TAG) \
-	  --push \
-	  $(BUILD_CONTEXT)
+.PHONY: deploy deploy-blue deploy-green check-blue-health
+deploy-blue:
+	@echo "Deploying to BLUE Server..."
+	@ssh aws-very 'cd workspace/veri-be && ./deploy.sh'
 
-.PHONY: clean clean-images
-
-
-.PHONY: deploy deploy-dev
-deploy:
-	@ssh aws-very 'cd veri-be/ && ./deploy.sh'
-
-deploy-dev:
+deploy-green:
+	@echo "Deploying to GREEN Server..."
 	@ssh oracle 'cd workspace/app/dev-veri-be/ && ./deploy.sh'
+
+check-blue-health:
+	@echo "Checking BLUE Server Health..."
+	@ssh aws-very ' \
+        while true; do \
+            if curl -sSf http://localhost:8080/actuator/health | grep -q "UP"; then \
+                break; \
+            else \
+                sleep 5; \
+            fi; \
+        done \
+    '
+	@echo "BLUE Server is healthy."
+
+deploy: deploy-blue check-blue-health deploy-green
