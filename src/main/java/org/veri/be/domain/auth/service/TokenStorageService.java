@@ -12,7 +12,7 @@ import java.time.Instant;
 
 @Service
 @RequiredArgsConstructor
-public class TokenStorageService {
+public class TokenStorageService implements TokenBlacklistStore {
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final BlacklistedTokenRepository blacklistedTokenRepository;
@@ -28,6 +28,7 @@ public class TokenStorageService {
         );
     }
 
+    @Override
     public void addBlackList(String token, long expiredAt) {
         blacklistedTokenRepository.save(
                 BlacklistedToken.builder()
@@ -41,6 +42,7 @@ public class TokenStorageService {
         refreshTokenRepository.deleteById(userId);
     }
 
+    @Override
     public boolean isBlackList(String token) {
         return blacklistedTokenRepository.findById(token)
                 .map(b -> b.getExpiredAt().isAfter(Instant.now(clock)))

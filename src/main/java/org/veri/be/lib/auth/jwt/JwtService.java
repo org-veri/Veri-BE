@@ -1,12 +1,12 @@
 package org.veri.be.lib.auth.jwt;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
+import org.veri.be.global.auth.token.TokenProvider;
 import org.veri.be.lib.auth.jwt.data.JwtProperties;
+import tools.jackson.databind.ObjectMapper;
 
 import javax.crypto.SecretKey;
 import java.time.Clock;
@@ -15,13 +15,7 @@ import java.util.Date;
 import java.util.Map;
 
 @Component
-public class JwtService {
-
-    public record TokenGeneration(
-            String token,
-            Long expiredAt
-    ) {
-    }
+public class JwtService implements TokenProvider {
 
     private final SecretKey accessKey;
     private final long accessValidity;
@@ -39,12 +33,9 @@ public class JwtService {
         this.objectMapper = objectMapper;
     }
 
+    @Override
     public <T> TokenGeneration generateAccessToken(T claimsPayload) {
-        Map<String, Object> claims = objectMapper.convertValue(
-                claimsPayload,
-                new TypeReference<>() {
-                }
-        );
+        Map<String, Object> claims = objectMapper.convertValue(claimsPayload, Map.class);
 
         long now = clock.millis();
         long expiration = now + accessValidity;
@@ -60,7 +51,8 @@ public class JwtService {
         return new TokenGeneration(token, expiration);
     }
 
-    public Claims parseAccessTokenPayloads(String accessToken) {
+    @Override
+    public Claims parseAccessToken(String accessToken) {
         return Jwts.parser()
                 .verifyWith(accessKey)
                 .build()
@@ -68,6 +60,7 @@ public class JwtService {
                 .getPayload();
     }
 
+    @Override
     public TokenGeneration generateRefreshToken(Long memberId) {
         long now = clock.millis();
         long expiration = now + refreshValidity;
@@ -83,7 +76,8 @@ public class JwtService {
         return new TokenGeneration(token, expiration);
     }
 
-    public Claims parseRefreshTokenPayloads(String refreshToken) {
+    @Override
+    public Claims parseRefreshToken(String refreshToken) {
         return Jwts.parser()
                 .verifyWith(refreshKey)
                 .build()

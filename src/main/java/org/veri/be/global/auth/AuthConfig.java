@@ -13,13 +13,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.veri.be.domain.auth.service.TokenStorageService;
+import org.veri.be.domain.auth.service.TokenBlacklistStore;
 import org.veri.be.domain.member.service.MemberQueryService;
 import org.veri.be.global.auth.oauth2.CustomAuthFailureHandler;
 import org.veri.be.global.auth.oauth2.CustomOAuth2SuccessHandler;
 import org.veri.be.global.auth.oauth2.CustomOAuth2UserService;
 import org.veri.be.lib.auth.jwt.JwtFilter;
-import org.veri.be.lib.auth.jwt.JwtService;
+import org.veri.be.global.auth.token.TokenProvider;
 
 import java.util.Collections;
 
@@ -56,15 +56,15 @@ public class AuthConfig {
     }
 
     private final MemberQueryService memberQueryService;
-    private final TokenStorageService tokenStorageService;
-    private final JwtService jwtService;
+    private final TokenBlacklistStore tokenBlacklistStore;
+    private final TokenProvider tokenProvider;
 
     @Bean
     @ConditionalOnBooleanProperty(prefix = "auth.jwt", name = "use")
     public FilterRegistrationBean<OncePerRequestFilter> firstFilterRegister() {
         log.info("Filter jwt registered");
         FilterRegistrationBean<OncePerRequestFilter> registrationBean =
-                new FilterRegistrationBean<>(new JwtFilter(memberQueryService, tokenStorageService, jwtService));
+                new FilterRegistrationBean<>(new JwtFilter(memberQueryService, tokenBlacklistStore, tokenProvider));
 
         registrationBean.setUrlPatterns(Collections.singletonList("/api/*"));
 
