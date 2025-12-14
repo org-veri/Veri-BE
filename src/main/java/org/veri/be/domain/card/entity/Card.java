@@ -66,4 +66,16 @@ public class Card extends BaseEntity {
             throw new BadRequestException(CardErrorInfo.FORBIDDEN);
         }
     }
+
+    public void assertReadableBy(Member viewer) {
+        if (Boolean.TRUE.equals(this.isPublic)) {
+            return;
+        }
+
+        if (viewer == null) {
+            throw new BadRequestException(CardErrorInfo.FORBIDDEN);
+        }
+
+        authorizeMember(viewer.getId());
+    }
 }

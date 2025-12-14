@@ -69,8 +69,11 @@ public class CardController {
 
     @Operation(summary = "카드 상세 조회", description = "카드 ID로 카드의 상세 정보를 조회합니다.")
     @GetMapping("/{cardId}")
-    public ApiResponse<CardDetailResponse> getCard(@PathVariable Long cardId) {
-        return ApiResponse.ok(cardQueryService.getCardDetail(cardId));
+    public ApiResponse<CardDetailResponse> getCard(
+            @PathVariable Long cardId,
+            @AuthenticatedMember Member member
+    ) {
+        return ApiResponse.ok(cardQueryService.getCardDetail(cardId, member));
     }
 
     @Operation(summary = "카드 수정", description = "카드 ID로 카드를 수정합니다. 본인 소유 카드만 수정할 수 있습니다.")

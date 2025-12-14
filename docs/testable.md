@@ -64,7 +64,7 @@
 - CardQueryService.getCardDetail는 카드 접근 권한을 서비스 층에서 검사합니다 (
   src/main/java/org/veri/be/domain/card/service/CardQueryService.java:24-41). 조회 서비스가 아닌 Card/Reading 도메인에 “비공개 카드
   접근 정책”을 담고, 메서드 파라미터로 전달된 요청자와 함께 판별하도록 옮기세요.
-    - 🔧 제안: `Card`에 `assertReadableBy(Member actor)` 같은 메서드를 정의하고, 서비스는 단순히 요청자를 넘겨 호출하게 하세요. 이렇게 하면 권한 정책을 한 곳에서 유지하고 단위 테스트도 간편해집니다.
+    - ✅ 적용: `Card.assertReadableBy` 도입 후 `CardController`에서 인증 사용자를 전달해 서비스가 도메인 메서드로 접근 권한을 검증하도록 변경했습니다.
 
 ### 비즈니스 로직 POJO 분리 (조회/DTO 층)
 
@@ -75,7 +75,7 @@
 - PostQueryService.getPostDetail가 서비스 내부에서 현재 사용자를 조회합니다 (
   src/main/java/org/veri/be/domain/post/service/PostQueryService.java:40-55). Controller에서 조회 주체를 넘겨주고, 서비스는 단순히
   도메인/리포지토리 호출만 하도록 분리하면 MockMvc 없이도 테스트할 수 있습니다.
-    - 🔧 제안: `PostQueryService#getPostDetail(Long postId, Member requester)` 형태로 바꾸고, 컨트롤러에서 인증 사용자를 주입하세요. 서비스는 전달받은 requester만 활용하므로 단위 테스트에서 더미 멤버를 사용해 다양한 케이스를 검증할 수 있습니다.
+    - ✅ 적용: `PostController`가 인증 사용자를 주입해 `PostQueryService#getPostDetail`에 전달하도록 수정했습니다.
 - CardController/PostController 일부 엔드포인트는 응답 DTO 생성을 위해 Converter나 Response 객체에 직접 비즈니스 룰을 넣습니다 (예: CardConverter,
   PostFeedResponse). DTO 생성기는 POJO이므로, 내부에서 다시 정적 컨텍스트에 의존하지 않도록 필요한 데이터(예: viewerId, 권한 플래그)를 생성자 인자로 받도록 인터페이스를
   정리하세요.

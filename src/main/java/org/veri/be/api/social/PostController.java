@@ -60,8 +60,11 @@ public class PostController {
 
     @GetMapping("/{postId}")
     @Operation(summary = "게시글 상세 조회", description = "게시글 ID로 게시글의 상세 정보를 조회합니다.")
-    public ApiResponse<PostDetailResponse> getPostDetail(@PathVariable Long postId) {
-        return ApiResponse.ok(this.postQueryService.getPostDetail(postId));
+    public ApiResponse<PostDetailResponse> getPostDetail(
+            @PathVariable Long postId,
+            @AuthenticatedMember Member member
+    ) {
+        return ApiResponse.ok(this.postQueryService.getPostDetail(postId, member));
     }
 
     @DeleteMapping("/{postId}")
