@@ -10,6 +10,7 @@ import org.veri.be.domain.member.entity.Member;
 import org.veri.be.global.entity.BaseEntity;
 import org.veri.be.lib.exception.http.ForbiddenException;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,5 +72,40 @@ public class Reading extends BaseEntity {
         if (!this.member.getId().equals(memberId)) {
             throw new ForbiddenException(ReadingErrorInfo.FORBIDDEN);
         }
+    }
+
+    public void updateProgress(Double score, LocalDateTime startedAt, LocalDateTime endedAt) {
+        this.score = score;
+        this.startedAt = startedAt;
+        this.endedAt = endedAt;
+        this.status = decideStatus(startedAt, endedAt);
+    }
+
+    public void updateScore(Double score) {
+        this.score = score;
+    }
+
+    public void start(Clock clock) {
+        LocalDateTime now = LocalDateTime.now(clock).withSecond(0).withNano(0);
+        this.startedAt = now;
+        this.status = ReadingStatus.READING;
+    }
+
+    public void finish(Clock clock) {
+        LocalDateTime now = LocalDateTime.now(clock).withSecond(0).withNano(0);
+        this.endedAt = now;
+        this.status = ReadingStatus.DONE;
+    }
+
+    private ReadingStatus decideStatus(LocalDateTime start, LocalDateTime end) {
+        if (end != null) {
+            return ReadingStatus.DONE;
+        }
+
+        if (start != null) {
+            return ReadingStatus.READING;
+        }
+
+        return ReadingStatus.NOT_START;
     }
 }

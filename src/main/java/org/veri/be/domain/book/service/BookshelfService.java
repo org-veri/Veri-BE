@@ -22,9 +22,9 @@ import org.veri.be.domain.member.entity.Member;
 import org.veri.be.global.auth.context.MemberContext;
 import org.veri.be.lib.exception.http.BadRequestException;
 
+import java.time.Clock;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +38,7 @@ public class BookshelfService {
 
     private final ReadingRepository readingRepository;
     private final BookRepository bookRepository;
+    private final Clock clock;
 
     @Transactional
     public Reading addToBookshelf(Member member, Long bookId, boolean isPublic) {
@@ -95,7 +96,7 @@ public class BookshelfService {
 
     @Transactional(readOnly = true)
     public Page<BookPopularResponse> searchWeeklyPopular(int page, int size) {
-        LocalDateTime now = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+        LocalDateTime now = LocalDateTime.now(clock);
         LocalDateTime startOfWeek = now.with(DayOfWeek.MONDAY).toLocalDate().atStartOfDay();
         LocalDateTime startOfNextWeek = startOfWeek.plusWeeks(1);
 
@@ -123,28 +124,8 @@ public class BookshelfService {
         Reading reading = getReadingById(memberBookId);
         reading.authorizeMember(MemberContext.getMemberOrThrow().getId());
 
-        ReadingStatus updateStatus = decideStatus(startedAt, endedAt);
-
-        Reading updated = reading.toBuilder()
-                .score(score)
-                .startedAt(startedAt)
-                .endedAt(endedAt)
-                .status(updateStatus)
-                .build();
-
-        readingRepository.save(updated);
-    }
-
-    private ReadingStatus decideStatus(LocalDateTime updateStart, LocalDateTime updateEnd) {
-        if (updateEnd != null) { //독서 완료 시간이 존재 시 DONE
-            return DONE;
-        }
-
-        if (updateStart != null) { //독서 완료 시간은 null, 독서 시작 시간은 존재시 READING
-            return READING;
-        }
-
-        return NOT_START; //그 이외는 독서 시작 & 완료 모두 null 이므로 NOT_START
+        reading.updateProgress(score, startedAt, endedAt);
+        readingRepository.save(reading);
     }
 
     @Transactional
@@ -152,9 +133,8 @@ public class BookshelfService {
         Reading reading = getReadingById(memberBookId);
         reading.authorizeMember(MemberContext.getMemberOrThrow().getId());
 
-        Reading updated = reading.toBuilder().score(score).build();
-
-        readingRepository.save(updated);
+        reading.updateScore(score);
+        readingRepository.save(reading);
     }
 
     @Transactional
@@ -162,21 +142,8 @@ public class BookshelfService {
         Reading reading = getReadingById(memberBookId);
         reading.authorizeMember(MemberContext.getMemberOrThrow().getId());
 
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime startedTime = LocalDateTime.of(now.getYear(),
-                now.getMonth(),
-                now.getDayOfMonth(),
-                now.getHour(),
-                now.getMinute(),
-                0,
-                0);
-
-        Reading updated = reading.toBuilder()
-                .startedAt(startedTime)
-                .status(READING)
-                .build();
-
-        readingRepository.save(updated);
+        reading.start(clock);
+        readingRepository.save(reading);
     }
 
     @Transactional
@@ -184,21 +151,8 @@ public class BookshelfService {
         Reading reading = getReadingById(memberBookId);
         reading.authorizeMember(MemberContext.getMemberOrThrow().getId());
 
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime endedTime = LocalDateTime.of(now.getYear(),
-                now.getMonth(),
-                now.getDayOfMonth(),
-                now.getHour(),
-                now.getMinute(),
-                0,
-                0);
-
-        Reading updated = reading.toBuilder()
-                .endedAt(endedTime)
-                .status(DONE)
-                .build();
-
-        readingRepository.save(updated);
+        reading.finish(clock);
+        readingRepository.save(reading);
     }
 
     @Transactional
