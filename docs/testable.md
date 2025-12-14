@@ -32,14 +32,14 @@
 - CardController는 수정·삭제 요청에서 로그인 사용자를 주입하지 않아 서비스가 MemberContext에 묶입니다 (
   src/main/java/org/veri/be/api/personal/CardController.java:70-94). @AuthenticatedMember를 메서드 인자로 받아
   CardCommandService에 넘기면 서비스도 순수 자바 객체로 테스트할 수 있습니다.
-    - 🔧 제안: `CardCommandService`의 메서드를 `updateCard(Member actor, ...)`, `deleteCard(Member actor, ...)`로 변경하고 컨트롤러에서 `@AuthenticatedMember Member member`를 전달하면, 서비스는 ThreadLocal에 의존하지 않고 POJO 테스트가 가능합니다.
+    - ✅ 적용: 카드 수정/삭제/공개 여부 변경 API 모두에서 `@AuthenticatedMember Member`를 주입하고, `CardCommandService`는 해당 멤버를 인자로 받아 권한을 검사하도록 변경했습니다.
 - PostController의 삭제/공개/비공개 엔드포인트도 동일하게 인증 사용자를 주입하지 않아 서비스가 정적 컨텍스트를 조회합니다 (
   src/main/java/org/veri/be/api/social/PostController.java:67-92). Controller에서 명시적으로 멤버를 받고 서비스 시그니처를 publishPost(
   postId, Member actor) 형태로 바꾸세요.
-    - 🔧 제안: `PostCommandService`가 `MemberContext`를 직접 부르지 않도록 `publishPost(Long id, Member actor)` 등의 메서드로 바꾼 뒤, 컨트롤러에서 인증 객체를 주입하세요. 이렇게 하면 `PostCommandService`를 순수 자바로 단위 테스트하며 권한 검증 로직도 쉽게 다룰 수 있습니다.
+    - ✅ 적용: 게시글 삭제/공개/비공개 API가 모두 인증 멤버를 주입하고, `PostCommandService`는 전달된 멤버를 사용해 권한을 확인하도록 리팩토링했습니다.
 - CommentController 전 엔드포인트가 인증 멤버를 파라미터로 받지 않아 CommentCommandService에서 MemberContext를 직접 참조합니다 (
   src/main/java/org/veri/be/api/social/CommentController.java:22-46). DI 원칙에 맞게 필요한 의존성(로그인 사용자)을 생성자/메서드 인자로 전달하세요.
-    - 🔧 제안: 컨트롤러 레이어에서 `@AuthenticatedMember Member member`를 모든 엔드포인트에 추가하고, 서비스 레이어에서는 전달된 파라미터만 사용하도록 리팩토링하세요. 그러면 인가 로직을 `Comment` 도메인 메서드로 옮기는 후속 작업도 쉬워집니다.
+    - ✅ 적용: 댓글 작성/수정/삭제/답글 작성 모두 인증 멤버를 컨트롤러에서 주입하며, `CommentCommandService`는 더 이상 `MemberContext`에 의존하지 않습니다.
 
 ### 비즈니스 로직 POJO 분리 (서비스 쪽)
 

@@ -9,7 +9,7 @@ import org.veri.be.domain.comment.repository.CommentRepository;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.post.entity.Post;
 import org.veri.be.domain.post.service.PostQueryService;
-import org.veri.be.global.auth.context.MemberContext;
+import java.time.Clock;
 
 import java.time.Clock;
 
@@ -23,8 +23,7 @@ public class CommentCommandService {
     private final Clock clock;
 
     @Transactional
-    public Long postComment(CommentPostRequest request) {
-        Member member = MemberContext.getMemberOrThrow();
+    public Long postComment(CommentPostRequest request, Member member) {
         Post post = postQueryService.getPostById(request.postId());
 
         Comment comment = Comment.builder()
@@ -38,8 +37,7 @@ public class CommentCommandService {
     }
 
     @Transactional
-    public Long postReply(Long parentCommentId, String content) {
-        Member member = MemberContext.getMemberOrThrow();
+    public Long postReply(Long parentCommentId, String content, Member member) {
         Comment parentComment = commentQueryService.getCommentById(parentCommentId);
 
         Comment reply = Comment.builder()
@@ -53,8 +51,7 @@ public class CommentCommandService {
         return commentRepository.save(reply).getId();
     }
 
-    public void editComment(Long commentId, String content) {
-        Member member = MemberContext.getMemberOrThrow();
+    public void editComment(Long commentId, String content, Member member) {
         Comment comment = commentQueryService.getCommentById(commentId);
         comment.authorizeMember(member.getId());
         comment.editContent(content);
@@ -63,8 +60,7 @@ public class CommentCommandService {
     }
 
     @Transactional
-    public void deleteComment(Long commentId) {
-        Member member = MemberContext.getMemberOrThrow();
+    public void deleteComment(Long commentId, Member member) {
         Comment comment = commentQueryService.getCommentById(commentId);
         comment.authorizeMember(member.getId());
 

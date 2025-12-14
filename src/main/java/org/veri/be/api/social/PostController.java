@@ -67,27 +67,30 @@ public class PostController {
     @DeleteMapping("/{postId}")
     @Operation(summary = "게시글 삭제", description = "게시글을 삭제합니다.")
     public ApiResponse<Void> deletePost(
-            @PathVariable Long postId
+            @PathVariable Long postId,
+            @AuthenticatedMember Member member
     ) {
-        this.postCommandService.deletePost(postId);
+        this.postCommandService.deletePost(postId, member);
         return ApiResponse.noContent();
     }
 
     @PostMapping("/{postId}/publish")
     @Operation(summary = "게시글 공개", description = "게시글을 공개합니다.")
     public ApiResponse<Void> publishPost(
-            @PathVariable Long postId
+            @PathVariable Long postId,
+            @AuthenticatedMember Member member
     ) {
-        this.postCommandService.publishPost(postId);
+        this.postCommandService.publishPost(postId, member);
         return ApiResponse.noContent();
     }
 
     @PostMapping("/{postId}/unpublish")
     @Operation(summary = "게시글 비공개", description = "게시글을 비공개합니다.")
     public ApiResponse<Void> unPublishPost(
-            @PathVariable Long postId
+            @PathVariable Long postId,
+            @AuthenticatedMember Member member
     ) {
-        this.postCommandService.unPublishPost(postId);
+        this.postCommandService.unPublishPost(postId, member);
         return ApiResponse.noContent();
     }
 

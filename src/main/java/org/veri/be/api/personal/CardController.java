@@ -77,9 +77,11 @@ public class CardController {
     @PatchMapping("/{cardId}")
     public ApiResponse<CardUpdateResponse> updateCard(
             @PathVariable Long cardId,
-            @RequestBody CardUpdateRequest request
+            @RequestBody CardUpdateRequest request,
+            @AuthenticatedMember Member member
     ) {
         Card response = cardCommandService.updateCard(
+                member,
                 cardId,
                 request.content(),
                 request.imageUrl()
@@ -89,8 +91,11 @@ public class CardController {
 
     @Operation(summary = "카드 삭제", description = "카드 ID로 카드를 삭제합니다. 본인 소유 카드만 삭제할 수 있습니다.")
     @DeleteMapping("/{cardId}")
-    public ApiResponse<Void> deleteCard(@PathVariable Long cardId) {
-        cardCommandService.deleteCard(cardId);
+    public ApiResponse<Void> deleteCard(
+            @PathVariable Long cardId,
+            @AuthenticatedMember Member member
+    ) {
+        cardCommandService.deleteCard(member, cardId);
         return ApiResponse.noContent();
     }
 

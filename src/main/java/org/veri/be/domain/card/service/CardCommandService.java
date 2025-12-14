@@ -9,7 +9,6 @@ import org.veri.be.domain.card.entity.Card;
 import org.veri.be.domain.card.exception.CardErrorInfo;
 import org.veri.be.domain.card.repository.CardRepository;
 import org.veri.be.domain.member.entity.Member;
-import org.veri.be.global.auth.context.MemberContext;
 import org.veri.be.lib.exception.http.BadRequestException;
 import org.veri.be.lib.exception.http.NotFoundException;
 import org.veri.be.global.storage.dto.PresignedUrlRequest;
@@ -49,9 +48,9 @@ public class CardCommandService {
     }
 
     @Transactional
-    public Card updateCard(Long cardId, String content, String imageUrl) {
+    public Card updateCard(Member member, Long cardId, String content, String imageUrl) {
         Card card = this.getCard(cardId);
-        card.authorizeMember(MemberContext.getMemberOrThrow().getId());
+        card.authorizeMember(member.getId());
 
         Card updatedCard = card.toBuilder()
                 .content(content)
@@ -67,9 +66,9 @@ public class CardCommandService {
     }
 
     @Transactional
-    public CardVisibilityUpdateResponse modifyVisibility(Long cardId, boolean isPublic) {
+    public CardVisibilityUpdateResponse modifyVisibility(Member member, Long cardId, boolean isPublic) {
         Card card = this.getCard(cardId);
-        card.authorizeMember(MemberContext.getMemberOrThrow().getId());
+        card.authorizeMember(member.getId());
 
         if (isPublic) {
             card.setPublic();
@@ -82,9 +81,9 @@ public class CardCommandService {
     }
 
     @Transactional
-    public void deleteCard(Long cardId) {
+    public void deleteCard(Member member, Long cardId) {
         Card card = getCard(cardId);
-        card.authorizeMember(MemberContext.getMemberOrThrow().getId());
+        card.authorizeMember(member.getId());
 
         cardRepository.deleteById(cardId);
     }
