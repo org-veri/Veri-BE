@@ -16,7 +16,6 @@ import org.veri.be.domain.post.repository.LikePostRepository;
 import org.veri.be.domain.post.repository.PostRepository;
 import org.veri.be.domain.post.repository.dto.DetailLikeInfoQueryResult;
 import org.veri.be.domain.post.repository.dto.PostFeedQueryResult;
-import org.veri.be.global.auth.context.MemberContext;
 import org.veri.be.lib.exception.CommonErrorInfo;
 import org.veri.be.lib.exception.http.NotFoundException;
 
@@ -47,9 +46,7 @@ public class PostQueryService {
                 .orElseThrow(() -> new NotFoundException(CommonErrorInfo.RESOURCE_NOT_FOUND));
     }
 
-    public PostDetailResponse getPostDetail(Long postId) {
-        Member requester = MemberContext.getMemberOrThrow();
-
+    public PostDetailResponse getPostDetail(Long postId, Member requester) {
         Post post = getPostById(postId);
         DetailLikeInfoQueryResult likeInfo = likePostQueryService.getDetailLikeInfoOfPost(postId, requester.getId());
         List<PostDetailResponse.CommentResponse> comments = commentQueryService.getCommentsByPostId(postId);

@@ -10,6 +10,7 @@ import org.veri.be.global.entity.BaseEntity;
 import org.veri.be.lib.exception.CommonErrorInfo;
 import org.veri.be.lib.exception.http.ForbiddenException;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,13 +60,26 @@ public class Comment extends BaseEntity implements Authorizable {
         return reply;
     }
 
-    public Comment editContent(String content) {
+    public Comment replyBy(Member member, String content) {
+        Comment reply = Comment.builder()
+                .post(this.post)
+                .author(member)
+                .content(content)
+                .parent(this)
+                .build();
+
+        return this.addReply(reply);
+    }
+
+    public Comment editBy(Member member, String content) {
+        authorizeMember(member.getId());
         this.content = content;
         return this;
     }
 
-    public void delete() {
-        this.deletedAt = LocalDateTime.now();
+    public void deleteBy(Member member, Clock clock) {
+        authorizeMember(member.getId());
+        this.deletedAt = LocalDateTime.now(clock);
     }
 
     public boolean isDeleted() {

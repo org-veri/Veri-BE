@@ -106,9 +106,10 @@ public class BookshelfController {
     @PatchMapping("/{readingId}/modify")
     public ApiResponse<Void> modifyBook(
             @RequestBody @Valid ReadingModifyRequest request,
-            @PathVariable Long readingId
+            @PathVariable Long readingId,
+            @AuthenticatedMember Member member
     ) {
-        bookshelfService.modifyBook(request.score(), request.startedAt(), request.endedAt(), readingId);
+        bookshelfService.modifyBook(member, request.score(), request.startedAt(), request.endedAt(), readingId);
 
         return ApiResponse.noContent();
     }
@@ -117,24 +118,31 @@ public class BookshelfController {
     @PatchMapping("/{readingId}/rate")
     public ApiResponse<Void> rateBook(
             @RequestBody @Valid ReadingScoreRequest request,
-            @PathVariable Long readingId) {
-        bookshelfService.rateScore(request.score(), readingId);
+            @PathVariable Long readingId,
+            @AuthenticatedMember Member member) {
+        bookshelfService.rateScore(member, request.score(), readingId);
 
         return ApiResponse.noContent();
     }
 
     @Operation(summary = "독서 시작 상태 변경", description = "책장에 등록된 책의 상태를 '읽는 중'으로 변경합니다.")
     @PatchMapping("/{readingId}/status/start")
-    public ApiResponse<Void> startReading(@PathVariable Long readingId) {
-        bookshelfService.readStart(readingId);
+    public ApiResponse<Void> startReading(
+            @PathVariable Long readingId,
+            @AuthenticatedMember Member member
+    ) {
+        bookshelfService.readStart(member, readingId);
 
         return ApiResponse.noContent();
     }
 
     @Operation(summary = "독서 완료 상태 변경", description = "책장에 등록된 책의 상태를 '완독'으로 변경합니다.")
     @PatchMapping("/{readingId}/status/over")
-    public ApiResponse<Void> finishReading(@PathVariable Long readingId) {
-        bookshelfService.readOver(readingId);
+    public ApiResponse<Void> finishReading(
+            @PathVariable Long readingId,
+            @AuthenticatedMember Member member
+    ) {
+        bookshelfService.readOver(member, readingId);
 
         return ApiResponse.noContent();
     }
@@ -143,15 +151,19 @@ public class BookshelfController {
     @PatchMapping("/{readingId}/visibility")
     public ApiResponse<ReadingVisibilityUpdateResponse> modifyVisibility(
             @PathVariable Long readingId,
-            @RequestParam boolean isPublic
+            @RequestParam boolean isPublic,
+            @AuthenticatedMember Member member
     ) {
-        return ApiResponse.ok(bookshelfService.modifyVisibility(readingId, isPublic));
+        return ApiResponse.ok(bookshelfService.modifyVisibility(member, readingId, isPublic));
     }
 
     @Operation(summary = "독서 삭제", description = "책장에 등록된 책을 삭제합니다.")
     @DeleteMapping("/{readingId}")
-    public ApiResponse<Void> deleteFromBookshelf(@PathVariable Long readingId) {
-        bookshelfService.deleteBook(readingId);
+    public ApiResponse<Void> deleteFromBookshelf(
+            @PathVariable Long readingId,
+            @AuthenticatedMember Member member
+    ) {
+        bookshelfService.deleteBook(member, readingId);
 
         return ApiResponse.noContent();
     }

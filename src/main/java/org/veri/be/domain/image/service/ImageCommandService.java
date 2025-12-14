@@ -14,13 +14,13 @@ import org.springframework.stereotype.Service;
 public class ImageCommandService {
 
     private final ImageRepository imageRepository;
-    private final MistralOcrService mistralOcrService;
+    private final OcrService mistralOcrService;
 
     @Transactional
     public String processWithMistral(Member member, String imageUrl) {
         insertImageUrl(imageUrl, member);
         try {
-            return mistralOcrService.doExtract(imageUrl);
+            return mistralOcrService.extract(imageUrl);
         } catch (InternalServerException e) {
             throw e;
         } catch (Exception e) {

@@ -26,6 +26,7 @@ public class AwsStorageService implements StorageService {
     private final S3Client s3Client;
     private final S3Presigner s3Presigner;
     private final ExtendedS3Presigner extendedS3Presigner;
+    private final StorageKeyGenerator storageKeyGenerator;
 
     @Override
     public PresignedUrlResponse generatePresignedUrlOfDefault(String contentType, long contentLength) {
@@ -41,7 +42,7 @@ public class AwsStorageService implements StorageService {
             String prefix,
             Duration duration
     ) {
-        String key = StorageUtil.generateUniqueKey(contentType, prefix);
+        String key = storageKeyGenerator.generate(contentType, prefix);
 
         PutObjectRequest objectRequest = PutObjectRequest.builder()
                 .bucket(bucket)
@@ -66,7 +67,7 @@ public class AwsStorageService implements StorageService {
             String prefix,
             Duration duration
     ) {
-        String key = StorageUtil.generateUniqueKey(contentType, prefix);
+        String key = storageKeyGenerator.generate(contentType, prefix);
 
         PostConditions conditions = PostConditions.builder()
                 .contentType(contentType)

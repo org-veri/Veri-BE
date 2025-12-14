@@ -13,7 +13,6 @@ import org.veri.be.domain.post.entity.LikePost;
 import org.veri.be.domain.post.entity.Post;
 import org.veri.be.domain.post.repository.LikePostRepository;
 import org.veri.be.domain.post.repository.PostRepository;
-import org.veri.be.global.auth.context.MemberContext;
 import org.veri.be.global.storage.dto.PresignedUrlRequest;
 import org.veri.be.global.storage.dto.PresignedUrlResponse;
 import org.veri.be.global.storage.service.StorageService;
@@ -52,25 +51,23 @@ public class PostCommandService {
     }
 
     @Transactional
-    public void deletePost(Long postId) {
+    public void deletePost(Long postId, Member member) {
         Post post = this.postQueryService.getPostById(postId);
-        post.authorizeMember(MemberContext.getMemberOrThrow().getId());
+        post.deleteBy(member);
         this.postRepository.deleteById(postId);
     }
 
     @Transactional
-    public void publishPost(Long postId) {
+    public void publishPost(Long postId, Member member) {
         Post post = this.postQueryService.getPostById(postId);
-        post.authorizeMember(MemberContext.getMemberOrThrow().getId());
-        post.setIsPublic(true);
+        post.publishBy(member);
         postRepository.save(post);
     }
 
     @Transactional
-    public void unPublishPost(Long postId) {
+    public void unPublishPost(Long postId, Member member) {
         Post post = this.postQueryService.getPostById(postId);
-        post.authorizeMember(MemberContext.getMemberOrThrow().getId());
-        post.setIsPublic(false);
+        post.unpublishBy(member);
         postRepository.save(post);
     }
 

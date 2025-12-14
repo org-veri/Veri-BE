@@ -14,7 +14,7 @@ import org.veri.be.domain.card.exception.CardErrorInfo;
 import org.veri.be.domain.card.repository.CardRepository;
 import org.veri.be.domain.card.repository.dto.CardFeedItem;
 import org.veri.be.domain.card.repository.dto.CardListItem;
-import org.veri.be.global.auth.context.MemberContext;
+import org.veri.be.domain.member.entity.Member;
 import org.veri.be.lib.exception.http.NotFoundException;
 
 @Transactional(readOnly = true)
@@ -23,6 +23,7 @@ import org.veri.be.lib.exception.http.NotFoundException;
 public class CardQueryService {
 
     private final CardRepository cardRepository;
+    private final CardConverter cardConverter;
 
     public Page<CardListItem> getOwnedCards(Long memberId, int page, int size, CardSortType sortType) {
         Pageable pageRequest = PageRequest.of(page, size, sortType.getSort());
@@ -31,14 +32,12 @@ public class CardQueryService {
         return cards;
     }
 
-    public CardDetailResponse getCardDetail(Long cardId) {
+    public CardDetailResponse getCardDetail(Long cardId, Member viewer) {
         Card card = getCardById(cardId);
 
-        if (!card.getIsPublic()) {
-            card.authorizeMember(MemberContext.getMemberOrThrow().getId());
-        }
+        card.assertReadableBy(viewer);
 
-        return CardConverter.toCardDetailResponse(card);
+        return cardConverter.toCardDetailResponse(card, viewer);
     }
 
     public Card getCardById(Long cardId) {
