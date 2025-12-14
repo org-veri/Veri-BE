@@ -7,6 +7,7 @@ import org.veri.be.domain.auth.entity.RefreshToken;
 import org.veri.be.domain.auth.repository.BlacklistedTokenRepository;
 import org.veri.be.domain.auth.repository.RefreshTokenRepository;
 
+import java.time.Clock;
 import java.time.Instant;
 
 @Service
@@ -15,13 +16,14 @@ public class TokenStorageService {
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final BlacklistedTokenRepository blacklistedTokenRepository;
+    private final Clock clock;
 
     public void addRefreshToken(Long id, String refresh, long expiredAt) {
         refreshTokenRepository.save(
                 RefreshToken.builder()
                         .userId(id)
                         .token(refresh)
-                        .expiredAt(Instant.now().plusMillis(expiredAt))
+                        .expiredAt(Instant.now(clock).plusMillis(expiredAt))
                         .build()
         );
     }
@@ -30,7 +32,7 @@ public class TokenStorageService {
         blacklistedTokenRepository.save(
                 BlacklistedToken.builder()
                         .token(token)
-                        .expiredAt(Instant.now().plusMillis(expiredAt))
+                        .expiredAt(Instant.now(clock).plusMillis(expiredAt))
                         .build()
         );
     }
@@ -41,13 +43,13 @@ public class TokenStorageService {
 
     public boolean isBlackList(String token) {
         return blacklistedTokenRepository.findById(token)
-                .map(b -> b.getExpiredAt().isAfter(Instant.now()))
+                .map(b -> b.getExpiredAt().isAfter(Instant.now(clock)))
                 .orElse(false);
     }
 
     public String getRefreshToken(Long id) {
         return refreshTokenRepository.findById(id)
-                .filter(r -> r.getExpiredAt().isAfter(Instant.now()))
+                .filter(r -> r.getExpiredAt().isAfter(Instant.now(clock)))
                 .map(RefreshToken::getToken)
                 .orElse(null);
     }

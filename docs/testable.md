@@ -9,9 +9,11 @@
     - 토큰 만료 계산과 로그아웃 시점이 AuthService에 고정되어 있어 Instant.now()/ System.currentTimeMillis()를 스텁할 방법이 없습니다 (
       src/main/java/org/veri/be/domain/auth/service/AuthService.java:51-90). Clock을 생성자 주입해 access/refresh 만료와 닉네임 충돌 해결
       로직을 테스트에서 고정된 시간으로 검증하세요.
+        - ✅ 적용: `AuthService`에 `Clock`을 주입해 로그아웃 잔여 시간 계산과 닉네임 중복 처리에서 시스템 시간을 직접 호출하지 않도록 수정했습니다.
     - TokenStorageService 역시 모든 만료 비교를 Instant.now()에 의존합니다 (
       src/main/java/org/veri/be/domain/auth/service/TokenStorageService.java:19-52). Clock을 주입해 리프레시/블랙리스트 저장과 만료 체크를
       결정적(deterministic)하게 만드세요.
+        - ✅ 적용: `TokenStorageService`에서 `Clock`을 생성자 주입받아 토큰 저장/블랙리스트 등록 및 만료 검증 시 `Instant.now(clock)`을 사용하도록 변경했습니다.
     - Comment.delete()와 MistralOcrService.doExtract()는 각각 LocalDateTime.now()와 Thread.sleep(500)을 직접 호출합니다 (
       src/main/java/org/veri/be/domain/comment/entity/Comment.java:67,
       src/main/java/org/veri/be/domain/image/service/MistralOcrService.java:49-55). 삭제 시각과 OCR 대기 시간을 외부에서 주입하거나 전략 형태로

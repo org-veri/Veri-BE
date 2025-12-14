@@ -13,6 +13,8 @@ import org.veri.be.global.auth.JwtClaimsPayload;
 import org.veri.be.global.auth.oauth2.dto.OAuth2UserInfo;
 import org.veri.be.lib.auth.jwt.JwtUtil;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.util.Optional;
 
 @Service
@@ -23,6 +25,7 @@ public class AuthService implements Authenticator {
     private final TokenStorageService tokenStorageService;
 
     private final MemberRepository memberRepository;
+    private final Clock clock;
 
     public LoginResponse login(Member member) {
         JwtUtil.TokenGeneration accessToken = JwtUtil.generateAccessToken(JwtClaimsPayload.from(member));
@@ -56,7 +59,7 @@ public class AuthService implements Authenticator {
         // access token 만료시간 계산
         java.util.Date accessExpDate = JwtUtil.parseAccessTokenPayloads(accessToken).getExpiration();
         java.time.Instant accessExp = accessExpDate != null ? accessExpDate.toInstant() : null;
-        long now = java.time.Instant.now().toEpochMilli();
+        long now = Instant.now(clock).toEpochMilli();
         long accessRemainMs = (accessExp != null) ? accessExp.toEpochMilli() - now : 0L;
         if (accessRemainMs > 0) {
             tokenStorageService.addBlackList(accessToken, accessRemainMs);
@@ -86,7 +89,7 @@ public class AuthService implements Authenticator {
             Member member = request.toMember();
             if (memberQueryService.existsByNickname(member.getNickname())) {
                 member.updateInfo(
-                        member.getNickname() + "_" + System.currentTimeMillis(),
+                        member.getNickname() + "_" + clock.millis(),
                         member.getProfileImageUrl());
             }
             return memberRepository.save(member);
