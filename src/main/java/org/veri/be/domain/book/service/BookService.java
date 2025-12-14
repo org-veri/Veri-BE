@@ -33,7 +33,7 @@ public class BookService {
     private final BookRepository bookRepository;
     private final RestTemplate restTemplate;
     private final NaverConfig naverConfig;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
     public Long addBook(String title, String image, String author, String publisher, String isbn) {
 
