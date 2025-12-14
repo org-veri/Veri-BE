@@ -53,23 +53,21 @@ public class PostCommandService {
     @Transactional
     public void deletePost(Long postId, Member member) {
         Post post = this.postQueryService.getPostById(postId);
-        post.authorizeMember(member.getId());
+        post.deleteBy(member);
         this.postRepository.deleteById(postId);
     }
 
     @Transactional
     public void publishPost(Long postId, Member member) {
         Post post = this.postQueryService.getPostById(postId);
-        post.authorizeMember(member.getId());
-        post.setIsPublic(true);
+        post.publishBy(member);
         postRepository.save(post);
     }
 
     @Transactional
     public void unPublishPost(Long postId, Member member) {
         Post post = this.postQueryService.getPostById(postId);
-        post.authorizeMember(member.getId());
-        post.setIsPublic(false);
+        post.unpublishBy(member);
         postRepository.save(post);
     }
 

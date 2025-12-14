@@ -50,12 +50,7 @@ public class CardCommandService {
     @Transactional
     public Card updateCard(Member member, Long cardId, String content, String imageUrl) {
         Card card = this.getCard(cardId);
-        card.authorizeMember(member.getId());
-
-        Card updatedCard = card.toBuilder()
-                .content(content)
-                .image(imageUrl)
-                .build();
+        Card updatedCard = card.updateContent(content, imageUrl, member);
 
         return cardRepository.save(updatedCard);
     }
@@ -68,14 +63,7 @@ public class CardCommandService {
     @Transactional
     public CardVisibilityUpdateResponse modifyVisibility(Member member, Long cardId, boolean isPublic) {
         Card card = this.getCard(cardId);
-        card.authorizeMember(member.getId());
-
-        if (isPublic) {
-            card.setPublic();
-        } else {
-            card.setPrivate();
-        }
-
+        card.changeVisibility(member, isPublic);
         cardRepository.save(card);
         return new CardVisibilityUpdateResponse(card.getId(), card.getIsPublic());
     }

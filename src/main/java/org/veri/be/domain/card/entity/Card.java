@@ -50,6 +50,29 @@ public class Card extends BaseEntity {
     @Column(name = "is_public", nullable = false)
     private Boolean isPublic = false;
 
+    public void authorizeMember(Long memberId) {
+        if (!this.member.getId().equals(memberId)) {
+            throw new BadRequestException(CardErrorInfo.FORBIDDEN);
+        }
+    }
+
+    public Card updateContent(String content, String imageUrl, Member actor) {
+        authorizeMember(actor.getId());
+        return this.toBuilder()
+                .content(content)
+                .image(imageUrl)
+                .build();
+    }
+
+    public void changeVisibility(Member actor, boolean makePublic) {
+        authorizeMember(actor.getId());
+        if (makePublic) {
+            setPublic();
+        } else {
+            setPrivate();
+        }
+    }
+
     public void setPublic() {
         if (!this.reading.getIsPublic()) {
             throw new BadRequestException(CardErrorInfo.READING_MS_NOT_PUBLIC);
@@ -59,12 +82,6 @@ public class Card extends BaseEntity {
 
     public void setPrivate() {
         this.isPublic = false;
-    }
-
-    public void authorizeMember(Long memberId) {
-        if (!this.member.getId().equals(memberId)) {
-            throw new BadRequestException(CardErrorInfo.FORBIDDEN);
-        }
     }
 
     public void assertReadableBy(Member viewer) {

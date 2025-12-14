@@ -51,16 +51,16 @@
   src/main/java/org/veri/be/domain/card/service/CardCommandService.java:35-90). Card 혹은 별도 도메인 서비스에 “읽기가 비공개면 카드도
   비공개” 규칙과 authorize 호출을 맡기고, 애플리케이션 서비스는 card.changeVisibility(Member actor, boolean request) 등
   을 호출하는 식으로 단순화하세요.
-    - 🔧 제안: `Card` 엔티티에 `changeVisibility(Member actor, boolean request)`를 도입해, 가시성 제약과 소유자 검증을 한 곳에서 처리하도록 만드세요. 서비스는 엔티티를 불러오고 명령만 위임하면 되므로 테스트도 쉬워집니다.
+    - ✅ 적용: `Card` 엔티티에 `changeVisibility`, `updateContent`, `assertReadableBy` 등을 추가해 모든 권한 검사를 도메인 계층으로 이동했고, 서비스는 해당 메서드를 호출하도록 단순화했습니다.
 - PostCommandService는 게시글 공개/비공개와 삭제를 하면서 MemberContext의 정적 상태를 직접 읽습니다 (
   src/main/java/org/veri/be/domain/post/service/PostCommandService.java:54-74). Post 엔티티에 publishBy(Member),
   deleteBy(Member) 같은 메서드를 추가하면 비즈니스 규칙을 POJO에서 검증할 수 있습니다.
-    - 🔧 제안: `Post` 엔티티에 `publishBy(Member)`, `unpublishBy(Member)`, `deleteBy(Member)` 메서드를 추가하고, 권한 검사를 엔티티 내부로 옮기면 `PostCommandService`는 단순히 도메인 명령을 호출하고 저장만 하면 됩니다.
+    - ✅ 적용: `Post` 엔티티에 `publishBy`, `unpublishBy`, `deleteBy`를 추가해 권한 검사를 엔티티에서 수행하고, CommandService는 도메인 메서드만 호출합니다.
 - CommentCommandService는 댓글 생성·수정·삭제 로직을 모두 프레임워크 의존적 코드 안에 두고 있습니다 (
   src/main/java/org/veri/be/domain/comment/service/CommentCommandService.java:17-65). CommentThread 혹은 Comment 엔티티에
   reply(Member, String), editBy(Member, String) 등을 도입해 Mockito 없이 단위 테스트 가능한 구조로 만들면 복잡한 트
   랜잭션 없이도 검증 가능합니다.
-    - 🔧 제안: `Comment` 엔티티에 `replyBy(Member, String)`, `editBy(Member, String)`, `deleteBy(Member, Clock)` 등을 추가하고, 서비스는 트랜잭션 경계만 관리하도록 바꾸세요. 그러면 댓글 도메인을 순수 POJO 테스트로 검증할 수 있습니다.
+    - ✅ 적용: `Comment.replyBy`, `editBy`, `deleteBy`를 구현해 댓글 도메인 스스로 권한을 확인하게 했고, 서비스는 해당 메서드를 사용해 트랜잭션만 관리합니다.
 - CardQueryService.getCardDetail는 카드 접근 권한을 서비스 층에서 검사합니다 (
   src/main/java/org/veri/be/domain/card/service/CardQueryService.java:24-41). 조회 서비스가 아닌 Card/Reading 도메인에 “비공개 카드
   접근 정책”을 담고, 메서드 파라미터로 전달된 요청자와 함께 판별하도록 옮기세요.

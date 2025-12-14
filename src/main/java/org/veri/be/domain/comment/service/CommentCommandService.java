@@ -40,21 +40,13 @@ public class CommentCommandService {
     public Long postReply(Long parentCommentId, String content, Member member) {
         Comment parentComment = commentQueryService.getCommentById(parentCommentId);
 
-        Comment reply = Comment.builder()
-                .post(parentComment.getPost())
-                .author(member)
-                .content(content)
-                .parent(parentComment)
-                .build();
-
-        parentComment.addReply(reply);
+        Comment reply = parentComment.replyBy(member, content);
         return commentRepository.save(reply).getId();
     }
 
     public void editComment(Long commentId, String content, Member member) {
         Comment comment = commentQueryService.getCommentById(commentId);
-        comment.authorizeMember(member.getId());
-        comment.editContent(content);
+        comment.editBy(member, content);
 
         commentRepository.save(comment);
     }
@@ -62,9 +54,7 @@ public class CommentCommandService {
     @Transactional
     public void deleteComment(Long commentId, Member member) {
         Comment comment = commentQueryService.getCommentById(commentId);
-        comment.authorizeMember(member.getId());
-
-        comment.delete(clock);
+        comment.deleteBy(member, clock);
         commentRepository.save(comment);
     }
 }

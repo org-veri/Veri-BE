@@ -60,12 +60,25 @@ public class Comment extends BaseEntity implements Authorizable {
         return reply;
     }
 
-    public Comment editContent(String content) {
+    public Comment replyBy(Member member, String content) {
+        Comment reply = Comment.builder()
+                .post(this.post)
+                .author(member)
+                .content(content)
+                .parent(this)
+                .build();
+
+        return this.addReply(reply);
+    }
+
+    public Comment editBy(Member member, String content) {
+        authorizeMember(member.getId());
         this.content = content;
         return this;
     }
 
-    public void delete(Clock clock) {
+    public void deleteBy(Member member, Clock clock) {
+        authorizeMember(member.getId());
         this.deletedAt = LocalDateTime.now(clock);
     }
 

@@ -80,4 +80,18 @@ public class Post extends BaseEntity implements Authorizable {
             throw new ForbiddenException(CommonErrorInfo.DOES_NOT_HAVE_PERMISSION);
         }
     }
+
+    public void publishBy(Member member) {
+        authorizeMember(member.getId());
+        this.isPublic = true;
+    }
+
+    public void unpublishBy(Member member) {
+        authorizeMember(member.getId());
+        this.isPublic = false;
+    }
+
+    public void deleteBy(Member member) {
+        authorizeMember(member.getId());
+    }
 }
