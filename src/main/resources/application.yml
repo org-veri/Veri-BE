@@ -12,10 +12,14 @@ server:
         http-only: true
 
 spring:
+  threads:
+    virtual:
+      enabled: true
   web:
     resources:
       add-mappings: false
   jpa:
+    open-in-view: false
     hibernate:
       ddl-auto: update
     show-sql: false
