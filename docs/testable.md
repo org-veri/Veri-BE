@@ -79,7 +79,7 @@
 - CardController/PostController 일부 엔드포인트는 응답 DTO 생성을 위해 Converter나 Response 객체에 직접 비즈니스 룰을 넣습니다 (예: CardConverter,
   PostFeedResponse). DTO 생성기는 POJO이므로, 내부에서 다시 정적 컨텍스트에 의존하지 않도록 필요한 데이터(예: viewerId, 권한 플래그)를 생성자 인자로 받도록 인터페이스를
   정리하세요.
-    - 🔧 제안: 모든 DTO 팩토리에 `viewerId`, `isOwner` 같은 정보를 명시적으로 넘기고, DTO는 전달된 데이터만 사용하도록 제한하세요. 이렇게 하면 DTO 변환기를 완전히 POJO화할 수 있습니다.
+    - ✅ 적용: `CardConverter`를 빈으로 전환해 `viewer` 정보를 명시적으로 인자로 받도록 했고, 응답 모델에 `mine` 플래그를 추가하여 비즈니스 룰을 DTO 생성 시점에 주입합니다.
 - Reading과 관련된 로직 대부분이 서비스 레이어에 존재하여 엔티티가 단순 데이터 컨테이너로만 쓰이고 있습니다 (
   src/main/java/org/veri/be/domain/book/entity/Reading.java:1-61). ‘도서 공개/비공개 시 카드 동기화’처럼 이미 일부 규칙이 엔티티에 있는 만큼,
   진행률/점수 변경 같은 나머지 규칙도 엔티티 메서드로 끌어오면 테스트 대상이 줄어듭니다.
@@ -93,14 +93,14 @@
     - ✅ 적용: `CurrentMemberAccessor` 인터페이스와 `ThreadLocalCurrentMemberAccessor` 구현을 추가해, 서비스/컨버터는 더 이상 `MemberContext` 정적 메서드를 직접 호출하지 않고 주입된 인터페이스에만 의존합니다.
 - JwtUtil이 정적 상태에 시크릿/만료 시간을 저장해두어 테스트마다 초기화하기 어렵습니다 (src/main/java/org/veri/be/lib/auth/jwt/JwtUtil.java:17-72).
   JwtService 빈으로 변경하고 필요한 구성(JwtProperties, Clock)을 생성자 주입하면 스파이/페이크를 사용할 수 있습니다.
-    - 🔧 제안: `JwtService` 클래스를 만들고, `generateAccessToken`, `parseAccessToken` 등을 인스턴스 메서드로 옮긴 뒤 `Clock`과 `JwtProperties`를 생성자에서 주입하세요. 정적 상태 제거만으로도 테스트 간 간섭을 차단할 수 있습니다.
+    - ✅ 적용: `JwtService` 빈을 도입해 모든 토큰 생성/파싱 로직을 인스턴스 메서드로 이동했고, `AuthService`, `JwtFilter`, Mock API 등에서 주입받아 사용하도록 변경했습니다.
 - ReadingConverter와 기타 Converter 들이 모두 정적 메서드로 구현되어 있어 테스트 시 의존성 주입이 불가능합니다 (
   src/main/java/org/veri/be/domain/book/dto/reading/ReadingConverter.java:10-37). Bean으로 등록하거나 Component와 Mapper
   인터페이스를 사용해 목킹 가능한 구조로 바꾸세요.
     - ✅ 적용: `ReadingConverter`를 빈으로 등록해 테스트에서 목킹 가능한 구조를 마련했습니다. 다른 Converter도 동일 패턴으로 이전할 수 있습니다.
 - StorageUtil.generateUniqueKey는 UUID.randomUUID()를 직접 호출해 presigned URL 테스트를 불안정하게 만듭니다 (
   src/main/java/org/veri/be/global/storage/service/StorageUtil.java:7-13). 랜덤 키 생성기를 전략/함수로 주입하면 결정적인 테스트가 가능합니다.
-    - 🔧 제안: `StorageKeyGenerator` 인터페이스를 도입하고 기본 구현은 UUID를 사용하도록 하되, 테스트에서는 고정 키를 반환하는 Fake를 주입하세요. 그러면 Presigned URL 생성 테스트가 안정적으로 수행됩니다.
+    - ✅ 적용: `StorageKeyGenerator`/`UuidStorageKeyGenerator`를 도입해 `AwsStorageService`가 키 생성 전략을 주입받도록 했습니다. 이제 테스트에서 고정 키 생성기를 주입해 결정적인 결과를 얻을 수 있습니다.
 
 ### 외부 시스템 추상화
 

@@ -23,6 +23,7 @@ import org.veri.be.lib.exception.http.NotFoundException;
 public class CardQueryService {
 
     private final CardRepository cardRepository;
+    private final CardConverter cardConverter;
 
     public Page<CardListItem> getOwnedCards(Long memberId, int page, int size, CardSortType sortType) {
         Pageable pageRequest = PageRequest.of(page, size, sortType.getSort());
@@ -36,7 +37,7 @@ public class CardQueryService {
 
         card.assertReadableBy(viewer);
 
-        return CardConverter.toCardDetailResponse(card);
+        return cardConverter.toCardDetailResponse(card, viewer);
     }
 
     public Card getCardById(Long cardId) {

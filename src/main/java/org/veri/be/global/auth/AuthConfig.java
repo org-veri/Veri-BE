@@ -19,6 +19,7 @@ import org.veri.be.global.auth.oauth2.CustomAuthFailureHandler;
 import org.veri.be.global.auth.oauth2.CustomOAuth2SuccessHandler;
 import org.veri.be.global.auth.oauth2.CustomOAuth2UserService;
 import org.veri.be.lib.auth.jwt.JwtFilter;
+import org.veri.be.lib.auth.jwt.JwtService;
 
 import java.util.Collections;
 
@@ -56,13 +57,14 @@ public class AuthConfig {
 
     private final MemberQueryService memberQueryService;
     private final TokenStorageService tokenStorageService;
+    private final JwtService jwtService;
 
     @Bean
     @ConditionalOnBooleanProperty(prefix = "auth.jwt", name = "use")
     public FilterRegistrationBean<OncePerRequestFilter> firstFilterRegister() {
         log.info("Filter jwt registered");
         FilterRegistrationBean<OncePerRequestFilter> registrationBean =
-                new FilterRegistrationBean<>(new JwtFilter(memberQueryService, tokenStorageService));
+                new FilterRegistrationBean<>(new JwtFilter(memberQueryService, tokenStorageService, jwtService));
 
         registrationBean.setUrlPatterns(Collections.singletonList("/api/*"));
 

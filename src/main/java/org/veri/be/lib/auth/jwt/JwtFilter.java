@@ -18,6 +18,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final MemberQueryService memberQueryService;
     private final TokenStorageService tokenStorageService;
+    private final JwtService jwtService;
 
     @Override
     protected void doFilterInternal(
@@ -29,7 +30,7 @@ public class JwtFilter extends OncePerRequestFilter {
             String token = AuthorizationHeaderUtil.extractTokenFromAuthorizationHeader(request);
 
             if (token != null && !tokenStorageService.isBlackList(token)) {
-                Object raw = JwtUtil.parseRefreshTokenPayloads(token).get("id");
+                Object raw = jwtService.parseRefreshTokenPayloads(token).get("id");
                 Long id = raw == null ? null : ((Number) raw).longValue();
 
                 if (id != null) {

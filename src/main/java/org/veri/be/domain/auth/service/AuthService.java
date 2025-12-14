@@ -11,7 +11,7 @@ import org.veri.be.domain.member.repository.MemberRepository;
 import org.veri.be.domain.member.service.MemberQueryService;
 import org.veri.be.global.auth.JwtClaimsPayload;
 import org.veri.be.global.auth.oauth2.dto.OAuth2UserInfo;
-import org.veri.be.lib.auth.jwt.JwtUtil;
+import org.veri.be.lib.auth.jwt.JwtService;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -25,11 +25,12 @@ public class AuthService implements Authenticator {
     private final TokenStorageService tokenStorageService;
 
     private final MemberRepository memberRepository;
+    private final JwtService jwtService;
     private final Clock clock;
 
     public LoginResponse login(Member member) {
-        JwtUtil.TokenGeneration accessToken = JwtUtil.generateAccessToken(JwtClaimsPayload.from(member));
-        JwtUtil.TokenGeneration refreshToken = JwtUtil.generateRefreshToken(member.getId());
+        JwtService.TokenGeneration accessToken = jwtService.generateAccessToken(JwtClaimsPayload.from(member));
+        JwtService.TokenGeneration refreshToken = jwtService.generateRefreshToken(member.getId());
         tokenStorageService.addRefreshToken(member.getId(), refreshToken.token(), refreshToken.expiredAt());
         return LoginResponse.builder()
                 .accessToken(accessToken.token())
@@ -39,10 +40,10 @@ public class AuthService implements Authenticator {
 
     public ReissueTokenResponse reissueToken(ReissueTokenRequest request) {
         String refreshToken = request.getRefreshToken();
-        Long id = (Long) JwtUtil.parseRefreshTokenPayloads(refreshToken).get("id");
+        Long id = (Long) jwtService.parseRefreshTokenPayloads(refreshToken).get("id");
 
         Member member = memberQueryService.findById(id);
-        String accessToken = JwtUtil.generateAccessToken(
+        String accessToken = jwtService.generateAccessToken(
                 new JwtClaimsPayload(member.getId(), member.getEmail(), member.getNickname(), false)
         ).token();
 
@@ -52,12 +53,12 @@ public class AuthService implements Authenticator {
     }
 
     public void logout(String accessToken) {
-        Long id = (Long) JwtUtil.parseAccessTokenPayloads(accessToken).get("id");
+        Long id = (Long) jwtService.parseAccessTokenPayloads(accessToken).get("id");
         String refreshToken = tokenStorageService.getRefreshToken(id);
         tokenStorageService.deleteRefreshToken(id);
 
         // access token 만료시간 계산
-        java.util.Date accessExpDate = JwtUtil.parseAccessTokenPayloads(accessToken).getExpiration();
+        java.util.Date accessExpDate = jwtService.parseAccessTokenPayloads(accessToken).getExpiration();
         java.time.Instant accessExp = accessExpDate != null ? accessExpDate.toInstant() : null;
         long now = Instant.now(clock).toEpochMilli();
         long accessRemainMs = (accessExp != null) ? accessExp.toEpochMilli() - now : 0L;
@@ -67,7 +68,7 @@ public class AuthService implements Authenticator {
 
         // refresh token이 존재하면 만료시간 계산 후 블랙리스트 등록
         if (refreshToken != null) {
-            java.util.Date refreshExpDate = JwtUtil.parseRefreshTokenPayloads(refreshToken).getExpiration();
+            java.util.Date refreshExpDate = jwtService.parseRefreshTokenPayloads(refreshToken).getExpiration();
             java.time.Instant refreshExp = refreshExpDate != null ? refreshExpDate.toInstant() : null;
             long refreshRemainMs = (refreshExp != null) ? refreshExp.toEpochMilli() - now : 0L;
             if (refreshRemainMs > 0) {

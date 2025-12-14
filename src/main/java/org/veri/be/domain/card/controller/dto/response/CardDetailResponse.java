@@ -12,7 +12,8 @@ public record CardDetailResponse(
         String imageUrl,
         LocalDateTime createdAt,
         BookInfo book,
-        Boolean isPublic
+        Boolean isPublic,
+        boolean mine
 ) {
 
     public record BookInfo(
