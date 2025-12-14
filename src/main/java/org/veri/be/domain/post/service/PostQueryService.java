@@ -28,7 +28,7 @@ import java.util.List;
 public class PostQueryService {
 
     private final PostRepository postRepository;
-    private final LikePostRepository likePostRepository;
+    private final LikePostQueryService likePostQueryService;
     private final CommentQueryService commentQueryService;
 
     public Page<PostFeedQueryResult> getPostFeeds(
@@ -51,7 +51,7 @@ public class PostQueryService {
         Member requester = MemberContext.getMemberOrThrow();
 
         Post post = getPostById(postId);
-        DetailLikeInfoQueryResult likeInfo = likePostRepository.getDetailLikeInfoOfPost(postId, requester.getId());
+        DetailLikeInfoQueryResult likeInfo = likePostQueryService.getDetailLikeInfoOfPost(postId, requester.getId());
         List<PostDetailResponse.CommentResponse> comments = commentQueryService.getCommentsByPostId(postId);
 
         return PostDetailResponse.from(post, likeInfo, comments);
