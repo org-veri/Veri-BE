@@ -5,18 +5,17 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.veri.be.domain.image.exception.ImageErrorInfo;
-import org.veri.be.domain.image.repository.OcrResultRepository;
-import org.veri.be.lib.exception.http.InternalServerException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
+import org.veri.be.domain.image.exception.ImageErrorInfo;
+import org.veri.be.domain.image.repository.OcrResultRepository;
+import org.veri.be.lib.exception.http.InternalServerException;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
 @Slf4j
@@ -47,50 +46,16 @@ public class MistralOcrService extends OcrService {
 
     @Override
     protected String doExtract(String imageUrl) {
-        // Todo. 전처리 이미지 사용 위해 0.5초 대기, 테스트 후 제거 고려
+        String extracted = null;
         try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            throw new InternalServerException(ImageErrorInfo.OCR_PROCESSING_FAILED);
-        }
-
-        String preprocessedImageUrl = this.getPreprocessedUrl(imageUrl);
-
-        // Todo. 전처리 / 원본 동시 요청, 전처리 유효 테스트 중에만 사용
-        CompletableFuture<String> preFuture =
-                CompletableFuture.supplyAsync(() -> callMistralApi(preprocessedImageUrl));
-
-        CompletableFuture<String> origFuture =
-                CompletableFuture.supplyAsync(() -> callMistralApi(imageUrl));
-
-        String preText = null;
-        String origText = null;
-
-        try {
-            preText = preFuture.join();
+            extracted = callMistralApi(imageUrl);
         } catch (CompletionException e) {
-            log.warn("Mistral OCR(preprocessed) 실패: {}",
-                    e.getCause() != null ? e.getCause().getMessage() : e.getMessage());
+            log.warn("Mistral OCR(원본) 실패: {}", e.getCause() != null ? e.getCause().getMessage() : e.getMessage());
         }
 
-        try {
-            origText = origFuture.join();
-        } catch (CompletionException e) {
-            log.warn("Mistral OCR(원본) 실패: {}",
-                    e.getCause() != null ? e.getCause().getMessage() : e.getMessage());
-        }
-
-        if (preText != null) {
-            saveOcrResult(imageUrl, preprocessedImageUrl, preText);
-        }
-        if (origText != null) {
-            saveOcrResult(imageUrl, null, origText);
-        }
-
-        if (preText != null) {
-            return preText;
-        } else if (origText != null) {
-            return origText;
+        if (extracted != null) {
+            saveOcrResult(imageUrl, null, extracted);
+            return extracted;
         } else {
             log.error("Mistral OCR 전처리/원본 모두 실패");
             throw new InternalServerException(ImageErrorInfo.OCR_PROCESSING_FAILED);
