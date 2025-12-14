@@ -16,7 +16,8 @@ import org.veri.be.domain.post.repository.LikePostRepository;
 import org.veri.be.domain.post.repository.PostRepository;
 import org.veri.be.domain.post.repository.dto.DetailLikeInfoQueryResult;
 import org.veri.be.domain.post.repository.dto.PostFeedQueryResult;
-import org.veri.be.global.auth.context.MemberContext;
+import org.veri.be.domain.member.entity.Member;
+import org.veri.be.global.auth.context.CurrentMemberAccessor;
 import org.veri.be.lib.exception.CommonErrorInfo;
 import org.veri.be.lib.exception.http.NotFoundException;
 
@@ -30,6 +31,7 @@ public class PostQueryService {
     private final PostRepository postRepository;
     private final LikePostQueryService likePostQueryService;
     private final CommentQueryService commentQueryService;
+    private final CurrentMemberAccessor currentMemberAccessor;
 
     public Page<PostFeedQueryResult> getPostFeeds(
             int page, int size, PostSortType sortType
@@ -48,7 +50,7 @@ public class PostQueryService {
     }
 
     public PostDetailResponse getPostDetail(Long postId) {
-        Member requester = MemberContext.getMemberOrThrow();
+        Member requester = currentMemberAccessor.getMemberOrThrow();
 
         Post post = getPostById(postId);
         DetailLikeInfoQueryResult likeInfo = likePostQueryService.getDetailLikeInfoOfPost(postId, requester.getId());

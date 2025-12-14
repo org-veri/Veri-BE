@@ -71,7 +71,7 @@
 - ReadingConverter가 정적 메서드 안에서 MemberContext를 호출해 카드 요약 노출을 필터링합니다 (
   src/main/java/org/veri/be/domain/book/dto/reading/ReadingConverter.java:10-36). Converter를 빈으로 만들고 호출자에게 viewerId를
   인자로 받으면 순수 자바 테스트가 가능합니다.
-    - 🔧 제안: `ReadingConverter`를 `@Component`로 등록하고, `toReadingDetailResponse(Reading reading, Long viewerId)`처럼 명시적인 파라미터를 받도록 변경하세요. 그러면 ThreadLocal 없이 카드 노출 정책을 테스트할 수 있습니다.
+    - ✅ 적용: `ReadingConverter`를 `@Component`로 전환하고 `CurrentMemberAccessor`를 주입하여, 현재 사용자 정보를 의존성 주입을 통해 전달하도록 변경했습니다.
 - PostQueryService.getPostDetail가 서비스 내부에서 현재 사용자를 조회합니다 (
   src/main/java/org/veri/be/domain/post/service/PostQueryService.java:40-55). Controller에서 조회 주체를 넘겨주고, 서비스는 단순히
   도메인/리포지토리 호출만 하도록 분리하면 MockMvc 없이도 테스트할 수 있습니다.
@@ -90,14 +90,14 @@
 - MemberContext는 정적 ThreadLocal을 노출하고 서비스·컨버터에서 직접 접근하게 합니다 (
   src/main/java/org/veri/be/global/auth/context/MemberContext.java:13-39). 요청 범위 빈 혹은 인터페이스로 감싸고 필요한 곳에 주입해야 테스트 시
   ThreadLocal 초기화 없이도 사용할 수 있습니다.
-    - 🔧 제안: `MemberContextHolder` 인터페이스를 만들고, 스프링 빈으로 구현체를 노출한 뒤 AOP/필터에서 주입하도록 변경하세요. 그 후 모든 서비스는 인터페이스에 의존하게 리팩토링하면 테스트에서 손쉽게 스텁 구현을 제공할 수 있습니다.
+    - ✅ 적용: `CurrentMemberAccessor` 인터페이스와 `ThreadLocalCurrentMemberAccessor` 구현을 추가해, 서비스/컨버터는 더 이상 `MemberContext` 정적 메서드를 직접 호출하지 않고 주입된 인터페이스에만 의존합니다.
 - JwtUtil이 정적 상태에 시크릿/만료 시간을 저장해두어 테스트마다 초기화하기 어렵습니다 (src/main/java/org/veri/be/lib/auth/jwt/JwtUtil.java:17-72).
   JwtService 빈으로 변경하고 필요한 구성(JwtProperties, Clock)을 생성자 주입하면 스파이/페이크를 사용할 수 있습니다.
     - 🔧 제안: `JwtService` 클래스를 만들고, `generateAccessToken`, `parseAccessToken` 등을 인스턴스 메서드로 옮긴 뒤 `Clock`과 `JwtProperties`를 생성자에서 주입하세요. 정적 상태 제거만으로도 테스트 간 간섭을 차단할 수 있습니다.
 - ReadingConverter와 기타 Converter 들이 모두 정적 메서드로 구현되어 있어 테스트 시 의존성 주입이 불가능합니다 (
   src/main/java/org/veri/be/domain/book/dto/reading/ReadingConverter.java:10-37). Bean으로 등록하거나 Component와 Mapper
   인터페이스를 사용해 목킹 가능한 구조로 바꾸세요.
-    - 🔧 제안: MapStruct/ModelMapper 같은 Mapper를 도입하거나, 수동 Converter를 `@Component`로 만들어 테스트에서 목킹할 수 있게 하세요. 정적 메서드를 제거하면 DTO 변환 규칙을 쉽게 교체할 수 있습니다.
+    - ✅ 적용: `ReadingConverter`를 빈으로 등록해 테스트에서 목킹 가능한 구조를 마련했습니다. 다른 Converter도 동일 패턴으로 이전할 수 있습니다.
 - StorageUtil.generateUniqueKey는 UUID.randomUUID()를 직접 호출해 presigned URL 테스트를 불안정하게 만듭니다 (
   src/main/java/org/veri/be/global/storage/service/StorageUtil.java:7-13). 랜덤 키 생성기를 전략/함수로 주입하면 결정적인 테스트가 가능합니다.
     - 🔧 제안: `StorageKeyGenerator` 인터페이스를 도입하고 기본 구현은 UUID를 사용하도록 하되, 테스트에서는 고정 키를 반환하는 Fake를 주입하세요. 그러면 Presigned URL 생성 테스트가 안정적으로 수행됩니다.
