@@ -11,6 +11,8 @@ import org.veri.be.domain.post.entity.Post;
 import org.veri.be.domain.post.service.PostQueryService;
 import org.veri.be.global.auth.context.MemberContext;
 
+import java.time.Clock;
+
 @Service
 @RequiredArgsConstructor
 public class CommentCommandService {
@@ -18,6 +20,7 @@ public class CommentCommandService {
     private final CommentRepository commentRepository;
     private final CommentQueryService commentQueryService;
     private final PostQueryService postQueryService;
+    private final Clock clock;
 
     @Transactional
     public Long postComment(CommentPostRequest request) {
@@ -65,7 +68,7 @@ public class CommentCommandService {
         Comment comment = commentQueryService.getCommentById(commentId);
         comment.authorizeMember(member.getId());
 
-        comment.delete();
+        comment.delete(clock);
         commentRepository.save(comment);
     }
 }
