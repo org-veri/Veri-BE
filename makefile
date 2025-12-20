@@ -43,18 +43,18 @@ buildx-and-push: ensure-builder
 	  --push \
 	  $(BUILD_CONTEXT)
 
-.PHONY: deploy deploy-blue deploy-green check-blue-health
+.PHONY: deploy deploy-blue deploy-green check-green-health
 deploy-blue:
 	@echo "Deploying to BLUE Server..."
 	@ssh aws-very 'cd workspace/veri-be && ./deploy.sh'
 
 deploy-green:
 	@echo "Deploying to GREEN Server..."
-	@ssh oracle 'cd workspace/app/dev-veri-be/ && ./deploy.sh'
+	@ssh oracle 'cd workspace/app/veri-be/ && ./deploy.sh'
 
-check-blue-health:
-	@echo "Checking BLUE Server Health..."
-	@ssh aws-very ' \
+check-green-health:
+	@echo "Checking GREEN Server Health..."
+	@ssh oracle ' \
         while true; do \
             if curl -sSf http://localhost:8080/actuator/health | grep -q "UP"; then \
                 break; \
@@ -65,4 +65,4 @@ check-blue-health:
     '
 	@echo "BLUE Server is healthy."
 
-deploy: deploy-blue check-blue-health deploy-green
+deploy: deploy-green check-green-health deploy-blue
