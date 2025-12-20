@@ -3,6 +3,7 @@ package org.veri.be.api.common;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,7 +22,7 @@ public class AuthController {
 
     @PostMapping("/api/v1/auth/reissue")
     @Operation(summary = "토큰 재발급", description = "리프레시 토큰을 이용하여 액세스 토큰을 재발급합니다.")
-    public ApiResponse<ReissueTokenResponse> reissueToken(@RequestBody ReissueTokenRequest request) {
+    public ApiResponse<ReissueTokenResponse> reissueToken(@RequestBody @Valid ReissueTokenRequest request) {
         ReissueTokenResponse response = authService.reissueToken(request);
         return ApiResponse.ok(response);
     }

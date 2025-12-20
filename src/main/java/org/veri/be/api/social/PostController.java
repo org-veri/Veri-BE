@@ -2,6 +2,7 @@ package org.veri.be.api.social;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.veri.be.global.auth.context.AuthenticatedMember;
@@ -33,7 +34,7 @@ public class PostController {
     @PostMapping
     @Operation(summary = "게시글 작성", description = "새로운 게시글을 작성합니다.")
     public ApiResponse<Long> createPost(
-            @RequestBody PostCreateRequest request,
+            @RequestBody @Valid PostCreateRequest request,
             @AuthenticatedMember Member member
     ) {
         return ApiResponse.created(this.postCommandService.createPost(request, member));
@@ -117,7 +118,7 @@ public class PostController {
 
     @Operation(summary = "게시글 이미지 presigned URL 발급", description = "게시글 이미지 업로드를 위한 presigned URL을 발급합니다.")
     @PostMapping("/image")
-    public ApiResponse<PresignedUrlResponse> uploadCardImage(@RequestBody PresignedUrlRequest request) {
+    public ApiResponse<PresignedUrlResponse> uploadCardImage(@RequestBody @Valid PresignedUrlRequest request) {
         return ApiResponse.ok(postCommandService.getPresignedUrl(request));
     }
 }

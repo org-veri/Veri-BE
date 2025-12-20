@@ -2,6 +2,7 @@ package org.veri.be.api.personal;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.veri.be.global.auth.context.AuthenticatedMember;
 import org.veri.be.domain.member.dto.MemberResponse;
@@ -31,7 +32,7 @@ public class MemberController {
     @Operation(summary = "내 정보 수정", description = "로그인한 사용자의 닉네임과 프로필 이미지를 수정합니다. null 인 값은 변경하지 않습니다.")
     @PatchMapping("/me/info")
     public ApiResponse<MemberResponse.MemberSimpleResponse> updateInfo(
-            @RequestBody UpdateMemberInfoRequest request,
+            @RequestBody @Valid UpdateMemberInfoRequest request,
             @AuthenticatedMember Member member
     ) {
         return ApiResponse.ok(memberCommandService.updateInfo(request, member));

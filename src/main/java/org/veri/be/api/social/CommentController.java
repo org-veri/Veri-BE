@@ -2,6 +2,7 @@ package org.veri.be.api.social;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.veri.be.domain.comment.dto.request.CommentEditRequest;
 import org.veri.be.domain.comment.dto.request.CommentPostRequest;
@@ -24,7 +25,7 @@ public class CommentController {
     @PostMapping()
     @Operation(summary = "댓글 작성", description = "게시글에 댓글을 작성합니다.")
     public ApiResponse<Long> postComment(
-            @RequestBody CommentPostRequest request,
+            @RequestBody @Valid CommentPostRequest request,
             @AuthenticatedMember Member member
     ) {
         return ApiResponse.created(commentCommandService.postComment(request, member));

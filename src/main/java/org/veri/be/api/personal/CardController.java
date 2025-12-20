@@ -2,6 +2,7 @@ package org.veri.be.api.personal;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.veri.be.global.auth.context.AuthenticatedMember;
@@ -32,7 +33,7 @@ public class CardController {
     @Operation(summary = "카드 생성", description = "카드를 새로 생성합니다. 독서가 비공개 상태라면 카드는 무조건 비공개로 생성됩니다.")
     @PostMapping
     public ApiResponse<CardCreateResponse> createCard(
-            @RequestBody CardCreateRequest request,
+            @RequestBody @Valid CardCreateRequest request,
             @AuthenticatedMember Member member) {
         Long cardId = cardCommandService.createCard(
                 member,
@@ -78,7 +79,7 @@ public class CardController {
     @PatchMapping("/{cardId}")
     public ApiResponse<CardUpdateResponse> updateCard(
             @PathVariable Long cardId,
-            @RequestBody CardUpdateRequest request,
+            @RequestBody @Valid CardUpdateRequest request,
             @AuthenticatedMember Member member
     ) {
         CardUpdateResponse response = cardCommandService.updateCard(
@@ -107,13 +108,13 @@ public class CardController {
      */
     @Operation(summary = "카드 이미지 presigned URL 발급", description = "요청한 이미지 타입과 크기에 맞는 presigned URL을 발급합니다. 해당 URL로 PUT 방식 업로드가 가능합니다.")
     @PostMapping("/image")
-    public ApiResponse<PresignedUrlResponse> uploadCardImage(@RequestBody PresignedUrlRequest request) {
+    public ApiResponse<PresignedUrlResponse> uploadCardImage(@RequestBody @Valid PresignedUrlRequest request) {
         return ApiResponse.ok(cardCommandService.getPresignedUrl(request));
     }
 
     @Operation(summary = "ocr을 위한 이미지 presigned URL 발급", description = "요청한 이미지 타입과 크기에 맞는 presigned URL을 발급합니다. 해당 URL로 PUT 방식 업로드가 가능합니다.")
     @PostMapping("/image/ocr")
-    public ApiResponse<PresignedUrlResponse> uploadCardImageForOcr(@RequestBody PresignedUrlRequest request) {
+    public ApiResponse<PresignedUrlResponse> uploadCardImageForOcr(@RequestBody @Valid PresignedUrlRequest request) {
         return ApiResponse.ok(cardCommandService.getPresignedUrlForOcr(request));
     }
 }

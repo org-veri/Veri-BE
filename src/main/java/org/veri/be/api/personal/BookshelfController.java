@@ -56,7 +56,7 @@ public class BookshelfController {
 
     @Operation(summary = "책장에 책 추가", description = "신규 도서를 등록하고 내 책장에 추가합니다.")
     @PostMapping
-    public ApiResponse<ReadingAddResponse> addBook(@RequestBody AddBookRequest request, @AuthenticatedMember Member member) {
+    public ApiResponse<ReadingAddResponse> addBook(@RequestBody @Valid AddBookRequest request, @AuthenticatedMember Member member) {
 
         Long bookId = bookService.addBook(
                 request.title(),
