@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.veri.be.global.auth.context.AuthenticatedMember;
 import org.veri.be.domain.card.controller.dto.request.CardCreateRequest;
 import org.veri.be.domain.card.controller.dto.request.CardUpdateRequest;
@@ -20,11 +21,14 @@ import org.veri.be.lib.response.ApiResponse;
 import org.veri.be.global.storage.dto.PresignedUrlRequest;
 import org.veri.be.global.storage.dto.PresignedUrlResponse;
 import org.springframework.web.bind.annotation.*;
+import org.veri.be.lib.exception.CommonErrorInfo;
+import org.veri.be.lib.exception.http.BadRequestException;
 
 @Tag(name = "독서 카드")
 @RequestMapping("/api/v1/cards")
 @RestController
 @RequiredArgsConstructor
+@Validated
 public class CardController {
 
     private final CardCommandService cardCommandService;
@@ -59,6 +63,9 @@ public class CardController {
             @RequestParam(defaultValue = "10") @Min(1) int size,
             @RequestParam(defaultValue = "newest") String sort
     ) {
+        if (page < 1 || size < 1) {
+            throw new BadRequestException(CommonErrorInfo.INVALID_REQUEST);
+        }
         CardSortType sortType = CardSortType.from(sort);
         return ApiResponse.ok(
                 CardListResponse.ofOwn(

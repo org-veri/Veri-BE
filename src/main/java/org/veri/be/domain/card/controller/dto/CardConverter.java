@@ -1,8 +1,6 @@
 package org.veri.be.domain.card.controller.dto;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.veri.be.api.common.dto.MemberProfileResponse;
 import org.veri.be.domain.card.controller.dto.response.CardDetailResponse;
 import org.veri.be.domain.card.controller.dto.response.CardUpdateResponse;
 import org.veri.be.domain.card.entity.Card;

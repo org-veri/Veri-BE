@@ -20,6 +20,7 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import jakarta.validation.ConstraintViolationException;
 
 @RestControllerAdvice
 @Slf4j
@@ -94,6 +95,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HandlerMethodValidationException.class)
     public ApiResponse<Map<?, ?>> handleHandlerMethodValidationException(
             HandlerMethodValidationException e) {
+        log.debug(e.getMessage());
+        return ApiResponse.error(CommonErrorInfo.INVALID_REQUEST, HttpStatus.BAD_REQUEST);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ApiResponse<Map<?, ?>> handleConstraintViolationException(ConstraintViolationException e) {
         log.debug(e.getMessage());
         return ApiResponse.error(CommonErrorInfo.INVALID_REQUEST, HttpStatus.BAD_REQUEST);
     }

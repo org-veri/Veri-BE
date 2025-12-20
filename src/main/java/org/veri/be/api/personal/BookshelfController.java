@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.veri.be.domain.book.dto.book.AddBookRequest;
 import org.veri.be.domain.book.dto.book.BookSearchResponse;
@@ -23,6 +24,8 @@ import org.veri.be.domain.member.entity.Member;
 import org.veri.be.global.auth.context.AuthenticatedMember;
 import org.veri.be.global.auth.guards.MemberGuard;
 import org.veri.be.lib.auth.guard.UseGuards;
+import org.veri.be.lib.exception.CommonErrorInfo;
+import org.veri.be.lib.exception.http.BadRequestException;
 import org.veri.be.lib.response.ApiResponse;
 
 @Tag(name = "책장")
@@ -30,6 +33,7 @@ import org.veri.be.lib.response.ApiResponse;
 @RestController
 @RequiredArgsConstructor
 @UseGuards({MemberGuard.class})
+@Validated
 public class BookshelfController {
 
     private final BookshelfService bookshelfService;
@@ -43,9 +47,12 @@ public class BookshelfController {
     )
     @GetMapping("/my")
     public ApiResponse<ReadingListResponse> getAllBooks(
-            @ModelAttribute ReadingPageRequest request,
+            @ModelAttribute @Valid ReadingPageRequest request,
             @AuthenticatedMember Member member
     ) {
+        if (request.getPage() < 1 || request.getSize() < 1) {
+            throw new BadRequestException(CommonErrorInfo.INVALID_REQUEST);
+        }
         Page<ReadingResponse> pageData = bookshelfService.searchAllReadingOfMember(
                 member.getId(),
                 request.getStatuses(),
@@ -77,6 +84,9 @@ public class BookshelfController {
             @RequestParam(defaultValue = "1") @Min(1) int page,
             @RequestParam(defaultValue = "10") @Min(1) int size
     ) {
+        if (page < 1 || size < 1) {
+            throw new BadRequestException(CommonErrorInfo.INVALID_REQUEST);
+        }
         BookSearchResponse bookResponses = bookService.searchBook(query, page, size);
 
         return ApiResponse.ok(bookResponses);
