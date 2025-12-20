@@ -108,6 +108,17 @@ class PostControllerTest {
                     .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.result").value(99L));
         }
+
+        @Test
+        @DisplayName("필수 필드가 누락되면 400을 반환한다")
+        void returns400WhenFieldMissing() throws Exception {
+            PostCreateRequest request = new PostCreateRequest(null, null, null, null);
+
+            mockMvc.perform(post("/api/v1/posts")
+                            .contentType("application/json")
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isBadRequest());
+        }
     }
 
     @Nested
@@ -312,6 +323,17 @@ class PostControllerTest {
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.result.publicUrl").value("https://example.com/public"));
+        }
+
+        @Test
+        @DisplayName("필수 필드가 누락되면 400을 반환한다")
+        void returns400WhenFieldMissing() throws Exception {
+            PresignedUrlRequest request = new PresignedUrlRequest(null, 0);
+
+            mockMvc.perform(post("/api/v1/posts/image")
+                            .contentType("application/json")
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isBadRequest());
         }
     }
 }

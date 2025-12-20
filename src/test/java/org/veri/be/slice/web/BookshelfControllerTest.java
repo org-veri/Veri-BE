@@ -155,6 +155,17 @@ class BookshelfControllerTest {
                     .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.result.memberBookId").value(20L));
         }
+
+        @Test
+        @DisplayName("필수 필드가 누락되면 400을 반환한다")
+        void returns400WhenFieldMissing() throws Exception {
+            AddBookRequest request = new AddBookRequest(null, null, null, null, null, true);
+
+            mockMvc.perform(post("/api/v2/bookshelf")
+                            .contentType("application/json")
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isBadRequest());
+        }
     }
 
     @Nested
@@ -185,6 +196,15 @@ class BookshelfControllerTest {
                             .param("size", "10"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.result.books[0].title").value("title"));
+        }
+
+        @Test
+        @DisplayName("page가 1보다 작으면 400을 반환한다")
+        void returns400WhenPageInvalid() throws Exception {
+            mockMvc.perform(get("/api/v2/bookshelf/search")
+                            .param("query", "query")
+                            .param("page", "0"))
+                    .andExpect(status().isBadRequest());
         }
     }
 

@@ -99,6 +99,17 @@ class CardControllerTest {
                     .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.result.cardId").value(1L));
         }
+
+        @Test
+        @DisplayName("필수 필드가 누락되면 400을 반환한다")
+        void returns400WhenFieldMissing() throws Exception {
+            CardCreateRequest request = new CardCreateRequest(null, null, null, null);
+
+            mockMvc.perform(post("/api/v1/cards")
+                            .contentType("application/json")
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isBadRequest());
+        }
     }
 
     @Nested
@@ -230,6 +241,17 @@ class CardControllerTest {
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.result.presignedUrl").value("https://example.com/presigned"));
+        }
+
+        @Test
+        @DisplayName("필수 필드가 누락되면 400을 반환한다")
+        void returns400WhenFieldMissing() throws Exception {
+            PresignedUrlRequest request = new PresignedUrlRequest(null, 0);
+
+            mockMvc.perform(post("/api/v1/cards/image")
+                            .contentType("application/json")
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isBadRequest());
         }
     }
 

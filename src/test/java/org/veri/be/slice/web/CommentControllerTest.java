@@ -87,7 +87,19 @@ class CommentControllerTest {
                     .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.result").value(100L));
         }
+
+        @Test
+        @DisplayName("필수 필드가 누락되면 400을 반환한다")
+        void returns400WhenFieldMissing() throws Exception {
+            CommentPostRequest request = new CommentPostRequest(null, null);
+
+            mockMvc.perform(post("/api/v1/comments")
+                            .contentType("application/json")
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isBadRequest());
+        }
     }
+...
 
     @Nested
     @DisplayName("POST /api/v1/comments/reply")
