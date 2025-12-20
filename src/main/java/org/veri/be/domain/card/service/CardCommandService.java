@@ -67,6 +67,7 @@ public class CardCommandService {
     @Transactional
     public CardVisibilityUpdateResponse modifyVisibility(Member member, Long cardId, boolean isPublic) {
         Card card = this.getCard(cardId);
+        card.authorizeMember(member.getId());
         card.changeVisibility(member, isPublic);
         cardRepository.save(card);
         return new CardVisibilityUpdateResponse(card.getId(), card.getIsPublic());

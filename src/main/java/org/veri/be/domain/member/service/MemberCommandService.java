@@ -20,7 +20,7 @@ public class MemberCommandService {
 
     @Transactional
     public MemberResponse.MemberSimpleResponse updateInfo(UpdateMemberInfoRequest request, Member requestMember) {
-        if (memberQueryService.existsByNickname(request.nickname())) {
+        if (!requestMember.getNickname().equals(request.nickname()) && memberQueryService.existsByNickname(request.nickname())) {
             throw new BadRequestException(MemberErrorInfo.ALREADY_EXIST_NICKNAME);
         }
 
