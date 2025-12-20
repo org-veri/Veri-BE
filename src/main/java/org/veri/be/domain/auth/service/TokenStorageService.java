@@ -44,6 +44,9 @@ public class TokenStorageService implements TokenBlacklistStore {
 
     @Override
     public boolean isBlackList(String token) {
+        if (token == null) {
+            return false;
+        }
         return blacklistedTokenRepository.findById(token)
                 .map(b -> b.getExpiredAt().isAfter(Instant.now(clock)))
                 .orElse(false);

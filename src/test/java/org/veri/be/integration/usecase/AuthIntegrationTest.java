@@ -55,12 +55,39 @@ class AuthIntegrationTest extends IntegrationTestSupport {
         @DisplayName("refreshToken 누락/NULL")
         void missingToken() throws Exception {
             ReissueTokenRequest request = new ReissueTokenRequest();
-            // null
 
             mockMvc.perform(post("/api/v1/auth/reissue")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        @DisplayName("탈퇴 등으로 존재하지 않는 회원 토큰")
+        void nonExistentMember() throws Exception {
+            String refreshToken = tokenProvider.generateRefreshToken(9999L).token();
+            ReissueTokenRequest request = new ReissueTokenRequest();
+            ReflectionTestUtils.setField(request, "refreshToken", refreshToken);
+
+            mockMvc.perform(post("/api/v1/auth/reissue")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isUnauthorized()); // Updated from 404 to 401
+        }
+
+        @Test
+        @DisplayName("블랙리스트에 등록된 refresh 토큰")
+        void blacklistedToken() throws Exception {
+            String refreshToken = tokenProvider.generateRefreshToken(getMockMember().getId()).token();
+            tokenStorageService.addBlackList(refreshToken, 100000L);
+
+            ReissueTokenRequest request = new ReissueTokenRequest();
+            ReflectionTestUtils.setField(request, "refreshToken", refreshToken);
+
+            mockMvc.perform(post("/api/v1/auth/reissue")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isUnauthorized());
         }
     }
 
@@ -73,6 +100,37 @@ class AuthIntegrationTest extends IntegrationTestSupport {
             String accessToken = tokenProvider.generateAccessToken(
                     org.veri.be.global.auth.JwtClaimsPayload.from(getMockMember())
             ).token();
+
+            mockMvc.perform(post("/api/v1/auth/logout")
+                            .requestAttr("token", accessToken))
+                    .andExpect(status().isNoContent());
+        }
+
+        @Test
+        @DisplayName("이미 블랙리스트 처리된 토큰으로 재요청")
+        void alreadyLoggedOut() throws Exception {
+            String accessToken = tokenProvider.generateAccessToken(
+                    org.veri.be.global.auth.JwtClaimsPayload.from(getMockMember())
+            ).token();
+
+            // 1st
+            mockMvc.perform(post("/api/v1/auth/logout")
+                            .requestAttr("token", accessToken))
+                    .andExpect(status().isNoContent());
+
+            // 2nd
+            mockMvc.perform(post("/api/v1/auth/logout")
+                            .requestAttr("token", accessToken))
+                    .andExpect(status().isNoContent());
+        }
+
+        @Test
+        @DisplayName("refresh 토큰이 저장소에 없음")
+        void noRefreshTokenInStorage() throws Exception {
+            String accessToken = tokenProvider.generateAccessToken(
+                    org.veri.be.global.auth.JwtClaimsPayload.from(getMockMember())
+            ).token();
+            tokenStorageService.deleteRefreshToken(getMockMember().getId());
 
             mockMvc.perform(post("/api/v1/auth/logout")
                             .requestAttr("token", accessToken))
