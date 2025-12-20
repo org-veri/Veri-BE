@@ -1,7 +1,5 @@
 package org.veri.be.unit.auth;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -11,6 +9,11 @@ import org.veri.be.domain.member.entity.enums.ProviderType;
 import org.veri.be.global.auth.AuthErrorInfo;
 import org.veri.be.global.auth.context.MemberContext;
 import org.veri.be.support.assertion.ExceptionAssertions;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class MemberContextTest {
 
@@ -93,8 +96,12 @@ class MemberContextTest {
     }
 
     @Test
-    @DisplayName("인스턴스를 생성할 수 있다")
-    void canInstantiate() {
-        assertThat(new MemberContext()).isNotNull();
+    @DisplayName("생성자는 외부에서 호출할 수 없도록 private이어야 한다")
+    void constructorShouldBePrivate() throws NoSuchMethodException {
+        // given
+        Constructor<MemberContext> constructor = MemberContext.class.getDeclaredConstructor();
+
+        // when & then
+        assertThat(Modifier.isPrivate(constructor.getModifiers())).isTrue();
     }
 }

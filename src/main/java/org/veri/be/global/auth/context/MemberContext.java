@@ -1,5 +1,6 @@
 package org.veri.be.global.auth.context;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.global.auth.AuthErrorInfo;
@@ -8,6 +9,7 @@ import org.veri.be.lib.exception.http.UnAuthorizedException;
 import java.util.Optional;
 
 @Slf4j
+@RequiredArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class MemberContext {
 
     public static final ThreadLocal<Member> currentMember = new ThreadLocal<>();

@@ -1,8 +1,5 @@
 package org.veri.be.unit.member;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -10,6 +7,11 @@ import org.veri.be.domain.member.converter.MemberConverter;
 import org.veri.be.domain.member.dto.MemberResponse;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class MemberConverterTest {
 
@@ -44,12 +46,12 @@ class MemberConverterTest {
     }
 
     @Test
-    @DisplayName("인스턴스화를 방지한다")
-    void canNotInstantiate() {
-        assertThatThrownBy(() -> {
-            java.lang.reflect.Constructor<MemberConverter> constructor = MemberConverter.class.getDeclaredConstructor();
-            constructor.setAccessible(true);
-            constructor.newInstance();
-        }).hasRootCauseInstanceOf(UnsupportedOperationException.class);
+    @DisplayName("생성자는 외부에서 호출할 수 없도록 private이어야 한다")
+    void constructorShouldBePrivate() throws NoSuchMethodException {
+        // given
+        Constructor<MemberConverter> constructor = MemberConverter.class.getDeclaredConstructor();
+
+        // when & then
+        assertThat(Modifier.isPrivate(constructor.getModifiers())).isTrue();
     }
 }
