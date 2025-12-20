@@ -45,6 +45,32 @@
     └── fixtures
 ```
 
+## 테스트 유형 및 가이드라인
+
+*   **통합 테스트 (Integration tests)**: `IntegrationTestSupport`를 확장하여 사용. 가짜 멤버(`mockMember`)와 `MemberContext`가 사전 설정된 `@SpringBootTest` 환경 제공.
+*   **컨트롤러 슬라이스 테스트 (Controller slice tests)**: `@WebMvcTest`를 사용하여 파라미터 유효성 검사, HTTP 상태 코드, 에러 타입을 검증.
+*   **영속성 테스트 (Persistence tests)**: `@DataJpaTest`를 사용하여 엔티티 매핑, 제약 조건, Cascade, 고아 제거 및 리포지토리 쿼리 검증.
+*   **단위 테스트 (Unit tests)**: Spring 컨텍스트 없이 도메인 로직을 검증하는 빠른 POJO 테스트.
+
+## 테스트 조직 및 규칙
+*   **패키지 구조**: `test/java/org/veri/be/{integration|slice|unit}/{domain}/`
+*   **가독성**: `@Nested` + `@DisplayName` 적극 활용.
+*   **패턴**: `Given-When-Then` 패턴 준수.
+
+## 테스트 체크포인트 워크플로우 (Claude Code 전용)
+기능 구현 후 다음 명령어를 사용하여 테스트 커버리지를 유지합니다.
+
+```bash
+# 미검증 변경 사항 분석 및 테스트 생성
+/sc:test-checkpoint
+```
+
+1.  `.claude/scripts/get_target_diff.sh`를 실행하여 마지막 `test.` 커밋 이후의 변경 사항 식별.
+2.  본 문서의 컨벤션에 따라 테스트 생성.
+3.  `test.` 접두사가 붙은 커밋으로 체크포인트 생성.
+
+**주의**: 모든 기능 작업 후에는 테스트 체크포인트 커밋을 남겨 테스트 정합성을 유지해야 합니다.
+
 ## 퍼시스턴스 레이어 테스트
 ### 검증 대상
 

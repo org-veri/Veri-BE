@@ -24,22 +24,53 @@ The agent workspace is isolated in the `.agents/` directory. Do not store contex
 | Directory | Access | Purpose |
 | :--- | :--- | :--- |
 | **`.agents/context/`** | **Read-Only** | Project goals, tech stack, and architectural constraints. |
-| **`.agents/plan/`** | **Read/Write** | High-level roadmaps and task backlogs. |
+| **`.agents/inspiration/`** | **Read-Only** | Design inspirations and reference docs (**Human Developers Only**). |
+| **`.agents/plan/`** | **Read/Write** | High-level roadmaps and task backlogs. (Subdirs: **`completed/`**, **`on-hold/`**) |
 | **`.agents/work/`** | **Write** | Active scratchpad for the current task. One file per task. |
-| **`.agents/review/`** | **Write** | Self-review notes, test results, and QA logs before completion. |
-| **`.agents/issue/`** | **Write** | detailed analysis of bugs, errors, or blockers encountered. |
+| **`.agents/review/`** | **Write** | Self-review notes, test results, and QA logs before completion. (Subdirs: **`completed/`**, **`on-hold/`**) |
+| **`.agents/issue/`** | **Write** | Detailed analysis of bugs, errors, or blockers encountered. (Subdirs: **`completed/`**, **`on-hold/`**) |
 | **`.agents/log/`** | **Append** | Chronological history of completed tasks (Source of Truth). |
 
 ---
 
-## 3. Standard Operational Procedure
+## 3. Mandatory Protocols
 
-For every assigned objective, execute the following cycle:
+### ① Inspiration Directory Restriction
+The `.agents/inspiration` directory is reserved for human developers. **Agents are strictly forbidden from modifying, deleting, or adding files in this directory.** Agents may only read these files to gain context.
+
+### ② File Lifecycle (The `completed/` & `on-hold/` Rules)
+To maintain a clean workspace, once a task, issue, or review is finalized or suspended:
+1.  Mark the internal status as **Completed**, **Closed**, or **On Hold**.
+2.  Move the file to a subdirectory within its respective parent:
+    *   **`completed/`**: For fully finished tasks.
+    *   **`on-hold/`**: For suspended, deferred, or deprioritized tasks.
+
+### ③ Structural Templates
+Agents must follow these structures for consistency:
+
+#### **Plan Document (`.agents/plan/`)**
+*   **Header**: `# Plan: [Title]`
+*   **Metadata**: Status, Date, Goal (Concise summary of the objective).
+*   **Body**: Breakdown into **Phases** or **Steps** using checklists (`- [ ]`).
+
+#### **Issue Document (`.agents/issue/`)**
+*   **Header**: `# Issue: [Short Description]`
+*   **Metadata**: Severity (Critical/High/Low), Status, Date.
+*   **Body**: **Description** (Problem), **Affected Files**, **Findings**, and **Recommendation** (How to fix).
+
+#### **Review Document (`.agents/review/`)**
+*   **Header**: `# [Type] Review - [Date]`
+*   **Metadata**: Reviewer, Scope (e.g., Security, Logic).
+*   **Body**: **Summary**, **Findings** (Detailed analysis), and **Action Items**.
+
+---
+
+## 4. Standard Operational Procedure
 
 ### Phase 1: Analysis & Setup
 1.  **Read Context**: Review `AGENTS.md` and `.agents/context/` to align with the project scope.
 2.  **Select Task**: Identify the next item from `.agents/plan/`.
-3.  **Initialize Workspace**:
+3.  **Initialize Workspace`:
     * Create a new file in `.agents/work/` (e.g., `.agents/work/task_name.md`).
     * Copy the specific requirements from the plan into this file.
     * Use this file to draft your implementation plan before writing code.
@@ -53,4 +84,4 @@ For every assigned objective, execute the following cycle:
 2.  **Log History**: Append a summary of the completed task to `.agents/log/history.md`.
     * *Format*: Timestamp, Task Name, Summary of Changes, Modified Files.
 3.  **Update Plan**: Mark the task as `[x]` in `.agents/plan/`.
-4.  **Cleanup**: (Optional) Move the temporary `.agents/work/` file to an archive if needed.
+4.  **Cleanup**: (Optional) Move the temporary `.agents/work/` file to an archive or follow the **File Lifecycle Rule`.
