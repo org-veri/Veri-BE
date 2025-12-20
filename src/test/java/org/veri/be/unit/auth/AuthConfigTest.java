@@ -43,7 +43,6 @@ class AuthConfigTest {
                     Mockito.mock(CustomOAuth2UserService.class),
                     Mockito.mock(CustomOAuth2SuccessHandler.class),
                     Mockito.mock(CustomAuthFailureHandler.class),
-                    Mockito.mock(MemberQueryService.class),
                     Mockito.mock(TokenBlacklistStore.class),
                     Mockito.mock(TokenProvider.class)
             );
@@ -69,7 +68,6 @@ class AuthConfigTest {
                     customOAuth2UserService,
                     customOAuth2SuccessHandler,
                     customAuthFailureHandler,
-                    Mockito.mock(MemberQueryService.class),
                     Mockito.mock(TokenBlacklistStore.class),
                     Mockito.mock(TokenProvider.class)
             );

@@ -48,6 +48,7 @@ import org.veri.be.global.auth.context.AuthenticatedMemberResolver;
 import org.veri.be.global.auth.context.MemberContext;
 import org.veri.be.global.auth.context.ThreadLocalCurrentMemberAccessor;
 import org.veri.be.lib.auth.guard.UseGuardsAspect;
+import org.veri.be.lib.exception.handler.GlobalExceptionHandler;
 import org.veri.be.lib.response.ApiResponseAdvice;
 
 @ExtendWith(MockitoExtension.class)
@@ -82,7 +83,7 @@ class BookshelfControllerTest {
 
         BookshelfController controller = new BookshelfController(bookshelfService, bookService);
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
-                .setControllerAdvice(new ApiResponseAdvice())
+                .setControllerAdvice(new ApiResponseAdvice(), new GlobalExceptionHandler())
                 .setCustomArgumentResolvers(new AuthenticatedMemberResolver(new ThreadLocalCurrentMemberAccessor(null)))
                 .build();
     }
@@ -322,7 +323,7 @@ class BookshelfControllerTest {
             mockMvc.perform(patch("/api/v2/bookshelf/10/visibility")
                             .param("isPublic", "true"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.result.idPublic").value(true));
+                    .andExpect(jsonPath("$.result.isPublic").value(true));
         }
     }
 

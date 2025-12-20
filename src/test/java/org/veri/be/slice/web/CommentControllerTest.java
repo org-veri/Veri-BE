@@ -99,7 +99,6 @@ class CommentControllerTest {
                     .andExpect(status().isBadRequest());
         }
     }
-...
 
     @Nested
     @DisplayName("POST /api/v1/comments/reply")

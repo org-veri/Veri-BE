@@ -106,6 +106,7 @@ class AuthServiceTest {
                     .add("id", 1L)
                     .build();
             given(tokenProvider.parseRefreshToken("refresh")).willReturn(claims);
+            given(tokenStorageService.getRefreshToken(1L)).willReturn("refresh");
             Member member = member(1L, "member@test.com", "member");
             given(memberQueryService.findById(1L)).willReturn(member);
             given(tokenProvider.generateAccessToken(any()))

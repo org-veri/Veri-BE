@@ -36,7 +36,6 @@ class CardQueryServiceTest {
     @Mock
     CardRepository cardRepository;
 
-    @Mock
     CardConverter cardConverter;
 
     CardQueryService cardQueryService;
@@ -46,6 +45,7 @@ class CardQueryServiceTest {
 
     @BeforeEach
     void setUp() {
+        cardConverter = new CardConverter();
         cardQueryService = new CardQueryService(cardRepository, cardConverter);
     }
 
@@ -78,10 +78,9 @@ class CardQueryServiceTest {
         void returnsDetailResponse() {
             Member viewer = member(1L, "member@test.com", "member");
             Card card = Card.builder().id(1L).member(viewer).build();
-            CardDetailResponse response = new CardDetailResponse(1L, null, null, null, null, null, true, true);
+            CardDetailResponse response = CardConverter.toCardDetailResponse(card, viewer);
 
             given(cardRepository.findByIdWithAllAssociations(1L)).willReturn(Optional.of(card));
-            given(cardConverter.toCardDetailResponse(card, viewer)).willReturn(response);
 
             CardDetailResponse result = cardQueryService.getCardDetail(1L, viewer);
 

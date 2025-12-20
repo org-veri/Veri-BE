@@ -48,7 +48,6 @@ class CardCommandServiceTest {
     @Mock
     StorageService storageService;
 
-    @Mock
     CardConverter cardConverter;
 
     CardCommandService cardCommandService;
@@ -58,6 +57,7 @@ class CardCommandServiceTest {
 
     @BeforeEach
     void setUp() {
+        cardConverter = new CardConverter();
         cardCommandService = new CardCommandService(
                 cardRepository,
                 readingRepository,
@@ -106,11 +106,10 @@ class CardCommandServiceTest {
                     .image("https://example.com/before.png")
                     .build();
             Card updated = card.updateContent("after", "https://example.com/after.png", member);
-            CardUpdateResponse response = new CardUpdateResponse(1L, "after", "https://example.com/after.png", null, null, null);
+            CardUpdateResponse response = CardUpdateResponse.from(updated);
 
             given(cardRepository.findById(1L)).willReturn(Optional.of(card));
             given(cardRepository.save(any(Card.class))).willReturn(updated);
-            given(cardConverter.toCardUpdateResponse(updated)).willReturn(response);
 
             CardUpdateResponse result = cardCommandService.updateCard(member, 1L, "after", "https://example.com/after.png");
 
