@@ -41,6 +41,7 @@ public class ReadingConverter {
                 .startedAt(reading.getStartedAt())
                 .endedAt(reading.getEndedAt())
                 .cardSummaries(summaries)
+                .isPublic(reading.getIsPublic())
                 .build();
     }
 }

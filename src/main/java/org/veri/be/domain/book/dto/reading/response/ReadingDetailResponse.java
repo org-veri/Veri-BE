@@ -18,7 +18,8 @@ public record ReadingDetailResponse(
         Double score,
         LocalDateTime startedAt,
         LocalDateTime endedAt,
-        List<CardSummaryResponse> cardSummaries
+        List<CardSummaryResponse> cardSummaries,
+        boolean isPublic
 ) {
     public record CardSummaryResponse(
             Long cardId,
