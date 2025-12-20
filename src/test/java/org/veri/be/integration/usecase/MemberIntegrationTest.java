@@ -30,13 +30,55 @@ class MemberIntegrationTest extends IntegrationTestSupport {
         @Test
         @DisplayName("닉네임/프로필 모두 수정")
         void updateInfoSuccess() throws Exception {
-            UpdateMemberInfoRequest request = new UpdateMemberInfoRequest("newNick", "newUrl");
+            UpdateMemberInfoRequest request = new UpdateMemberInfoRequest("newNick", "https://example.com/new.png");
 
             mockMvc.perform(patch("/api/v1/members/me/info")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.result.nickname").value("newNick"));
+        }
+
+        @Test
+        @DisplayName("닉네임 중복")
+        void updateDuplicateNickname() throws Exception {
+            org.veri.be.domain.member.entity.Member other = org.veri.be.domain.member.entity.Member.builder()
+                    .email("other@test.com")
+                    .nickname("dupNick")
+                    .profileImageUrl("https://example.com/img.png")
+                    .providerId("p2")
+                    .providerType(org.veri.be.domain.member.entity.enums.ProviderType.KAKAO)
+                    .build();
+            memberRepository.save(other);
+
+            UpdateMemberInfoRequest request = new UpdateMemberInfoRequest("dupNick", "https://example.com/new.png");
+
+            mockMvc.perform(patch("/api/v1/members/me/info")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        @DisplayName("필수 필드 검증 실패")
+        void updateValidationFail() throws Exception {
+            UpdateMemberInfoRequest request = new UpdateMemberInfoRequest("", "invalid-url"); // nickname empty
+
+            mockMvc.perform(patch("/api/v1/members/me/info")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        @DisplayName("기존 닉네임과 동일한 값 요청")
+        void updateSameNickname() throws Exception {
+            UpdateMemberInfoRequest request = new UpdateMemberInfoRequest(getMockMember().getNickname(), "https://example.com/new.png");
+
+            mockMvc.perform(patch("/api/v1/members/me/info")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isOk()); // Should be allowed or ignored
         }
     }
 

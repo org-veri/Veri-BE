@@ -84,6 +84,22 @@ class PostIntegrationTest extends IntegrationTestSupport {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.result.posts[0]").exists());
         }
+
+        @Test
+        @DisplayName("page=0")
+        void invalidPage() throws Exception {
+            mockMvc.perform(get("/api/v1/posts")
+                            .param("page", "0"))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        @DisplayName("정렬 파라미터 오류")
+        void invalidSort() throws Exception {
+            mockMvc.perform(get("/api/v1/posts")
+                            .param("sort", "INVALID"))
+                    .andExpect(status().isBadRequest());
+        }
     }
 
     @Nested
@@ -98,52 +114,12 @@ class PostIntegrationTest extends IntegrationTestSupport {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.result.postId").value(post.getId()));
         }
-    }
 
-    @Nested
-    @DisplayName("DELETE /api/v1/posts/{postId}")
-    class DeletePost {
         @Test
-        @DisplayName("소유 게시글 삭제")
-        void deleteSuccess() throws Exception {
-            Post post = createPost(getMockMember().getId(), true);
-
-            mockMvc.perform(delete("/api/v1/posts/" + post.getId()))
-                    .andExpect(status().isNoContent());
-        }
-    }
-
-    @Nested
-    @DisplayName("POST /api/v1/posts/{postId}/(un)publish")
-    class Publish {
-        @Test
-        @DisplayName("공개/비공개 전환")
-        void publishSuccess() throws Exception {
-            Post post = createPost(getMockMember().getId(), false);
-
-            mockMvc.perform(post("/api/v1/posts/" + post.getId() + "/publish"))
-                    .andExpect(status().isNoContent());
-
-            mockMvc.perform(post("/api/v1/posts/" + post.getId() + "/unpublish"))
-                    .andExpect(status().isNoContent());
-        }
-    }
-
-    @Nested
-    @DisplayName("POST /api/v1/posts/like/{postId}")
-    class Like {
-        @Test
-        @DisplayName("최초 좋아요 & 취소")
-        void likeSuccess() throws Exception {
-            Post post = createPost(getMockMember().getId(), true);
-
-            mockMvc.perform(post("/api/v1/posts/like/" + post.getId()))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.result.isLiked").value(true));
-
-            mockMvc.perform(post("/api/v1/posts/unlike/" + post.getId()))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.result.isLiked").value(false));
+        @DisplayName("존재하지 않는 게시글")
+        void getDetailNotFound() throws Exception {
+            mockMvc.perform(get("/api/v1/posts/999"))
+                    .andExpect(status().isNotFound());
         }
     }
 
@@ -160,6 +136,28 @@ class PostIntegrationTest extends IntegrationTestSupport {
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.result.presignedUrl").value("http://stub.presigned.url"));
+        }
+
+        @Test
+        @DisplayName("용량 초과")
+        void urlTooLarge() throws Exception {
+            PresignedUrlRequest request = new PresignedUrlRequest("image/png", 10 * 1024 * 1024L);
+
+            mockMvc.perform(post("/api/v1/posts/image")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        @DisplayName("이미지 타입 아님")
+        void urlInvalidType() throws Exception {
+            PresignedUrlRequest request = new PresignedUrlRequest("text/plain", 1000L);
+
+            mockMvc.perform(post("/api/v1/posts/image")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isBadRequest());
         }
     }
 

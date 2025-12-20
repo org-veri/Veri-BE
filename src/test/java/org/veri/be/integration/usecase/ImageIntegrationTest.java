@@ -26,5 +26,20 @@ class ImageIntegrationTest extends IntegrationTestSupport {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.result").value("Stub OCR Result"));
         }
+
+        @Test
+        @DisplayName("OCR 서비스 예외")
+        void ocrException() throws Exception {
+            mockMvc.perform(post("/api/v0/images/ocr")
+                            .param("imageUrl", "https://example.com/error.png"))
+                    .andExpect(status().isInternalServerError());
+        }
+
+        @Test
+        @DisplayName("URL 파라미터 누락")
+        void missingParam() throws Exception {
+            mockMvc.perform(post("/api/v0/images/ocr"))
+                    .andExpect(status().isBadRequest());
+        }
     }
 }

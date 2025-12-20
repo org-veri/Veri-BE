@@ -50,6 +50,18 @@ class AuthIntegrationTest extends IntegrationTestSupport {
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isUnauthorized()); 
         }
+
+        @Test
+        @DisplayName("refreshToken 누락/NULL")
+        void missingToken() throws Exception {
+            ReissueTokenRequest request = new ReissueTokenRequest();
+            // null
+
+            mockMvc.perform(post("/api/v1/auth/reissue")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isBadRequest());
+        }
     }
 
     @Nested

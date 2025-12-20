@@ -8,6 +8,7 @@ import org.veri.be.domain.card.exception.CardErrorInfo;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.global.entity.BaseEntity;
 import org.veri.be.lib.exception.http.BadRequestException;
+import org.veri.be.lib.exception.http.ForbiddenException;
 
 @Getter
 @SuperBuilder(toBuilder = true)
@@ -52,7 +53,7 @@ public class Card extends BaseEntity {
 
     public void authorizeMember(Long memberId) {
         if (!this.member.getId().equals(memberId)) {
-            throw new BadRequestException(CardErrorInfo.FORBIDDEN);
+            throw new ForbiddenException(CardErrorInfo.FORBIDDEN);
         }
     }
 
@@ -90,7 +91,7 @@ public class Card extends BaseEntity {
         }
 
         if (viewer == null) {
-            throw new BadRequestException(CardErrorInfo.FORBIDDEN);
+            throw new ForbiddenException(CardErrorInfo.FORBIDDEN);
         }
 
         authorizeMember(viewer.getId());

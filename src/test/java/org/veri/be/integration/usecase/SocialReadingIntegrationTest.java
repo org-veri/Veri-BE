@@ -28,6 +28,15 @@ class SocialReadingIntegrationTest extends IntegrationTestSupport {
             mockMvc.perform(get("/api/v2/bookshelf/popular"))
                     .andExpect(status().isOk());
         }
+
+        @Test
+        @DisplayName("최근 일주일 내 추가 도서 없음")
+        void getPopularEmpty() throws Exception {
+            // Assuming clean DB or no recent adds
+            mockMvc.perform(get("/api/v2/bookshelf/popular"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result.books").isEmpty());
+        }
     }
 
     @Nested
@@ -36,18 +45,50 @@ class SocialReadingIntegrationTest extends IntegrationTestSupport {
         @Test
         @DisplayName("공개 독서 상세")
         void getReadingDetailSuccess() throws Exception {
-            Book book = Book.builder().title("T").image("I").isbn("ISBN").build();
-            book = bookRepository.save(book);
-            Reading reading = Reading.builder()
-                    .member(getMockMember())
-                    .book(book)
-                    .isPublic(true)
-                    .build();
-            reading = readingRepository.save(reading);
+            Reading reading = createReading(true, getMockMember());
 
             mockMvc.perform(get("/api/v2/bookshelf/" + reading.getId()))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.result.memberBookId").value(reading.getId()));
         }
+
+        @Test
+        @DisplayName("비공개 + 소유자 조회")
+        void getPrivateOwner() throws Exception {
+            Reading reading = createReading(false, getMockMember());
+
+            mockMvc.perform(get("/api/v2/bookshelf/" + reading.getId()))
+                    .andExpect(status().isOk());
+        }
+
+        @Test
+        @DisplayName("비공개 + 타인 접근")
+        void getPrivateOther() throws Exception {
+            org.veri.be.domain.member.entity.Member other = org.veri.be.domain.member.entity.Member.builder()
+                    .email("o").nickname("o").profileImageUrl("p").providerId("p").providerType(org.veri.be.domain.member.entity.enums.ProviderType.KAKAO).build();
+            memberRepository.save(other);
+            Reading reading = createReading(false, other);
+
+            mockMvc.perform(get("/api/v2/bookshelf/" + reading.getId()))
+                    .andExpect(status().isForbidden());
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 ID")
+        void getNotFound() throws Exception {
+            mockMvc.perform(get("/api/v2/bookshelf/999"))
+                    .andExpect(status().isBadRequest()); // As per checklist expectation (BookErrorInfo.BAD_REQUEST)
+        }
+    }
+
+    private Reading createReading(boolean isPublic, org.veri.be.domain.member.entity.Member member) {
+        Book book = Book.builder().title("T").image("I").isbn("ISBN").build();
+        book = bookRepository.save(book);
+        Reading reading = Reading.builder()
+                .member(member)
+                .book(book)
+                .isPublic(isPublic)
+                .build();
+        return readingRepository.save(reading);
     }
 }
