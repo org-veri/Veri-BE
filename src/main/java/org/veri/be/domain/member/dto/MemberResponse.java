@@ -14,6 +14,16 @@ public class MemberResponse {
         private String image;
         private Integer numOfReadBook;
         private Integer numOfCard;
+
+        public static MemberInfoResponse from(Member member, int numOfBook, int numOfCard) {
+            return MemberInfoResponse.builder()
+                    .email(member.getEmail())
+                    .nickname(member.getNickname())
+                    .image(member.getProfileImageUrl())
+                    .numOfReadBook(numOfBook)
+                    .numOfCard(numOfCard)
+                    .build();
+        }
     }
 
     @Getter

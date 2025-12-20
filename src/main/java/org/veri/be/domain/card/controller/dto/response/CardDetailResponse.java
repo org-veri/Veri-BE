@@ -2,6 +2,8 @@ package org.veri.be.domain.card.controller.dto.response;
 
 import org.veri.be.domain.book.entity.Reading;
 import org.veri.be.api.common.dto.MemberProfileResponse;
+import org.veri.be.domain.card.entity.Card;
+import org.veri.be.domain.member.entity.Member;
 
 import java.time.LocalDateTime;
 
@@ -15,6 +17,25 @@ public record CardDetailResponse(
         Boolean isPublic,
         boolean mine
 ) {
+
+    public static CardDetailResponse from(Card card, Member viewer) {
+        if (card == null) {
+            return null;
+        }
+
+        boolean mine = viewer != null && card.getMember().getId().equals(viewer.getId());
+
+        return new CardDetailResponse(
+                card.getId(),
+                MemberProfileResponse.from(card.getMember()),
+                card.getContent(),
+                card.getImage(),
+                card.getCreatedAt(),
+                BookInfo.from(card.getReading()),
+                card.getIsPublic(),
+                mine
+        );
+    }
 
     public record BookInfo(
             Long id,

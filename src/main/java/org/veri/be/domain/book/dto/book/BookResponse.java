@@ -25,4 +25,14 @@ public class BookResponse {
                 .isbn(book.getIsbn())
                 .build();
     }
+
+    public static BookResponse from(NaverBookItem response) {
+        return BookResponse.builder()
+                .author(response.getAuthor())
+                .imageUrl(response.getImage())
+                .title(response.getTitle())
+                .publisher(response.getPublisher())
+                .isbn(response.getIsbn())
+                .build();
+    }
 }

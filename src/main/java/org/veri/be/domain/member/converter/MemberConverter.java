@@ -5,13 +5,11 @@ import org.veri.be.domain.member.entity.Member;
 
 public class MemberConverter {
 
+    private MemberConverter() {
+        throw new UnsupportedOperationException("Utility class");
+    }
+
     public static MemberResponse.MemberInfoResponse toMemberInfoResponse(Member member, int numOfBook, int numOfCard) {
-        return MemberResponse.MemberInfoResponse.builder()
-                .email(member.getEmail())
-                .nickname(member.getNickname())
-                .image(member.getProfileImageUrl())
-                .numOfReadBook(numOfBook)
-                .numOfCard(numOfCard)
-                .build();
+        return MemberResponse.MemberInfoResponse.from(member, numOfBook, numOfCard);
     }
 }

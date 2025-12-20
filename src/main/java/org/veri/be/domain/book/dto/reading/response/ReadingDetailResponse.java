@@ -4,6 +4,9 @@ import lombok.Builder;
 import org.veri.be.domain.book.entity.enums.ReadingStatus;
 import org.veri.be.api.common.dto.MemberProfileResponse;
 
+import org.veri.be.domain.book.entity.Reading;
+import org.veri.be.domain.member.entity.Member;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,6 +24,34 @@ public record ReadingDetailResponse(
         List<CardSummaryResponse> cardSummaries,
         boolean isPublic
 ) {
+    public static ReadingDetailResponse from(Reading reading, Member viewer) {
+        List<CardSummaryResponse> summaries = reading.getCards().stream()
+                .map(card -> new CardSummaryResponse(card.getId(), card.getImage(), card.getIsPublic()))
+                .toList();
+
+        boolean isOwner = viewer != null && reading.getMember().getId().equals(viewer.getId());
+
+        if (!isOwner) {
+            summaries = summaries.stream()
+                    .filter(CardSummaryResponse::isPublic)
+                    .toList();
+        }
+
+        return ReadingDetailResponse.builder()
+                .memberBookId(reading.getId())
+                .member(MemberProfileResponse.from(reading.getMember()))
+                .title(reading.getBook().getTitle())
+                .imageUrl(reading.getBook().getImage())
+                .status(reading.getStatus())
+                .score(reading.getScore())
+                .author(reading.getBook().getAuthor())
+                .startedAt(reading.getStartedAt())
+                .endedAt(reading.getEndedAt())
+                .cardSummaries(summaries)
+                .isPublic(reading.getIsPublic())
+                .build();
+    }
+
     public record CardSummaryResponse(
             Long cardId,
             String cardImage,

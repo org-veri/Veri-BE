@@ -12,33 +12,15 @@ import org.veri.be.domain.member.entity.Member;
 @RequiredArgsConstructor
 public class CardConverter {
 
-    public CardDetailResponse toCardDetailResponse(Card card, Member viewer) {
-        if (card == null) {
-            return null;
-        }
-
-        boolean mine = viewer != null && card.getMember().getId().equals(viewer.getId());
-
-        return new CardDetailResponse(
-                card.getId(),
-                MemberProfileResponse.from(card.getMember()),
-                card.getContent(),
-                card.getImage(),
-                card.getCreatedAt(),
-                CardDetailResponse.BookInfo.from(card.getReading()),
-                card.getIsPublic(),
-                mine
-        );
+    private CardConverter() {
+        throw new UnsupportedOperationException("Utility class");
     }
 
-    public CardUpdateResponse toCardUpdateResponse(Card card) {
-        return new CardUpdateResponse(
-                card.getId(),
-                card.getContent(),
-                card.getImage(),
-                card.getCreatedAt(),
-                card.getUpdatedAt(),
-                CardDetailResponse.BookInfo.from(card.getReading())
-        );
+    public static CardDetailResponse toCardDetailResponse(Card card, Member viewer) {
+        return CardDetailResponse.from(card, viewer);
+    }
+
+    public static CardUpdateResponse toCardUpdateResponse(Card card) {
+        return CardUpdateResponse.from(card);
     }
 }
