@@ -41,8 +41,18 @@ public class AuthService implements Authenticator {
 
     public ReissueTokenResponse reissueToken(ReissueTokenRequest request) {
         String refreshToken = request.getRefreshToken();
+        
+        if (tokenBlacklistStore.isBlackList(refreshToken)) {
+            throw new org.veri.be.lib.exception.http.UnAuthorizedException(org.veri.be.global.auth.AuthErrorInfo.UNAUTHORIZED);
+        }
+
         Object rawId = tokenProvider.parseRefreshToken(refreshToken).get("id");
         Long id = rawId == null ? null : ((Number) rawId).longValue();
+
+        String storedToken = tokenStorageService.getRefreshToken(id);
+        if (storedToken == null || !storedToken.equals(refreshToken)) {
+            throw new org.veri.be.lib.exception.http.UnAuthorizedException(org.veri.be.global.auth.AuthErrorInfo.UNAUTHORIZED);
+        }
 
         Member member = memberQueryService.findById(id);
         String accessToken = tokenProvider.generateAccessToken(
