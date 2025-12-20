@@ -23,3 +23,6 @@
 
 ## 4. Code Quality
 - [x] **Test Coverage**: Added Controller Slice Tests and Integration Tests to cover DTO validation constraints (e.g., `@Min`, `@NotNull`, `@URL`). All 70+ test scenarios pass.
+
+## History
+- **2025-12-21**: Migrated document into **.agents/work** structure.

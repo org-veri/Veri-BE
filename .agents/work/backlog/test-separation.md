@@ -35,3 +35,6 @@ Common test code (Object Mothers, Builders, Helper methods) often gets duplicate
 ## Phase 3: Slice Test Organization
 - [ ] **Decision**: Decide whether "Slice Tests" (Controller Tests) belong to `test` (Unit-like speed) or `integrationTest` (Spring Context loading).
     - *Recommendation*: Keep `@WebMvcTest` in `test` (Unit) as they are relatively fast and mocked.
+
+## History
+- **2025-12-21**: Moved plan into **.agents/work** structure.

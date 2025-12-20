@@ -25,11 +25,9 @@ The agent workspace is isolated in the `.agents/` directory. Do not store contex
 | :--- | :--- | :--- |
 | **`.agents/context/`** | **Read-Only** | Project goals, tech stack, and architectural constraints. |
 | **`.agents/inspiration/`** | **Read-Only** | Design inspirations and reference docs (**Human Developers Only**). |
-| **`.agents/plan/`** | **Read/Write** | High-level roadmaps and task backlogs. (Subdirs: **`completed/`**, **`on-hold/`**) |
-| **`.agents/work/`** | **Write** | Active scratchpad for the current task. One file per task. |
+| **`.agents/work/`** | **Read/Write** | Unified task documents using the plan style, with history appended in the same file. (Subdirs: **`backlog/`**, **`completed/`**, **`on-hold/`**) |
 | **`.agents/review/`** | **Write** | Self-review notes, test results, and QA logs before completion. (Subdirs: **`completed/`**, **`on-hold/`**) |
 | **`.agents/issue/`** | **Write** | Detailed analysis of bugs, errors, or blockers encountered. (Subdirs: **`completed/`**, **`on-hold/`**) |
-| **`.agents/log/`** | **Append** | Chronological history of completed tasks (Source of Truth). |
 
 ---
 
@@ -48,10 +46,12 @@ To maintain a clean workspace, once a task, issue, or review is finalized or sus
 ### ③ Structural Templates
 Agents must follow these structures for consistency:
 
-#### **Plan Document (`.agents/plan/`)**
+#### **Work Document (`.agents/work/`)**
 *   **Header**: `# Plan: [Title]`
 *   **Metadata**: Status, Date, Goal (Concise summary of the objective).
+*   **Parent Task**: Optional reference to the originating task document when this work is derived from a prior task.
 *   **Body**: Breakdown into **Phases** or **Steps** using checklists (`- [ ]`).
+*   **History**: Append entries under `## History` at the end of the file.
 
 #### **Issue Document (`.agents/issue/`)**
 *   **Header**: `# Issue: [Short Description]`
@@ -69,11 +69,11 @@ Agents must follow these structures for consistency:
 
 ### Phase 1: Analysis & Setup
 1.  **Read Context**: Review `AGENTS.md` and `.agents/context/` to align with the project scope.
-2.  **Select Task**: Identify the next item from `.agents/plan/`.
+2.  **Select Task**: Identify the next item from `.agents/work/backlog/`.
 3.  **Initialize Workspace`:
-    * Create a new file in `.agents/work/` (e.g., `.agents/work/task_name.md`).
-    * Copy the specific requirements from the plan into this file.
+    * Create a new file in `.agents/work/` (e.g., `.agents/work/task_name.md`) using the **Work Document** template.
     * Use this file to draft your implementation plan before writing code.
+    * If this task is derived from a prior task, include **Parent Task** with the path to the originating work document.
 
 ### Phase 2: Execution
 1.  **Implement**: Write the code in the project source directories.
@@ -81,7 +81,7 @@ Agents must follow these structures for consistency:
 
 ### Phase 3: Verification & Closure
 1.  **Self-Review**: Create a summary in `.agents/review/` verifying that requirements are met.
-2.  **Log History**: Append a summary of the completed task to `.agents/log/history.md`.
+2.  **Log History**: Append a summary of the completed task under `## History` in the task's **Work Document**.
     * *Format*: Timestamp, Task Name, Summary of Changes, Modified Files.
-3.  **Update Plan**: Mark the task as `[x]` in `.agents/plan/`.
+3.  **Update Status**: Mark the task as **Completed**, then move the file to `.agents/work/completed/`.
 4.  **Cleanup**: (Optional) Move the temporary `.agents/work/` file to an archive or follow the **File Lifecycle Rule`.

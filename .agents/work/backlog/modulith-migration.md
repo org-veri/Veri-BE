@@ -55,3 +55,6 @@ Move classes to prioritize **Domain Cohesion** over **Layer separation**.
     }
     ```
 - [ ] **Documentation**: Run tests to generate C4 component diagrams (Living Documentation).
+
+## History
+- **2025-12-21**: Moved plan into **.agents/work** structure.

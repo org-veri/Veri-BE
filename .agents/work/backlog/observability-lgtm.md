@@ -119,3 +119,6 @@ services:
     *   Open `http://localhost:3000`.
     *   Explore -> Tempo -> Find a trace.
     *   **Key Success Metric**: Click a span in the trace view and see a "Logs" button (or split view) that queries Loki for that specific `traceId`.
+
+## History
+- **2025-12-21**: Moved plan into **.agents/work** structure.

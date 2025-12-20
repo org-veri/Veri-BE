@@ -15,3 +15,6 @@
 ## Verification
 *   Ran `./gradlew test --tests org.veri.be.unit.auth.*` -> **PASSED**
 *   Ran `./gradlew test --tests org.veri.be.slice.web.*` -> **PASSED**
+
+## History
+- **2025-12-21**: Migrated log into **.agents/work** structure.

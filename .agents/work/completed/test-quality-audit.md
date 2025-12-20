@@ -27,3 +27,6 @@
 - [x] Comprehensive audit of all test files.
 - [x] Creation of `.agents/review/test-quality-report.md`.
 - [x] Roadmap for future test improvements.
+
+## History
+- **2025-12-21**: Migrated document into **.agents/work** structure.

@@ -169,3 +169,5 @@
 - [x] DELETE /{commentId} | 소유 댓글 삭제(soft delete)
 - [x] DELETE /{commentId} | 이미 삭제된 댓글 재삭제
 - [x] DELETE /{commentId} | 인증 없이 삭제 시도
+## History
+- **2025-12-21**: Migrated document into **.agents/work** structure.

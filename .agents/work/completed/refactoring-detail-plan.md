@@ -64,3 +64,5 @@ For each Converter:
 1.  **Scan**: Review `src/test` for specific logical flaws.
 2.  **Report**: Create a list of "Weak Tests" if any found.
 3.  **Refactor**: Strengthen assertions (e.g., check specific field values instead of just presence).
+## History
+- **2025-12-21**: Migrated document into **.agents/work** structure.

@@ -29,3 +29,6 @@
 - [x] **BookSearch**: Introduced `BookSearchClient` interface for Naver OpenAPI.
 - [x] **OCR**: Introduced `OcrService` interface and `AbstractOcrService` base.
 - [x] **Auth**: Abstracted `TokenProvider` and `TokenBlacklistStore`.
+
+## History
+- **2025-12-21**: Migrated log into **.agents/work** structure.

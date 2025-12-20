@@ -20,3 +20,6 @@
 
 ### 4. UseGuardsAspect Exception Handling
 *   Update tests to expect exceptions instead of `ApiResponse`.
+
+## History
+- **2025-12-21**: Migrated document into **.agents/work** structure.

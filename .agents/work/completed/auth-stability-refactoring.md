@@ -26,3 +26,6 @@
 - Updated all Unit Tests (`MemberGuardTest`, `MemberContextTest`, etc.) to match the new architecture.
 - Updated all Slice Tests (~8 Controller tests) to correctly initialize the Accessor and Resolver.
 - **Result**: All tests passed, performance improved by 1 DB query per request.
+
+## History
+- **2025-12-21**: Migrated document into **.agents/work** structure.

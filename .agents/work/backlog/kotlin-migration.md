@@ -42,3 +42,6 @@ Convert boilerplate-heavy Java classes to Kotlin Data Classes.
 
 ## Compatibility Check
 - **Java 25 vs Kotlin**: Kotlin runs on the JVM. Ensure the Kotlin compiler `jvmTarget` is set to `21` (LTS) or aligns with the runtime. Some Java 25 preview features might not have direct Kotlin equivalents yet, but interoperability is generally seamless.
+
+## History
+- **2025-12-21**: Moved plan into **.agents/work** structure.
