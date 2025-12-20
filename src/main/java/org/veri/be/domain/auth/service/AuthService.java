@@ -12,6 +12,8 @@ import org.veri.be.global.auth.dto.ReissueTokenRequest;
 import org.veri.be.global.auth.dto.ReissueTokenResponse;
 import org.veri.be.global.auth.oauth2.dto.OAuth2UserInfo;
 import org.veri.be.global.auth.token.TokenProvider;
+import org.veri.be.lib.exception.CommonErrorInfo;
+import org.veri.be.lib.exception.http.BadRequestException;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -41,6 +43,10 @@ public class AuthService implements Authenticator {
 
     public ReissueTokenResponse reissueToken(ReissueTokenRequest request) {
         String refreshToken = request.getRefreshToken();
+
+        if (refreshToken == null || refreshToken.isBlank()) {
+            throw new BadRequestException(CommonErrorInfo.INVALID_REQUEST);
+        }
         
         if (tokenBlacklistStore.isBlackList(refreshToken)) {
             throw new org.veri.be.lib.exception.http.UnAuthorizedException(org.veri.be.global.auth.AuthErrorInfo.UNAUTHORIZED);

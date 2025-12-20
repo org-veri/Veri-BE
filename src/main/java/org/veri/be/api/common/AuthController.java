@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.veri.be.domain.auth.service.AuthService;
 import org.veri.be.global.auth.dto.ReissueTokenRequest;
 import org.veri.be.global.auth.dto.ReissueTokenResponse;
+import org.veri.be.lib.exception.CommonErrorInfo;
+import org.veri.be.lib.exception.http.BadRequestException;
 import org.veri.be.lib.response.ApiResponse;
 
 @RestController
@@ -31,6 +33,9 @@ public class AuthController {
     @Operation(summary = "로그아웃", description = "현재 로그인된 사용자를 로그아웃 처리합니다.")
     public ApiResponse<Void> logout(HttpServletRequest request) {
         String token = (String) request.getAttribute("token");
+        if (token == null) {
+            throw new BadRequestException(CommonErrorInfo.INVALID_REQUEST);
+        }
         authService.logout(token);
         return ApiResponse.noContent();
     }

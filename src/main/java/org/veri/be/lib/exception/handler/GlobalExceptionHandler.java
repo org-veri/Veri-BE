@@ -117,10 +117,4 @@ public class GlobalExceptionHandler {
         return ApiResponse.error(CommonErrorInfo.INVALID_REQUEST, HttpStatus.BAD_REQUEST);
     }
 
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler(io.jsonwebtoken.JwtException.class)
-    public ApiResponse<Map<?, ?>> handleJwtException(io.jsonwebtoken.JwtException e) {
-        log.debug("JWT Error: {}", e.getMessage());
-        return ApiResponse.error(org.veri.be.global.auth.AuthErrorInfo.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
-    }
 }

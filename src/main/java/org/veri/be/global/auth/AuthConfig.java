@@ -14,7 +14,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.veri.be.domain.auth.service.TokenBlacklistStore;
-import org.veri.be.domain.member.service.MemberQueryService;
 import org.veri.be.global.auth.oauth2.CustomAuthFailureHandler;
 import org.veri.be.global.auth.oauth2.CustomOAuth2SuccessHandler;
 import org.veri.be.global.auth.oauth2.CustomOAuth2UserService;
@@ -55,7 +54,6 @@ public class AuthConfig {
         return http.build();
     }
 
-    private final MemberQueryService memberQueryService;
     private final TokenBlacklistStore tokenBlacklistStore;
     private final TokenProvider tokenProvider;
 
@@ -64,7 +62,7 @@ public class AuthConfig {
     public FilterRegistrationBean<OncePerRequestFilter> firstFilterRegister() {
         log.info("Filter jwt registered");
         FilterRegistrationBean<OncePerRequestFilter> registrationBean =
-                new FilterRegistrationBean<>(new JwtFilter(memberQueryService, tokenBlacklistStore, tokenProvider));
+                new FilterRegistrationBean<>(new JwtFilter(tokenBlacklistStore, tokenProvider));
 
         registrationBean.setUrlPatterns(Collections.singletonList("/api/*"));
 
