@@ -16,6 +16,14 @@ auth:
   oauth2:
     dynamic-redirect: false
 
+jwt:
+  access:
+    secret: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+    validity: 3600000
+  refresh:
+    secret: AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=
+    validity: 1209600000
+
 
 cloud:
   aws:

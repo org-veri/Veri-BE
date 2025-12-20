@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '4.0.0'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'jacoco'
 }
 
 group = 'org.veri'
@@ -27,8 +28,8 @@ repositories {
 
 dependencies {
     // Lombok
-    compileOnly ('org.projectlombok:lombok')
-    annotationProcessor ('org.projectlombok:lombok')
+    compileOnly('org.projectlombok:lombok')
+    annotationProcessor('org.projectlombok:lombok')
 
     implementation('org.springframework.boot:spring-boot-starter-web')
     implementation('org.springframework.boot:spring-boot-starter-validation')
@@ -57,6 +58,9 @@ dependencies {
     testRuntimeOnly('org.junit.platform:junit-platform-launcher')
     testImplementation('org.springframework.security:spring-security-test')
     testImplementation('org.springframework.boot:spring-boot-starter-test')
+    testImplementation platform('org.testcontainers:testcontainers-bom:1.19.7')
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation 'org.testcontainers:mysql'
 
     // monitoring
     implementation('org.springframework.boot:spring-boot-starter-actuator')
@@ -68,4 +72,36 @@ dependencies {
 
 tasks.named('test', Test) {
     useJUnitPlatform()
+}
+
+jacocoTestReport {
+    dependsOn test
+
+    reports {
+        xml.required = true
+        csv.required = false
+        html.required = true
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    '**/mock/*',
+                    '**/dto/**',
+                    '**/aop/**',
+                    '**/config/**',
+                    '**/lib/*',
+                    '**/event/**',
+                    '**/exception/**',
+                    '**/*Application*',
+                    '**/*InitData*',
+            ])
+        }))
+    }
+
+    finalizedBy 'jacocoTestCoverageVerification'
+    doFirst {
+        def reportPath = reports.html.outputLocation.get().asFile
+        println "\n[Will be generated] JaCoCo Report: file://${reportPath}/index.html\n"
+    }
 }
