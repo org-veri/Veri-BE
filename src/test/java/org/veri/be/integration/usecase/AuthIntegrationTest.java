@@ -136,5 +136,12 @@ class AuthIntegrationTest extends IntegrationTestSupport {
                             .requestAttr("token", accessToken))
                     .andExpect(status().isNoContent());
         }
+
+        @Test
+        @DisplayName("attribute 에 토큰 없음")
+        void missingAttribute() throws Exception {
+            mockMvc.perform(post("/api/v1/auth/logout"))
+                    .andExpect(status().isBadRequest());
+        }
     }
 }

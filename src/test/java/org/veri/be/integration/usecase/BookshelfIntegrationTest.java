@@ -157,6 +157,16 @@ class BookshelfIntegrationTest extends IntegrationTestSupport {
     @DisplayName("PATCH /api/v2/bookshelf/{id}/modify")
     class ModifyBook {
         @Test
+        @DisplayName("점수/기간 모두 수정")
+        void modifySuccess() throws Exception {
+            Integer id = createReading();
+            mockMvc.perform(patch("/api/v2/bookshelf/" + id + "/modify")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\"score\": 4.5, \"startedAt\": \"2024-01-01T00:00:00\", \"endedAt\": \"2024-01-02T00:00:00\"}"))
+                    .andExpect(status().isNoContent());
+        }
+
+        @Test
         @DisplayName("점수 0.5 단위 위반")
         void modifyScoreInvalid() throws Exception {
             mockMvc.perform(patch("/api/v2/bookshelf/1/modify")
@@ -164,11 +174,30 @@ class BookshelfIntegrationTest extends IntegrationTestSupport {
                             .content("{\"score\": 4.4, \"startedAt\": \"2024-01-01T00:00:00\", \"endedAt\": \"2024-01-02T00:00:00\"}"))
                     .andExpect(status().isBadRequest());
         }
+
+        @Test
+        @DisplayName("startedAt/endedAt 역전")
+        void modifyTimeReverse() throws Exception {
+            mockMvc.perform(patch("/api/v2/bookshelf/1/modify")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\"score\": 4.5, \"startedAt\": \"2024-01-02T00:00:00\", \"endedAt\": \"2024-01-01T00:00:00\"}"))
+                    .andExpect(status().isBadRequest());
+        }
     }
 
     @Nested
     @DisplayName("PATCH /api/v2/bookshelf/{id}/rate")
     class RateBook {
+        @Test
+        @DisplayName("정상 별점 등록")
+        void rateSuccess() throws Exception {
+            Integer id = createReading();
+            mockMvc.perform(patch("/api/v2/bookshelf/" + id + "/rate")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\"score\": 3.5}"))
+                    .andExpect(status().isNoContent());
+        }
+
         @Test
         @DisplayName("범위 위반")
         void rateInvalid() throws Exception {
@@ -181,12 +210,7 @@ class BookshelfIntegrationTest extends IntegrationTestSupport {
         @Test
         @DisplayName("null 로 점수 제거")
         void rateNull() throws Exception {
-            AddBookRequest addRequest = new AddBookRequest("Title", "Img", "Author", "Pub", "ISBN123", false);
-            String responseString = mockMvc.perform(post("/api/v2/bookshelf")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(addRequest)))
-                    .andReturn().getResponse().getContentAsString();
-            Integer readingId = com.jayway.jsonpath.JsonPath.read(responseString, "$.result.memberBookId");
+            Integer readingId = createReading();
 
             mockMvc.perform(patch("/api/v2/bookshelf/" + readingId + "/rate")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -199,14 +223,25 @@ class BookshelfIntegrationTest extends IntegrationTestSupport {
     @DisplayName("PATCH /api/v2/bookshelf/{id}/status")
     class StatusBook {
         @Test
+        @DisplayName("독서 시작")
+        void startSuccess() throws Exception {
+            Integer id = createReading();
+            mockMvc.perform(patch("/api/v2/bookshelf/" + id + "/status/start"))
+                    .andExpect(status().isNoContent());
+        }
+
+        @Test
+        @DisplayName("독서 완료")
+        void overSuccess() throws Exception {
+            Integer id = createReading();
+            mockMvc.perform(patch("/api/v2/bookshelf/" + id + "/status/over"))
+                    .andExpect(status().isNoContent());
+        }
+
+        @Test
         @DisplayName("이미 DONE 상태")
         void statusAlreadyDone() throws Exception {
-            AddBookRequest addRequest = new AddBookRequest("Title", "Img", "Author", "Pub", "ISBN123", false);
-            String responseString = mockMvc.perform(post("/api/v2/bookshelf")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(addRequest)))
-                    .andReturn().getResponse().getContentAsString();
-            Integer readingId = com.jayway.jsonpath.JsonPath.read(responseString, "$.result.memberBookId");
+            Integer readingId = createReading();
 
             // Complete reading
             mockMvc.perform(patch("/api/v2/bookshelf/" + readingId + "/status/over"))
@@ -219,13 +254,44 @@ class BookshelfIntegrationTest extends IntegrationTestSupport {
     }
 
     @Nested
+    @DisplayName("PATCH /api/v2/bookshelf/{id}/visibility")
+    class VisibilityBook {
+        @Test
+        @DisplayName("공개로 전환")
+        void visibilitySuccess() throws Exception {
+            Integer id = createReading();
+            mockMvc.perform(patch("/api/v2/bookshelf/" + id + "/visibility")
+                            .param("isPublic", "true"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result.isPublic").value(true));
+        }
+    }
+
+    @Nested
     @DisplayName("DELETE /api/v2/bookshelf/{id}")
     class DeleteBook {
+        @Test
+        @DisplayName("정상 삭제")
+        void deleteSuccess() throws Exception {
+            Integer id = createReading();
+            mockMvc.perform(delete("/api/v2/bookshelf/" + id))
+                    .andExpect(status().isNoContent());
+        }
+
         @Test
         @DisplayName("존재하지 않는 ID")
         void deleteNotFound() throws Exception {
             mockMvc.perform(delete("/api/v2/bookshelf/999"))
                     .andExpect(status().isBadRequest());
         }
+    }
+
+    private Integer createReading() throws Exception {
+        AddBookRequest addRequest = new AddBookRequest("Title", "Img", "Author", "Pub", "ISBN" + System.currentTimeMillis(), false);
+        String responseString = mockMvc.perform(post("/api/v2/bookshelf")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(addRequest)))
+                .andReturn().getResponse().getContentAsString();
+        return com.jayway.jsonpath.JsonPath.read(responseString, "$.result.memberBookId");
     }
 }

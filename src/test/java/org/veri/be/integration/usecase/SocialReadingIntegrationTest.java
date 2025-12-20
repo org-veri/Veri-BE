@@ -37,6 +37,19 @@ class SocialReadingIntegrationTest extends IntegrationTestSupport {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.result.books").isEmpty());
         }
+
+        @Test
+        @DisplayName("인기 도서 최대 10개 제한")
+        void getPopularLimit() throws Exception {
+            // Create 12 readings for 12 different books
+            for (int i = 0; i < 12; i++) {
+                createReading(true, getMockMember(), "ISBN" + i);
+            }
+
+            mockMvc.perform(get("/api/v2/bookshelf/popular"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.result.books.length()").value(org.hamcrest.Matchers.lessThanOrEqualTo(10)));
+        }
     }
 
     @Nested
@@ -45,7 +58,7 @@ class SocialReadingIntegrationTest extends IntegrationTestSupport {
         @Test
         @DisplayName("공개 독서 상세")
         void getReadingDetailSuccess() throws Exception {
-            Reading reading = createReading(true, getMockMember());
+            Reading reading = createReading(true, getMockMember(), "ISBN-DETAIL");
 
             mockMvc.perform(get("/api/v2/bookshelf/" + reading.getId()))
                     .andExpect(status().isOk())
@@ -55,7 +68,7 @@ class SocialReadingIntegrationTest extends IntegrationTestSupport {
         @Test
         @DisplayName("비공개 + 소유자 조회")
         void getPrivateOwner() throws Exception {
-            Reading reading = createReading(false, getMockMember());
+            Reading reading = createReading(false, getMockMember(), "ISBN-PRIVATE");
 
             mockMvc.perform(get("/api/v2/bookshelf/" + reading.getId()))
                     .andExpect(status().isOk());
@@ -67,7 +80,7 @@ class SocialReadingIntegrationTest extends IntegrationTestSupport {
             org.veri.be.domain.member.entity.Member other = org.veri.be.domain.member.entity.Member.builder()
                     .email("o").nickname("o").profileImageUrl("p").providerId("p").providerType(org.veri.be.domain.member.entity.enums.ProviderType.KAKAO).build();
             memberRepository.save(other);
-            Reading reading = createReading(false, other);
+            Reading reading = createReading(false, other, "ISBN-OTHER");
 
             mockMvc.perform(get("/api/v2/bookshelf/" + reading.getId()))
                     .andExpect(status().isForbidden());
@@ -81,8 +94,8 @@ class SocialReadingIntegrationTest extends IntegrationTestSupport {
         }
     }
 
-    private Reading createReading(boolean isPublic, org.veri.be.domain.member.entity.Member member) {
-        Book book = Book.builder().title("T").image("I").isbn("ISBN").build();
+    private Reading createReading(boolean isPublic, org.veri.be.domain.member.entity.Member member, String isbn) {
+        Book book = Book.builder().title("T").image("I").isbn(isbn).build();
         book = bookRepository.save(book);
         Reading reading = Reading.builder()
                 .member(member)

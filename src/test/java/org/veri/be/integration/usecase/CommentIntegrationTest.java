@@ -131,6 +131,20 @@ class CommentIntegrationTest extends IntegrationTestSupport {
             mockMvc.perform(delete("/api/v1/comments/" + commentId))
                     .andExpect(status().isOk());
         }
+
+        @Test
+        @DisplayName("이미 삭제된 댓글 재삭제")
+        void alreadyDeleted() throws Exception {
+            Long commentId = createComment();
+
+            // 1st
+            mockMvc.perform(delete("/api/v1/comments/" + commentId))
+                    .andExpect(status().isOk());
+
+            // 2nd
+            mockMvc.perform(delete("/api/v1/comments/" + commentId))
+                    .andExpect(status().isOk());
+        }
     }
 
     private Long createPost() {

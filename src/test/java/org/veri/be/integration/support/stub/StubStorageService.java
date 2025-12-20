@@ -19,6 +19,6 @@ public class StubStorageService implements StorageService {
 
     @Override
     public PresignedPostForm generatePresignedPost(String contentType, long fileSize, String prefix, Duration duration) {
-        return null;
+        return new PresignedPostForm("http://stub.s3.url", java.util.Map.of("key", "value"));
     }
 }

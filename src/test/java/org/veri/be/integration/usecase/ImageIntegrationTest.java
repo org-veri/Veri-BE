@@ -42,4 +42,24 @@ class ImageIntegrationTest extends IntegrationTestSupport {
                     .andExpect(status().isBadRequest());
         }
     }
+
+    @Nested
+    @DisplayName("POST /api/v1/images/ocr")
+    class OcrV1 {
+        @Test
+        @DisplayName("동일 URL 재업로드")
+        void duplicateUrl() throws Exception {
+            String url = "https://example.com/duplicate.png";
+
+            // 1st upload
+            mockMvc.perform(post("/api/v1/images/ocr")
+                            .param("imageUrl", url))
+                    .andExpect(status().isOk());
+
+            // 2nd upload (same URL)
+            mockMvc.perform(post("/api/v1/images/ocr")
+                            .param("imageUrl", url))
+                    .andExpect(status().isOk());
+        }
+    }
 }
