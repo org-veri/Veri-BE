@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.veri.be.global.auth.context.AuthenticatedMember;
-import org.veri.be.domain.card.controller.dto.CardConverter;
 import org.veri.be.domain.card.controller.dto.request.CardCreateRequest;
 import org.veri.be.domain.card.controller.dto.request.CardUpdateRequest;
 import org.veri.be.domain.card.controller.dto.response.CardCreateResponse;
@@ -13,7 +12,6 @@ import org.veri.be.domain.card.controller.dto.response.CardDetailResponse;
 import org.veri.be.domain.card.controller.dto.response.CardListResponse;
 import org.veri.be.domain.card.controller.dto.response.CardUpdateResponse;
 import org.veri.be.domain.card.controller.enums.CardSortType;
-import org.veri.be.domain.card.entity.Card;
 import org.veri.be.domain.card.service.CardCommandService;
 import org.veri.be.domain.card.service.CardQueryService;
 import org.veri.be.domain.member.entity.Member;
@@ -30,7 +28,6 @@ public class CardController {
 
     private final CardCommandService cardCommandService;
     private final CardQueryService cardQueryService;
-    private final org.veri.be.domain.card.controller.dto.CardConverter cardConverter;
 
     @Operation(summary = "카드 생성", description = "카드를 새로 생성합니다. 독서가 비공개 상태라면 카드는 무조건 비공개로 생성됩니다.")
     @PostMapping
@@ -84,13 +81,13 @@ public class CardController {
             @RequestBody CardUpdateRequest request,
             @AuthenticatedMember Member member
     ) {
-        Card response = cardCommandService.updateCard(
+        CardUpdateResponse response = cardCommandService.updateCard(
                 member,
                 cardId,
                 request.content(),
                 request.imageUrl()
         );
-        return ApiResponse.ok(cardConverter.toCardUpdateResponse(response));
+        return ApiResponse.ok(response);
     }
 
     @Operation(summary = "카드 삭제", description = "카드 ID로 카드를 삭제합니다. 본인 소유 카드만 삭제할 수 있습니다.")

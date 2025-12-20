@@ -47,7 +47,9 @@ public class PostQueryService {
     }
 
     public PostDetailResponse getPostDetail(Long postId, Member requester) {
-        Post post = getPostById(postId);
+        Post post = postRepository.findByIdWithAllAssociations(postId)
+                .orElseThrow(() -> new NotFoundException(CommonErrorInfo.RESOURCE_NOT_FOUND));
+
         DetailLikeInfoQueryResult likeInfo = likePostQueryService.getDetailLikeInfoOfPost(postId, requester.getId());
         List<PostDetailResponse.CommentResponse> comments = commentQueryService.getCommentsByPostId(postId);
 

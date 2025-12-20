@@ -4,6 +4,8 @@ import io.github.miensoap.s3.core.post.dto.PresignedPostForm;
 import lombok.RequiredArgsConstructor;
 import org.veri.be.domain.book.entity.Reading;
 import org.veri.be.domain.book.repository.ReadingRepository;
+import org.veri.be.domain.card.controller.dto.CardConverter;
+import org.veri.be.domain.card.controller.dto.response.CardUpdateResponse;
 import org.veri.be.domain.card.controller.dto.response.CardVisibilityUpdateResponse;
 import org.veri.be.domain.card.entity.Card;
 import org.veri.be.domain.card.exception.CardErrorInfo;
@@ -29,6 +31,7 @@ public class CardCommandService {
     private final CardRepository cardRepository;
     private final ReadingRepository readingRepository;
     private final StorageService storageService;
+    private final CardConverter cardConverter;
 
     @Transactional
     public Long createCard(Member member, String content, String imageUrl, Long memberBookId, Boolean isPublic) {
@@ -48,11 +51,12 @@ public class CardCommandService {
     }
 
     @Transactional
-    public Card updateCard(Member member, Long cardId, String content, String imageUrl) {
+    public CardUpdateResponse updateCard(Member member, Long cardId, String content, String imageUrl) {
         Card card = this.getCard(cardId);
         Card updatedCard = card.updateContent(content, imageUrl, member);
+        Card savedCard = cardRepository.save(updatedCard);
 
-        return cardRepository.save(updatedCard);
+        return cardConverter.toCardUpdateResponse(savedCard);
     }
 
     public Card getCard(Long cardId) {

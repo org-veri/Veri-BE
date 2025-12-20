@@ -19,7 +19,7 @@ public class CommentQueryService {
     private final CommentRepository commentRepository;
 
     public List<PostDetailResponse.CommentResponse> getCommentsByPostId(Long postId) {
-        List<Comment> comments = commentRepository.findByPostIdAndParentIdIsNullOrderByCreatedAtAsc(postId);
+        List<Comment> comments = commentRepository.findByPostIdWithRepliesAndAuthor(postId);
 
         return comments.stream()
                 .map(PostDetailResponse.CommentResponse::fromEntity)

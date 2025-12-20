@@ -33,7 +33,8 @@ public class CardQueryService {
     }
 
     public CardDetailResponse getCardDetail(Long cardId, Member viewer) {
-        Card card = getCardById(cardId);
+        Card card = cardRepository.findByIdWithAllAssociations(cardId)
+                .orElseThrow(() -> new NotFoundException(CardErrorInfo.NOT_FOUND));
 
         card.assertReadableBy(viewer);
 

@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface CardRepository extends JpaRepository<Card, Long> {
 
@@ -42,4 +44,13 @@ public interface CardRepository extends JpaRepository<Card, Long> {
                     "FROM Card c " +
                     "WHERE c.isPublic = true")
     Page<CardFeedItem> findAllPublicItems(Pageable pageable);
+
+    @Query("""
+            SELECT c FROM Card c
+            JOIN FETCH c.member
+            JOIN FETCH c.reading r
+            JOIN FETCH r.book
+            WHERE c.id = :cardId
+            """)
+    Optional<Card> findByIdWithAllAssociations(@Param("cardId") Long cardId);
 }

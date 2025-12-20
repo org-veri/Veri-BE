@@ -3,6 +3,7 @@ package org.veri.be.domain.comment.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.BatchSize;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.post.entity.Post;
 import org.veri.be.global.entity.Authorizable;
@@ -45,6 +46,7 @@ public class Comment extends BaseEntity implements Authorizable {
 
     @Builder.Default
     @OrderBy("createdAt ASC")
+    @BatchSize(size = 100)
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> replies = new ArrayList<>();
 
