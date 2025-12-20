@@ -7,7 +7,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-public abstract class UrlUtil {
+public final class UrlUtil {
+
+    private UrlUtil() {
+        throw new UnsupportedOperationException("Utility class");
+    }
 
     public static String getRequestingUrl(HttpServletRequest request) {
         if (request == null) {

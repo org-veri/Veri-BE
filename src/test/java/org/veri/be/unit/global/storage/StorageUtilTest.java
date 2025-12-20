@@ -25,10 +25,4 @@ class StorageUtilTest {
             assertThat(StorageUtil.isImage("application/pdf")).isFalse();
         }
     }
-
-    @Test
-    @DisplayName("인스턴스를 생성할 수 있다")
-    void canInstantiate() {
-        assertThat(new StorageUtil()).isNotNull();
-    }
 }
