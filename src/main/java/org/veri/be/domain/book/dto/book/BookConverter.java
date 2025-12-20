@@ -22,7 +22,11 @@ public class BookConverter {
                 .toList();
 
         int size = naverResponse.getDisplay();
-        int page = naverResponse.getStart() / naverResponse.getDisplay() + 1;
+        if (size <= 0) {
+            size = 10; // 기본값 설정
+        }
+
+        int page = naverResponse.getStart() / size + 1;
         long totalElements = naverResponse.getTotal();
         int totalPages = (int) Math.ceil((double) totalElements / size);
 
