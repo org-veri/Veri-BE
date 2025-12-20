@@ -39,8 +39,11 @@ import org.veri.be.domain.post.dto.response.PostFeedResponseItem;
 import org.veri.be.domain.post.repository.dto.PostFeedQueryResult;
 import org.veri.be.domain.post.service.PostCommandService;
 import org.veri.be.domain.post.service.PostQueryService;
+import org.veri.be.domain.member.entity.Member;
+import org.veri.be.domain.member.entity.enums.ProviderType;
 import org.veri.be.global.auth.context.AuthenticatedMemberResolver;
 import org.veri.be.global.auth.context.MemberContext;
+import org.veri.be.global.auth.context.ThreadLocalCurrentMemberAccessor;
 import org.veri.be.global.storage.dto.PresignedUrlRequest;
 import org.veri.be.global.storage.dto.PresignedUrlResponse;
 import org.veri.be.lib.response.ApiResponseAdvice;
@@ -49,7 +52,6 @@ import org.veri.be.lib.response.ApiResponseAdvice;
 class PostControllerTest {
 
     MockMvc mockMvc;
-
     ObjectMapper objectMapper;
 
     @Mock
@@ -76,7 +78,7 @@ class PostControllerTest {
         PostController controller = new PostController(postCommandService, postQueryService);
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
                 .setControllerAdvice(new ApiResponseAdvice())
-                .setCustomArgumentResolvers(new AuthenticatedMemberResolver())
+                .setCustomArgumentResolvers(new AuthenticatedMemberResolver(new ThreadLocalCurrentMemberAccessor(null)))
                 .build();
     }
 

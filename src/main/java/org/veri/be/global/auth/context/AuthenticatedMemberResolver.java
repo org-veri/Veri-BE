@@ -8,10 +8,14 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.veri.be.domain.member.entity.Member;
+import org.veri.be.global.auth.AuthErrorInfo;
+import org.veri.be.lib.exception.http.UnAuthorizedException;
 
 @Component
 @RequiredArgsConstructor
 public class AuthenticatedMemberResolver implements HandlerMethodArgumentResolver {
+
+    private final CurrentMemberAccessor currentMemberAccessor;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -25,6 +29,7 @@ public class AuthenticatedMemberResolver implements HandlerMethodArgumentResolve
             NativeWebRequest webRequest,
             WebDataBinderFactory binderFactory
     ) {
-        return MemberContext.getMemberOrThrow();
+        return currentMemberAccessor.getCurrentMember()
+                .orElseThrow(() -> new UnAuthorizedException(AuthErrorInfo.UNAUTHORIZED));
     }
 }

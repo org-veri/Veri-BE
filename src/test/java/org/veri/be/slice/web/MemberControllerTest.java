@@ -28,13 +28,13 @@ import org.veri.be.domain.member.service.MemberCommandService;
 import org.veri.be.domain.member.service.MemberQueryService;
 import org.veri.be.global.auth.context.AuthenticatedMemberResolver;
 import org.veri.be.global.auth.context.MemberContext;
+import org.veri.be.global.auth.context.ThreadLocalCurrentMemberAccessor;
 import org.veri.be.lib.response.ApiResponseAdvice;
 
 @ExtendWith(MockitoExtension.class)
 class MemberControllerTest {
 
     MockMvc mockMvc;
-
     ObjectMapper objectMapper;
 
     @Mock
@@ -61,7 +61,7 @@ class MemberControllerTest {
         MemberController controller = new MemberController(memberCommandService, memberQueryService);
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
                 .setControllerAdvice(new ApiResponseAdvice())
-                .setCustomArgumentResolvers(new AuthenticatedMemberResolver())
+                .setCustomArgumentResolvers(new AuthenticatedMemberResolver(new ThreadLocalCurrentMemberAccessor(null)))
                 .build();
     }
 

@@ -25,18 +25,21 @@ import org.veri.be.api.social.SocialCardController;
 import org.veri.be.domain.card.controller.dto.response.CardVisibilityUpdateResponse;
 import org.veri.be.domain.card.controller.enums.CardSortType;
 import org.veri.be.domain.card.repository.dto.CardFeedItem;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.veri.be.domain.card.service.CardCommandService;
 import org.veri.be.domain.card.service.CardQueryService;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
 import org.veri.be.global.auth.context.AuthenticatedMemberResolver;
 import org.veri.be.global.auth.context.MemberContext;
+import org.veri.be.global.auth.context.ThreadLocalCurrentMemberAccessor;
 import org.veri.be.lib.response.ApiResponseAdvice;
 
 @ExtendWith(MockitoExtension.class)
 class SocialCardControllerTest {
 
     MockMvc mockMvc;
+    ObjectMapper objectMapper;
 
     @Mock
     CardCommandService cardCommandService;
@@ -48,6 +51,7 @@ class SocialCardControllerTest {
 
     @BeforeEach
     void setUp() {
+        objectMapper = new ObjectMapper().findAndRegisterModules();
         member = Member.builder()
                 .id(1L)
                 .email("member@test.com")
@@ -61,7 +65,7 @@ class SocialCardControllerTest {
         SocialCardController controller = new SocialCardController(cardCommandService, cardQueryService);
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
                 .setControllerAdvice(new ApiResponseAdvice())
-                .setCustomArgumentResolvers(new AuthenticatedMemberResolver())
+                .setCustomArgumentResolvers(new AuthenticatedMemberResolver(new ThreadLocalCurrentMemberAccessor(null)))
                 .build();
     }
 

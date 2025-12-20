@@ -35,10 +35,8 @@ public class JwtFilter extends OncePerRequestFilter {
                 Long id = raw == null ? null : ((Number) raw).longValue();
 
                 if (id != null) {
-                    Member member = memberQueryService.findById(id);
-
                     MemberContext.setCurrentToken(token);
-                    MemberContext.setCurrentMember(member);
+                    MemberContext.setCurrentMemberId(id);
                 }
             }
 

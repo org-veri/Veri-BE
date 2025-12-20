@@ -11,10 +11,19 @@ import java.util.Optional;
 public class MemberContext {
 
     public static final ThreadLocal<Member> currentMember = new ThreadLocal<>();
+    public static final ThreadLocal<Long> currentMemberId = new ThreadLocal<>();
     public static final ThreadLocal<String> currentToken = new ThreadLocal<>();
 
     public static void setCurrentToken(String token) {
         currentToken.set(token);
+    }
+
+    public static void setCurrentMemberId(Long memberId) {
+        currentMemberId.set(memberId);
+    }
+
+    public static Optional<Long> getCurrentMemberId() {
+        return Optional.ofNullable(currentMemberId.get());
     }
 
     public static void setCurrentMember(Member member) {
@@ -34,6 +43,7 @@ public class MemberContext {
 
     public static void clear() {
         currentMember.remove();
+        currentMemberId.remove();
         currentToken.remove();
 
         log.debug("Member cleared");

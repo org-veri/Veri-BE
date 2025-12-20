@@ -40,22 +40,30 @@ import org.veri.be.domain.book.service.BookService;
 import org.veri.be.domain.book.service.BookshelfService;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.veri.be.domain.book.service.BookshelfService;
+import org.veri.be.domain.member.entity.Member;
+import org.veri.be.domain.member.entity.enums.ProviderType;
 import org.veri.be.global.auth.context.AuthenticatedMemberResolver;
 import org.veri.be.global.auth.context.MemberContext;
+import org.veri.be.global.auth.context.ThreadLocalCurrentMemberAccessor;
+import org.veri.be.lib.auth.guard.UseGuardsAspect;
 import org.veri.be.lib.response.ApiResponseAdvice;
 
 @ExtendWith(MockitoExtension.class)
 class BookshelfControllerTest {
 
     MockMvc mockMvc;
-
     ObjectMapper objectMapper;
+
+    @Mock
+    BookService bookService;
 
     @Mock
     BookshelfService bookshelfService;
 
     @Mock
-    BookService bookService;
+    UseGuardsAspect useGuardsAspect;
 
     Member member;
 
@@ -75,7 +83,7 @@ class BookshelfControllerTest {
         BookshelfController controller = new BookshelfController(bookshelfService, bookService);
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
                 .setControllerAdvice(new ApiResponseAdvice())
-                .setCustomArgumentResolvers(new AuthenticatedMemberResolver())
+                .setCustomArgumentResolvers(new AuthenticatedMemberResolver(new ThreadLocalCurrentMemberAccessor(null)))
                 .build();
     }
 

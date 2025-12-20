@@ -27,15 +27,18 @@ import org.veri.be.domain.comment.dto.request.ReplyPostRequest;
 import org.veri.be.domain.comment.service.CommentCommandService;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.veri.be.domain.member.entity.Member;
+import org.veri.be.domain.member.entity.enums.ProviderType;
 import org.veri.be.global.auth.context.AuthenticatedMemberResolver;
 import org.veri.be.global.auth.context.MemberContext;
+import org.veri.be.global.auth.context.ThreadLocalCurrentMemberAccessor;
 import org.veri.be.lib.response.ApiResponseAdvice;
 
 @ExtendWith(MockitoExtension.class)
 class CommentControllerTest {
 
     MockMvc mockMvc;
-
     ObjectMapper objectMapper;
 
     @Mock
@@ -59,7 +62,7 @@ class CommentControllerTest {
         CommentController controller = new CommentController(commentCommandService);
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
                 .setControllerAdvice(new ApiResponseAdvice())
-                .setCustomArgumentResolvers(new AuthenticatedMemberResolver())
+                .setCustomArgumentResolvers(new AuthenticatedMemberResolver(new ThreadLocalCurrentMemberAccessor(null)))
                 .build();
     }
 

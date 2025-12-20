@@ -36,12 +36,7 @@ public class UseGuardsAspect {
 
         for (Class<? extends Guard> guardClass : guardClasses) {
             Guard guard = this.applicationContext.getBean(guardClass);
-
-            try {
-                guard.canActivate();
-            } catch (ApplicationException e) {
-                return this.createErrorResponse(e);
-            }
+            guard.canActivate();
         }
 
         return joinPoint.proceed();
@@ -54,9 +49,5 @@ public class UseGuardsAspect {
             useGuards = joinPoint.getTarget().getClass().getAnnotation(UseGuards.class);
         }
         return useGuards;
-    }
-
-    private ApiResponse<Map<?, ?>> createErrorResponse(ApplicationException exception) {
-        return ApiResponse.error(exception.getErrorInfo(), HttpStatus.UNAUTHORIZED);
     }
 }

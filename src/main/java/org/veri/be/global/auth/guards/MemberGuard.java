@@ -14,9 +14,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MemberGuard implements Guard {
 
+    private final org.veri.be.global.auth.context.CurrentMemberAccessor currentMemberAccessor;
+
     @Override
     public void canActivate() {
-        Optional<Member> member = MemberContext.getCurrentMember();
+        Optional<Member> member = currentMemberAccessor.getCurrentMember();
         if (!checkMemberHasRole(member)) {
             throw new ForbiddenException(CommonErrorInfo.DOES_NOT_HAVE_PERMISSION);
         }

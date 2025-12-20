@@ -34,6 +34,19 @@ class MemberContextTest {
     }
 
     @Nested
+    @DisplayName("getCurrentMemberId")
+    class GetCurrentMemberId {
+
+        @Test
+        @DisplayName("저장된 멤버 ID를 반환한다")
+        void returnsStoredMemberId() {
+            MemberContext.setCurrentMemberId(10L);
+
+            assertThat(MemberContext.getCurrentMemberId()).contains(10L);
+        }
+    }
+
+    @Nested
     @DisplayName("getMemberOrThrow")
     class GetMemberOrThrow {
 
@@ -54,14 +67,16 @@ class MemberContextTest {
     class Clear {
 
         @Test
-        @DisplayName("멤버와 토큰을 비운다")
+        @DisplayName("멤버와 토큰, ID를 모두 비운다")
         void clearsContext() {
             MemberContext.setCurrentMember(member());
+            MemberContext.setCurrentMemberId(1L);
             MemberContext.setCurrentToken("token");
 
             MemberContext.clear();
 
             assertThat(MemberContext.getCurrentMember()).isEmpty();
+            assertThat(MemberContext.getCurrentMemberId()).isEmpty();
             assertThat(MemberContext.currentToken.get()).isNull();
         }
     }

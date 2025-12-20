@@ -27,8 +27,13 @@ import org.veri.be.domain.image.service.ImageCommandService;
 import org.veri.be.domain.image.service.ImageQueryService;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.veri.be.domain.image.service.ImageQueryService;
+import org.veri.be.domain.member.entity.Member;
+import org.veri.be.domain.member.entity.enums.ProviderType;
 import org.veri.be.global.auth.context.AuthenticatedMemberResolver;
 import org.veri.be.global.auth.context.MemberContext;
+import org.veri.be.global.auth.context.ThreadLocalCurrentMemberAccessor;
 import org.veri.be.global.response.PageResponse;
 import org.veri.be.lib.response.ApiResponseAdvice;
 
@@ -36,6 +41,7 @@ import org.veri.be.lib.response.ApiResponseAdvice;
 class ImageControllerTest {
 
     MockMvc mockMvc;
+    ObjectMapper objectMapper;
 
     @Mock
     ImageCommandService imageCommandService;
@@ -47,6 +53,7 @@ class ImageControllerTest {
 
     @BeforeEach
     void setUp() {
+        objectMapper = new ObjectMapper().findAndRegisterModules();
         member = Member.builder()
                 .id(1L)
                 .email("member@test.com")
@@ -60,7 +67,7 @@ class ImageControllerTest {
         ImageController controller = new ImageController(imageCommandService, imageQueryService);
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
                 .setControllerAdvice(new ApiResponseAdvice())
-                .setCustomArgumentResolvers(new AuthenticatedMemberResolver())
+                .setCustomArgumentResolvers(new AuthenticatedMemberResolver(new ThreadLocalCurrentMemberAccessor(null)))
                 .build();
     }
 
