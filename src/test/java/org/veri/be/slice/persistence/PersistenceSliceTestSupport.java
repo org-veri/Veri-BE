@@ -41,9 +41,9 @@ public abstract class PersistenceSliceTestSupport {
     }
 
     @TestConfiguration
-    @AutoConfigurationPackage(basePackages = "com.smoody.chat")
+    @AutoConfigurationPackage(basePackages = "org.veri.be")
     @EnableAutoConfiguration
-    @EnableJpaRepositories(basePackages = "com.smoody.chat")
+    @EnableJpaRepositories(basePackages = "org.veri.be")
     static class PersistenceTestConfig {
     }
 }
