@@ -352,7 +352,7 @@ class BookshelfServiceTest {
             verify(readingRepository).save(readingCaptor.capture());
             assertThat(readingCaptor.getValue().getIsPublic()).isTrue();
             assertThat(response.id()).isEqualTo(10L);
-            assertThat(response.idPublic()).isTrue();
+            assertThat(response.isPublic()).isTrue();
         }
     }
 
