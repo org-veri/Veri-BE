@@ -117,7 +117,7 @@ class SocialCardControllerTest {
             mockMvc.perform(patch("/api/v1/cards/20/visibility")
                             .param("isPublic", "true"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.result.idPublic").value(true));
+                    .andExpect(jsonPath("$.result.isPublic").value(true));
         }
     }
 }

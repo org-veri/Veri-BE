@@ -8,7 +8,7 @@
 
 ### AuthController (`/api/v1/auth`)
 - [x] POST /auth/reissue | Stored refresh 토큰으로 재발급
-- [ ] POST /auth/reissue | 만료 혹은 위조된 refresh 토큰
+- [x] POST /auth/reissue | 만료 혹은 위조된 refresh 토큰
 - [ ] POST /auth/reissue | refreshToken 누락/NULL
 - [ ] POST /auth/reissue | 탈퇴 등으로 존재하지 않는 회원 토큰
 - [ ] POST /auth/reissue | 블랙리스트에 등록된 refresh 토큰
@@ -34,14 +34,14 @@
 
 ### MemberController (`/api/v1/members`)
 - [x] GET /me | 정상 내 정보 조회
-- [ ] GET /me | 토큰 없이 호출
+- [x] GET /me | 토큰 없이 호출
 - [x] PATCH /me/info | 닉네임/프로필 모두 수정
 - [ ] PATCH /me/info | 기존 닉네임과 동일한 값 요청
 - [ ] PATCH /me/info | 닉네임 중복
 - [ ] PATCH /me/info | 필수 필드 검증 실패
 - [ ] PATCH /me/info | 인증 없이 수정 시도
 - [x] GET /nickname/exists | 닉네임 존재 여부 true
-- [ ] GET /nickname/exists | 파라미터 누락
+- [x] GET /nickname/exists | 파라미터 누락
 
 ### BookshelfController (`/api/v2/bookshelf`)
 - [x] GET /my | 기본 조회
@@ -52,7 +52,7 @@
 - [x] POST / (addBook) | 새 도서 + 책장 추가
 - [ ] POST / | 동일 도서 중복 추가
 - [ ] POST / | 잘못된 ISBN 등 유효성
-- [ ] POST / | 인증 없이 추가 시도
+- [x] POST / | 인증 없이 추가 시도
 - [x] GET /search | 키워드 검색 성공
 - [ ] GET /search | page/size 범위 위반
 - [x] GET /my/count | 완독 수 존재

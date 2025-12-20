@@ -108,4 +108,19 @@ public class GlobalExceptionHandler {
                 e.getMessage());
         return ApiResponse.error(CommonErrorInfo.INVALID_REQUEST, HttpStatus.BAD_REQUEST);
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(org.springframework.web.bind.MissingServletRequestParameterException.class)
+    public ApiResponse<Map<?, ?>> handleMissingServletRequestParameterException(
+            org.springframework.web.bind.MissingServletRequestParameterException e) {
+        log.debug(e.getMessage());
+        return ApiResponse.error(CommonErrorInfo.INVALID_REQUEST, HttpStatus.BAD_REQUEST);
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(io.jsonwebtoken.JwtException.class)
+    public ApiResponse<Map<?, ?>> handleJwtException(io.jsonwebtoken.JwtException e) {
+        log.debug("JWT Error: {}", e.getMessage());
+        return ApiResponse.error(org.veri.be.global.auth.AuthErrorInfo.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+    }
 }

@@ -136,7 +136,7 @@ class CardCommandServiceTest {
             verify(cardRepository).save(cardCaptor.capture());
             assertThat(cardCaptor.getValue().getIsPublic()).isTrue();
             assertThat(result.id()).isEqualTo(1L);
-            assertThat(result.idPublic()).isTrue();
+            assertThat(result.isPublic()).isTrue();
         }
     }
 
