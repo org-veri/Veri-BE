@@ -39,7 +39,7 @@ public class MemberController {
 
     @Operation(summary = "닉네임 중복 확인", description = "닉네임이 이미 사용 중인지 확인합니다.")
     @GetMapping("/nickname/exists")
-    public ApiResponse<Boolean> checkNicknameExists(String nickname) {
+    public ApiResponse<Boolean> checkNicknameExists(@RequestParam String nickname) {
         boolean exists = memberQueryService.existsByNickname(nickname);
         return ApiResponse.ok(exists);
     }
