@@ -1,7 +1,5 @@
 logging:
-  level:
-    root: info
-    org.springframework.web.servlet: ERROR
+  config: classpath:logback/logback-spring.xml
 
 server:
   servlet:
@@ -12,6 +10,12 @@ server:
         http-only: true
 
 spring:
+  config:
+    import:
+      - classpath:logging.yml
+      - classpath:monitoring.yml
+  application:
+    name: veri-be
   threads:
     virtual:
       enabled: true
