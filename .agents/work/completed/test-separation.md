@@ -1,6 +1,6 @@
 # Plan: Test Module Separation
 
-**Status**: Draft
+**Status**: Completed
 **Date**: 2025-12-21
 **Goal**: Physically separate Unit Tests from Integration Tests and introduce shared test fixtures using Gradle SourceSets.
 
@@ -38,3 +38,7 @@ Common test code (Object Mothers, Builders, Helper methods) often gets duplicate
 
 ## History
 - **2025-12-21**: Moved plan into **.agents/work** structure.
+- **2025-02-14**: Split tests into a dedicated **tests** module with JaCoCo reporting and moved test sources/resources. Related work file:
+```
+.agents/work/completed/test-module-separation.md
+```
