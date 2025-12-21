@@ -1,20 +1,7 @@
 package org.veri.be.slice.web;
 
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -27,13 +14,16 @@ import org.veri.be.domain.comment.dto.request.ReplyPostRequest;
 import org.veri.be.domain.comment.service.CommentCommandService;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.veri.be.domain.member.entity.Member;
-import org.veri.be.domain.member.entity.enums.ProviderType;
 import org.veri.be.global.auth.context.AuthenticatedMemberResolver;
 import org.veri.be.global.auth.context.MemberContext;
 import org.veri.be.global.auth.context.ThreadLocalCurrentMemberAccessor;
 import org.veri.be.lib.response.ApiResponseAdvice;
+
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 class CommentControllerTest {
@@ -79,7 +69,7 @@ class CommentControllerTest {
         @DisplayName("댓글을 작성하면 ID를 반환한다")
         void returnsCommentId() throws Exception {
             CommentPostRequest request = new CommentPostRequest(10L, "content");
-            given(commentCommandService.postComment(eq(request), eq(member))).willReturn(100L);
+            given(commentCommandService.postComment(request, member)).willReturn(100L);
 
             mockMvc.perform(post("/api/v1/comments")
                             .contentType("application/json")

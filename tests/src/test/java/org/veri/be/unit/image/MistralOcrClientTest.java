@@ -72,7 +72,7 @@ class MistralOcrClientTest {
             Object requestBody = bodyCaptor.getValue();
             assertThat(ReflectionTestUtils.getField(requestBody, "model")).isEqualTo("ocr-model");
             Object document = ReflectionTestUtils.getField(requestBody, "document");
-            Object imageUrl = ReflectionTestUtils.getField(document, "image_url");
+            Object imageUrl = ReflectionTestUtils.getField(document, "imageUrl");
             assertThat(ReflectionTestUtils.getField(imageUrl, "url"))
                     .isEqualTo("https://example.com/ocr/image.png");
         }

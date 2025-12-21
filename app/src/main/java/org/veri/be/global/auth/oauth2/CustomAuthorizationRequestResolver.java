@@ -20,7 +20,7 @@ public class CustomAuthorizationRequestResolver implements OAuth2AuthorizationRe
     private final OAuth2AuthorizationRequestResolver defaultResolver;
 
     public CustomAuthorizationRequestResolver(ClientRegistrationRepository repo) {
-        String OAUTH2_BASE_URL = "/oauth2/authorization";
+        final String OAUTH2_BASE_URL = "/oauth2/authorization";
         this.defaultResolver = new DefaultOAuth2AuthorizationRequestResolver(repo, OAUTH2_BASE_URL);
     }
 

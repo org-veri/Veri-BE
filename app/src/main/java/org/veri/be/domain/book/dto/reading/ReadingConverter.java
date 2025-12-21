@@ -2,13 +2,10 @@ package org.veri.be.domain.book.dto.reading;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.veri.be.api.common.dto.MemberProfileResponse;
 import org.veri.be.domain.book.dto.reading.response.ReadingDetailResponse;
 import org.veri.be.domain.book.entity.Reading;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.global.auth.context.CurrentMemberAccessor;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor

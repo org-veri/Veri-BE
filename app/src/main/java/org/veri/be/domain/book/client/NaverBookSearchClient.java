@@ -1,8 +1,5 @@
 package org.veri.be.domain.book.client;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import tools.jackson.core.JacksonException;
-import tools.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -15,6 +12,8 @@ import org.veri.be.domain.book.config.NaverConfig;
 import org.veri.be.domain.book.dto.book.NaverBookResponse;
 import org.veri.be.domain.book.exception.BookErrorInfo;
 import org.veri.be.lib.exception.http.BadRequestException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 import java.net.URI;
 
@@ -56,7 +55,7 @@ public class NaverBookSearchClient implements BookSearchClient {
 
         try {
             return objectMapper.readValue(respEntity.getBody(), NaverBookResponse.class);
-        } catch (JacksonException e) {
+        } catch (JacksonException _) {
             throw new BadRequestException(BookErrorInfo.BAD_REQUEST);
         }
     }

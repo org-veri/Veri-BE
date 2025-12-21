@@ -1,13 +1,15 @@
 package org.veri.be.global.auth.oauth2.dto;
 
-import org.veri.be.global.auth.AuthErrorInfo;
+import lombok.experimental.UtilityClass;
 import org.veri.be.domain.member.entity.enums.ProviderType;
+import org.veri.be.global.auth.AuthErrorInfo;
 import org.veri.be.lib.exception.http.BadRequestException;
 
 import java.util.Map;
 import java.util.function.Function;
 
-public abstract class OAuth2UserInfoMapper {
+@UtilityClass
+public class OAuth2UserInfoMapper {
 
     public static OAuth2UserInfo of(CustomOAuth2User oAuth2User) {
         Function<Map<String, Object>, OAuth2UserInfo> mapper = providerMappers.get(oAuth2User.getProviderType());

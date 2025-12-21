@@ -47,8 +47,8 @@ class PageResponseTest {
             assertThat(response.content()).isNull();
             assertThat(response.page()).isEqualTo(3);
             assertThat(response.size()).isEqualTo(5);
-            assertThat(response.totalElements()).isEqualTo(0);
-            assertThat(response.totalPages()).isEqualTo(0);
+            assertThat(response.totalElements()).isZero();
+            assertThat(response.totalPages()).isZero();
         }
     }
 }

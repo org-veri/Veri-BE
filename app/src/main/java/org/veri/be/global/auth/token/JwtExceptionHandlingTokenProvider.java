@@ -25,7 +25,7 @@ public class JwtExceptionHandlingTokenProvider implements TokenProvider {
     public Claims parseAccessToken(String accessToken) {
         try {
             return delegate.parseAccessToken(accessToken);
-        } catch (JwtException | IllegalArgumentException e) {
+        } catch (JwtException | IllegalArgumentException _) {
             throw new UnAuthorizedException(AuthErrorInfo.UNAUTHORIZED);
         }
     }
@@ -34,7 +34,7 @@ public class JwtExceptionHandlingTokenProvider implements TokenProvider {
     public Claims parseRefreshToken(String refreshToken) {
         try {
             return delegate.parseRefreshToken(refreshToken);
-        } catch (JwtException | IllegalArgumentException e) {
+        } catch (JwtException | IllegalArgumentException _) {
             throw new UnAuthorizedException(AuthErrorInfo.UNAUTHORIZED);
         }
     }

@@ -91,9 +91,7 @@ public class BookshelfService {
             reading.authorizeMember(currentMemberAccessor.getMemberOrThrow().getId());
         }
 
-        ReadingDetailResponse dto = readingConverter.toReadingDetailResponse(reading);
-
-        return dto;
+        return readingConverter.toReadingDetailResponse(reading);
     }
 
     @Transactional(readOnly = true)
@@ -104,9 +102,7 @@ public class BookshelfService {
 
         Pageable pageRequest = PageRequest.of(page, size);
 
-        Page<BookPopularResponse> responses = readingRepository.findMostPopularBook(startOfWeek, startOfNextWeek, pageRequest);
-
-        return responses;
+        return readingRepository.findMostPopularBook(startOfWeek, startOfNextWeek, pageRequest);
     }
 
     @Transactional(readOnly = true)

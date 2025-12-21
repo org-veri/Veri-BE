@@ -1,11 +1,7 @@
 package org.veri.be.slice.persistence.comment;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceUnitUtil;
-import java.time.LocalDateTime;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -20,6 +16,11 @@ import org.veri.be.domain.member.repository.MemberRepository;
 import org.veri.be.domain.post.entity.Post;
 import org.veri.be.domain.post.repository.PostRepository;
 import org.veri.be.slice.persistence.PersistenceSliceTestSupport;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class CommentRepositoryTest extends PersistenceSliceTestSupport {
 
@@ -53,8 +54,9 @@ class CommentRepositoryTest extends PersistenceSliceTestSupport {
 
             List<Comment> results = commentRepository.findByPostIdAndParentIdIsNull(post.getId());
 
-            assertThat(results).hasSize(2);
-            assertThat(results).allMatch(comment -> comment.getParent() == null);
+            assertThat(results)
+                    .hasSize(2)
+                    .allMatch(comment -> comment.getParent() == null);
             assertThat(results).extracting(Comment::getId)
                     .containsExactlyInAnyOrder(root1.getId(), root2.getId());
         }

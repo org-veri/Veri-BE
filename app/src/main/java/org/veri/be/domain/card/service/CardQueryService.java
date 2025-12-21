@@ -27,8 +27,7 @@ public class CardQueryService {
     public Page<CardListItem> getOwnedCards(Long memberId, int page, int size, CardSortType sortType) {
         Pageable pageRequest = PageRequest.of(page, size, sortType.getSort());
 
-        Page<CardListItem> cards = cardRepository.findAllByMemberId(memberId, pageRequest);
-        return cards;
+        return cardRepository.findAllByMemberId(memberId, pageRequest);
     }
 
     public CardDetailResponse getCardDetail(Long cardId, Member viewer) {

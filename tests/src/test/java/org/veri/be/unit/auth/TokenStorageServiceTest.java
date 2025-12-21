@@ -94,7 +94,7 @@ class TokenStorageServiceTest {
         @Test
         @DisplayName("만료되지 않은 토큰은 블랙리스트로 판단한다")
         void returnsTrueWhenNotExpired() {
-            given(blacklistedTokenRepository.findById(eq("token")))
+            given(blacklistedTokenRepository.findById("token"))
                     .willReturn(Optional.of(BlacklistedToken.builder()
                             .token("token")
                             .expiredAt(Instant.parse("2024-01-01T00:00:05Z"))
@@ -108,7 +108,7 @@ class TokenStorageServiceTest {
         @Test
         @DisplayName("만료된 토큰은 블랙리스트로 판단하지 않는다")
         void returnsFalseWhenExpired() {
-            given(blacklistedTokenRepository.findById(eq("token")))
+            given(blacklistedTokenRepository.findById("token"))
                     .willReturn(Optional.of(BlacklistedToken.builder()
                             .token("token")
                             .expiredAt(Instant.parse("2023-12-31T23:59:59Z"))
@@ -127,7 +127,7 @@ class TokenStorageServiceTest {
         @Test
         @DisplayName("만료되지 않은 리프레시 토큰을 반환한다")
         void returnsRefreshTokenWhenValid() {
-            given(refreshTokenRepository.findById(eq(1L)))
+            given(refreshTokenRepository.findById(1L))
                     .willReturn(Optional.of(RefreshToken.builder()
                             .userId(1L)
                             .token("refresh-token")
@@ -142,7 +142,7 @@ class TokenStorageServiceTest {
         @Test
         @DisplayName("만료된 리프레시 토큰은 null을 반환한다")
         void returnsNullWhenExpired() {
-            given(refreshTokenRepository.findById(eq(1L)))
+            given(refreshTokenRepository.findById(1L))
                     .willReturn(Optional.of(RefreshToken.builder()
                             .userId(1L)
                             .token("refresh-token")

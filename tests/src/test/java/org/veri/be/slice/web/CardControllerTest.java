@@ -1,24 +1,7 @@
 package org.veri.be.slice.web;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDateTime;
-import java.util.List;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -42,6 +25,17 @@ import org.veri.be.global.auth.context.ThreadLocalCurrentMemberAccessor;
 import org.veri.be.global.storage.dto.PresignedUrlRequest;
 import org.veri.be.global.storage.dto.PresignedUrlResponse;
 import org.veri.be.lib.response.ApiResponseAdvice;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 class CardControllerTest {
@@ -90,7 +84,7 @@ class CardControllerTest {
         @DisplayName("카드를 생성한다")
         void createsCard() throws Exception {
             CardCreateRequest request = new CardCreateRequest("content", "https://example.com/card.png", 10L, true);
-            given(cardCommandService.createCard(eq(member), eq("content"), eq("https://example.com/card.png"), eq(10L), eq(true)))
+            given(cardCommandService.createCard(member, "content", "https://example.com/card.png", 10L, true))
                     .willReturn(1L);
 
             mockMvc.perform(post("/api/v1/cards")
@@ -200,7 +194,7 @@ class CardControllerTest {
                     null,
                     null
             );
-            given(cardCommandService.updateCard(eq(member), eq(1L), eq("content"), eq("https://example.com/card.png")))
+            given(cardCommandService.updateCard(member, 1L, "content", "https://example.com/card.png"))
                     .willReturn(response);
 
             mockMvc.perform(patch("/api/v1/cards/1")
@@ -221,7 +215,7 @@ class CardControllerTest {
             mockMvc.perform(delete("/api/v1/cards/1"))
                     .andExpect(status().isNoContent());
 
-            verify(cardCommandService).deleteCard(eq(member), eq(1L));
+            verify(cardCommandService).deleteCard(member, 1L);
         }
     }
 

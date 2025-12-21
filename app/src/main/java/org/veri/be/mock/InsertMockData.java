@@ -69,18 +69,20 @@ public class InsertMockData {
         em.persist(reading);
         em.persist(reading2);
 
+        String exampleUrlPrefix = "https://example.com/card-image-";
+        String exampleContentPrefix = "테스트 카드 내용 ";
         for (int i = 0; i < 5; i++) {
             Card card = Card.builder()
-                    .image("https://example.com/card-image-" + i + ".jpg")
-                    .content("테스트 카드 내용 " + i)
+                    .image(exampleUrlPrefix + i + ".jpg")
+                    .content(exampleContentPrefix + i)
                     .reading(reading)
                     .member(member)
                     .build();
             em.persist(card);
 
             Card card2 = Card.builder()
-                    .image("https://example.com/card-image-" + i + ".jpg")
-                    .content("테스트 카드 내용 " + i)
+                    .image(exampleUrlPrefix + i + ".jpg")
+                    .content(exampleContentPrefix + i)
                     .reading(reading2)
                     .member(member2)
                     .build();
@@ -89,8 +91,8 @@ public class InsertMockData {
 
         for (int i = 5; i < 10; i++) {
             Card card = Card.builder()
-                    .image("https://example.com/card-image-" + i + ".jpg")
-                    .content("테스트 카드 내용 " + i)
+                    .image(exampleUrlPrefix + i + ".jpg")
+                    .content(exampleContentPrefix + i)
                     .reading(reading)
                     .member(member)
                     .isPublic(true)
@@ -98,8 +100,8 @@ public class InsertMockData {
             em.persist(card);
 
             Card card2 = Card.builder()
-                    .image("https://example.com/card-image-" + i + ".jpg")
-                    .content("테스트 카드 내용 " + i)
+                    .image(exampleUrlPrefix + i + ".jpg")
+                    .content(exampleContentPrefix + i)
                     .reading(reading2)
                     .member(member2)
                     .isPublic(true)

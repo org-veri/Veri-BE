@@ -1,14 +1,5 @@
 package org.veri.be.unit.post;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-
-import java.util.Comparator;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -27,6 +18,7 @@ import org.veri.be.domain.post.dto.request.PostCreateRequest;
 import org.veri.be.domain.post.dto.response.LikeInfoResponse;
 import org.veri.be.domain.post.entity.LikePost;
 import org.veri.be.domain.post.entity.Post;
+import org.veri.be.domain.post.entity.PostImage;
 import org.veri.be.domain.post.repository.LikePostRepository;
 import org.veri.be.domain.post.repository.PostRepository;
 import org.veri.be.domain.post.service.PostCommandService;
@@ -35,6 +27,15 @@ import org.veri.be.global.storage.dto.PresignedUrlRequest;
 import org.veri.be.global.storage.dto.PresignedUrlResponse;
 import org.veri.be.global.storage.service.StorageService;
 import org.veri.be.support.assertion.ExceptionAssertions;
+
+import java.util.Comparator;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class PostCommandServiceTest {
@@ -109,8 +110,8 @@ class PostCommandServiceTest {
             assertThat(saved.getBook()).isEqualTo(book);
             assertThat(saved.getImages()).hasSize(2);
             List<Long> orders = saved.getImages().stream()
-                    .sorted(Comparator.comparingLong(image -> image.getDisplayOrder()))
-                    .map(image -> image.getDisplayOrder())
+                    .sorted(Comparator.comparingLong(PostImage::getDisplayOrder))
+                    .map(PostImage::getDisplayOrder)
                     .toList();
             assertThat(orders).containsExactly(1L, 2L);
         }
@@ -221,7 +222,7 @@ class PostCommandServiceTest {
             PresignedUrlRequest request = new PresignedUrlRequest("image/png", 100);
             PresignedUrlResponse response = new PresignedUrlResponse("https://example.com/presigned", "https://example.com/public");
 
-            given(storageService.generatePresignedUrlOfDefault(eq("image/png"), eq(100L))).willReturn(response);
+            given(storageService.generatePresignedUrlOfDefault("image/png", 100L)).willReturn(response);
 
             PresignedUrlResponse result = postCommandService.getPresignedUrl(request);
 
@@ -280,7 +281,7 @@ class PostCommandServiceTest {
             LikeInfoResponse result = postCommandService.unlikePost(1L, member);
 
             verify(likePostRepository).deleteByPostIdAndMemberId(1L, 1L);
-            assertThat(result.likeCount()).isEqualTo(0L);
+            assertThat(result.likeCount()).isZero();
             assertThat(result.isLiked()).isFalse();
         }
     }

@@ -1,6 +1,7 @@
 package org.veri.be.domain.image.client;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -56,7 +57,7 @@ public class MistralOcrClient implements OcrClient {
                     .map(Page::getMarkdown)
                     .reduce("", (acc, pageText) -> acc + "\n" + pageText)
                     .trim();
-        } catch (RestClientException e) {
+        } catch (RestClientException _) {
             throw new InternalServerException(ImageErrorInfo.OCR_PROCESSING_FAILED);
         }
     }
@@ -71,7 +72,8 @@ public class MistralOcrClient implements OcrClient {
     @Data
     @AllArgsConstructor
     private static class DocumentPayload {
-        private ImageUrlPayload image_url;
+        @JsonProperty("image_url")
+        private ImageUrlPayload imageUrl;
     }
 
     @Data

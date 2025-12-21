@@ -1,19 +1,7 @@
 package org.veri.be.unit.auth;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.never;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -36,6 +24,19 @@ import org.veri.be.global.auth.dto.ReissueTokenRequest;
 import org.veri.be.global.auth.dto.ReissueTokenResponse;
 import org.veri.be.global.auth.oauth2.dto.OAuth2UserInfo;
 import org.veri.be.global.auth.token.TokenProvider;
+
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
@@ -91,7 +92,7 @@ class AuthServiceTest {
 
             assertThat(response.getAccessToken()).isEqualTo("access");
             assertThat(response.getRefreshToken()).isEqualTo("refresh");
-            verify(tokenStorageService).addRefreshToken(eq(1L), eq("refresh"), eq(fixedClock.millis() + 2000));
+            verify(tokenStorageService).addRefreshToken(1L, "refresh", fixedClock.millis() + 2000);
         }
     }
 
@@ -129,10 +130,10 @@ class AuthServiceTest {
         void blacklistsAccessAndRefresh() {
             Claims accessClaims = Jwts.claims()
                     .add("id", 1L)
-                    .setExpiration(Date.from(Instant.parse("2030-01-01T00:01:00Z")))
+                    .expiration(Date.from(Instant.parse("2030-01-01T00:01:00Z")))
                     .build();
             Claims refreshClaims = Jwts.claims()
-                    .setExpiration(Date.from(Instant.parse("2030-01-01T00:02:00Z")))
+                    .expiration(Date.from(Instant.parse("2030-01-01T00:02:00Z")))
                     .build();
 
             given(tokenProvider.parseAccessToken("access")).willReturn(accessClaims);
@@ -141,8 +142,8 @@ class AuthServiceTest {
 
             authService.logout("access");
 
-            verify(tokenBlacklistStore).addBlackList(eq("access"), eq(60_000L));
-            verify(tokenBlacklistStore).addBlackList(eq("refresh"), eq(120_000L));
+            verify(tokenBlacklistStore).addBlackList("access", 60_000L);
+            verify(tokenBlacklistStore).addBlackList("refresh", 120_000L);
             verify(tokenStorageService).deleteRefreshToken(1L);
         }
 
@@ -151,14 +152,14 @@ class AuthServiceTest {
         void skipsRefreshWhenMissing() {
             Claims accessClaims = Jwts.claims()
                     .add("id", 1L)
-                    .setExpiration(Date.from(Instant.parse("2030-01-01T00:01:00Z")))
+                    .expiration(Date.from(Instant.parse("2030-01-01T00:01:00Z")))
                     .build();
             given(tokenProvider.parseAccessToken("access")).willReturn(accessClaims);
             given(tokenStorageService.getRefreshToken(1L)).willReturn(null);
 
             authService.logout("access");
 
-            verify(tokenBlacklistStore).addBlackList(eq("access"), eq(60_000L));
+            verify(tokenBlacklistStore).addBlackList("access", 60_000L);
             verify(tokenBlacklistStore, never()).addBlackList(eq("refresh"), any(Long.class));
         }
     }

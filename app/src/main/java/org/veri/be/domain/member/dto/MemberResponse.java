@@ -1,9 +1,12 @@
 package org.veri.be.domain.member.dto;
 
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.veri.be.domain.member.entity.Member;
 
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemberResponse {
 
     @Getter

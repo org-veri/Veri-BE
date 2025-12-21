@@ -1,24 +1,7 @@
 package org.veri.be.slice.web;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDateTime;
-import java.util.List;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -28,8 +11,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.veri.be.api.personal.BookshelfController;
 import org.veri.be.domain.book.dto.book.AddBookRequest;
-import org.veri.be.domain.book.dto.book.BookSearchResponse;
 import org.veri.be.domain.book.dto.book.BookResponse;
+import org.veri.be.domain.book.dto.book.BookSearchResponse;
 import org.veri.be.domain.book.dto.reading.request.ReadingModifyRequest;
 import org.veri.be.domain.book.dto.reading.request.ReadingScoreRequest;
 import org.veri.be.domain.book.dto.reading.response.ReadingResponse;
@@ -40,16 +23,23 @@ import org.veri.be.domain.book.service.BookService;
 import org.veri.be.domain.book.service.BookshelfService;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.veri.be.domain.book.service.BookshelfService;
-import org.veri.be.domain.member.entity.Member;
-import org.veri.be.domain.member.entity.enums.ProviderType;
 import org.veri.be.global.auth.context.AuthenticatedMemberResolver;
 import org.veri.be.global.auth.context.MemberContext;
 import org.veri.be.global.auth.context.ThreadLocalCurrentMemberAccessor;
 import org.veri.be.lib.auth.guard.UseGuardsAspect;
 import org.veri.be.lib.exception.handler.GlobalExceptionHandler;
 import org.veri.be.lib.response.ApiResponseAdvice;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 class BookshelfControllerTest {
@@ -148,7 +138,7 @@ class BookshelfControllerTest {
                     .id(20L)
                     .createdAt(LocalDateTime.of(2024, 1, 1, 0, 0))
                     .build();
-            given(bookshelfService.addToBookshelf(eq(member), eq(10L), eq(true))).willReturn(reading);
+            given(bookshelfService.addToBookshelf(member, 10L, true)).willReturn(reading);
 
             mockMvc.perform(post("/api/v2/bookshelf")
                             .contentType("application/json")
@@ -337,7 +327,7 @@ class BookshelfControllerTest {
             mockMvc.perform(delete("/api/v2/bookshelf/10"))
                     .andExpect(status().isNoContent());
 
-            verify(bookshelfService).deleteBook(eq(member), eq(10L));
+            verify(bookshelfService).deleteBook(member, 10L);
         }
     }
 }

@@ -1,12 +1,13 @@
 package org.veri.be.unit.global.storage;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.veri.be.global.storage.service.UuidStorageKeyGenerator;
+
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class UuidStorageKeyGeneratorTest {
 
@@ -21,8 +22,9 @@ class UuidStorageKeyGeneratorTest {
 
             String key = generator.generate("image/png", "public");
 
-            assertThat(key).startsWith("public/");
-            assertThat(key).endsWith(".png");
+            assertThat(key)
+                    .startsWith("public/")
+                    .endsWith(".png");
             assertThat(extractUuid(key)).isNotNull();
         }
 

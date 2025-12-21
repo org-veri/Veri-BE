@@ -7,6 +7,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class InjectIPAddressInterceptor implements HandlerInterceptor {
 
     public static final String IP = "IP";
+    private static final String UNKNOWN = "unknown";
 
     @Override
     public boolean preHandle(
@@ -28,13 +29,14 @@ public class InjectIPAddressInterceptor implements HandlerInterceptor {
      */
     private String getClientIp(HttpServletRequest request) {
         String clientIp = request.getHeader("X-Forwarded-For");
-        if (clientIp == null || clientIp.isEmpty() || "unknown".equalsIgnoreCase(clientIp)) {
+
+        if (clientIp == null || clientIp.isEmpty() || UNKNOWN.equalsIgnoreCase(clientIp)) {
             clientIp = request.getHeader("Proxy-Client-IP");
         }
-        if (clientIp == null || clientIp.isEmpty() || "unknown".equalsIgnoreCase(clientIp)) {
+        if (clientIp == null || clientIp.isEmpty() || UNKNOWN.equalsIgnoreCase(clientIp)) {
             clientIp = request.getHeader("WL-Proxy-Client-IP");
         }
-        if (clientIp == null || clientIp.isEmpty() || "unknown".equalsIgnoreCase(clientIp)) {
+        if (clientIp == null || clientIp.isEmpty() || UNKNOWN.equalsIgnoreCase(clientIp)) {
             clientIp = request.getRemoteAddr();
         }
         return clientIp;

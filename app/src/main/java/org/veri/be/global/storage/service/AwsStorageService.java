@@ -5,11 +5,10 @@ import io.github.miensoap.s3.core.post.dto.PostObjectPresignRequest;
 import io.github.miensoap.s3.core.post.dto.PresignedPostForm;
 import io.github.miensoap.s3.core.post.s3policy.PostConditions;
 import lombok.RequiredArgsConstructor;
-import org.veri.be.global.storage.dto.PresignedUrlResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.veri.be.global.storage.dto.PresignedUrlResponse;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
@@ -44,16 +43,9 @@ public class AwsStorageService implements StorageService {
     ) {
         String key = storageKeyGenerator.generate(contentType, prefix);
 
-        PutObjectRequest objectRequest = PutObjectRequest.builder()
-                .bucket(bucket)
-                .key(key)
-                .contentLength(contentLength)
-                .contentType(contentType)
-                .build();
-
         PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
                 .signatureDuration(duration)
-                .putObjectRequest(objectRequest)
+                .putObjectRequest(o -> o.bucket(bucket).key(key).contentLength(contentLength).contentType(contentType).build())
                 .build();
 
         PresignedPutObjectRequest presignedRequest = s3Presigner.presignPutObject(presignRequest);

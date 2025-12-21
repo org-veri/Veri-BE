@@ -1,15 +1,6 @@
 package org.veri.be.unit.card;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-
 import io.github.miensoap.s3.core.post.dto.PresignedPostForm;
-import java.time.Duration;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -28,13 +19,21 @@ import org.veri.be.domain.card.controller.dto.response.CardVisibilityUpdateRespo
 import org.veri.be.domain.card.entity.Card;
 import org.veri.be.domain.card.exception.CardErrorInfo;
 import org.veri.be.domain.card.repository.CardRepository;
+import org.veri.be.domain.card.service.CardCommandService;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
 import org.veri.be.global.storage.dto.PresignedUrlRequest;
 import org.veri.be.global.storage.dto.PresignedUrlResponse;
 import org.veri.be.global.storage.service.StorageService;
 import org.veri.be.support.assertion.ExceptionAssertions;
-import org.veri.be.domain.card.service.CardCommandService;
+
+import java.time.Duration;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class CardCommandServiceTest {
@@ -187,7 +186,7 @@ class CardCommandServiceTest {
             PresignedUrlRequest request = new PresignedUrlRequest("image/png", 100);
             PresignedUrlResponse response = new PresignedUrlResponse("https://example.com/presigned", "https://example.com/public");
 
-            given(storageService.generatePresignedUrl(eq("image/png"), eq(100L), eq("public/ocr"), eq(Duration.ofMinutes(5))))
+            given(storageService.generatePresignedUrl("image/png", 100L, "public/ocr", Duration.ofMinutes(5)))
                     .willReturn(response);
 
             PresignedUrlResponse result = cardCommandService.getPresignedUrlForOcr(request);
@@ -228,7 +227,7 @@ class CardCommandServiceTest {
             PresignedUrlRequest request = new PresignedUrlRequest("image/png", 100);
             PresignedUrlResponse response = new PresignedUrlResponse("https://example.com/presigned", "https://example.com/public");
 
-            given(storageService.generatePresignedUrl(eq("image/png"), eq(100L), eq("public"), eq(Duration.ofMinutes(5))))
+            given(storageService.generatePresignedUrl("image/png", 100L, "public", Duration.ofMinutes(5)))
                     .willReturn(response);
 
             PresignedUrlResponse result = cardCommandService.getPresignedUrl(request);
@@ -245,7 +244,7 @@ class CardCommandServiceTest {
         @DisplayName("Presigned Post 폼을 반환한다")
         void returnsPresignedPost() {
             PresignedPostForm form = new PresignedPostForm("https://example.com", java.util.Map.of());
-            given(storageService.generatePresignedPost(eq("image/*"), eq(3 * 1024 * 1024L), eq("public"), eq(Duration.ofMinutes(5))))
+            given(storageService.generatePresignedPost("image/*", 3 * 1024 * 1024L, "public", Duration.ofMinutes(5)))
                     .willReturn(form);
 
             PresignedPostForm result = cardCommandService.getPresignedPost();
