@@ -17,8 +17,8 @@ import org.veri.be.domain.auth.service.TokenBlacklistStore;
 import org.veri.be.global.auth.oauth2.CustomAuthFailureHandler;
 import org.veri.be.global.auth.oauth2.CustomOAuth2SuccessHandler;
 import org.veri.be.global.auth.oauth2.CustomOAuth2UserService;
-import org.veri.be.lib.auth.jwt.JwtFilter;
 import org.veri.be.global.auth.token.TokenProvider;
+import org.veri.be.lib.auth.jwt.JwtFilter;
 
 import java.util.Collections;
 
@@ -34,9 +34,9 @@ public class AuthConfig {
     private final CustomAuthFailureHandler customAuthFailureHandler;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
         http.httpBasic(AbstractHttpConfigurer::disable).formLogin(AbstractHttpConfigurer::disable)
-                        .csrf(AbstractHttpConfigurer::disable);
+                .csrf(AbstractHttpConfigurer::disable);
 
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()

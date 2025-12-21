@@ -1,17 +1,14 @@
 package org.veri.be.unit.book;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.lang.reflect.Field;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.veri.be.domain.book.dto.book.BookConverter;
-import org.veri.be.domain.book.dto.book.BookSearchResponse;
-import org.veri.be.domain.book.dto.book.BookResponse;
-import org.veri.be.domain.book.dto.book.NaverBookItem;
-import org.veri.be.domain.book.dto.book.NaverBookResponse;
+import org.veri.be.domain.book.dto.book.*;
+
+import java.lang.reflect.Field;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class BookConverterTest {
 
@@ -81,7 +78,7 @@ class BookConverterTest {
 
             assertThat(result.size()).isEqualTo(10);
             assertThat(result.page()).isEqualTo(1);
-            assertThat(result.totalPages()).isEqualTo(0);
+            assertThat(result.totalPages()).isZero();
         }
     }
 

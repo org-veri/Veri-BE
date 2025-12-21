@@ -9,7 +9,6 @@ import org.veri.be.domain.book.dto.book.AddBookRequest;
 import org.veri.be.domain.card.controller.dto.request.CardCreateRequest;
 import org.veri.be.domain.card.controller.dto.request.CardUpdateRequest;
 import org.veri.be.global.storage.dto.PresignedUrlRequest;
-import org.veri.be.global.storage.dto.PresignedUrlResponse;
 import org.veri.be.global.storage.service.StorageService;
 import org.veri.be.integration.IntegrationTestSupport;
 
@@ -19,7 +18,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class CardIntegrationTest extends IntegrationTestSupport {
 
-    @Autowired StorageService storageService;
+    @Autowired
+    StorageService storageService;
 
     @Nested
     @DisplayName("GET /api/v1/cards/my/count")

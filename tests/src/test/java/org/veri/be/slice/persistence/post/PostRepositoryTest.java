@@ -1,13 +1,7 @@
 package org.veri.be.slice.persistence.post;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceUnitUtil;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -27,6 +21,13 @@ import org.veri.be.domain.post.entity.Post;
 import org.veri.be.domain.post.repository.PostRepository;
 import org.veri.be.domain.post.repository.dto.PostFeedQueryResult;
 import org.veri.be.slice.persistence.PersistenceSliceTestSupport;
+
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class PostRepositoryTest extends PersistenceSliceTestSupport {
 
@@ -72,8 +73,8 @@ class PostRepositoryTest extends PersistenceSliceTestSupport {
             Map<Long, PostFeedQueryResult> resultMap = page.getContent().stream()
                     .collect(Collectors.toMap(PostFeedQueryResult::postId, Function.identity()));
 
-            assertThat(resultMap).containsKey(publicPost.getId());
-            assertThat(resultMap).doesNotContainKey(privatePost.getId());
+            assertThat(resultMap).containsKey(publicPost.getId())
+                    .doesNotContainKey(privatePost.getId());
             assertThat(resultMap.get(publicPost.getId()).thumbnailImageUrl())
                     .isEqualTo("https://example.com/thumbnail.png");
             assertThat(resultMap.get(publicPost.getId()).likeCount()).isEqualTo(1);

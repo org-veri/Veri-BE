@@ -1,19 +1,7 @@
 package org.veri.be.slice.web;
 
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.List;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -27,15 +15,21 @@ import org.veri.be.domain.image.service.ImageCommandService;
 import org.veri.be.domain.image.service.ImageQueryService;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.veri.be.domain.image.service.ImageQueryService;
-import org.veri.be.domain.member.entity.Member;
-import org.veri.be.domain.member.entity.enums.ProviderType;
 import org.veri.be.global.auth.context.AuthenticatedMemberResolver;
 import org.veri.be.global.auth.context.MemberContext;
 import org.veri.be.global.auth.context.ThreadLocalCurrentMemberAccessor;
 import org.veri.be.global.response.PageResponse;
 import org.veri.be.lib.response.ApiResponseAdvice;
+
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 class ImageControllerTest {
@@ -124,7 +118,7 @@ class ImageControllerTest {
                     1,
                     1
             );
-            given(imageQueryService.fetchUploadedImages(eq(1L), eq(PageRequest.of(0, 5))))
+            given(imageQueryService.fetchUploadedImages(1L, PageRequest.of(0, 5)))
                     .willReturn(response);
 
             mockMvc.perform(get("/api/v0/images")

@@ -40,10 +40,12 @@ public class BookshelfController {
     private final BookService bookService;
 
     @Operation(summary = "내 책장 전체 조회",
-            description = "내 책장에 등록된 모든 책을 페이지네이션과 정렬 기준으로 조회합니다.\n"
-                    + "정렬 기준은 'NEWEST', 'OLDEST', 'SCORE' 가 있습니다. (기본값 'NEWEST')\n"
-                    + "상태 목록으로 조회할 상태를 지정할 수 있습니다.\n"
-                    + "독서 상태는 'NOT_START', 'READING', 'DONE' 가 있습니다. (기본값 전체)"
+            description = """
+                    내 책장에 등록된 모든 책을 페이지네이션과 정렬 기준으로 조회합니다.
+                    - 정렬 기준은 'NEWEST', 'OLDEST', 'SCORE' 가 있습니다. (기본값 'NEWEST')
+                    - 상태 목록으로 조회할 상태를 지정할 수 있습니다.
+                    - 독서 상태는 'NOT_START', 'READING', 'DONE' 가 있습니다. (기본값 전체)
+                    """
     )
     @GetMapping("/my")
     public ApiResponse<ReadingListResponse> getAllBooks(

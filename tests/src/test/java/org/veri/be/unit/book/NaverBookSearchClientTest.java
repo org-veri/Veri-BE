@@ -1,11 +1,5 @@
 package org.veri.be.unit.book;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-
-import java.net.URI;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -28,7 +22,12 @@ import org.veri.be.domain.book.exception.BookErrorInfo;
 import org.veri.be.support.assertion.ExceptionAssertions;
 import tools.jackson.databind.ObjectMapper;
 
-import static org.mockito.Mockito.verify;
+import java.net.URI;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 class NaverBookSearchClientTest {

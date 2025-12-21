@@ -1,7 +1,5 @@
 package org.veri.be.unit.post;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -9,6 +7,8 @@ import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
 import org.veri.be.domain.post.entity.LikePost;
 import org.veri.be.domain.post.entity.Post;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class LikePostTest {
 
@@ -24,8 +24,7 @@ class LikePostTest {
             LikePost first = LikePost.builder().member(member).post(post).build();
             LikePost second = LikePost.builder().member(member(1L)).post(post(10L)).build();
 
-            assertThat(first).isEqualTo(second);
-            assertThat(first.hashCode()).isEqualTo(second.hashCode());
+            assertThat(first).isEqualTo(second).hasSameHashCodeAs(second);
         }
 
         @Test

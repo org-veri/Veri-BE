@@ -46,7 +46,7 @@ public final class UrlUtil {
 
             return baseUri;
 
-        } catch (MalformedURLException | URISyntaxException e) {
+        } catch (MalformedURLException | URISyntaxException _) {
             return null;
         }
     }

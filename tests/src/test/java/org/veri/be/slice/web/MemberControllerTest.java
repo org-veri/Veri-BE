@@ -1,19 +1,7 @@
 package org.veri.be.slice.web;
 
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -30,6 +18,13 @@ import org.veri.be.global.auth.context.AuthenticatedMemberResolver;
 import org.veri.be.global.auth.context.MemberContext;
 import org.veri.be.global.auth.context.ThreadLocalCurrentMemberAccessor;
 import org.veri.be.lib.response.ApiResponseAdvice;
+
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 class MemberControllerTest {
@@ -108,7 +103,7 @@ class MemberControllerTest {
                     .nickname("new-nickname")
                     .image("https://example.com/new.png")
                     .build();
-            given(memberCommandService.updateInfo(eq(request), eq(member))).willReturn(response);
+            given(memberCommandService.updateInfo(request, member)).willReturn(response);
 
             mockMvc.perform(patch("/api/v1/members/me/info")
                             .contentType("application/json")

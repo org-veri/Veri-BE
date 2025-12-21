@@ -1,10 +1,9 @@
 package org.veri.be.unit.post;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-
-import java.util.List;
+import me.miensoap.fluent.core.FieldStep;
+import me.miensoap.fluent.core.FluentQuery;
+import me.miensoap.fluent.core.OrderStep;
+import me.miensoap.fluent.core.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -12,10 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import me.miensoap.fluent.core.FieldStep;
-import me.miensoap.fluent.core.FluentQuery;
-import me.miensoap.fluent.core.OrderStep;
-import me.miensoap.fluent.core.Property;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
 import org.veri.be.domain.post.entity.LikePost;
@@ -23,6 +18,11 @@ import org.veri.be.domain.post.entity.Post;
 import org.veri.be.domain.post.repository.LikePostRepository;
 import org.veri.be.domain.post.repository.dto.DetailLikeInfoQueryResult;
 import org.veri.be.domain.post.service.LikePostQueryService;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 class LikePostQueryServiceTest {
@@ -47,7 +47,7 @@ class LikePostQueryServiceTest {
         given(likePostRepository.query()).willReturn(fluentQuery);
         given(fluentQuery.fetchJoin(anyProperty())).willReturn(fluentQuery);
         given(fluentQuery.where(anyProperty())).willReturn(fieldStep);
-        given(fieldStep.equalTo(eq(1L))).willReturn(fluentQuery);
+        given(fieldStep.equalTo(1L)).willReturn(fluentQuery);
         given(fluentQuery.distinct()).willReturn(fluentQuery);
         given(fluentQuery.orderBy(anyProperty())).willReturn(orderStep);
         given(orderStep.ascending()).willReturn(fluentQuery);
@@ -70,7 +70,7 @@ class LikePostQueryServiceTest {
 
             assertThat(result.likeCount()).isEqualTo(1L);
             assertThat(result.likedMembers()).hasSize(1);
-            assertThat(result.likedMembers().get(0).id()).isEqualTo(1L);
+            assertThat(result.likedMembers().getFirst().id()).isEqualTo(1L);
             assertThat(result.isLiked()).isTrue();
         }
 

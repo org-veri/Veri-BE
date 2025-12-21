@@ -43,7 +43,7 @@ public class MistralOcrService extends AbstractOcrService {
     protected String doExtract(String imageUrl) {
         try {
             sleepSupport.sleep(Duration.ofMillis(500));
-        } catch (InterruptedException e) {
+        } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
             throw new InternalServerException(ImageErrorInfo.OCR_PROCESSING_FAILED);
         }
