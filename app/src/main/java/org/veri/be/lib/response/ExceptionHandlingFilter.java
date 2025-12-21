@@ -38,14 +38,14 @@ public class ExceptionHandlingFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } catch (ApplicationException e) {
             if (isBeforeController(request)) {
-                ApiResponse<Map<?, ?>> apiResponse = exceptionHelper.handleApplicationException(e);
+                ApiResponse<Map<String, Object>> apiResponse = exceptionHelper.handleApplicationException(e);
                 writeErrorResponseIfPossible(response, apiResponse);
             } else {
                 throw e;
             }
         } catch (Exception e) {
             if (isBeforeController(request)) {
-                ApiResponse<Map<?, ?>> apiResponse = exceptionHelper.handleAnyUnexpectedException(e);
+                ApiResponse<Map<String, Object>> apiResponse = exceptionHelper.handleAnyUnexpectedException(e);
                 writeErrorResponseIfPossible(response, apiResponse);
             } else {
                 throw e;

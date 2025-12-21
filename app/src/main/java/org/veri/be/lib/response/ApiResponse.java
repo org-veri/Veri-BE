@@ -96,16 +96,16 @@ public class ApiResponse<T> {
                 .build();
     }
 
-    public static ApiResponse<Map<?, ?>> error(ErrorInfo errorInfo, HttpStatus httpStatus) {
+    public static ApiResponse<Map<String, Object>> error(ErrorInfo errorInfo, HttpStatus httpStatus) {
         return ApiResponse.error(errorInfo, httpStatus, MediaType.APPLICATION_JSON);
     }
 
-    public static ApiResponse<Map<?, ?>> error(
+    public static ApiResponse<Map<String, Object>> error(
             ErrorInfo errorInfo,
             HttpStatus httpStatus,
             MediaType contentType
     ) {
-        return ApiResponse.<Map<?, ?>>builder()
+        return ApiResponse.<Map<String, Object>>builder()
                 .httpStatus(httpStatus)
                 .isSuccess(false)
                 .result(new HashMap<>())
@@ -115,11 +115,11 @@ public class ApiResponse<T> {
                 .build();
     }
 
-    public static ResponseEntity<ApiResponse<Map<?, ?>>> validationFailure(List<FieldError> fieldErrors) {
+    public static ResponseEntity<ApiResponse<Map<String, String>>> validationFailure(List<FieldError> fieldErrors) {
         return ApiResponse.validationFailure(fieldErrors, MediaType.APPLICATION_JSON);
     }
 
-    public static ResponseEntity<ApiResponse<Map<?, ?>>> validationFailure(
+    public static ResponseEntity<ApiResponse<Map<String, String>>> validationFailure(
             List<FieldError> fieldErrors,
             MediaType contentType
     ) {
@@ -127,7 +127,7 @@ public class ApiResponse<T> {
         fieldErrors.forEach(
                 fieldError -> errors.put(fieldError.getField(), fieldError.getDefaultMessage()));
 
-        ApiResponse<Map<?, ?>> apiResponse = ApiResponse.<Map<?, ?>>builder()
+        ApiResponse<Map<String, String>> apiResponse = ApiResponse.<Map<String, String>>builder()
                 .isSuccess(false)
                 .result(errors)
                 .message(CommonErrorInfo.NOT_VALID_REQUEST_FIELDS.getMessage())

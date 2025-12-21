@@ -1,12 +1,12 @@
 package org.veri.be.domain.card.controller.dto;
 
-import org.springframework.stereotype.Component;
+import lombok.experimental.UtilityClass;
 import org.veri.be.domain.card.controller.dto.response.CardDetailResponse;
 import org.veri.be.domain.card.controller.dto.response.CardUpdateResponse;
 import org.veri.be.domain.card.entity.Card;
 import org.veri.be.domain.member.entity.Member;
 
-@Component
+@UtilityClass
 public class CardConverter {
 
     public static CardDetailResponse toCardDetailResponse(Card card, Member viewer) {

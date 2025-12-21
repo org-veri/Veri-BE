@@ -27,7 +27,7 @@ import jakarta.validation.ConstraintViolationException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ApplicationException.class)
-    public ApiResponse<Map<?, ?>> handleApplicationException(ApplicationException e) {
+    public ApiResponse<Map<String, Object>> handleApplicationException(ApplicationException e) {
         if (e.getHttpStatus().is4xxClientError()) {
             log.info(e.getMessage());
         } else {
@@ -39,26 +39,26 @@ public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
-    public ApiResponse<Map<?, ?>> handleAnyUnexpectedException(Exception e) {
+    public ApiResponse<Map<String, Object>> handleAnyUnexpectedException(Exception e) {
         log.warn("Unexpected Error Occurred", e);
         return ApiResponse.error(CommonErrorInfo.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NoResourceFoundException.class)
-    public ApiResponse<Map<?, ?>> handleNoResourceFoundException(NoResourceFoundException e) {
+    public ApiResponse<Map<String, Object>> handleNoResourceFoundException(NoResourceFoundException e) {
         return ApiResponse.error(CommonErrorInfo.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NoHandlerFoundException.class)
-    public ApiResponse<Map<?, ?>> handleNoHandlerFoundException(NoHandlerFoundException e) {
+    public ApiResponse<Map<String, Object>> handleNoHandlerFoundException(NoHandlerFoundException e) {
         return ApiResponse.error(CommonErrorInfo.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ApiResponse<Map<?, ?>> handleHttpRequestNotSupportedException(
+    public ApiResponse<Map<String, Object>> handleHttpRequestNotSupportedException(
             HttpRequestMethodNotSupportedException e,
             HttpServletRequest request) {
         log.debug("Method {} for '{}' Not supported. Request IP : {}", request.getMethod(),
@@ -69,7 +69,7 @@ public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Map<?, ?>>> handleMethodArgumentNotValidException(
+    public ResponseEntity<ApiResponse<Map<String, String>>> handleMethodArgumentNotValidException(
             MethodArgumentNotValidException e) {
         log.debug(e.getMessage());
         return ApiResponse.validationFailure(e.getFieldErrors());
@@ -77,7 +77,7 @@ public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ApiResponse<Map<?, ?>> handleMethodArgumentTypeMismatchException(
+    public ApiResponse<Map<String, Object>> handleMethodArgumentTypeMismatchException(
             MethodArgumentTypeMismatchException e) {
         log.debug(e.getMessage());
         return ApiResponse.error(CommonErrorInfo.INVALID_REQUEST, HttpStatus.BAD_REQUEST);
@@ -85,7 +85,7 @@ public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ApiResponse<Map<?, ?>> handleHttpMessageNotReadableException(
+    public ApiResponse<Map<String, Object>> handleHttpMessageNotReadableException(
             HttpMessageNotReadableException e) {
         log.debug(e.getMessage());
         return ApiResponse.error(CommonErrorInfo.INVALID_REQUEST, HttpStatus.BAD_REQUEST);
@@ -93,7 +93,7 @@ public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HandlerMethodValidationException.class)
-    public ApiResponse<Map<?, ?>> handleHandlerMethodValidationException(
+    public ApiResponse<Map<String, Object>> handleHandlerMethodValidationException(
             HandlerMethodValidationException e) {
         log.debug(e.getMessage());
         return ApiResponse.error(CommonErrorInfo.INVALID_REQUEST, HttpStatus.BAD_REQUEST);
@@ -101,14 +101,14 @@ public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ConstraintViolationException.class)
-    public ApiResponse<Map<?, ?>> handleConstraintViolationException(ConstraintViolationException e) {
+    public ApiResponse<Map<String, Object>> handleConstraintViolationException(ConstraintViolationException e) {
         log.debug(e.getMessage());
         return ApiResponse.error(CommonErrorInfo.INVALID_REQUEST, HttpStatus.BAD_REQUEST);
     }
     
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(UnrecognizedPropertyException.class)
-    public ApiResponse<Map<?, ?>> handleUnrecognizedPropertyException(
+    public ApiResponse<Map<String, Object>> handleUnrecognizedPropertyException(
             UnrecognizedPropertyException e,
             HttpServletRequest request
     ) {
@@ -119,7 +119,7 @@ public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(org.springframework.web.bind.MissingServletRequestParameterException.class)
-    public ApiResponse<Map<?, ?>> handleMissingServletRequestParameterException(
+    public ApiResponse<Map<String, Object>> handleMissingServletRequestParameterException(
             org.springframework.web.bind.MissingServletRequestParameterException e) {
         log.debug(e.getMessage());
         return ApiResponse.error(CommonErrorInfo.INVALID_REQUEST, HttpStatus.BAD_REQUEST);

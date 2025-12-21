@@ -2,6 +2,8 @@ package org.veri.be.domain.card.service;
 
 import io.github.miensoap.s3.core.post.dto.PresignedPostForm;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.veri.be.domain.book.entity.Reading;
 import org.veri.be.domain.book.repository.ReadingRepository;
 import org.veri.be.domain.card.controller.dto.CardConverter;
@@ -11,14 +13,12 @@ import org.veri.be.domain.card.entity.Card;
 import org.veri.be.domain.card.exception.CardErrorInfo;
 import org.veri.be.domain.card.repository.CardRepository;
 import org.veri.be.domain.member.entity.Member;
-import org.veri.be.lib.exception.http.BadRequestException;
-import org.veri.be.lib.exception.http.NotFoundException;
 import org.veri.be.global.storage.dto.PresignedUrlRequest;
 import org.veri.be.global.storage.dto.PresignedUrlResponse;
 import org.veri.be.global.storage.service.StorageService;
 import org.veri.be.global.storage.service.StorageUtil;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.veri.be.lib.exception.http.BadRequestException;
+import org.veri.be.lib.exception.http.NotFoundException;
 
 import java.time.Duration;
 
@@ -31,7 +31,6 @@ public class CardCommandService {
     private final CardRepository cardRepository;
     private final ReadingRepository readingRepository;
     private final StorageService storageService;
-    private final CardConverter cardConverter;
 
     @Transactional
     public Long createCard(Member member, String content, String imageUrl, Long memberBookId, Boolean isPublic) {
@@ -56,7 +55,7 @@ public class CardCommandService {
         Card updatedCard = card.updateContent(content, imageUrl, member);
         Card savedCard = cardRepository.save(updatedCard);
 
-        return cardConverter.toCardUpdateResponse(savedCard);
+        return CardConverter.toCardUpdateResponse(savedCard);
     }
 
     public Card getCard(Long cardId) {

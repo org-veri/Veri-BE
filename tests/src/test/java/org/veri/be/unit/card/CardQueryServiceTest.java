@@ -45,8 +45,7 @@ class CardQueryServiceTest {
 
     @BeforeEach
     void setUp() {
-        cardConverter = new CardConverter();
-        cardQueryService = new CardQueryService(cardRepository, cardConverter);
+        cardQueryService = new CardQueryService(cardRepository);
     }
 
     @Nested
