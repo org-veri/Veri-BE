@@ -85,3 +85,17 @@ Agents must follow these structures for consistency:
     * *Format*: Timestamp, Task Name, Summary of Changes, Modified Files.
 3.  **Update Status**: Mark the task as **Completed**, then move the file to `.agents/work/completed/`.
 4.  **Cleanup**: (Optional) Move the temporary `.agents/work/` file to an archive or follow the **File Lifecycle Rule`.
+
+## 5. Git Commit Standards
+When committing changes, follow these guidelines:
+* **prefix**: Start the commit message with "{type}. " (e.g., "feat. ", "fix. ", "docs. ").
+* **Types**:
+    * `feat.`: New feature
+    * `fix.`: Bug fix
+    * `docs.`: Documentation changes
+    * `style.`: Code style changes (formatting, missing semi-colons, etc.)
+    * `refactor.`: Code refactoring
+    * `test.`: Adding or updating tests
+    * `chore.`: Maintenance tasks (build process, dependencies, etc.)
+* **Atomic Commits**: Each commit should represent a single logical change.
+* **Descriptive Messages**: Use clear, concise commit messages that describe the change.
