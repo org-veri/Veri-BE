@@ -1,6 +1,6 @@
 # Plan: Observability with Grafana LGTM & OpenTelemetry
 
-**Status**: Draft
+**Status**: Completed
 **Date**: 2025-12-21
 **Goal**: Implement comprehensive logging and distributed tracing using the Grafana LGTM stack (Loki, Grafana, Tempo) and Spring Boot 4's OpenTelemetry support.
 
@@ -122,3 +122,9 @@ services:
 
 ## History
 - **2025-12-21**: Moved plan into **.agents/work** structure.
+- **2025-02-14**: Observability delivery verified and integrated. Updated **application-local.yml** and **application.yml** to use Spring Boot OTLP auto-configuration, added **OpenTelemetryLogbackConfig**, and confirmed delivery to **Loki** and **Tempo**. Related work files:
+```
+.agents/work/completed/observability-lgtm-verify.md
+.agents/review/observability-lgtm-delivery-2025-02-14.md
+.agents/issue/completed/observability-otlp-delivery-missing.md
+```
