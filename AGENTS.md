@@ -75,6 +75,9 @@ Agents must follow these structures for consistency:
     * Use this file to draft your implementation plan before writing code.
     * If this task is derived from a prior task, include **Parent Task** with the path to the originating work document.
 
+### Phase 0: Conversational Tasks Exception
+For purely conversational tasks that do not require writing documents or modifying files, skip creating or updating any `.agents/` work, review, or issue documents.
+
 ### Phase 2: Execution
 1.  **Implement**: Write the code in the project source directories.
 2.  **Update Context**: Continuously update your status in the `.agents/work/` file.
