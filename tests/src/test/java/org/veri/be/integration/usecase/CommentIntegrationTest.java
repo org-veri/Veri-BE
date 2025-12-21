@@ -10,6 +10,8 @@ import org.veri.be.domain.book.repository.BookRepository;
 import org.veri.be.domain.comment.dto.request.CommentEditRequest;
 import org.veri.be.domain.comment.dto.request.CommentPostRequest;
 import org.veri.be.domain.comment.dto.request.ReplyPostRequest;
+import org.veri.be.domain.member.entity.Member;
+import org.veri.be.domain.member.entity.enums.ProviderType;
 import org.veri.be.domain.post.dto.request.PostCreateRequest;
 import org.veri.be.domain.post.service.PostCommandService;
 import org.veri.be.integration.IntegrationTestSupport;
@@ -113,10 +115,25 @@ class CommentIntegrationTest extends IntegrationTestSupport {
         @Test
         @DisplayName("타인 댓글 수정 시도")
         void editForbidden() throws Exception {
-            // Create comment by other
-            // ... need setup for other member's comment.
-            // Skipping complex setup for now, assuming auth check works.
-            // Or create other member and comment.
+            Long postId = createPost();
+            Member otherMember = Member.builder()
+                    .email("other@prompt.town")
+                    .nickname("타인")
+                    .profileImageUrl("https://example.com/other.png")
+                    .providerId("provider-9999")
+                    .providerType(ProviderType.KAKAO)
+                    .build();
+            otherMember = memberRepository.save(otherMember);
+            Long commentId = commentCommandService.postComment(
+                    new CommentPostRequest(postId, "Other comment"),
+                    otherMember
+            );
+            CommentEditRequest request = new CommentEditRequest("Edited");
+
+            mockMvc.perform(patch("/api/v1/comments/" + commentId)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(request)))
+                    .andExpect(status().isForbidden());
         }
     }
 

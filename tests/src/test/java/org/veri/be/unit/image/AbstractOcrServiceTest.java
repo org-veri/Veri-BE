@@ -16,6 +16,11 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 @ExtendWith(MockitoExtension.class)
 class AbstractOcrServiceTest {
@@ -55,34 +60,32 @@ class AbstractOcrServiceTest {
     @DisplayName("getPreprocessedUrl")
     class GetPreprocessedUrl {
 
-        @Test
-        @DisplayName("ocr 경로와 확장자를 변경한다")
-        void convertsToPreprocessedUrl() {
+        @ParameterizedTest
+        @MethodSource("preprocessedUrlCases")
+        @DisplayName("입력 경로에 따라 전처리 URL을 생성한다")
+        void buildsPreprocessedUrl(String input, String expected) {
             TestOcrService service = testService();
 
-            String result = service.exposePreprocessedUrl("https://example.com/ocr/image.png");
+            String result = service.exposePreprocessedUrl(input);
 
-            assertThat(result).isEqualTo("https://example.com/ocr-preprocessed/image.jpg");
+            assertThat(result).isEqualTo(expected);
         }
 
-        @Test
-        @DisplayName("확장자가 없으면 jpg를 붙인다")
-        void addsJpgWhenNoExtension() {
-            TestOcrService service = testService();
-
-            String result = service.exposePreprocessedUrl("https://example.com/ocr/image");
-
-            assertThat(result).isEqualTo("https://example.jpg");
-        }
-
-        @Test
-        @DisplayName("점이 없으면 확장자를 추가한다")
-        void addsJpgWhenNoDots() {
-            TestOcrService service = testService();
-
-            String result = service.exposePreprocessedUrl("ocr/image");
-
-            assertThat(result).isEqualTo("ocr/image.jpg");
+        private static Stream<Arguments> preprocessedUrlCases() {
+            return Stream.of(
+                    Arguments.of(
+                            "https://example.com/ocr/image.png",
+                            "https://example.com/ocr-preprocessed/image.jpg"
+                    ),
+                    Arguments.of(
+                            "https://example.com/ocr/image",
+                            "https://example.jpg"
+                    ),
+                    Arguments.of(
+                            "ocr/image",
+                            "ocr/image.jpg"
+                    )
+            );
         }
     }
 

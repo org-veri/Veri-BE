@@ -1,8 +1,5 @@
 package org.veri.be.slice.persistence.image;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -16,6 +13,10 @@ import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
 import org.veri.be.domain.member.repository.MemberRepository;
 import org.veri.be.slice.persistence.PersistenceSliceTestSupport;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ImageRepositoryTest extends PersistenceSliceTestSupport {
 
@@ -46,7 +47,9 @@ class ImageRepositoryTest extends PersistenceSliceTestSupport {
 
             List<String> urls = page.getContent();
             assertThat(page.getTotalElements()).isEqualTo(3);
-            assertThat(urls).allMatch(url -> url.startsWith("https://example.com/image-"));
+            assertThat(urls)
+                    .isNotEmpty()
+                    .allMatch(url -> url.startsWith("https://example.com/image-"));
         }
     }
 

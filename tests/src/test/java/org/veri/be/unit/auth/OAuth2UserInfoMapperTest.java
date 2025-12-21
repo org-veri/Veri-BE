@@ -7,6 +7,7 @@ import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.core.GrantedAuthority;
 import org.veri.be.domain.member.entity.enums.ProviderType;
 import org.veri.be.global.auth.oauth2.dto.CustomOAuth2User;
 import org.veri.be.global.auth.oauth2.dto.OAuth2UserInfo;
@@ -46,10 +47,11 @@ class OAuth2UserInfoMapperTest {
         @DisplayName("지원하지 않는 ProviderType이면 예외가 발생한다")
         void throwsWhenUnsupported() {
             Map<String, Object> attributes = Map.of();
+            List<GrantedAuthority> authorities = List.of();
 
             org.junit.jupiter.api.Assertions.assertThrows(
                     IllegalArgumentException.class,
-                    () -> new CustomOAuth2User(List.of(), attributes, "id", "google")
+                    () -> new CustomOAuth2User(authorities, attributes, "id", "google")
             );
         }
     }

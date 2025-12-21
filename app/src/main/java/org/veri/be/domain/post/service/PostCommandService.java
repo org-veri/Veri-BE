@@ -43,7 +43,7 @@ public class PostCommandService {
                 .build();
 
         for (int i = 0; i < request.images().size(); i++) {
-            post.addImage(request.images().get(i), i + 1);
+            post.addImage(request.images().get(i), i + 1L);
         }
 
         this.postRepository.save(post);

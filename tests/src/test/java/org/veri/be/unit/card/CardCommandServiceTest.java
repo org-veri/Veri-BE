@@ -57,12 +57,10 @@ class CardCommandServiceTest {
 
     @BeforeEach
     void setUp() {
-        cardConverter = new CardConverter();
         cardCommandService = new CardCommandService(
                 cardRepository,
                 readingRepository,
-                storageService,
-                cardConverter
+                storageService
         );
     }
 
