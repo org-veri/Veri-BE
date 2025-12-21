@@ -1,3 +1,3 @@
 rootProject.name = 'Veri-BE'
 
-include('app', 'support:logging', 'support:monitoring')
+include('app', 'support:logging', 'support:monitoring', 'tests')
