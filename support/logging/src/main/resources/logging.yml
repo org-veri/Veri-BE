@@ -1,0 +1,6 @@
+logging:
+  level:
+    root: info
+    org.springframework.web.servlet: ERROR
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
