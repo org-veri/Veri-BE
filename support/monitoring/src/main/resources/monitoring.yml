@@ -6,16 +6,16 @@ management:
     tracing:
       export:
         otlp:
-          endpoint: ${OTLP_ENDPOINT:http://localhost:4318}/v1/traces
+          endpoint: ${OTLP_TRACES_ENDPOINT:http://localhost:4318/v1/traces}
     logging:
       export:
         otlp:
-          endpoint: ${OTLP_ENDPOINT:http://localhost:4318}/v1/logs
+          endpoint: ${OTLP_LOGS_ENDPOINT:http://localhost:4318/v1/logs}
   otlp:
     metrics:
       export:
         step: 10s
-        url: ${OTLP_ENDPOINT:http://localhost:4318}/v1/metrics
+        url: ${OTLP_METRICS_ENDPOINT:http://localhost:4318/v1/metrics}
   observations:
     annotations:
       enabled: true
