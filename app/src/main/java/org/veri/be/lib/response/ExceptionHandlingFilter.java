@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.MediaType;
+import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerMapping;
@@ -16,7 +19,6 @@ import org.veri.be.lib.exception.handler.GlobalExceptionHandler;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
-import java.util.Map;
 
 @Slf4j
 @Component
@@ -27,52 +29,51 @@ public class ExceptionHandlingFilter extends OncePerRequestFilter {
     private final GlobalExceptionHandler exceptionHelper;
     private final ObjectMapper objectMapper;
 
+    private boolean isBeforeController(HttpServletRequest request) {
+        return request.getAttribute(HandlerMapping.BEST_MATCHING_HANDLER_ATTRIBUTE) == null;
+    }
+
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
             FilterChain filterChain
     ) throws IOException, ServletException {
-
         try {
             filterChain.doFilter(request, response);
         } catch (ApplicationException e) {
             if (isBeforeController(request)) {
-                ApiResponse<Map<String, Object>> apiResponse = exceptionHelper.handleApplicationException(e);
-                writeErrorResponseIfPossible(response, apiResponse);
-            } else {
-                throw e;
+                ResponseEntity<ProblemDetail> re =
+                        exceptionHelper.handleApplicationExceptionBeforeController(e, request);
+                writeResponseEntity(response, re);
+                return;
             }
+            throw e;
         } catch (Exception e) {
             if (isBeforeController(request)) {
-                ApiResponse<Map<String, Object>> apiResponse = exceptionHelper.handleAnyUnexpectedException(e);
-                writeErrorResponseIfPossible(response, apiResponse);
-            } else {
-                throw e;
+                ResponseEntity<ProblemDetail> re =
+                        exceptionHelper.handleUnexpectedBeforeController(e, request);
+                writeResponseEntity(response, re);
+                return;
             }
+            throw e;
         }
     }
 
-    private boolean isBeforeController(HttpServletRequest request) {
-        return request.getAttribute(HandlerMapping.BEST_MATCHING_HANDLER_ATTRIBUTE) == null;
-    }
-
-    private void writeErrorResponseIfPossible(
+    private void writeResponseEntity(
             HttpServletResponse response,
-            ApiResponse<?> apiResponse
+            ResponseEntity<ProblemDetail> re
     ) throws IOException {
         if (response.isCommitted()) {
             return;
         }
 
-        response.resetBuffer();
-        response.setStatus(apiResponse.getHttpStatus().value());
-        response.setContentType(apiResponse.getContentType().toString());
-        apiResponse.getHeaders().forEach(header ->
-                response.addHeader(header.name(), header.value())
-        );
+        response.setStatus(re.getStatusCode().value());
+
+        MediaType contentType = re.getHeaders().getContentType();
+        response.setContentType(contentType != null ? contentType.toString() : MediaType.APPLICATION_PROBLEM_JSON_VALUE);
+
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(objectMapper.writeValueAsString(apiResponse));
-        response.flushBuffer();
+        objectMapper.writeValue(response.getWriter(), re.getBody());
     }
 }

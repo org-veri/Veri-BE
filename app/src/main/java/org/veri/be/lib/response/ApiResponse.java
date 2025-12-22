@@ -5,17 +5,11 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
-import org.veri.be.lib.exception.CommonErrorInfo;
-import org.veri.be.lib.exception.ErrorInfo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @JsonSerialize
 @Builder
@@ -94,47 +88,5 @@ public class ApiResponse<T> {
                 .code(SUCCESS_CODE)
                 .message(SUCCESS_MESSAGE)
                 .build();
-    }
-
-    public static ApiResponse<Map<String, Object>> error(ErrorInfo errorInfo, HttpStatus httpStatus) {
-        return ApiResponse.error(errorInfo, httpStatus, MediaType.APPLICATION_JSON);
-    }
-
-    public static ApiResponse<Map<String, Object>> error(
-            ErrorInfo errorInfo,
-            HttpStatus httpStatus,
-            MediaType contentType
-    ) {
-        return ApiResponse.<Map<String, Object>>builder()
-                .httpStatus(httpStatus)
-                .isSuccess(false)
-                .result(new HashMap<>())
-                .code(errorInfo.getCode())
-                .message(errorInfo.getMessage())
-                .contentType(contentType)
-                .build();
-    }
-
-    public static ResponseEntity<ApiResponse<Map<String, String>>> validationFailure(List<FieldError> fieldErrors) {
-        return ApiResponse.validationFailure(fieldErrors, MediaType.APPLICATION_JSON);
-    }
-
-    public static ResponseEntity<ApiResponse<Map<String, String>>> validationFailure(
-            List<FieldError> fieldErrors,
-            MediaType contentType
-    ) {
-        Map<String, String> errors = new HashMap<>();
-        fieldErrors.forEach(
-                fieldError -> errors.put(fieldError.getField(), fieldError.getDefaultMessage()));
-
-        ApiResponse<Map<String, String>> apiResponse = ApiResponse.<Map<String, String>>builder()
-                .isSuccess(false)
-                .result(errors)
-                .message(CommonErrorInfo.NOT_VALID_REQUEST_FIELDS.getMessage())
-                .contentType(contentType)
-                .httpStatus(HttpStatus.BAD_REQUEST)
-                .code(CommonErrorInfo.NOT_VALID_REQUEST_FIELDS.getCode())
-                .build();
-        return ResponseEntity.ok(apiResponse);
     }
 }
