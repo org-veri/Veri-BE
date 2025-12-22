@@ -6,9 +6,9 @@ import org.veri.be.domain.card.repository.CardRepository;
 import org.veri.be.domain.member.converter.MemberConverter;
 import org.veri.be.domain.member.dto.MemberResponse;
 import org.veri.be.domain.member.entity.Member;
-import org.veri.be.domain.member.exception.MemberErrorInfo;
+import org.veri.be.domain.member.exception.MemberErrorCode;
 import org.veri.be.domain.member.repository.MemberRepository;
-import org.veri.be.lib.exception.http.NotFoundException;
+import org.veri.be.lib.exception.ApplicationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +23,7 @@ public class MemberQueryService {
 
     public Member findById(Long id) {
         return memberRepository.findById(id).orElseThrow(() ->
-                new NotFoundException(MemberErrorInfo.NOT_FOUND));
+                ApplicationException.of(MemberErrorCode.NOT_FOUND));
     }
 
     public MemberResponse.MemberInfoResponse findMyInfo(Member member) {

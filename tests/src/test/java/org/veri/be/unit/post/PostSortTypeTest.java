@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.veri.be.domain.card.exception.CardErrorInfo;
+import org.veri.be.domain.card.exception.CardErrorCode;
 import org.veri.be.domain.post.controller.enums.PostSortType;
 import org.veri.be.support.assertion.ExceptionAssertions;
 
@@ -36,7 +36,7 @@ class PostSortTypeTest {
         void throwsWhenInvalid() {
             ExceptionAssertions.assertApplicationException(
                     () -> PostSortType.from("invalid"),
-                    CardErrorInfo.BAD_REQUEST
+                    CardErrorCode.BAD_REQUEST
             );
         }
     }

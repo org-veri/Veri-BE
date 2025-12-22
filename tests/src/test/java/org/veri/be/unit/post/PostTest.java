@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
 import org.veri.be.domain.post.entity.Post;
-import org.veri.be.lib.exception.CommonErrorInfo;
+import org.veri.be.lib.exception.CommonErrorCode;
 import org.veri.be.support.assertion.ExceptionAssertions;
 
 class PostTest {
@@ -52,7 +52,7 @@ class PostTest {
 
             ExceptionAssertions.assertApplicationException(
                     () -> post.authorizeMember(other.getId()),
-                    CommonErrorInfo.DOES_NOT_HAVE_PERMISSION
+                    CommonErrorCode.DOES_NOT_HAVE_PERMISSION
             );
         }
     }

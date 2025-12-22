@@ -17,7 +17,7 @@ import org.veri.be.domain.card.controller.dto.CardConverter;
 import org.veri.be.domain.card.controller.dto.response.CardUpdateResponse;
 import org.veri.be.domain.card.controller.dto.response.CardVisibilityUpdateResponse;
 import org.veri.be.domain.card.entity.Card;
-import org.veri.be.domain.card.exception.CardErrorInfo;
+import org.veri.be.domain.card.exception.CardErrorCode;
 import org.veri.be.domain.card.repository.CardRepository;
 import org.veri.be.domain.card.service.CardCommandService;
 import org.veri.be.domain.member.entity.Member;
@@ -165,7 +165,7 @@ class CardCommandServiceTest {
 
             ExceptionAssertions.assertApplicationException(
                     () -> cardCommandService.getPresignedUrlForOcr(request),
-                    CardErrorInfo.IMAGE_TOO_LARGE
+                    CardErrorCode.IMAGE_TOO_LARGE
             );
         }
 
@@ -176,7 +176,7 @@ class CardCommandServiceTest {
 
             ExceptionAssertions.assertApplicationException(
                     () -> cardCommandService.getPresignedUrlForOcr(request),
-                    CardErrorInfo.UNSUPPORTED_IMAGE_TYPE
+                    CardErrorCode.UNSUPPORTED_IMAGE_TYPE
             );
         }
 
@@ -206,7 +206,7 @@ class CardCommandServiceTest {
 
             ExceptionAssertions.assertApplicationException(
                     () -> cardCommandService.getPresignedUrl(request),
-                    CardErrorInfo.IMAGE_TOO_LARGE
+                    CardErrorCode.IMAGE_TOO_LARGE
             );
         }
 
@@ -217,7 +217,7 @@ class CardCommandServiceTest {
 
             ExceptionAssertions.assertApplicationException(
                     () -> cardCommandService.getPresignedUrl(request),
-                    CardErrorInfo.UNSUPPORTED_IMAGE_TYPE
+                    CardErrorCode.UNSUPPORTED_IMAGE_TYPE
             );
         }
 

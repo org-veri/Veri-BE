@@ -12,12 +12,11 @@ import org.veri.be.domain.post.controller.enums.PostSortType;
 import org.veri.be.domain.post.dto.response.PostDetailResponse;
 import org.veri.be.domain.post.dto.response.PostFeedResponseItem;
 import org.veri.be.domain.post.entity.Post;
-import org.veri.be.domain.post.repository.LikePostRepository;
 import org.veri.be.domain.post.repository.PostRepository;
 import org.veri.be.domain.post.repository.dto.DetailLikeInfoQueryResult;
 import org.veri.be.domain.post.repository.dto.PostFeedQueryResult;
-import org.veri.be.lib.exception.CommonErrorInfo;
-import org.veri.be.lib.exception.http.NotFoundException;
+import org.veri.be.lib.exception.CommonErrorCode;
+import org.veri.be.lib.exception.ApplicationException;
 
 import java.util.List;
 
@@ -43,12 +42,12 @@ public class PostQueryService {
 
     public Post getPostById(Long postId) {
         return postRepository.findById(postId)
-                .orElseThrow(() -> new NotFoundException(CommonErrorInfo.RESOURCE_NOT_FOUND));
+                .orElseThrow(() -> ApplicationException.of(CommonErrorCode.RESOURCE_NOT_FOUND));
     }
 
     public PostDetailResponse getPostDetail(Long postId, Member requester) {
         Post post = postRepository.findByIdWithAllAssociations(postId)
-                .orElseThrow(() -> new NotFoundException(CommonErrorInfo.RESOURCE_NOT_FOUND));
+                .orElseThrow(() -> ApplicationException.of(CommonErrorCode.RESOURCE_NOT_FOUND));
 
         DetailLikeInfoQueryResult likeInfo = likePostQueryService.getDetailLikeInfoOfPost(postId, requester.getId());
         List<PostDetailResponse.CommentResponse> comments = commentQueryService.getCommentsByPostId(postId);

@@ -16,8 +16,8 @@ import org.veri.be.domain.post.dto.response.PostFeedResponse;
 import org.veri.be.domain.post.dto.response.PostListResponse;
 import org.veri.be.domain.post.service.PostCommandService;
 import org.veri.be.domain.post.service.PostQueryService;
-import org.veri.be.lib.exception.CommonErrorInfo;
-import org.veri.be.lib.exception.http.BadRequestException;
+import org.veri.be.lib.exception.CommonErrorCode;
+import org.veri.be.lib.exception.ApplicationException;
 import org.veri.be.lib.response.ApiResponse;
 import org.veri.be.global.storage.dto.PresignedUrlRequest;
 import org.veri.be.global.storage.dto.PresignedUrlResponse;
@@ -58,7 +58,7 @@ public class PostController {
             @RequestParam(defaultValue = "newest") String sort
     ) {
         if (page < 1 || size < 1) {
-            throw new BadRequestException(CommonErrorInfo.INVALID_REQUEST);
+            throw ApplicationException.of(CommonErrorCode.INVALID_REQUEST);
         }
         PostSortType sortType = PostSortType.from(sort);
         return ApiResponse.ok(

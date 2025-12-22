@@ -15,12 +15,12 @@ import org.veri.be.domain.book.dto.reading.response.ReadingVisibilityUpdateRespo
 import org.veri.be.domain.book.entity.Book;
 import org.veri.be.domain.book.entity.Reading;
 import org.veri.be.domain.book.entity.enums.ReadingStatus;
-import org.veri.be.domain.book.exception.BookErrorInfo;
+import org.veri.be.domain.book.exception.BookErrorCode;
 import org.veri.be.domain.book.repository.BookRepository;
 import org.veri.be.domain.book.repository.ReadingRepository;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.global.auth.context.CurrentMemberAccessor;
-import org.veri.be.lib.exception.http.BadRequestException;
+import org.veri.be.lib.exception.ApplicationException;
 
 import java.time.Clock;
 import java.time.DayOfWeek;
@@ -45,7 +45,7 @@ public class BookshelfService {
     @Transactional
     public Reading addToBookshelf(Member member, Long bookId, boolean isPublic) {
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new BadRequestException(BookErrorInfo.BAD_REQUEST));
+                .orElseThrow(() -> ApplicationException.of(BookErrorCode.BAD_REQUEST));
 
         //Reading 중복 저장 방지 로직 추가 -> 기존 책을 응답
         Optional<Reading> findReading = readingRepository.findByMemberAndBook(member.getId(), bookId);
@@ -85,7 +85,7 @@ public class BookshelfService {
     @Transactional(readOnly = true)
     public ReadingDetailResponse searchDetail(Long memberBookId) {
         Reading reading = readingRepository.findByIdWithCardsAndBook(memberBookId)
-                .orElseThrow(() -> new BadRequestException(BookErrorInfo.BAD_REQUEST));
+                .orElseThrow(() -> ApplicationException.of(BookErrorCode.BAD_REQUEST));
 
         if (!reading.getIsPublic()) {
             reading.authorizeMember(currentMemberAccessor.getMemberOrThrow().getId());
@@ -178,6 +178,6 @@ public class BookshelfService {
 
     private Reading getReadingById(Long readingId) {
         return readingRepository.findById(readingId)
-                .orElseThrow(() -> new BadRequestException(BookErrorInfo.BAD_REQUEST));
+                .orElseThrow(() -> ApplicationException.of(BookErrorCode.BAD_REQUEST));
     }
 }

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.veri.be.domain.book.entity.Book;
 import org.veri.be.domain.book.service.BookService;
-import org.veri.be.domain.card.exception.CardErrorInfo;
+import org.veri.be.domain.card.exception.CardErrorCode;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.post.dto.request.PostCreateRequest;
 import org.veri.be.domain.post.dto.response.LikeInfoResponse;
@@ -17,7 +17,7 @@ import org.veri.be.global.storage.dto.PresignedUrlRequest;
 import org.veri.be.global.storage.dto.PresignedUrlResponse;
 import org.veri.be.global.storage.service.StorageService;
 import org.veri.be.global.storage.service.StorageUtil;
-import org.veri.be.lib.exception.http.BadRequestException;
+import org.veri.be.lib.exception.ApplicationException;
 
 import static org.veri.be.global.storage.service.StorageConstants.MB;
 
@@ -73,11 +73,11 @@ public class PostCommandService {
 
     public PresignedUrlResponse getPresignedUrl(PresignedUrlRequest request) {
         if (request.contentLength() > MB) {
-            throw new BadRequestException(CardErrorInfo.IMAGE_TOO_LARGE);
+            throw ApplicationException.of(CardErrorCode.IMAGE_TOO_LARGE);
         }
 
         if (!StorageUtil.isImage(request.contentType()))
-            throw new BadRequestException(CardErrorInfo.UNSUPPORTED_IMAGE_TYPE);
+            throw ApplicationException.of(CardErrorCode.UNSUPPORTED_IMAGE_TYPE);
 
         return storageService.generatePresignedUrlOfDefault(
                 request.contentType(),

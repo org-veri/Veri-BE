@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.veri.be.domain.book.entity.Reading;
 import org.veri.be.domain.book.entity.enums.ReadingStatus;
-import org.veri.be.domain.book.exception.ReadingErrorInfo;
+import org.veri.be.domain.book.exception.ReadingErrorCode;
 import org.veri.be.domain.card.entity.Card;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
@@ -104,7 +104,7 @@ class ReadingTest {
 
             ExceptionAssertions.assertApplicationException(
                     () -> reading.authorizeMember(2L),
-                    ReadingErrorInfo.FORBIDDEN
+                    ReadingErrorCode.FORBIDDEN
             );
         }
     }

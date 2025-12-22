@@ -28,13 +28,12 @@ import org.veri.be.domain.book.controller.enums.ReadingSortType;
 import org.veri.be.domain.book.dto.book.BookPopularResponse;
 import org.veri.be.domain.book.dto.reading.ReadingConverter;
 import org.veri.be.domain.book.dto.reading.response.ReadingDetailResponse;
-import org.veri.be.domain.book.dto.reading.response.ReadingResponse;
 import org.veri.be.domain.book.dto.reading.response.ReadingVisibilityUpdateResponse;
 import org.veri.be.domain.book.entity.Book;
 import org.veri.be.domain.book.entity.Reading;
 import org.veri.be.domain.book.entity.enums.ReadingStatus;
-import org.veri.be.domain.book.exception.BookErrorInfo;
-import org.veri.be.domain.book.exception.ReadingErrorInfo;
+import org.veri.be.domain.book.exception.BookErrorCode;
+import org.veri.be.domain.book.exception.ReadingErrorCode;
 import org.veri.be.domain.book.repository.BookRepository;
 import org.veri.be.domain.book.repository.ReadingRepository;
 import org.veri.be.domain.book.service.BookshelfService;
@@ -94,7 +93,7 @@ class BookshelfServiceTest {
 
             ExceptionAssertions.assertApplicationException(
                     () -> bookshelfService.addToBookshelf(member, 1L, true),
-                    BookErrorInfo.BAD_REQUEST
+                    BookErrorCode.BAD_REQUEST
             );
         }
 
@@ -172,7 +171,7 @@ class BookshelfServiceTest {
 
             ExceptionAssertions.assertApplicationException(
                     () -> bookshelfService.searchDetail(10L),
-                    ReadingErrorInfo.FORBIDDEN
+                    ReadingErrorCode.FORBIDDEN
             );
         }
 

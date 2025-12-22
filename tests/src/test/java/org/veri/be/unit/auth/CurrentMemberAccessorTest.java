@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
-import org.veri.be.global.auth.AuthErrorInfo;
+import org.veri.be.global.auth.AuthErrorCode;
 import org.veri.be.global.auth.context.CurrentMemberAccessor;
 import org.veri.be.support.assertion.ExceptionAssertions;
 
@@ -36,7 +36,7 @@ class CurrentMemberAccessorTest {
 
             ExceptionAssertions.assertApplicationException(
                     accessor::getMemberOrThrow,
-                    AuthErrorInfo.UNAUTHORIZED
+                    AuthErrorCode.UNAUTHORIZED
             );
         }
     }

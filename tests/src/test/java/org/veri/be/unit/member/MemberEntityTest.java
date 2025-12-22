@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
-import org.veri.be.lib.exception.CommonErrorInfo;
+import org.veri.be.lib.exception.CommonErrorCode;
 import org.veri.be.support.assertion.ExceptionAssertions;
 
 class MemberEntityTest {
@@ -50,7 +50,7 @@ class MemberEntityTest {
 
             ExceptionAssertions.assertApplicationException(
                     () -> member.authorizeMember(2L),
-                    CommonErrorInfo.DOES_NOT_HAVE_PERMISSION
+                    CommonErrorCode.DOES_NOT_HAVE_PERMISSION
             );
         }
 

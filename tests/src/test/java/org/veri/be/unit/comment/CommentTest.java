@@ -14,8 +14,8 @@ import org.veri.be.domain.comment.entity.Comment;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
 import org.veri.be.domain.post.entity.Post;
-import org.veri.be.lib.exception.CommonErrorInfo;
-import org.veri.be.lib.exception.http.ForbiddenException;
+import org.veri.be.lib.exception.CommonErrorCode;
+import org.veri.be.lib.exception.ApplicationException;
 
 class CommentTest {
 
@@ -63,7 +63,7 @@ class CommentTest {
         }
 
         @Test
-        @DisplayName("작성자가 아니면 ForbiddenException이 발생한다")
+        @DisplayName("작성자가 아니면 ApplicationException이 발생한다")
         void throwsWhenNotAuthor() {
             Member author = member(1L, "author@test.com", "author");
             Member other = member(2L, "other@test.com", "other");
@@ -73,8 +73,8 @@ class CommentTest {
                     .build();
 
             assertThatThrownBy(() -> comment.editBy(other, "after"))
-                    .isInstanceOf(ForbiddenException.class)
-                    .hasMessage(CommonErrorInfo.DOES_NOT_HAVE_PERMISSION.getMessage());
+                    .isInstanceOf(ApplicationException.class)
+                    .hasMessage(CommonErrorCode.DOES_NOT_HAVE_PERMISSION.getMessage());
         }
     }
 
@@ -101,7 +101,7 @@ class CommentTest {
         }
 
         @Test
-        @DisplayName("작성자가 아니면 ForbiddenException이 발생한다")
+        @DisplayName("작성자가 아니면 ApplicationException이 발생한다")
         void throwsWhenNotAuthor() {
             Member author = member(1L, "author@test.com", "author");
             Member other = member(2L, "other@test.com", "other");
@@ -112,8 +112,8 @@ class CommentTest {
             Clock fixedClock = Clock.fixed(Instant.parse("2024-01-01T00:00:00Z"), ZoneId.of("UTC"));
 
             assertThatThrownBy(() -> comment.deleteBy(other, fixedClock))
-                    .isInstanceOf(ForbiddenException.class)
-                    .hasMessage(CommonErrorInfo.DOES_NOT_HAVE_PERMISSION.getMessage());
+                    .isInstanceOf(ApplicationException.class)
+                    .hasMessage(CommonErrorCode.DOES_NOT_HAVE_PERMISSION.getMessage());
         }
     }
 

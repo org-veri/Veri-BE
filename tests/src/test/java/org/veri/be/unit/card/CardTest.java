@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.veri.be.domain.book.entity.Reading;
 import org.veri.be.domain.card.entity.Card;
-import org.veri.be.domain.card.exception.CardErrorInfo;
+import org.veri.be.domain.card.exception.CardErrorCode;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
 import org.veri.be.support.assertion.ExceptionAssertions;
@@ -29,7 +29,7 @@ class CardTest {
 
             ExceptionAssertions.assertApplicationException(
                     () -> card.authorizeMember(other.getId()),
-                    CardErrorInfo.FORBIDDEN
+                    CardErrorCode.FORBIDDEN
             );
         }
     }
@@ -75,7 +75,7 @@ class CardTest {
 
             ExceptionAssertions.assertApplicationException(
                     () -> card.changeVisibility(owner, true),
-                    CardErrorInfo.READING_MS_NOT_PUBLIC
+                    CardErrorCode.READING_MS_NOT_PUBLIC
             );
         }
 
@@ -122,7 +122,7 @@ class CardTest {
 
             ExceptionAssertions.assertApplicationException(
                     () -> card.assertReadableBy(null),
-                    CardErrorInfo.FORBIDDEN
+                    CardErrorCode.FORBIDDEN
             );
         }
     }

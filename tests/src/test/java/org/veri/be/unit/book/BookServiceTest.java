@@ -21,7 +21,7 @@ import org.veri.be.domain.book.client.BookSearchClient;
 import org.veri.be.domain.book.entity.Book;
 import org.veri.be.domain.book.repository.BookRepository;
 import org.veri.be.domain.book.service.BookService;
-import org.veri.be.lib.exception.CommonErrorInfo;
+import org.veri.be.lib.exception.CommonErrorCode;
 import org.veri.be.support.assertion.ExceptionAssertions;
 
 @ExtendWith(MockitoExtension.class)
@@ -100,13 +100,13 @@ class BookServiceTest {
         }
 
         @Test
-        @DisplayName("존재하지 않으면 NotFoundException을 던진다")
+        @DisplayName("존재하지 않으면 ApplicationException을 던진다")
         void throwsWhenNotFound() {
             given(bookRepository.findById(1L)).willReturn(Optional.empty());
 
             ExceptionAssertions.assertApplicationException(
                     () -> bookService.getBookById(1L),
-                    CommonErrorInfo.RESOURCE_NOT_FOUND
+                    CommonErrorCode.RESOURCE_NOT_FOUND
             );
         }
     }

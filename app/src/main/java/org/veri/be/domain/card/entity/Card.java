@@ -4,11 +4,11 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.veri.be.domain.book.entity.Reading;
-import org.veri.be.domain.card.exception.CardErrorInfo;
+import org.veri.be.domain.card.exception.CardErrorCode;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.global.entity.BaseEntity;
-import org.veri.be.lib.exception.http.BadRequestException;
-import org.veri.be.lib.exception.http.ForbiddenException;
+import org.veri.be.lib.exception.ApplicationException;
+import org.veri.be.lib.exception.ApplicationException;
 
 @Getter
 @SuperBuilder(toBuilder = true)
@@ -53,7 +53,7 @@ public class Card extends BaseEntity {
 
     public void authorizeMember(Long memberId) {
         if (!this.member.getId().equals(memberId)) {
-            throw new ForbiddenException(CardErrorInfo.FORBIDDEN);
+            throw ApplicationException.of(CardErrorCode.FORBIDDEN);
         }
     }
 
@@ -76,7 +76,7 @@ public class Card extends BaseEntity {
 
     public void setPublic() {
         if (!this.reading.getIsPublic()) {
-            throw new BadRequestException(CardErrorInfo.READING_MS_NOT_PUBLIC);
+            throw ApplicationException.of(CardErrorCode.READING_MS_NOT_PUBLIC);
         }
         this.isPublic = true;
     }
@@ -91,7 +91,7 @@ public class Card extends BaseEntity {
         }
 
         if (viewer == null) {
-            throw new ForbiddenException(CardErrorInfo.FORBIDDEN);
+            throw ApplicationException.of(CardErrorCode.FORBIDDEN);
         }
 
         authorizeMember(viewer.getId());

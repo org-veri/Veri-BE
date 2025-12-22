@@ -21,10 +21,9 @@ import org.veri.be.domain.card.controller.dto.CardConverter;
 import org.veri.be.domain.card.controller.dto.response.CardDetailResponse;
 import org.veri.be.domain.card.controller.enums.CardSortType;
 import org.veri.be.domain.card.entity.Card;
-import org.veri.be.domain.card.exception.CardErrorInfo;
+import org.veri.be.domain.card.exception.CardErrorCode;
 import org.veri.be.domain.card.repository.CardRepository;
 import org.veri.be.domain.card.repository.dto.CardFeedItem;
-import org.veri.be.domain.card.repository.dto.CardListItem;
 import org.veri.be.domain.card.service.CardQueryService;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
@@ -93,7 +92,7 @@ class CardQueryServiceTest {
 
             ExceptionAssertions.assertApplicationException(
                     () -> cardQueryService.getCardDetail(1L, null),
-                    CardErrorInfo.NOT_FOUND
+                    CardErrorCode.NOT_FOUND
             );
         }
     }
@@ -109,7 +108,7 @@ class CardQueryServiceTest {
 
             ExceptionAssertions.assertApplicationException(
                     () -> cardQueryService.getCardById(1L),
-                    CardErrorInfo.NOT_FOUND
+                    CardErrorCode.NOT_FOUND
             );
         }
     }

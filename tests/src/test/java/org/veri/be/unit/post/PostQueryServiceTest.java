@@ -18,7 +18,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.veri.be.api.common.dto.MemberProfileResponse;
 import org.veri.be.domain.book.entity.Book;
@@ -36,7 +35,7 @@ import org.veri.be.domain.post.repository.dto.DetailLikeInfoQueryResult;
 import org.veri.be.domain.post.repository.dto.PostFeedQueryResult;
 import org.veri.be.domain.post.service.LikePostQueryService;
 import org.veri.be.domain.post.service.PostQueryService;
-import org.veri.be.lib.exception.CommonErrorInfo;
+import org.veri.be.lib.exception.CommonErrorCode;
 import org.veri.be.support.assertion.ExceptionAssertions;
 
 @ExtendWith(MockitoExtension.class)
@@ -124,13 +123,13 @@ class PostQueryServiceTest {
     class GetPostById {
 
         @Test
-        @DisplayName("존재하지 않으면 NotFoundException을 던진다")
+        @DisplayName("존재하지 않으면 ApplicationException을 던진다")
         void throwsWhenNotFound() {
             given(postRepository.findById(1L)).willReturn(java.util.Optional.empty());
 
             ExceptionAssertions.assertApplicationException(
                     () -> postQueryService.getPostById(1L),
-                    CommonErrorInfo.RESOURCE_NOT_FOUND
+                    CommonErrorCode.RESOURCE_NOT_FOUND
             );
         }
     }
@@ -176,14 +175,14 @@ class PostQueryServiceTest {
         }
 
         @Test
-        @DisplayName("게시글이 없으면 NotFoundException을 던진다")
+        @DisplayName("게시글이 없으면 ApplicationException을 던진다")
         void throwsWhenPostMissing() {
             Member requester = member(2L, "request@test.com", "requester");
             given(postRepository.findByIdWithAllAssociations(1L)).willReturn(java.util.Optional.empty());
 
             ExceptionAssertions.assertApplicationException(
                     () -> postQueryService.getPostDetail(1L, requester),
-                    CommonErrorInfo.RESOURCE_NOT_FOUND
+                    CommonErrorCode.RESOURCE_NOT_FOUND
             );
         }
     }

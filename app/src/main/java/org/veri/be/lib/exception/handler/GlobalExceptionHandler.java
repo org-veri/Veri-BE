@@ -1,6 +1,5 @@
 package org.veri.be.lib.exception.handler;
 
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +13,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
@@ -63,9 +62,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     // 3) Method validation
-    @ExceptionHandler(HandlerMethodValidationException.class)
-    public ResponseEntity<Object> handleHandlerMethodValidationException(HandlerMethodValidationException ex,
-                                                                         WebRequest request) {
+    @Override
+    protected ResponseEntity<Object> handleHandlerMethodValidationException(HandlerMethodValidationException ex,
+                                                                            HttpHeaders headers,
+                                                                            HttpStatusCode status,
+                                                                            WebRequest request) {
         ErrorCode errorCode = CommonErrorCode.INVALID_REQUEST;
         return buildWithErrors(errorCode, errorCode.getMessage(), request, ex,
                 validationErrorMapper.from(ex), "METHOD_VALIDATION");
@@ -80,28 +81,58 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     // 4) Binding / parse / param
-    @ExceptionHandler({
-            MethodArgumentTypeMismatchException.class,
-            MissingServletRequestParameterException.class,
-            HttpMessageNotReadableException.class,
-            UnrecognizedPropertyException.class
-    })
-    public ResponseEntity<Object> handleBadRequest(Exception ex, WebRequest request) {
+    @Override
+    protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex,
+                                                        HttpHeaders headers,
+                                                        HttpStatusCode status,
+                                                        WebRequest request) {
+        ErrorCode errorCode = CommonErrorCode.INVALID_REQUEST;
+        return build(errorCode, errorCode.getMessage(), request, ex, "BAD_REQUEST");
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex,
+                                                                          HttpHeaders headers,
+                                                                          HttpStatusCode status,
+                                                                          WebRequest request) {
+        ErrorCode errorCode = CommonErrorCode.INVALID_REQUEST;
+        return build(errorCode, errorCode.getMessage(), request, ex, "BAD_REQUEST");
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
+                                                                  HttpHeaders headers,
+                                                                  HttpStatusCode status,
+                                                                  WebRequest request) {
         ErrorCode errorCode = CommonErrorCode.INVALID_REQUEST;
         return build(errorCode, errorCode.getMessage(), request, ex, "BAD_REQUEST");
     }
 
     // 5) Not found
-    @ExceptionHandler({NoResourceFoundException.class, NoHandlerFoundException.class})
-    public ResponseEntity<Object> handleNotFound(Exception ex, WebRequest request) {
+    @Override
+    protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex,
+                                                                   HttpHeaders headers,
+                                                                   HttpStatusCode status,
+                                                                   WebRequest request) {
+        ErrorCode errorCode = CommonErrorCode.RESOURCE_NOT_FOUND;
+        return build(errorCode, errorCode.getMessage(), request, ex, "NOT_FOUND");
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleNoResourceFoundException(NoResourceFoundException ex,
+                                                                    HttpHeaders headers,
+                                                                    HttpStatusCode status,
+                                                                    WebRequest request) {
         ErrorCode errorCode = CommonErrorCode.RESOURCE_NOT_FOUND;
         return build(errorCode, errorCode.getMessage(), request, ex, "NOT_FOUND");
     }
 
     // 요청대로: Method Not Supported도 404로
-    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<Object> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex,
-                                                           WebRequest request) {
+    @Override
+    protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex,
+                                                                         HttpHeaders headers,
+                                                                         HttpStatusCode status,
+                                                                         WebRequest request) {
         ErrorCode errorCode = CommonErrorCode.RESOURCE_NOT_FOUND;
         return build(errorCode, errorCode.getMessage(), request, ex, "METHOD_NOT_SUPPORTED");
     }

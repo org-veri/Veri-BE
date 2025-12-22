@@ -1,8 +1,8 @@
 package org.veri.be.domain.book.controller.enums;
 
 import lombok.Getter;
-import org.veri.be.domain.book.exception.BookErrorInfo;
-import org.veri.be.lib.exception.http.BadRequestException;
+import org.veri.be.domain.book.exception.BookErrorCode;
+import org.veri.be.lib.exception.ApplicationException;
 import org.springframework.data.domain.Sort;
 
 @Getter
@@ -22,7 +22,7 @@ public enum ReadingSortType {
             case "newest" -> NEWEST;
             case "oldest" -> OLDEST;
             case "score" -> SCORE;
-            default -> throw new BadRequestException(BookErrorInfo.BAD_REQUEST);
+            default -> throw ApplicationException.of(BookErrorCode.BAD_REQUEST);
         };
     }
 }

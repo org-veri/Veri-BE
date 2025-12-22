@@ -4,9 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.veri.be.domain.image.client.OcrClient;
-import org.veri.be.domain.image.exception.ImageErrorInfo;
+import org.veri.be.domain.image.exception.ImageErrorCode;
 import org.veri.be.domain.image.repository.OcrResultRepository;
-import org.veri.be.lib.exception.http.InternalServerException;
+import org.veri.be.lib.exception.ApplicationException;
 import org.veri.be.lib.time.SleepSupport;
 
 import java.time.Duration;
@@ -45,7 +45,7 @@ public class MistralOcrService extends AbstractOcrService {
             sleepSupport.sleep(Duration.ofMillis(500));
         } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
-            throw new InternalServerException(ImageErrorInfo.OCR_PROCESSING_FAILED);
+            throw ApplicationException.of(ImageErrorCode.OCR_PROCESSING_FAILED);
         }
 
         String extracted = tryExtractAsync(imageUrl);
@@ -62,7 +62,7 @@ public class MistralOcrService extends AbstractOcrService {
         }
 
         log.error("Mistral OCR 전처리/원본 모두 실패");
-        throw new InternalServerException(ImageErrorInfo.OCR_PROCESSING_FAILED);
+        throw ApplicationException.of(ImageErrorCode.OCR_PROCESSING_FAILED);
     }
 
     private String tryExtractAsync(String targetImageUrl) {

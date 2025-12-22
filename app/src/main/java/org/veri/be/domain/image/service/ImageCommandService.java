@@ -4,10 +4,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.veri.be.domain.image.entity.Image;
-import org.veri.be.domain.image.exception.ImageErrorInfo;
+import org.veri.be.domain.image.exception.ImageErrorCode;
 import org.veri.be.domain.image.repository.ImageRepository;
 import org.veri.be.domain.member.entity.Member;
-import org.veri.be.lib.exception.http.InternalServerException;
+import org.veri.be.lib.exception.ApplicationException;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +22,7 @@ public class ImageCommandService {
         try {
             return mistralOcrService.extract(imageUrl);
         } catch (Exception _) {
-            throw new InternalServerException(ImageErrorInfo.OCR_PROCESSING_FAILED);
+            throw ApplicationException.of(ImageErrorCode.OCR_PROCESSING_FAILED);
         }
     }
 

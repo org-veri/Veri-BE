@@ -6,7 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.veri.be.domain.card.controller.enums.CardSortType;
-import org.veri.be.domain.card.exception.CardErrorInfo;
+import org.veri.be.domain.card.exception.CardErrorCode;
 import org.veri.be.support.assertion.ExceptionAssertions;
 
 class CardSortTypeTest {
@@ -27,7 +27,7 @@ class CardSortTypeTest {
         void throwsWhenUnknown() {
             ExceptionAssertions.assertApplicationException(
                     () -> CardSortType.from("invalid"),
-                    CardErrorInfo.BAD_REQUEST
+                    CardErrorCode.BAD_REQUEST
             );
         }
     }

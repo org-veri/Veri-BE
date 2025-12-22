@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.veri.be.domain.book.entity.Book;
 import org.veri.be.domain.book.service.BookService;
-import org.veri.be.domain.card.exception.CardErrorInfo;
+import org.veri.be.domain.card.exception.CardErrorCode;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
 import org.veri.be.domain.post.dto.request.PostCreateRequest;
@@ -201,7 +201,7 @@ class PostCommandServiceTest {
 
             ExceptionAssertions.assertApplicationException(
                     () -> postCommandService.getPresignedUrl(request),
-                    CardErrorInfo.IMAGE_TOO_LARGE
+                    CardErrorCode.IMAGE_TOO_LARGE
             );
         }
 
@@ -212,7 +212,7 @@ class PostCommandServiceTest {
 
             ExceptionAssertions.assertApplicationException(
                     () -> postCommandService.getPresignedUrl(request),
-                    CardErrorInfo.UNSUPPORTED_IMAGE_TYPE
+                    CardErrorCode.UNSUPPORTED_IMAGE_TYPE
             );
         }
 

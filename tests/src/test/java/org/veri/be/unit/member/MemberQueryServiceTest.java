@@ -16,7 +16,7 @@ import org.veri.be.domain.card.repository.CardRepository;
 import org.veri.be.domain.member.dto.MemberResponse;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
-import org.veri.be.domain.member.exception.MemberErrorInfo;
+import org.veri.be.domain.member.exception.MemberErrorCode;
 import org.veri.be.domain.member.repository.MemberRepository;
 import org.veri.be.domain.member.service.MemberQueryService;
 import org.veri.be.support.assertion.ExceptionAssertions;
@@ -45,13 +45,13 @@ class MemberQueryServiceTest {
     class FindById {
 
         @Test
-        @DisplayName("존재하지 않으면 NotFoundException을 던진다")
+        @DisplayName("존재하지 않으면 ApplicationException을 던진다")
         void throwsWhenNotFound() {
             given(memberRepository.findById(1L)).willReturn(Optional.empty());
 
             ExceptionAssertions.assertApplicationException(
                     () -> memberQueryService.findById(1L),
-                    MemberErrorInfo.NOT_FOUND
+                    MemberErrorCode.NOT_FOUND
             );
         }
 

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.AuthenticationException;
-import org.veri.be.global.auth.AuthErrorInfo;
+import org.veri.be.global.auth.AuthErrorCode;
 import org.veri.be.global.auth.oauth2.CustomAuthFailureHandler;
 import org.veri.be.support.assertion.ExceptionAssertions;
 
@@ -28,7 +28,7 @@ class CustomAuthFailureHandlerTest {
                             new AuthenticationException("fail") {
                             }
                     ),
-                    AuthErrorInfo.UNAUTHORIZED
+                    AuthErrorCode.UNAUTHORIZED
             );
         }
     }

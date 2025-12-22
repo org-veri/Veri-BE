@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.repository.MemberRepository;
 import org.veri.be.domain.member.service.MemberQueryService;
+import org.veri.be.global.auth.AuthErrorCode;
 import org.veri.be.global.auth.Authenticator;
 import org.veri.be.global.auth.JwtClaimsPayload;
 import org.veri.be.global.auth.dto.LoginResponse;
@@ -12,8 +13,8 @@ import org.veri.be.global.auth.dto.ReissueTokenRequest;
 import org.veri.be.global.auth.dto.ReissueTokenResponse;
 import org.veri.be.global.auth.oauth2.dto.OAuth2UserInfo;
 import org.veri.be.global.auth.token.TokenProvider;
-import org.veri.be.lib.exception.CommonErrorInfo;
-import org.veri.be.lib.exception.http.BadRequestException;
+import org.veri.be.lib.exception.CommonErrorCode;
+import org.veri.be.lib.exception.ApplicationException;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -45,11 +46,11 @@ public class AuthService implements Authenticator {
         String refreshToken = request.getRefreshToken();
 
         if (refreshToken == null || refreshToken.isBlank()) {
-            throw new BadRequestException(CommonErrorInfo.INVALID_REQUEST);
+            throw ApplicationException.of(CommonErrorCode.INVALID_REQUEST);
         }
         
         if (tokenBlacklistStore.isBlackList(refreshToken)) {
-            throw new org.veri.be.lib.exception.http.UnAuthorizedException(org.veri.be.global.auth.AuthErrorInfo.UNAUTHORIZED);
+            throw ApplicationException.of(AuthErrorCode.UNAUTHORIZED);
         }
 
         Object rawId = tokenProvider.parseRefreshToken(refreshToken).get("id");
@@ -57,7 +58,7 @@ public class AuthService implements Authenticator {
 
         String storedToken = tokenStorageService.getRefreshToken(id);
         if (storedToken == null || !storedToken.equals(refreshToken)) {
-            throw new org.veri.be.lib.exception.http.UnAuthorizedException(org.veri.be.global.auth.AuthErrorInfo.UNAUTHORIZED);
+            throw ApplicationException.of(AuthErrorCode.UNAUTHORIZED);
         }
 
         Member member = memberQueryService.findById(id);

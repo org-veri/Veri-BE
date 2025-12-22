@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.veri.be.domain.member.dto.MemberResponse;
 import org.veri.be.domain.member.dto.UpdateMemberInfoRequest;
 import org.veri.be.domain.member.entity.Member;
-import org.veri.be.domain.member.exception.MemberErrorInfo;
+import org.veri.be.domain.member.exception.MemberErrorCode;
 import org.veri.be.domain.member.repository.MemberRepository;
-import org.veri.be.lib.exception.http.BadRequestException;
+import org.veri.be.lib.exception.ApplicationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +21,7 @@ public class MemberCommandService {
     @Transactional
     public MemberResponse.MemberSimpleResponse updateInfo(UpdateMemberInfoRequest request, Member requestMember) {
         if (!requestMember.getNickname().equals(request.nickname()) && memberQueryService.existsByNickname(request.nickname())) {
-            throw new BadRequestException(MemberErrorInfo.ALREADY_EXIST_NICKNAME);
+            throw ApplicationException.of(MemberErrorCode.ALREADY_EXIST_NICKNAME);
         }
 
         requestMember.updateInfo(request.nickname(), request.profileImageUrl());

@@ -6,8 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
-import org.veri.be.global.auth.AuthErrorInfo;
-import org.veri.be.lib.exception.http.BadRequestException;
+import org.veri.be.global.auth.AuthErrorCode;
+import org.veri.be.lib.exception.ApplicationException;
 
 @Slf4j
 @Component
@@ -20,6 +20,6 @@ public class CustomAuthFailureHandler implements AuthenticationFailureHandler {
             AuthenticationException exception
     ) {
         log.debug(exception.getMessage(), exception);
-        throw new BadRequestException(AuthErrorInfo.UNAUTHORIZED);
+        throw ApplicationException.of(AuthErrorCode.UNAUTHORIZED);
     }
 }
