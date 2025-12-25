@@ -56,7 +56,7 @@ class MemberIntegrationTest extends IntegrationTestSupport {
             mockMvc.perform(patch("/api/v1/members/me/info")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
-                    .andExpect(status().isBadRequest());
+                    .andExpect(status().isConflict());
         }
 
         @Test
