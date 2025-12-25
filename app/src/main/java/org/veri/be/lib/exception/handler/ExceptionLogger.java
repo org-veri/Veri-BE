@@ -2,36 +2,61 @@ package org.veri.be.lib.exception.handler;
 
 import com.nimbusds.jose.shaded.gson.Gson;
 import com.nimbusds.jose.shaded.gson.GsonBuilder;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 
 import java.net.URI;
-import java.util.Arrays;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
 public class ExceptionLogger {
 
     public void log(HttpStatus status, String message, URI instance, Exception ex, String tag) {
+        doLog(status, message, instance.toString(), null, ex, tag);
+    }
+
+    public void log(HttpStatus status, String message, HttpServletRequest request, Exception ex, String tag) {
+        String path = request.getRequestURI();
+        String requestDetails = LogUtils.getRequestDetails(request);
+
+        doLog(status, message, path, requestDetails, ex, tag);
+    }
+
+    private void doLog(HttpStatus status, String message, String path, String requestDetails, Exception ex, String tag) {
+        String detailsInfo = (requestDetails != null) ? " | " + requestDetails : "";
+
         if (status.is4xxClientError()) {
-            log.info("[{}] {} (path: {})", tag, message, instance);
+            log.info("[{}] {} (path: {}){}", tag, message, path, detailsInfo);
 
             if (log.isDebugEnabled()) {
                 String optimizedStack = LogUtils.getOptimizedStackTrace(ex);
-                log.debug("[{}][STACK] (path: {})\n{}", tag, instance, optimizedStack);
+                log.debug("[{}][STACK]\n{}", tag, optimizedStack);
             }
             return;
         }
 
         String optimizedStack = LogUtils.getOptimizedStackTrace(ex);
-        log.error("[{}] {} (path: {})\n{}", tag, message, instance, optimizedStack);
+        log.error("[{}] {} (path: {}){}\n{}", tag, message, path, detailsInfo, optimizedStack);
     }
 }
 
 
+@UtilityClass
 class LogUtils {
-    private static final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();
+
+    private static final Gson gson = new GsonBuilder()
+            .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+            .setPrettyPrinting()
+            .create();
+
     private static final String BASE_PACKAGE = "org.veri";
+
+    private static final Set<String> SENSITIVE_HEADERS = new HashSet<>(Arrays.asList(
+            "authorization", "cookie", "proxy-authorization", "x-auth-token"
+    ));
 
     private static final String[] IGNORED_PREFIXES = {
             "org.springframework",
@@ -49,16 +74,30 @@ class LogUtils {
             "io.netty"
     };
 
-    /**
-     * 객체를 JSON 문자열로 변환 (기존 logBusiness의 가공 역할)
-     */
-    public static String toJson(Object data) {
-        return gson.toJson(data);
+    public static String getRequestDetails(HttpServletRequest request) {
+        if (request == null) return " (Request is null)";
+
+        Map<String, Object> details = new LinkedHashMap<>();
+
+        details.put("method", request.getMethod());
+        details.put("uri", request.getRequestURI());
+        details.put("query", request.getQueryString());
+        details.put("remoteAddr", request.getRemoteAddr());
+
+        Map<String, String> headers = new HashMap<>();
+        Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames != null && headerNames.hasMoreElements()) {
+            String headerName = headerNames.nextElement();
+            if (SENSITIVE_HEADERS.contains(headerName.toLowerCase())) {
+                headers.put(headerName, "**** PROTECTED ****");
+            } else {
+                headers.put(headerName, request.getHeader(headerName));
+            }
+        }
+        details.put("headers", headers);
+        return gson.toJson(details);
     }
 
-    /**
-     * 예외의 스택 트레이스를 핵심만 남겨 문자열로 반환
-     */
     public static String getOptimizedStackTrace(Throwable e) {
         if (e == null) return "";
 
