@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.veri.be.domain.auth.service.AuthService;
 import org.veri.be.global.auth.dto.ReissueTokenRequest;
 import org.veri.be.global.auth.dto.ReissueTokenResponse;
-import org.veri.be.lib.exception.CommonErrorCode;
 import org.veri.be.lib.exception.ApplicationException;
+import org.veri.be.lib.exception.CommonErrorCode;
 import org.veri.be.lib.response.ApiResponse;
 
 @RestController
