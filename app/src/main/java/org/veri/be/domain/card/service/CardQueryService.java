@@ -15,7 +15,7 @@ import org.veri.be.domain.card.repository.CardRepository;
 import org.veri.be.domain.card.repository.dto.CardFeedItem;
 import org.veri.be.domain.card.repository.dto.CardListItem;
 import org.veri.be.domain.member.entity.Member;
-import org.veri.be.lib.exception.http.NotFoundException;
+import org.veri.be.lib.exception.ApplicationException;
 
 @Transactional(readOnly = true)
 @Service
@@ -32,7 +32,7 @@ public class CardQueryService {
 
     public CardDetailResponse getCardDetail(Long cardId, Member viewer) {
         Card card = cardRepository.findByIdWithAllAssociations(cardId)
-                .orElseThrow(() -> new NotFoundException(CardErrorInfo.NOT_FOUND));
+                .orElseThrow(() -> ApplicationException.of(CardErrorInfo.NOT_FOUND));
 
         card.assertReadableBy(viewer);
 
@@ -41,7 +41,7 @@ public class CardQueryService {
 
     public Card getCardById(Long cardId) {
         return cardRepository.findById(cardId)
-                .orElseThrow(() -> new NotFoundException(CardErrorInfo.NOT_FOUND));
+                .orElseThrow(() -> ApplicationException.of(CardErrorInfo.NOT_FOUND));
     }
 
     public int getOwnedCardCount(Long memberId) {

@@ -23,7 +23,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 import org.veri.be.domain.image.client.MistralOcrClient;
-import org.veri.be.domain.image.exception.ImageErrorInfo;
+import org.veri.be.domain.image.exception.ImageErrorCode;
 import org.veri.be.support.assertion.ExceptionAssertions;
 
 @ExtendWith(MockitoExtension.class)
@@ -90,7 +90,7 @@ class MistralOcrClientTest {
 
             ExceptionAssertions.assertApplicationException(
                     () -> client.requestOcr("https://example.com/ocr/image.png"),
-                    ImageErrorInfo.OCR_PROCESSING_FAILED
+                    ImageErrorCode.OCR_PROCESSING_FAILED
             );
         }
 
@@ -108,7 +108,7 @@ class MistralOcrClientTest {
 
             ExceptionAssertions.assertApplicationException(
                     () -> client.requestOcr("https://example.com/ocr/image.png"),
-                    ImageErrorInfo.OCR_PROCESSING_FAILED
+                    ImageErrorCode.OCR_PROCESSING_FAILED
             );
         }
 
@@ -125,7 +125,7 @@ class MistralOcrClientTest {
 
             ExceptionAssertions.assertApplicationException(
                     () -> client.requestOcr("https://example.com/ocr/image.png"),
-                    ImageErrorInfo.OCR_PROCESSING_FAILED
+                    ImageErrorCode.OCR_PROCESSING_FAILED
             );
         }
 
@@ -137,7 +137,7 @@ class MistralOcrClientTest {
 
             ExceptionAssertions.assertApplicationException(
                     () -> client.requestOcr("https://example.com/ocr/image.png"),
-                    ImageErrorInfo.OCR_PROCESSING_FAILED
+                    ImageErrorCode.OCR_PROCESSING_FAILED
             );
         }
     }

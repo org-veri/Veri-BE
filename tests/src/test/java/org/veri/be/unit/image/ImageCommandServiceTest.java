@@ -15,13 +15,13 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.veri.be.domain.image.entity.Image;
-import org.veri.be.domain.image.exception.ImageErrorInfo;
+import org.veri.be.domain.image.exception.ImageErrorCode;
 import org.veri.be.domain.image.repository.ImageRepository;
 import org.veri.be.domain.image.service.ImageCommandService;
 import org.veri.be.domain.image.service.OcrService;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
-import org.veri.be.lib.exception.http.InternalServerException;
+import org.veri.be.lib.exception.ApplicationException;
 import org.veri.be.support.assertion.ExceptionAssertions;
 
 @ExtendWith(MockitoExtension.class)
@@ -71,20 +71,20 @@ class ImageCommandServiceTest {
 
             ExceptionAssertions.assertApplicationException(
                     () -> imageCommandService.processWithMistral(member, "https://example.com/image.png"),
-                    ImageErrorInfo.OCR_PROCESSING_FAILED
+                    ImageErrorCode.OCR_PROCESSING_FAILED
             );
         }
 
         @Test
-        @DisplayName("InternalServerException은 그대로 전달된다")
-        void rethrowsInternalServerException() {
+        @DisplayName("ApplicationException은 그대로 전달된다")
+        void rethrowsApplicationException() {
             Member member = member(1L, "member@test.com", "member");
             given(ocrService.extract("https://example.com/image.png"))
-                    .willThrow(new InternalServerException(ImageErrorInfo.OCR_PROCESSING_FAILED));
+                    .willThrow(ApplicationException.of(ImageErrorCode.OCR_PROCESSING_FAILED));
 
             ExceptionAssertions.assertApplicationException(
                     () -> imageCommandService.processWithMistral(member, "https://example.com/image.png"),
-                    ImageErrorInfo.OCR_PROCESSING_FAILED
+                    ImageErrorCode.OCR_PROCESSING_FAILED
             );
         }
     }

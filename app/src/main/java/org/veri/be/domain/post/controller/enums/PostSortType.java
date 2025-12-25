@@ -2,8 +2,8 @@ package org.veri.be.domain.post.controller.enums;
 
 import lombok.Getter;
 import org.veri.be.domain.card.exception.CardErrorInfo;
-import org.veri.be.lib.exception.http.BadRequestException;
 import org.springframework.data.domain.Sort;
+import org.veri.be.lib.exception.ApplicationException;
 
 @Getter
 public enum PostSortType {
@@ -20,7 +20,7 @@ public enum PostSortType {
         return switch (value.toLowerCase()) {
             case "newest" -> NEWEST;
             case "oldest" -> OLDEST;
-            default -> throw new BadRequestException(CardErrorInfo.BAD_REQUEST);
+            default -> throw ApplicationException.of(CardErrorInfo.BAD_REQUEST);
         };
     }
 }

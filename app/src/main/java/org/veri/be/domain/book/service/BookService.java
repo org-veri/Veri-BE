@@ -6,8 +6,8 @@ import org.veri.be.domain.book.dto.book.BookConverter;
 import org.veri.be.domain.book.dto.book.BookSearchResponse;
 import org.veri.be.domain.book.entity.Book;
 import org.veri.be.domain.book.repository.BookRepository;
-import org.veri.be.lib.exception.CommonErrorInfo;
-import org.veri.be.lib.exception.http.NotFoundException;
+import org.veri.be.lib.exception.CommonErrorCode;
+import org.veri.be.lib.exception.ApplicationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
@@ -49,6 +49,6 @@ public class BookService {
     public Book getBookById(Long bookId) {
         if (bookId == null) return null;
         return bookRepository.findById(bookId)
-                .orElseThrow(() -> new NotFoundException(CommonErrorInfo.RESOURCE_NOT_FOUND));
+                .orElseThrow(() -> ApplicationException.of(CommonErrorCode.RESOURCE_NOT_FOUND));
     }
 }

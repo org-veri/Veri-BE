@@ -4,7 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.veri.be.global.auth.AuthErrorInfo;
-import org.veri.be.lib.exception.http.UnAuthorizedException;
+import org.veri.be.lib.exception.ApplicationException;
 
 @RequiredArgsConstructor
 public class JwtExceptionHandlingTokenProvider implements TokenProvider {
@@ -26,7 +26,7 @@ public class JwtExceptionHandlingTokenProvider implements TokenProvider {
         try {
             return delegate.parseAccessToken(accessToken);
         } catch (JwtException | IllegalArgumentException _) {
-            throw new UnAuthorizedException(AuthErrorInfo.UNAUTHORIZED);
+            throw ApplicationException.of(AuthErrorInfo.UNAUTHORIZED);
         }
     }
 
@@ -35,7 +35,7 @@ public class JwtExceptionHandlingTokenProvider implements TokenProvider {
         try {
             return delegate.parseRefreshToken(refreshToken);
         } catch (JwtException | IllegalArgumentException _) {
-            throw new UnAuthorizedException(AuthErrorInfo.UNAUTHORIZED);
+            throw ApplicationException.of(AuthErrorInfo.UNAUTHORIZED);
         }
     }
 }

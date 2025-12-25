@@ -21,8 +21,8 @@ import org.veri.be.lib.response.ApiResponse;
 import org.veri.be.global.storage.dto.PresignedUrlRequest;
 import org.veri.be.global.storage.dto.PresignedUrlResponse;
 import org.springframework.web.bind.annotation.*;
-import org.veri.be.lib.exception.CommonErrorInfo;
-import org.veri.be.lib.exception.http.BadRequestException;
+import org.veri.be.lib.exception.CommonErrorCode;
+import org.veri.be.lib.exception.ApplicationException;
 
 @Tag(name = "독서 카드")
 @RequestMapping("/api/v1/cards")
@@ -64,7 +64,7 @@ public class CardController {
             @RequestParam(defaultValue = "newest") String sort
     ) {
         if (page < 1 || size < 1) {
-            throw new BadRequestException(CommonErrorInfo.INVALID_REQUEST);
+            throw ApplicationException.of(CommonErrorCode.INVALID_REQUEST);
         }
         CardSortType sortType = CardSortType.from(sort);
         return ApiResponse.ok(
