@@ -18,7 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import org.veri.be.domain.book.client.NaverBookSearchClient;
 import org.veri.be.domain.book.config.NaverConfig;
 import org.veri.be.domain.book.dto.book.NaverBookResponse;
-import org.veri.be.domain.book.exception.BookErrorInfo;
+import org.veri.be.domain.book.exception.BookErrorCode;
 import org.veri.be.support.assertion.ExceptionAssertions;
 import tools.jackson.databind.ObjectMapper;
 
@@ -74,7 +74,7 @@ class NaverBookSearchClientTest {
         void throwsWhenStartTooLarge() {
             ExceptionAssertions.assertApplicationException(
                     () -> client.search("query", 101, 10),
-                    BookErrorInfo.BAD_REQUEST
+                    BookErrorCode.BAD_REQUEST
             );
         }
 
@@ -86,7 +86,7 @@ class NaverBookSearchClientTest {
 
             ExceptionAssertions.assertApplicationException(
                     () -> client.search("query", 1, 10),
-                    BookErrorInfo.BAD_REQUEST
+                    BookErrorCode.BAD_REQUEST
             );
         }
 
@@ -98,7 +98,7 @@ class NaverBookSearchClientTest {
 
             ExceptionAssertions.assertApplicationException(
                     () -> client.search("query", 1, 10),
-                    BookErrorInfo.BAD_REQUEST
+                    BookErrorCode.BAD_REQUEST
             );
         }
 

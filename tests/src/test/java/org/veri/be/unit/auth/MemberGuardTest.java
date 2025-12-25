@@ -15,7 +15,7 @@ import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
 import org.veri.be.global.auth.context.CurrentMemberAccessor;
 import org.veri.be.global.auth.guards.MemberGuard;
-import org.veri.be.lib.exception.CommonErrorInfo;
+import org.veri.be.lib.exception.CommonErrorCode;
 import org.veri.be.support.assertion.ExceptionAssertions;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,7 +46,7 @@ class MemberGuardTest {
 
             ExceptionAssertions.assertApplicationException(
                     guard::canActivate,
-                    CommonErrorInfo.DOES_NOT_HAVE_PERMISSION
+                    CommonErrorCode.DOES_NOT_HAVE_PERMISSION
             );
         }
     }

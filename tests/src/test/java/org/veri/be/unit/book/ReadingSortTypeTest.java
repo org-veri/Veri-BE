@@ -6,7 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.veri.be.domain.book.controller.enums.ReadingSortType;
-import org.veri.be.domain.book.exception.BookErrorInfo;
+import org.veri.be.domain.book.exception.BookErrorCode;
 import org.veri.be.support.assertion.ExceptionAssertions;
 
 class ReadingSortTypeTest {
@@ -44,7 +44,7 @@ class ReadingSortTypeTest {
         void throwsWhenInvalid() {
             ExceptionAssertions.assertApplicationException(
                     () -> ReadingSortType.from("invalid"),
-                    BookErrorInfo.BAD_REQUEST
+                    BookErrorCode.BAD_REQUEST
             );
         }
     }

@@ -90,7 +90,7 @@ class SocialReadingIntegrationTest extends IntegrationTestSupport {
         @DisplayName("존재하지 않는 ID")
         void getNotFound() throws Exception {
             mockMvc.perform(get("/api/v2/bookshelf/999"))
-                    .andExpect(status().isBadRequest()); // As per checklist expectation (BookErrorInfo.BAD_REQUEST)
+                    .andExpect(status().isBadRequest()); // As per checklist expectation (BookErrorCode.BAD_REQUEST)
         }
     }
 

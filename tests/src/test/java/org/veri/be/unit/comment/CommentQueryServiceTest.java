@@ -20,7 +20,7 @@ import org.veri.be.domain.comment.service.CommentQueryService;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
 import org.veri.be.domain.post.dto.response.PostDetailResponse;
-import org.veri.be.lib.exception.CommonErrorInfo;
+import org.veri.be.lib.exception.CommonErrorCode;
 import org.veri.be.support.assertion.ExceptionAssertions;
 
 @ExtendWith(MockitoExtension.class)
@@ -105,7 +105,7 @@ class CommentQueryServiceTest {
 
             ExceptionAssertions.assertApplicationException(
                     () -> commentQueryService.getCommentById(1L),
-                    CommonErrorInfo.RESOURCE_NOT_FOUND
+                    CommonErrorCode.RESOURCE_NOT_FOUND
             );
         }
 
