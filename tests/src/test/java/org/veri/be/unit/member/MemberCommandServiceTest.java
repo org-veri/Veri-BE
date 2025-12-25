@@ -17,7 +17,7 @@ import org.veri.be.domain.member.dto.MemberResponse;
 import org.veri.be.domain.member.dto.UpdateMemberInfoRequest;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
-import org.veri.be.domain.member.exception.MemberErrorInfo;
+import org.veri.be.domain.member.exception.MemberErrorCode;
 import org.veri.be.domain.member.repository.MemberRepository;
 import org.veri.be.domain.member.service.MemberCommandService;
 import org.veri.be.domain.member.service.MemberQueryService;
@@ -56,7 +56,7 @@ class MemberCommandServiceTest {
 
             ExceptionAssertions.assertApplicationException(
                     () -> memberCommandService.updateInfo(request, member),
-                    MemberErrorInfo.ALREADY_EXIST_NICKNAME
+                    MemberErrorCode.ALREADY_EXIST_NICKNAME
             );
         }
 

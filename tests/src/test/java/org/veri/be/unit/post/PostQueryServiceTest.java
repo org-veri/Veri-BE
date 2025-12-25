@@ -36,7 +36,7 @@ import org.veri.be.domain.post.repository.dto.DetailLikeInfoQueryResult;
 import org.veri.be.domain.post.repository.dto.PostFeedQueryResult;
 import org.veri.be.domain.post.service.LikePostQueryService;
 import org.veri.be.domain.post.service.PostQueryService;
-import org.veri.be.lib.exception.CommonErrorInfo;
+import org.veri.be.lib.exception.CommonErrorCode;
 import org.veri.be.support.assertion.ExceptionAssertions;
 
 @ExtendWith(MockitoExtension.class)
@@ -130,7 +130,7 @@ class PostQueryServiceTest {
 
             ExceptionAssertions.assertApplicationException(
                     () -> postQueryService.getPostById(1L),
-                    CommonErrorInfo.RESOURCE_NOT_FOUND
+                    CommonErrorCode.RESOURCE_NOT_FOUND
             );
         }
     }
@@ -183,7 +183,7 @@ class PostQueryServiceTest {
 
             ExceptionAssertions.assertApplicationException(
                     () -> postQueryService.getPostDetail(1L, requester),
-                    CommonErrorInfo.RESOURCE_NOT_FOUND
+                    CommonErrorCode.RESOURCE_NOT_FOUND
             );
         }
     }

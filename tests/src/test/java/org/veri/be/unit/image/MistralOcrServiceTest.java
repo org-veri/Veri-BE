@@ -19,7 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.veri.be.domain.image.client.OcrClient;
 import org.veri.be.domain.image.entity.OcrResult;
-import org.veri.be.domain.image.exception.ImageErrorInfo;
+import org.veri.be.domain.image.exception.ImageErrorCode;
 import org.veri.be.domain.image.repository.OcrResultRepository;
 import org.veri.be.domain.image.service.MistralOcrService;
 import org.veri.be.lib.time.SleepSupport;
@@ -93,7 +93,7 @@ class MistralOcrServiceTest {
 
             ExceptionAssertions.assertApplicationException(
                     () -> service.extract("https://example.com/ocr/image.png"),
-                    ImageErrorInfo.OCR_PROCESSING_FAILED
+                    ImageErrorCode.OCR_PROCESSING_FAILED
             );
         }
 
@@ -105,7 +105,7 @@ class MistralOcrServiceTest {
 
             ExceptionAssertions.assertApplicationException(
                     () -> service.extract("https://example.com/ocr/image.png"),
-                    ImageErrorInfo.OCR_PROCESSING_FAILED
+                    ImageErrorCode.OCR_PROCESSING_FAILED
             );
         }
     }
