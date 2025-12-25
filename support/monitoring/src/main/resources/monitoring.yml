@@ -1,5 +1,7 @@
 management:
   tracing:
+    export:
+      enabled: true
     sampling:
       probability: 1.0
   opentelemetry:
@@ -19,3 +21,7 @@ management:
   observations:
     annotations:
       enabled: true
+
+spring:
+  datasource:
+    observable: true
