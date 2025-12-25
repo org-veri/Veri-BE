@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
-import org.veri.be.lib.exception.CommonErrorInfo;
-import org.veri.be.lib.exception.ErrorInfo;
+import org.veri.be.lib.exception.CommonErrorCode;
+import org.veri.be.lib.exception.ErrorCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -96,12 +96,12 @@ public class ApiResponse<T> {
                 .build();
     }
 
-    public static ApiResponse<Map<String, Object>> error(ErrorInfo errorInfo, HttpStatus httpStatus) {
-        return ApiResponse.error(errorInfo, httpStatus, MediaType.APPLICATION_JSON);
+    public static ApiResponse<Map<String, Object>> error(ErrorCode errorCode, HttpStatus httpStatus) {
+        return ApiResponse.error(errorCode, httpStatus, MediaType.APPLICATION_JSON);
     }
 
     public static ApiResponse<Map<String, Object>> error(
-            ErrorInfo errorInfo,
+            ErrorCode errorCode,
             HttpStatus httpStatus,
             MediaType contentType
     ) {
@@ -109,8 +109,8 @@ public class ApiResponse<T> {
                 .httpStatus(httpStatus)
                 .isSuccess(false)
                 .result(new HashMap<>())
-                .code(errorInfo.getCode())
-                .message(errorInfo.getMessage())
+                .code(errorCode.getCode())
+                .message(errorCode.getMessage())
                 .contentType(contentType)
                 .build();
     }
@@ -130,10 +130,10 @@ public class ApiResponse<T> {
         ApiResponse<Map<String, String>> apiResponse = ApiResponse.<Map<String, String>>builder()
                 .isSuccess(false)
                 .result(errors)
-                .message(CommonErrorInfo.NOT_VALID_REQUEST_FIELDS.getMessage())
+                .message(CommonErrorCode.NOT_VALID_REQUEST_FIELDS.getMessage())
                 .contentType(contentType)
                 .httpStatus(HttpStatus.BAD_REQUEST)
-                .code(CommonErrorInfo.NOT_VALID_REQUEST_FIELDS.getCode())
+                .code(CommonErrorCode.NOT_VALID_REQUEST_FIELDS.getCode())
                 .build();
         return ResponseEntity.ok(apiResponse);
     }
