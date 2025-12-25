@@ -1,4 +1,4 @@
-package org.veri.be.global.config;
+package org.veri.be.logging.config;
 
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.instrumentation.logback.appender.v1_0.OpenTelemetryAppender;
