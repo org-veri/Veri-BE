@@ -10,35 +10,47 @@ public class InjectIPAddressInterceptor implements HandlerInterceptor {
     private static final String UNKNOWN = "unknown";
 
     @Override
-    public boolean preHandle(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            Object handler
-    ) {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String clientIp = getClientIp(request);
         request.setAttribute(IP, clientIp);
-
         return true;
     }
 
-    /**
-     * 클라이언트 IP를 추출
-     * <p>
-     * X-Forwarded-For, Proxy-Client-IP, WL-Proxy-Client-IP 헤더를 우선적으로 확인하고, 그렇지 않으면
-     * request.getRemoteAddr()를 사용합니다.
-     */
     private String getClientIp(HttpServletRequest request) {
-        String clientIp = request.getHeader("X-Forwarded-For");
+        String ip = request.getHeader("X-Forwarded-For");
 
-        if (clientIp == null || clientIp.isEmpty() || UNKNOWN.equalsIgnoreCase(clientIp)) {
-            clientIp = request.getHeader("Proxy-Client-IP");
+        if (isValidIp(ip)) {
+            if (ip.contains(",")) {
+                return ip.split(",")[0].trim();
+            }
+            return ip;
         }
-        if (clientIp == null || clientIp.isEmpty() || UNKNOWN.equalsIgnoreCase(clientIp)) {
-            clientIp = request.getHeader("WL-Proxy-Client-IP");
+
+        ip = request.getHeader("X-Real-IP");
+        if (isValidIp(ip)) return ip;
+
+        ip = request.getHeader("Proxy-Client-IP");
+        if (isValidIp(ip)) return ip;
+
+        ip = request.getHeader("WL-Proxy-Client-IP");
+        if (isValidIp(ip)) return ip;
+
+        ip = request.getHeader("HTTP_CLIENT_IP");
+        if (isValidIp(ip)) return ip;
+
+        ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+        if (isValidIp(ip)) return ip;
+
+        ip = request.getRemoteAddr();
+
+        if ("0:0:0:0:0:0:0:1".equals(ip)) {
+            return "127.0.0.1";
         }
-        if (clientIp == null || clientIp.isEmpty() || UNKNOWN.equalsIgnoreCase(clientIp)) {
-            clientIp = request.getRemoteAddr();
-        }
-        return clientIp;
+
+        return ip;
+    }
+
+    private boolean isValidIp(String ip) {
+        return ip != null && !ip.isEmpty() && !UNKNOWN.equalsIgnoreCase(ip);
     }
 }
