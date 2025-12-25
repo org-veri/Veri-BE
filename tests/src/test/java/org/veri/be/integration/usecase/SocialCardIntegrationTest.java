@@ -91,7 +91,7 @@ class SocialCardIntegrationTest extends IntegrationTestSupport {
             book = bookRepository.save(book);
             Reading reading = Reading.builder().member(getMockMember()).book(book).isPublic(false).build();
             reading = readingRepository.save(reading);
-            
+
             Card card = Card.builder()
                     .member(getMockMember())
                     .reading(reading)
@@ -103,7 +103,7 @@ class SocialCardIntegrationTest extends IntegrationTestSupport {
 
             mockMvc.perform(patch("/api/v1/cards/" + card.getId() + "/visibility")
                             .param("isPublic", "true"))
-                    .andExpect(status().isBadRequest()); // Should fail as reading is private
+                    .andExpect(status().isForbidden()); // Should fail as reading is private
         }
 
         @Test
