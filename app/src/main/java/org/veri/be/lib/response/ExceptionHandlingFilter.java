@@ -16,7 +16,6 @@ import org.veri.be.lib.exception.handler.GlobalExceptionHandler;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
-import java.util.Map;
 
 @Slf4j
 @Component
@@ -38,14 +37,14 @@ public class ExceptionHandlingFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } catch (ApplicationException e) {
             if (isBeforeController(request)) {
-                ApiResponse<Map<String, Object>> apiResponse = exceptionHelper.handleApplicationException(e, request);
+                ApiResponse<Void> apiResponse = exceptionHelper.handleApplicationException(e, request);
                 writeErrorResponseIfPossible(response, apiResponse);
             } else {
                 throw e;
             }
         } catch (Exception e) {
             if (isBeforeController(request)) {
-                ApiResponse<Map<String, Object>> apiResponse = exceptionHelper.handleAnyUnexpectedException(e, request);
+                ApiResponse<Void> apiResponse = exceptionHelper.handleAnyUnexpectedException(e, request);
                 writeErrorResponseIfPossible(response, apiResponse);
             } else {
                 throw e;

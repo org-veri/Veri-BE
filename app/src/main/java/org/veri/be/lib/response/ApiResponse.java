@@ -5,17 +5,12 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
-import org.veri.be.lib.exception.CommonErrorCode;
-import org.veri.be.lib.exception.ErrorCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
+import org.veri.be.lib.exception.ErrorCode;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @JsonSerialize
 @Builder
@@ -96,45 +91,24 @@ public class ApiResponse<T> {
                 .build();
     }
 
-    public static ApiResponse<Map<String, Object>> error(ErrorCode errorCode, HttpStatus httpStatus) {
-        return ApiResponse.error(errorCode, httpStatus, MediaType.APPLICATION_JSON);
-    }
-
-    public static ApiResponse<Map<String, Object>> error(
-            ErrorCode errorCode,
-            HttpStatus httpStatus,
-            MediaType contentType
-    ) {
-        return ApiResponse.<Map<String, Object>>builder()
-                .httpStatus(httpStatus)
+    public static ApiResponse<Void> error(ErrorCode errorCode, HttpStatus httpStatus) {
+        return ApiResponse.<Void>builder()
                 .isSuccess(false)
-                .result(new HashMap<>())
                 .code(errorCode.getCode())
                 .message(errorCode.getMessage())
-                .contentType(contentType)
+                .httpStatus(httpStatus)
+                .result(null) // 데이터 없음
                 .build();
     }
 
-    public static ResponseEntity<ApiResponse<Map<String, String>>> validationFailure(List<FieldError> fieldErrors) {
-        return ApiResponse.validationFailure(fieldErrors, MediaType.APPLICATION_JSON);
-    }
-
-    public static ResponseEntity<ApiResponse<Map<String, String>>> validationFailure(
-            List<FieldError> fieldErrors,
-            MediaType contentType
-    ) {
-        Map<String, String> errors = new HashMap<>();
-        fieldErrors.forEach(
-                fieldError -> errors.put(fieldError.getField(), fieldError.getDefaultMessage()));
-
-        ApiResponse<Map<String, String>> apiResponse = ApiResponse.<Map<String, String>>builder()
+    public static <T> ApiResponse<T> error(ErrorCode errorCode, HttpStatus httpStatus, T result) {
+        return ApiResponse.<T>builder()
                 .isSuccess(false)
-                .result(errors)
-                .message(CommonErrorCode.NOT_VALID_REQUEST_FIELDS.getMessage())
-                .contentType(contentType)
-                .httpStatus(HttpStatus.BAD_REQUEST)
-                .code(CommonErrorCode.NOT_VALID_REQUEST_FIELDS.getCode())
+                .code(errorCode.getCode())
+                .message(errorCode.getMessage())
+                .httpStatus(httpStatus)
+                .contentType(MediaType.APPLICATION_JSON)
+                .result(result)
                 .build();
-        return ResponseEntity.ok(apiResponse);
     }
 }

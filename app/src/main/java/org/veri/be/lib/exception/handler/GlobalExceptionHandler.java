@@ -2,16 +2,9 @@ package org.veri.be.lib.exception.handler;
 
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import jakarta.servlet.http.HttpServletRequest;
-import java.net.URI;
-import java.util.Map;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
-import org.veri.be.lib.exception.ApplicationException;
-import org.veri.be.lib.exception.CommonErrorCode;
-import org.veri.be.global.interceptors.InjectIPAddressInterceptor;
-import org.veri.be.lib.response.ApiResponse;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -19,10 +12,16 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-import jakarta.validation.ConstraintViolationException;
+import org.veri.be.global.interceptors.InjectIPAddressInterceptor;
+import org.veri.be.lib.exception.ApplicationException;
+import org.veri.be.lib.exception.CommonErrorCode;
+import org.veri.be.lib.response.ApiResponse;
+
+import java.net.URI;
+import java.util.List;
+import java.util.Map;
 
 @RestControllerAdvice
 @Slf4j
@@ -32,7 +31,7 @@ public class GlobalExceptionHandler {
     private final ValidationErrorMapper validationErrorMapper = new ValidationErrorMapper();
 
     @ExceptionHandler(ApplicationException.class)
-    public ApiResponse<Map<String, Object>> handleApplicationException(
+    public ApiResponse<Void> handleApplicationException(
             ApplicationException e,
             HttpServletRequest request) {
         exceptionLogger.log(
@@ -48,7 +47,7 @@ public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
-    public ApiResponse<Map<String, Object>> handleAnyUnexpectedException(
+    public ApiResponse<Void> handleAnyUnexpectedException(
             Exception e,
             HttpServletRequest request) {
         exceptionLogger.log(
@@ -64,7 +63,7 @@ public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NoResourceFoundException.class)
-    public ApiResponse<Map<String, Object>> handleNoResourceFoundException(
+    public ApiResponse<Void> handleNoResourceFoundException(
             NoResourceFoundException e,
             HttpServletRequest request) {
         exceptionLogger.log(
@@ -80,7 +79,7 @@ public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NoHandlerFoundException.class)
-    public ApiResponse<Map<String, Object>> handleNoHandlerFoundException(
+    public ApiResponse<Void> handleNoHandlerFoundException(
             NoHandlerFoundException e,
             HttpServletRequest request) {
         exceptionLogger.log(
@@ -96,7 +95,7 @@ public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ApiResponse<Map<String, Object>> handleHttpRequestNotSupportedException(
+    public ApiResponse<Void> handleHttpRequestNotSupportedException(
             HttpRequestMethodNotSupportedException e,
             HttpServletRequest request) {
         String message = String.format("Method %s for '%s' Not supported. Request IP: %s",
@@ -117,9 +116,10 @@ public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Map<String, String>>> handleMethodArgumentNotValidException(
+    public ApiResponse<List<Map<String, String>>> handleMethodArgumentNotValidException(
             MethodArgumentNotValidException e,
             HttpServletRequest request) {
+
         exceptionLogger.log(
                 HttpStatus.BAD_REQUEST,
                 "Validation failed for request fields",
@@ -128,46 +128,16 @@ public class GlobalExceptionHandler {
                 "VALIDATION_ERROR"
         );
 
-        return ApiResponse.validationFailure(e.getFieldErrors());
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ApiResponse<Map<String, Object>> handleMethodArgumentTypeMismatchException(
-            MethodArgumentTypeMismatchException e,
-            HttpServletRequest request) {
-        exceptionLogger.log(
-                HttpStatus.BAD_REQUEST,
-                CommonErrorCode.INVALID_REQUEST.getMessage(),
-                URI.create(request.getRequestURI()),
-                e,
-                "TYPE_MISMATCH"
-        );
-
-        return ApiResponse.error(CommonErrorCode.INVALID_REQUEST, HttpStatus.BAD_REQUEST);
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ApiResponse<Map<String, Object>> handleHttpMessageNotReadableException(
-            HttpMessageNotReadableException e,
-            HttpServletRequest request) {
-        exceptionLogger.log(
-                HttpStatus.BAD_REQUEST,
-                "Request message not readable",
-                URI.create(request.getRequestURI()),
-                e,
-                "MESSAGE_NOT_READABLE"
-        );
-
-        return ApiResponse.error(CommonErrorCode.INVALID_REQUEST, HttpStatus.BAD_REQUEST);
+        List<Map<String, String>> errors = validationErrorMapper.from(e);
+        return ApiResponse.error(CommonErrorCode.NOT_VALID_REQUEST_FIELDS, HttpStatus.BAD_REQUEST, errors);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HandlerMethodValidationException.class)
-    public ApiResponse<Map<String, Object>> handleHandlerMethodValidationException(
+    public ApiResponse<List<Map<String, String>>> handleHandlerMethodValidationException(
             HandlerMethodValidationException e,
             HttpServletRequest request) {
+
         exceptionLogger.log(
                 HttpStatus.BAD_REQUEST,
                 "Method parameter validation failed",
@@ -176,14 +146,16 @@ public class GlobalExceptionHandler {
                 "METHOD_VALIDATION_ERROR"
         );
 
-        return ApiResponse.error(CommonErrorCode.INVALID_REQUEST, HttpStatus.BAD_REQUEST);
+        List<Map<String, String>> errors = validationErrorMapper.from(e);
+        return ApiResponse.error(CommonErrorCode.NOT_VALID_REQUEST_FIELDS, HttpStatus.BAD_REQUEST, errors);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ConstraintViolationException.class)
-    public ApiResponse<Map<String, Object>> handleConstraintViolationException(
+    public ApiResponse<List<Map<String, String>>> handleConstraintViolationException(
             ConstraintViolationException e,
             HttpServletRequest request) {
+
         exceptionLogger.log(
                 HttpStatus.BAD_REQUEST,
                 "Constraint violation occurred",
@@ -192,12 +164,13 @@ public class GlobalExceptionHandler {
                 "CONSTRAINT_VIOLATION"
         );
 
-        return ApiResponse.error(CommonErrorCode.INVALID_REQUEST, HttpStatus.BAD_REQUEST);
+        List<Map<String, String>> errors = validationErrorMapper.from(e);
+        return ApiResponse.error(CommonErrorCode.NOT_VALID_REQUEST_FIELDS, HttpStatus.BAD_REQUEST, errors);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(UnrecognizedPropertyException.class)
-    public ApiResponse<Map<String, Object>> handleUnrecognizedPropertyException(
+    public ApiResponse<Void> handleUnrecognizedPropertyException(
             UnrecognizedPropertyException e,
             HttpServletRequest request
     ) {
@@ -218,7 +191,7 @@ public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ApiResponse<Map<String, Object>> handleMissingServletRequestParameterException(
+    public ApiResponse<Void> handleMissingServletRequestParameterException(
             MissingServletRequestParameterException e,
             HttpServletRequest request) {
         exceptionLogger.log(
