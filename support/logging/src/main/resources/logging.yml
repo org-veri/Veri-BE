@@ -1,6 +1,21 @@
 logging:
   level:
     root: info
+    # 노이즈 제거
     org.springframework.web.servlet: ERROR
+    org.apache.coyote.http11.Http11Processor: OFF
+    org.apache.catalina.startup.DigesterFactory: ERROR
+    org.apache.catalina.util.LifecycleBase: ERROR
+    org.apache.coyote.http11.Http11NioProtocol: WARN
+    org.apache.tomcat.util.net.NioSelectorPool: WARN
+    org.hibernate.validator: WARN
+    org.hibernate.orm.deprecation: ERROR
+    com.zaxxer.hikari: WARN
+    org.springframework.security: WARN
+    software.amazon.awssdk: WARN
+    com.amazonaws: WARN
+    org.springdoc: WARN
+    io.swagger.v3: WARN
+    org.apache.http: WARN
   pattern:
     level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
