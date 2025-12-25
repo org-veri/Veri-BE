@@ -17,8 +17,7 @@ import org.veri.be.global.storage.dto.PresignedUrlRequest;
 import org.veri.be.global.storage.dto.PresignedUrlResponse;
 import org.veri.be.global.storage.service.StorageService;
 import org.veri.be.global.storage.service.StorageUtil;
-import org.veri.be.lib.exception.http.BadRequestException;
-import org.veri.be.lib.exception.http.NotFoundException;
+import org.veri.be.lib.exception.ApplicationException;
 
 import java.time.Duration;
 
@@ -35,7 +34,7 @@ public class CardCommandService {
     @Transactional
     public Long createCard(Member member, String content, String imageUrl, Long memberBookId, Boolean isPublic) {
         Reading reading = readingRepository.findById(memberBookId)
-                .orElseThrow(() -> new BadRequestException(CardErrorInfo.BAD_REQUEST));
+                .orElseThrow(() -> ApplicationException.of(CardErrorInfo.BAD_REQUEST));
 
         Card card = Card.builder()
                 .member(member)
@@ -60,7 +59,7 @@ public class CardCommandService {
 
     public Card getCard(Long cardId) {
         return cardRepository.findById(cardId)
-                .orElseThrow(() -> new NotFoundException(CardErrorInfo.NOT_FOUND));
+                .orElseThrow(() -> ApplicationException.of(CardErrorInfo.NOT_FOUND));
     }
 
     @Transactional
@@ -85,11 +84,11 @@ public class CardCommandService {
         String prefix = "public/ocr";
 
         if (request.contentLength() > 3 * MB) {
-            throw new BadRequestException(CardErrorInfo.IMAGE_TOO_LARGE);
+            throw ApplicationException.of(CardErrorInfo.IMAGE_TOO_LARGE);
         }
 
         if (!StorageUtil.isImage(request.contentType()))
-            throw new BadRequestException(CardErrorInfo.UNSUPPORTED_IMAGE_TYPE);
+            throw ApplicationException.of(CardErrorInfo.UNSUPPORTED_IMAGE_TYPE);
 
         return storageService.generatePresignedUrl(
                 request.contentType(),
@@ -104,11 +103,11 @@ public class CardCommandService {
         String prefix = "public";
 
         if (request.contentLength() > 3 * MB) {
-            throw new BadRequestException(CardErrorInfo.IMAGE_TOO_LARGE);
+            throw ApplicationException.of(CardErrorInfo.IMAGE_TOO_LARGE);
         }
 
         if (!StorageUtil.isImage(request.contentType()))
-            throw new BadRequestException(CardErrorInfo.UNSUPPORTED_IMAGE_TYPE);
+            throw ApplicationException.of(CardErrorInfo.UNSUPPORTED_IMAGE_TYPE);
 
         return storageService.generatePresignedUrl(
                 request.contentType(),

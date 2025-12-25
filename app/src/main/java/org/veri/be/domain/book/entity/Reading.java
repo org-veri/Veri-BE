@@ -2,13 +2,13 @@ package org.veri.be.domain.book.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.veri.be.lib.exception.ApplicationException;
 import lombok.experimental.SuperBuilder;
 import org.veri.be.domain.book.entity.enums.ReadingStatus;
-import org.veri.be.domain.book.exception.ReadingErrorInfo;
+import org.veri.be.domain.book.exception.ReadingErrorCode;
 import org.veri.be.domain.card.entity.Card;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.global.entity.BaseEntity;
-import org.veri.be.lib.exception.http.ForbiddenException;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -70,7 +70,7 @@ public class Reading extends BaseEntity {
 
     public void authorizeMember(Long memberId) {
         if (!this.member.getId().equals(memberId)) {
-            throw new ForbiddenException(ReadingErrorInfo.FORBIDDEN);
+            throw ApplicationException.of(ReadingErrorCode.FORBIDDEN);
         }
     }
 

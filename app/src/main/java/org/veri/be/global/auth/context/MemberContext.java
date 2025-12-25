@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.global.auth.AuthErrorInfo;
-import org.veri.be.lib.exception.http.UnAuthorizedException;
+import org.veri.be.lib.exception.ApplicationException;
 
 import java.util.Optional;
 
@@ -39,7 +39,7 @@ public class MemberContext {
 
     public static Member getMemberOrThrow() {
         return getCurrentMember().orElseThrow(
-                () -> new UnAuthorizedException(AuthErrorInfo.UNAUTHORIZED)
+                () -> ApplicationException.of(AuthErrorInfo.UNAUTHORIZED)
         );
     }
 

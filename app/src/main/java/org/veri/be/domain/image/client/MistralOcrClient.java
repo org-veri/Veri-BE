@@ -11,8 +11,8 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
-import org.veri.be.domain.image.exception.ImageErrorInfo;
-import org.veri.be.lib.exception.http.InternalServerException;
+import org.veri.be.domain.image.exception.ImageErrorCode;
+import org.veri.be.lib.exception.ApplicationException;
 
 import java.util.List;
 
@@ -50,7 +50,7 @@ public class MistralOcrClient implements OcrClient {
                     .body(MistralOcrResponse.class);
 
             if (response == null || response.pages == null || response.pages.isEmpty()) {
-                throw new InternalServerException(ImageErrorInfo.OCR_PROCESSING_FAILED);
+                throw ApplicationException.of(ImageErrorCode.OCR_PROCESSING_FAILED);
             }
 
             return response.pages.stream()
@@ -58,7 +58,7 @@ public class MistralOcrClient implements OcrClient {
                     .reduce("", (acc, pageText) -> acc + "\n" + pageText)
                     .trim();
         } catch (RestClientException _) {
-            throw new InternalServerException(ImageErrorInfo.OCR_PROCESSING_FAILED);
+            throw ApplicationException.of(ImageErrorCode.OCR_PROCESSING_FAILED);
         }
     }
 

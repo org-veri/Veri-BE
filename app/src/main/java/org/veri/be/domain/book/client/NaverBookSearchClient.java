@@ -10,8 +10,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.veri.be.domain.book.config.NaverConfig;
 import org.veri.be.domain.book.dto.book.NaverBookResponse;
-import org.veri.be.domain.book.exception.BookErrorInfo;
-import org.veri.be.lib.exception.http.BadRequestException;
+import org.veri.be.domain.book.exception.BookErrorCode;
+import org.veri.be.lib.exception.ApplicationException;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 
@@ -29,7 +29,7 @@ public class NaverBookSearchClient implements BookSearchClient {
     public NaverBookResponse search(String query, int page, int size) {
         int start = (page - 1) * size + 1;
         if (start > 1000) {
-            throw new BadRequestException(BookErrorInfo.BAD_REQUEST);
+            throw ApplicationException.of(BookErrorCode.BAD_REQUEST);
         }
 
         URI uri = UriComponentsBuilder
@@ -50,13 +50,13 @@ public class NaverBookSearchClient implements BookSearchClient {
 
         ResponseEntity<String> respEntity = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
         if (respEntity.getStatusCode().is5xxServerError() || respEntity.getBody() == null) {
-            throw new BadRequestException(BookErrorInfo.BAD_REQUEST);
+            throw ApplicationException.of(BookErrorCode.BAD_REQUEST);
         }
 
         try {
             return objectMapper.readValue(respEntity.getBody(), NaverBookResponse.class);
         } catch (JacksonException _) {
-            throw new BadRequestException(BookErrorInfo.BAD_REQUEST);
+            throw ApplicationException.of(BookErrorCode.BAD_REQUEST);
         }
     }
 }

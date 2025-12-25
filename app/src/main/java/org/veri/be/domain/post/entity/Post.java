@@ -8,8 +8,8 @@ import org.veri.be.domain.comment.entity.Comment;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.global.entity.Authorizable;
 import org.veri.be.global.entity.BaseEntity;
-import org.veri.be.lib.exception.CommonErrorInfo;
-import org.veri.be.lib.exception.http.ForbiddenException;
+import org.veri.be.lib.exception.CommonErrorCode;
+import org.veri.be.lib.exception.ApplicationException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +77,7 @@ public class Post extends BaseEntity implements Authorizable {
     @Override
     public void authorizeMember(Long id) {
         if (!this.author.getId().equals(id)) {
-            throw new ForbiddenException(CommonErrorInfo.DOES_NOT_HAVE_PERMISSION);
+            throw ApplicationException.of(CommonErrorCode.DOES_NOT_HAVE_PERMISSION);
         }
     }
 

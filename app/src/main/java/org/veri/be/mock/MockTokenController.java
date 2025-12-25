@@ -10,8 +10,8 @@ import org.veri.be.domain.member.repository.MemberRepository;
 import org.veri.be.global.auth.JwtClaimsPayload;
 import org.veri.be.global.auth.dto.LoginResponse;
 import org.veri.be.global.auth.token.TokenProvider;
-import org.veri.be.lib.exception.CommonErrorInfo;
-import org.veri.be.lib.exception.http.BadRequestException;
+import org.veri.be.lib.exception.ApplicationException;
+import org.veri.be.lib.exception.CommonErrorCode;
 
 @Profile("local")
 @RestController
@@ -25,7 +25,7 @@ public class MockTokenController {
     public LoginResponse getMockToken(@PathVariable Long memberId) {
         Member member;
         member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new BadRequestException(CommonErrorInfo.INVALID_REQUEST));
+                .orElseThrow(() -> ApplicationException.of(CommonErrorCode.INVALID_REQUEST));
 
 
         return LoginResponse.builder()

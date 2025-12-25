@@ -24,8 +24,8 @@ import org.veri.be.domain.member.entity.Member;
 import org.veri.be.global.auth.context.AuthenticatedMember;
 import org.veri.be.global.auth.guards.MemberGuard;
 import org.veri.be.lib.auth.guard.UseGuards;
-import org.veri.be.lib.exception.CommonErrorInfo;
-import org.veri.be.lib.exception.http.BadRequestException;
+import org.veri.be.lib.exception.CommonErrorCode;
+import org.veri.be.lib.exception.ApplicationException;
 import org.veri.be.lib.response.ApiResponse;
 
 @Tag(name = "책장")
@@ -53,7 +53,7 @@ public class BookshelfController {
             @AuthenticatedMember Member member
     ) {
         if (request.getPage() < 1 || request.getSize() < 1) {
-            throw new BadRequestException(CommonErrorInfo.INVALID_REQUEST);
+            throw ApplicationException.of(CommonErrorCode.INVALID_REQUEST);
         }
         Page<ReadingResponse> pageData = bookshelfService.searchAllReadingOfMember(
                 member.getId(),
@@ -87,7 +87,7 @@ public class BookshelfController {
             @RequestParam(defaultValue = "10") @Min(1) int size
     ) {
         if (page < 1 || size < 1) {
-            throw new BadRequestException(CommonErrorInfo.INVALID_REQUEST);
+            throw ApplicationException.of(CommonErrorCode.INVALID_REQUEST);
         }
         BookSearchResponse bookResponses = bookService.searchBook(query, page, size);
 

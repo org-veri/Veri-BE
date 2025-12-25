@@ -17,7 +17,7 @@ import org.veri.be.global.storage.dto.PresignedUrlRequest;
 import org.veri.be.global.storage.dto.PresignedUrlResponse;
 import org.veri.be.global.storage.service.StorageService;
 import org.veri.be.global.storage.service.StorageUtil;
-import org.veri.be.lib.exception.http.BadRequestException;
+import org.veri.be.lib.exception.ApplicationException;
 
 import static org.veri.be.global.storage.service.StorageConstants.MB;
 
@@ -73,11 +73,11 @@ public class PostCommandService {
 
     public PresignedUrlResponse getPresignedUrl(PresignedUrlRequest request) {
         if (request.contentLength() > MB) {
-            throw new BadRequestException(CardErrorInfo.IMAGE_TOO_LARGE);
+            throw ApplicationException.of(CardErrorInfo.IMAGE_TOO_LARGE);
         }
 
         if (!StorageUtil.isImage(request.contentType()))
-            throw new BadRequestException(CardErrorInfo.UNSUPPORTED_IMAGE_TYPE);
+            throw ApplicationException.of(CardErrorInfo.UNSUPPORTED_IMAGE_TYPE);
 
         return storageService.generatePresignedUrlOfDefault(
                 request.contentType(),

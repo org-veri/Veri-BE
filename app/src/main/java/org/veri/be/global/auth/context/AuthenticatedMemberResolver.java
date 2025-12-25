@@ -9,7 +9,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.global.auth.AuthErrorInfo;
-import org.veri.be.lib.exception.http.UnAuthorizedException;
+import org.veri.be.lib.exception.ApplicationException;
 
 @Component
 @RequiredArgsConstructor
@@ -30,6 +30,6 @@ public class AuthenticatedMemberResolver implements HandlerMethodArgumentResolve
             WebDataBinderFactory binderFactory
     ) {
         return currentMemberAccessor.getCurrentMember()
-                .orElseThrow(() -> new UnAuthorizedException(AuthErrorInfo.UNAUTHORIZED));
+                .orElseThrow(() -> ApplicationException.of(AuthErrorInfo.UNAUTHORIZED));
     }
 }
