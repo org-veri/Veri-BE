@@ -8,7 +8,6 @@ import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.post.entity.Post;
 import org.veri.be.global.entity.Authorizable;
 import org.veri.be.global.entity.BaseEntity;
-import org.veri.be.lib.exception.CommonErrorCode;
 import org.veri.be.lib.exception.ApplicationException;
 
 import java.time.Clock;
@@ -74,13 +73,13 @@ public class Comment extends BaseEntity implements Authorizable {
     }
 
     public Comment editBy(Member member, String content) {
-        authorizeMember(member.getId());
+        authorizeOrThrow(member.getId());
         this.content = content;
         return this;
     }
 
     public void deleteBy(Member member, Clock clock) {
-        authorizeMember(member.getId());
+        authorizeOrThrow(member.getId());
         this.deletedAt = LocalDateTime.now(clock);
     }
 
@@ -89,9 +88,7 @@ public class Comment extends BaseEntity implements Authorizable {
     }
 
     @Override
-    public void authorizeMember(Long id) {
-        if (!this.author.getId().equals(id)) {
-            throw ApplicationException.of(CommonErrorCode.DOES_NOT_HAVE_PERMISSION);
-        }
+    public boolean authorizeMember(Long id) {
+        return this.author.getId().equals(id);
     }
 }

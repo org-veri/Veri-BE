@@ -32,7 +32,7 @@ public record CardDetailResponse(
                 card.getImage(),
                 card.getCreatedAt(),
                 BookInfo.from(card.getReading()),
-                card.getIsPublic(),
+                card.isPublic(),
                 mine
         );
     }

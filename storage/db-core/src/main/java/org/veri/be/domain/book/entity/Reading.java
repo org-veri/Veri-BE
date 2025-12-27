@@ -2,12 +2,11 @@ package org.veri.be.domain.book.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.veri.be.lib.exception.ApplicationException;
 import lombok.experimental.SuperBuilder;
 import org.veri.be.domain.book.entity.enums.ReadingStatus;
-import org.veri.be.domain.book.exception.ReadingErrorCode;
 import org.veri.be.domain.card.entity.Card;
 import org.veri.be.domain.member.entity.Member;
+import org.veri.be.global.entity.Authorizable;
 import org.veri.be.global.entity.BaseEntity;
 
 import java.time.Clock;
@@ -21,7 +20,7 @@ import java.util.List;
 @Table(name = "reading")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class Reading extends BaseEntity {
+public class Reading extends BaseEntity implements Authorizable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,7 +49,7 @@ public class Reading extends BaseEntity {
 
     @Builder.Default
     @Column(name = "is_public")
-    private Boolean isPublic = true;
+    private boolean isPublic = true;
 
     @Builder.Default
     @OneToMany(mappedBy = "reading")
@@ -68,10 +67,8 @@ public class Reading extends BaseEntity {
         this.cards.forEach(Card::setPrivate);
     }
 
-    public void authorizeMember(Long memberId) {
-        if (!this.member.getId().equals(memberId)) {
-            throw ApplicationException.of(ReadingErrorCode.FORBIDDEN);
-        }
+    public boolean authorizeMember(Long memberId) {
+        return this.member.getId().equals(memberId);
     }
 
     public void updateProgress(Double score, LocalDateTime startedAt, LocalDateTime endedAt) {

@@ -9,8 +9,6 @@ import lombok.experimental.SuperBuilder;
 import org.veri.be.domain.member.entity.enums.ProviderType;
 import org.veri.be.global.entity.Authorizable;
 import org.veri.be.global.entity.BaseEntity;
-import org.veri.be.lib.exception.ApplicationException;
-import org.veri.be.lib.exception.CommonErrorCode;
 
 @Getter
 @SuperBuilder
@@ -47,9 +45,7 @@ public class Member extends BaseEntity implements Authorizable {
     }
 
     @Override
-    public void authorizeMember(Long memberId) {
-        if (!this.id.equals(memberId)) {
-            throw ApplicationException.of(CommonErrorCode.DOES_NOT_HAVE_PERMISSION);
-        }
+    public boolean authorizeMember(Long memberId) {
+        return this.id.equals(memberId);
     }
 }

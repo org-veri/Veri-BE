@@ -8,8 +8,6 @@ import org.veri.be.domain.comment.entity.Comment;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.global.entity.Authorizable;
 import org.veri.be.global.entity.BaseEntity;
-import org.veri.be.lib.exception.CommonErrorCode;
-import org.veri.be.lib.exception.ApplicationException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +51,7 @@ public class Post extends BaseEntity implements Authorizable {
 
     @Setter
     @Builder.Default
-    private Boolean isPublic = true;
+    private boolean isPublic = true;
 
     public Comment addComment(Comment comment) {
         this.comments.add(comment);
@@ -74,24 +72,19 @@ public class Post extends BaseEntity implements Authorizable {
         this.images.add(image);
     }
 
-    @Override
-    public void authorizeMember(Long id) {
-        if (!this.author.getId().equals(id)) {
-            throw ApplicationException.of(CommonErrorCode.DOES_NOT_HAVE_PERMISSION);
-        }
-    }
 
     public void publishBy(Member member) {
-        authorizeMember(member.getId());
+        authorizeOrThrow(member.getId());
         this.isPublic = true;
     }
 
     public void unpublishBy(Member member) {
-        authorizeMember(member.getId());
+        authorizeOrThrow(member.getId());
         this.isPublic = false;
     }
 
-    public void deleteBy(Member member) {
-        authorizeMember(member.getId());
+    @Override
+    public boolean authorizeMember(Long id) {
+        return this.author.getId().equals(id);
     }
 }

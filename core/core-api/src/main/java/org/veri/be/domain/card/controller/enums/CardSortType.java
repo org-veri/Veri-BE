@@ -1,9 +1,9 @@
 package org.veri.be.domain.card.controller.enums;
 
 import lombok.Getter;
-import org.veri.be.domain.card.exception.CardErrorInfo;
 import org.springframework.data.domain.Sort;
 import org.veri.be.lib.exception.ApplicationException;
+import org.veri.be.lib.exception.CommonErrorCode;
 
 @Getter
 public enum CardSortType {
@@ -20,7 +20,7 @@ public enum CardSortType {
         return switch (value.toLowerCase()) {
             case "newest" -> NEWEST;
             case "oldest" -> OLDEST;
-            default -> throw ApplicationException.of(CardErrorInfo.BAD_REQUEST);
+            default -> throw ApplicationException.of(CommonErrorCode.INVALID_REQUEST);
         };
     }
 }

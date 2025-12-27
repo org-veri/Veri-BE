@@ -1,16 +1,17 @@
 package org.veri.be.unit.card;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.veri.be.domain.book.entity.Reading;
 import org.veri.be.domain.card.entity.Card;
-import org.veri.be.domain.card.exception.CardErrorInfo;
+import org.veri.be.domain.card.entity.CardErrorInfo;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
 import org.veri.be.support.assertion.ExceptionAssertions;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 
 class CardTest {
 
@@ -19,7 +20,7 @@ class CardTest {
     class AuthorizeMember {
 
         @Test
-        @DisplayName("다른 멤버면 예외가 발생한다")
+        @DisplayName("다른 멤버면 false를 반환한다")
         void throwsWhenNotOwner() {
             Member owner = member(1L, "owner@test.com", "owner");
             Member other = member(2L, "other@test.com", "other");
@@ -27,10 +28,7 @@ class CardTest {
                     .member(owner)
                     .build();
 
-            ExceptionAssertions.assertApplicationException(
-                    () -> card.authorizeMember(other.getId()),
-                    CardErrorInfo.FORBIDDEN
-            );
+            assertThat(card.authorizeMember(other.getId())).isFalse();
         }
     }
 
@@ -95,7 +93,7 @@ class CardTest {
 
             card.changeVisibility(owner, false);
 
-            assertThat(card.getIsPublic()).isFalse();
+            assertThat(card.isPublic()).isFalse();
         }
     }
 
@@ -114,15 +112,20 @@ class CardTest {
         }
 
         @Test
-        @DisplayName("비공개 카드에서 비로그인 조회는 예외가 발생한다")
+        @DisplayName("비공개 카드는 작성자만 읽을 수 있다")
         void throwsWhenPrivateAndNoViewer() {
+            var owner = member(1L, "owner", "owner");
+            var reader = member(2L, "reader", "reader");
+
             Card card = Card.builder()
+                    .member(owner)
                     .isPublic(false)
                     .build();
 
+            assertThatNoException().isThrownBy(() -> card.assertReadableBy(owner));
             ExceptionAssertions.assertApplicationException(
-                    () -> card.assertReadableBy(null),
-                    CardErrorInfo.FORBIDDEN
+                    () -> card.assertReadableBy(reader),
+                    CardErrorInfo.READING_MS_NOT_PUBLIC
             );
         }
     }

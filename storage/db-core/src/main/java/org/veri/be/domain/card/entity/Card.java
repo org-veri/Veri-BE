@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.veri.be.domain.book.entity.Reading;
-import org.veri.be.domain.card.exception.CardErrorInfo;
 import org.veri.be.domain.member.entity.Member;
+import org.veri.be.global.entity.Authorizable;
 import org.veri.be.global.entity.BaseEntity;
 import org.veri.be.lib.exception.ApplicationException;
 
@@ -15,7 +15,7 @@ import org.veri.be.lib.exception.ApplicationException;
 @Table(name = "card")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class Card extends BaseEntity {
+public class Card extends BaseEntity implements Authorizable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,16 +48,11 @@ public class Card extends BaseEntity {
 
     @Builder.Default
     @Column(name = "is_public", nullable = false)
-    private Boolean isPublic = false;
+    private boolean isPublic = false;
 
-    public void authorizeMember(Long memberId) {
-        if (!this.member.getId().equals(memberId)) {
-            throw ApplicationException.of(CardErrorInfo.FORBIDDEN);
-        }
-    }
 
     public Card updateContent(String content, String imageUrl, Member actor) {
-        authorizeMember(actor.getId());
+        authorizeOrThrow(actor.getId());
         return this.toBuilder()
                 .content(content)
                 .image(imageUrl)
@@ -65,7 +60,7 @@ public class Card extends BaseEntity {
     }
 
     public void changeVisibility(Member actor, boolean makePublic) {
-        authorizeMember(actor.getId());
+        authorizeOrThrow(actor.getId());
         if (makePublic) {
             setPublic();
         } else {
@@ -74,7 +69,7 @@ public class Card extends BaseEntity {
     }
 
     public void setPublic() {
-        if (!this.reading.getIsPublic()) {
+        if (!this.reading.isPublic()) {
             throw ApplicationException.of(CardErrorInfo.READING_MS_NOT_PUBLIC);
         }
         this.isPublic = true;
@@ -84,15 +79,13 @@ public class Card extends BaseEntity {
         this.isPublic = false;
     }
 
+    @Override
+    public boolean authorizeMember(Long memberId) {
+        return memberId.equals(this.member.getId());
+    }
+
     public void assertReadableBy(Member viewer) {
-        if (Boolean.TRUE.equals(this.isPublic)) {
-            return;
-        }
-
-        if (viewer == null) {
-            throw ApplicationException.of(CardErrorInfo.FORBIDDEN);
-        }
-
-        authorizeMember(viewer.getId());
+        if (this.isPublic || this.authorizeMember(viewer.getId())) return;
+        throw ApplicationException.of(CardErrorInfo.READING_MS_NOT_PUBLIC);
     }
 }

@@ -1,15 +1,13 @@
 package org.veri.be.unit.post;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
 import org.veri.be.domain.post.entity.Post;
-import org.veri.be.lib.exception.CommonErrorCode;
-import org.veri.be.support.assertion.ExceptionAssertions;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class PostTest {
 
@@ -40,20 +38,16 @@ class PostTest {
     class AuthorizeMember {
 
         @Test
-        @DisplayName("작성자가 아니면 예외가 발생한다")
-        void throwsWhenNotOwner() {
+        @DisplayName("작성자가 아니면 false를 반환한다")
+        void falseWhenNotOwner() {
             Member author = member(1L, "author@test.com", "author");
-            Member other = member(2L, "other@test.com", "other");
             Post post = Post.builder()
                     .author(author)
                     .title("title")
                     .content("content")
                     .build();
 
-            ExceptionAssertions.assertApplicationException(
-                    () -> post.authorizeMember(other.getId()),
-                    CommonErrorCode.DOES_NOT_HAVE_PERMISSION
-            );
+            assertThat(post.authorizeMember(2L)).isFalse();
         }
     }
 
@@ -74,7 +68,7 @@ class PostTest {
 
             post.publishBy(author);
 
-            assertThat(post.getIsPublic()).isTrue();
+            assertThat(post.isPublic()).isTrue();
         }
 
         @Test
@@ -90,7 +84,7 @@ class PostTest {
 
             post.unpublishBy(author);
 
-            assertThat(post.getIsPublic()).isFalse();
+            assertThat(post.isPublic()).isFalse();
         }
     }
 

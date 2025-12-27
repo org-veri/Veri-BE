@@ -1,14 +1,12 @@
 package org.veri.be.unit.member;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
-import org.veri.be.lib.exception.CommonErrorCode;
-import org.veri.be.support.assertion.ExceptionAssertions;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class MemberEntityTest {
 
@@ -44,14 +42,11 @@ class MemberEntityTest {
     class AuthorizeMember {
 
         @Test
-        @DisplayName("다른 사용자면 예외가 발생한다")
-        void throwsWhenDifferentMember() {
+        @DisplayName("다른 사용자면 false를 반환다")
+        void falseWhenDifferentMember() {
             Member member = member("member", "https://example.com/profile.png");
 
-            ExceptionAssertions.assertApplicationException(
-                    () -> member.authorizeMember(2L),
-                    CommonErrorCode.DOES_NOT_HAVE_PERMISSION
-            );
+            assertThat(member.authorizeMember(2L)).isFalse();
         }
 
         @Test

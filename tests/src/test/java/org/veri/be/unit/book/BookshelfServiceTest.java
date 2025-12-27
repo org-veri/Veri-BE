@@ -1,17 +1,5 @@
 package org.veri.be.unit.book;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-
-import java.time.Clock;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -26,7 +14,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.veri.be.domain.book.controller.enums.ReadingSortType;
 import org.veri.be.domain.book.dto.book.BookPopularResponse;
-import org.veri.be.domain.book.repository.dto.BookPopularQueryResult;
 import org.veri.be.domain.book.dto.reading.ReadingConverter;
 import org.veri.be.domain.book.dto.reading.response.ReadingDetailResponse;
 import org.veri.be.domain.book.dto.reading.response.ReadingVisibilityUpdateResponse;
@@ -34,14 +21,28 @@ import org.veri.be.domain.book.entity.Book;
 import org.veri.be.domain.book.entity.Reading;
 import org.veri.be.domain.book.entity.enums.ReadingStatus;
 import org.veri.be.domain.book.exception.BookErrorCode;
-import org.veri.be.domain.book.exception.ReadingErrorCode;
 import org.veri.be.domain.book.repository.BookRepository;
 import org.veri.be.domain.book.repository.ReadingRepository;
+import org.veri.be.domain.book.repository.dto.BookPopularQueryResult;
 import org.veri.be.domain.book.service.BookshelfService;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
 import org.veri.be.global.auth.context.CurrentMemberAccessor;
+import org.veri.be.lib.exception.CommonErrorCode;
 import org.veri.be.support.assertion.ExceptionAssertions;
+
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class BookshelfServiceTest {
@@ -131,7 +132,7 @@ class BookshelfServiceTest {
             assertThat(saved.getMember()).isEqualTo(member);
             assertThat(saved.getBook()).isEqualTo(book);
             assertThat(saved.getStatus()).isEqualTo(ReadingStatus.NOT_START);
-            assertThat(saved.getIsPublic()).isFalse();
+            assertThat(saved.isPublic()).isFalse();
             assertThat(result).isEqualTo(saved);
         }
     }
@@ -172,7 +173,7 @@ class BookshelfServiceTest {
 
             ExceptionAssertions.assertApplicationException(
                     () -> bookshelfService.searchDetail(10L),
-                    ReadingErrorCode.FORBIDDEN
+                    CommonErrorCode.RESOURCE_NOT_FOUND
             );
         }
 
@@ -350,7 +351,7 @@ class BookshelfServiceTest {
             ReadingVisibilityUpdateResponse response = bookshelfService.modifyVisibility(member, 10L, true);
 
             verify(readingRepository).save(readingCaptor.capture());
-            assertThat(readingCaptor.getValue().getIsPublic()).isTrue();
+            assertThat(readingCaptor.getValue().isPublic()).isTrue();
             assertThat(response.id()).isEqualTo(10L);
             assertThat(response.isPublic()).isTrue();
         }

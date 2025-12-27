@@ -1,22 +1,21 @@
 package org.veri.be.unit.book;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.veri.be.domain.book.entity.Reading;
+import org.veri.be.domain.book.entity.enums.ReadingStatus;
+import org.veri.be.domain.card.entity.Card;
+import org.veri.be.domain.member.entity.Member;
+import org.veri.be.domain.member.entity.enums.ProviderType;
 
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.veri.be.domain.book.entity.Reading;
-import org.veri.be.domain.book.entity.enums.ReadingStatus;
-import org.veri.be.domain.book.exception.ReadingErrorCode;
-import org.veri.be.domain.card.entity.Card;
-import org.veri.be.domain.member.entity.Member;
-import org.veri.be.domain.member.entity.enums.ProviderType;
-import org.veri.be.support.assertion.ExceptionAssertions;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ReadingTest {
 
@@ -58,8 +57,8 @@ class ReadingTest {
 
             reading.setPrivate();
 
-            assertThat(reading.getIsPublic()).isFalse();
-            assertThat(reading.getCards()).allMatch(card -> !card.getIsPublic());
+            assertThat(reading.isPublic()).isFalse();
+            assertThat(reading.getCards()).allMatch(card -> !card.isPublic());
         }
     }
 
@@ -97,15 +96,12 @@ class ReadingTest {
     class AuthorizeMember {
 
         @Test
-        @DisplayName("작성자와 다르면 예외가 발생한다")
+        @DisplayName("작성자와 다르면 false 를 반환한다")
         void throwsWhenNotOwner() {
             Member owner = member(1L, "owner@test.com", "owner");
             Reading reading = Reading.builder().member(owner).build();
 
-            ExceptionAssertions.assertApplicationException(
-                    () -> reading.authorizeMember(2L),
-                    ReadingErrorCode.FORBIDDEN
-            );
+            assertThat(reading.authorizeMember(2L)).isFalse();
         }
     }
 

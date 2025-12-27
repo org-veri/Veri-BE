@@ -83,7 +83,7 @@ class SocialReadingIntegrationTest extends IntegrationTestSupport {
             Reading reading = createReading(false, other, "ISBN-OTHER");
 
             mockMvc.perform(get("/api/v2/bookshelf/" + reading.getId()))
-                    .andExpect(status().isForbidden());
+                    .andExpect(status().isNotFound());
         }
 
         @Test
