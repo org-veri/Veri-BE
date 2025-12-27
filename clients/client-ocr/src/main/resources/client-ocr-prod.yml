@@ -1,0 +1,5 @@
+mistral:
+  ocr:
+    url: https://api.mistral.ai/v1/ocr
+    key: ${MISTRAL_OCR_KEY}
+    model: mistral-ocr-latest
