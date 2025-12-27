@@ -13,6 +13,15 @@ spring:
     hibernate:
       ddl-auto: create
 
+management:
+  tracing:
+    export:
+      enabled: false
+  otlp:
+    metrics:
+      export:
+        enabled: false
+
 auth:
   jwt:
     use: false
