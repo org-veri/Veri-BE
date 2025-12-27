@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.veri.be.domain.book.entity.Book;
 import org.veri.be.domain.book.service.BookService;
-import org.veri.be.domain.card.exception.CardErrorInfo;
+import org.veri.be.domain.card.entity.CardErrorInfo;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.post.dto.request.PostCreateRequest;
 import org.veri.be.domain.post.dto.response.LikeInfoResponse;
@@ -53,7 +53,7 @@ public class PostCommandService {
     @Transactional
     public void deletePost(Long postId, Member member) {
         Post post = this.postQueryService.getPostById(postId);
-        post.deleteBy(member);
+        post.authorizeOrThrow(member.getId());
         this.postRepository.deleteById(postId);
     }
 

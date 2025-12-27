@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.veri.be.api.personal.BookshelfController;
+import org.veri.be.domain.book.controller.enums.ReadingSortType;
 import org.veri.be.domain.book.dto.book.AddBookRequest;
 import org.veri.be.domain.book.dto.book.BookResponse;
 import org.veri.be.domain.book.dto.book.BookSearchResponse;
@@ -106,7 +107,7 @@ class BookshelfControllerTest {
                     PageRequest.of(0, 10),
                     1
             );
-            given(bookshelfService.searchAllReadingOfMember(eq(1L), any(), eq(0), eq(10), eq(org.veri.be.domain.book.controller.enums.ReadingSortType.NEWEST)))
+            given(bookshelfService.searchAllReadingOfMember(eq(1L), any(), eq(0), eq(10), eq(ReadingSortType.NEWEST)))
                     .willReturn(page);
 
             mockMvc.perform(get("/api/v2/bookshelf/my")

@@ -26,7 +26,7 @@ public record ReadingDetailResponse(
 ) {
     public static ReadingDetailResponse from(Reading reading, Member viewer) {
         List<CardSummaryResponse> summaries = reading.getCards().stream()
-                .map(card -> new CardSummaryResponse(card.getId(), card.getImage(), card.getIsPublic()))
+                .map(card -> new CardSummaryResponse(card.getId(), card.getImage(), card.isPublic()))
                 .toList();
 
         boolean isOwner = viewer != null && reading.getMember().getId().equals(viewer.getId());
@@ -48,7 +48,7 @@ public record ReadingDetailResponse(
                 .startedAt(reading.getStartedAt())
                 .endedAt(reading.getEndedAt())
                 .cardSummaries(summaries)
-                .isPublic(reading.getIsPublic())
+                .isPublic(reading.isPublic())
                 .build();
     }
 

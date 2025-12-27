@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.veri.be.domain.book.entity.Book;
 import org.veri.be.domain.book.service.BookService;
-import org.veri.be.domain.card.exception.CardErrorInfo;
+import org.veri.be.domain.card.entity.CardErrorInfo;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.entity.enums.ProviderType;
 import org.veri.be.domain.post.dto.request.PostCreateRequest;
@@ -161,7 +161,7 @@ class PostCommandServiceTest {
             postCommandService.publishPost(1L, author);
 
             verify(postRepository).save(postCaptor.capture());
-            assertThat(postCaptor.getValue().getIsPublic()).isTrue();
+            assertThat(postCaptor.getValue().isPublic()).isTrue();
         }
     }
 
@@ -186,7 +186,7 @@ class PostCommandServiceTest {
             postCommandService.unPublishPost(1L, author);
 
             verify(postRepository).save(postCaptor.capture());
-            assertThat(postCaptor.getValue().getIsPublic()).isFalse();
+            assertThat(postCaptor.getValue().isPublic()).isFalse();
         }
     }
 

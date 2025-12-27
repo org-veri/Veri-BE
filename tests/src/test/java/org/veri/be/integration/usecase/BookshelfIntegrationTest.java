@@ -272,7 +272,7 @@ class BookshelfIntegrationTest extends IntegrationTestSupport {
         @DisplayName("존재하지 않는 ID")
         void deleteNotFound() throws Exception {
             mockMvc.perform(delete("/api/v2/bookshelf/999"))
-                    .andExpect(status().isBadRequest());
+                    .andExpect(status().isNotFound());
         }
     }
 

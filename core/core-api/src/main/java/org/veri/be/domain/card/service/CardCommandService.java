@@ -10,7 +10,7 @@ import org.veri.be.domain.card.controller.dto.CardConverter;
 import org.veri.be.domain.card.controller.dto.response.CardUpdateResponse;
 import org.veri.be.domain.card.controller.dto.response.CardVisibilityUpdateResponse;
 import org.veri.be.domain.card.entity.Card;
-import org.veri.be.domain.card.exception.CardErrorInfo;
+import org.veri.be.domain.card.entity.CardErrorInfo;
 import org.veri.be.domain.card.repository.CardRepository;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.global.storage.dto.PresignedUrlRequest;
@@ -18,6 +18,7 @@ import org.veri.be.global.storage.dto.PresignedUrlResponse;
 import org.veri.be.global.storage.service.StorageService;
 import org.veri.be.global.storage.service.StorageUtil;
 import org.veri.be.lib.exception.ApplicationException;
+import org.veri.be.lib.exception.CommonErrorCode;
 
 import java.time.Duration;
 
@@ -34,14 +35,14 @@ public class CardCommandService {
     @Transactional
     public Long createCard(Member member, String content, String imageUrl, Long memberBookId, Boolean isPublic) {
         Reading reading = readingRepository.findById(memberBookId)
-                .orElseThrow(() -> ApplicationException.of(CardErrorInfo.BAD_REQUEST));
+                .orElseThrow(() -> ApplicationException.of(CommonErrorCode.INVALID_REQUEST));
 
         Card card = Card.builder()
                 .member(member)
                 .content(content)
                 .image(imageUrl)
                 .reading(reading)
-                .isPublic(reading.getIsPublic() && isPublic) // 독서가 비공개면 카드도 무조건 비공개
+                .isPublic(reading.isPublic() && isPublic) // 독서가 비공개면 카드도 무조건 비공개
                 .build();
 
         cardRepository.save(card);
@@ -59,22 +60,22 @@ public class CardCommandService {
 
     public Card getCard(Long cardId) {
         return cardRepository.findById(cardId)
-                .orElseThrow(() -> ApplicationException.of(CardErrorInfo.NOT_FOUND));
+                .orElseThrow(() -> ApplicationException.of(CommonErrorCode.RESOURCE_NOT_FOUND));
     }
 
     @Transactional
     public CardVisibilityUpdateResponse modifyVisibility(Member member, Long cardId, boolean isPublic) {
         Card card = this.getCard(cardId);
-        card.authorizeMember(member.getId());
+        card.authorizeOrThrow(member.getId());
         card.changeVisibility(member, isPublic);
         cardRepository.save(card);
-        return new CardVisibilityUpdateResponse(card.getId(), card.getIsPublic());
+        return new CardVisibilityUpdateResponse(card.getId(), card.isPublic());
     }
 
     @Transactional
     public void deleteCard(Member member, Long cardId) {
         Card card = getCard(cardId);
-        card.authorizeMember(member.getId());
+        card.authorizeOrThrow(member.getId());
 
         cardRepository.deleteById(cardId);
     }

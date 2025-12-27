@@ -17,7 +17,7 @@ import org.veri.be.domain.card.controller.dto.CardConverter;
 import org.veri.be.domain.card.controller.dto.response.CardUpdateResponse;
 import org.veri.be.domain.card.controller.dto.response.CardVisibilityUpdateResponse;
 import org.veri.be.domain.card.entity.Card;
-import org.veri.be.domain.card.exception.CardErrorInfo;
+import org.veri.be.domain.card.entity.CardErrorInfo;
 import org.veri.be.domain.card.repository.CardRepository;
 import org.veri.be.domain.card.service.CardCommandService;
 import org.veri.be.domain.member.entity.Member;
@@ -83,7 +83,7 @@ class CardCommandServiceTest {
             Long id = cardCommandService.createCard(member, "content", "https://example.com/card.png", 10L, true);
 
             verify(cardRepository).save(cardCaptor.capture());
-            assertThat(cardCaptor.getValue().getIsPublic()).isFalse();
+            assertThat(cardCaptor.getValue().isPublic()).isFalse();
             assertThat(id).isEqualTo(1L);
         }
     }
@@ -130,7 +130,7 @@ class CardCommandServiceTest {
             CardVisibilityUpdateResponse result = cardCommandService.modifyVisibility(member, 1L, true);
 
             verify(cardRepository).save(cardCaptor.capture());
-            assertThat(cardCaptor.getValue().getIsPublic()).isTrue();
+            assertThat(cardCaptor.getValue().isPublic()).isTrue();
             assertThat(result.id()).isEqualTo(1L);
             assertThat(result.isPublic()).isTrue();
         }

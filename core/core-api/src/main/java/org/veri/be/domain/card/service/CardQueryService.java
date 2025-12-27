@@ -10,12 +10,13 @@ import org.veri.be.domain.card.controller.dto.CardConverter;
 import org.veri.be.domain.card.controller.dto.response.CardDetailResponse;
 import org.veri.be.domain.card.controller.enums.CardSortType;
 import org.veri.be.domain.card.entity.Card;
-import org.veri.be.domain.card.exception.CardErrorInfo;
+import org.veri.be.domain.card.entity.CardErrorInfo;
 import org.veri.be.domain.card.repository.CardRepository;
 import org.veri.be.domain.card.repository.dto.CardFeedItem;
 import org.veri.be.domain.card.repository.dto.CardListItem;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.lib.exception.ApplicationException;
+import org.veri.be.lib.exception.CommonErrorCode;
 
 @Transactional(readOnly = true)
 @Service
@@ -32,7 +33,7 @@ public class CardQueryService {
 
     public CardDetailResponse getCardDetail(Long cardId, Member viewer) {
         Card card = cardRepository.findByIdWithAllAssociations(cardId)
-                .orElseThrow(() -> ApplicationException.of(CardErrorInfo.NOT_FOUND));
+                .orElseThrow(() -> ApplicationException.of(CommonErrorCode.RESOURCE_NOT_FOUND));
 
         card.assertReadableBy(viewer);
 
@@ -41,7 +42,7 @@ public class CardQueryService {
 
     public Card getCardById(Long cardId) {
         return cardRepository.findById(cardId)
-                .orElseThrow(() -> ApplicationException.of(CardErrorInfo.NOT_FOUND));
+                .orElseThrow(() -> ApplicationException.of(CommonErrorCode.RESOURCE_NOT_FOUND));
     }
 
     public int getOwnedCardCount(Long memberId) {
