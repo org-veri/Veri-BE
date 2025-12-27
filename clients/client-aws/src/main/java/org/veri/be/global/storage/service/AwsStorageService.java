@@ -4,7 +4,7 @@ import io.github.miensoap.s3.core.ExtendedS3Presigner;
 import io.github.miensoap.s3.core.post.dto.PostObjectPresignRequest;
 import io.github.miensoap.s3.core.post.dto.PresignedPostForm;
 import io.github.miensoap.s3.core.post.s3policy.PostConditions;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.veri.be.global.storage.dto.PresignedUrlResponse;
@@ -16,7 +16,6 @@ import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignReques
 import java.time.Duration;
 
 @Service
-@RequiredArgsConstructor
 public class AwsStorageService implements StorageService {
 
     @Value("${cloud.aws.s3.bucket}")
@@ -26,6 +25,18 @@ public class AwsStorageService implements StorageService {
     private final S3Presigner s3Presigner;
     private final ExtendedS3Presigner extendedS3Presigner;
     private final StorageKeyGenerator storageKeyGenerator;
+
+    public AwsStorageService(
+            S3Client s3Client,
+            @Qualifier("s3Presigner") S3Presigner s3Presigner,
+            ExtendedS3Presigner extendedS3Presigner,
+            StorageKeyGenerator storageKeyGenerator
+    ) {
+        this.s3Client = s3Client;
+        this.s3Presigner = s3Presigner;
+        this.extendedS3Presigner = extendedS3Presigner;
+        this.storageKeyGenerator = storageKeyGenerator;
+    }
 
     @Override
     public PresignedUrlResponse generatePresignedUrlOfDefault(String contentType, long contentLength) {
