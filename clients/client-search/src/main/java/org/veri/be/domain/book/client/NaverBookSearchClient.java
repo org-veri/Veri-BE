@@ -1,12 +1,9 @@
 package org.veri.be.domain.book.client;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.veri.be.domain.book.config.NaverConfig;
 import org.veri.be.domain.book.dto.book.NaverBookResponse;
@@ -19,7 +16,7 @@ import java.net.URI;
 @RequiredArgsConstructor
 public class NaverBookSearchClient {
 
-    private final RestTemplate restTemplate;
+    private final RestClient restClient;
     private final NaverConfig naverConfig;
     private final ObjectMapper objectMapper;
 
@@ -40,18 +37,27 @@ public class NaverBookSearchClient {
                 .build()
                 .toUri();
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("X-Naver-Client-Id", naverConfig.getClientId());
-        headers.set("X-Naver-Client-Secret", naverConfig.getClientSecret());
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
+        String body;
+        try {
+            body = restClient.get()
+                    .uri(uri)
+                    .headers(headers -> {
+                        headers.set("X-Naver-Client-Id", naverConfig.getClientId());
+                        headers.set("X-Naver-Client-Secret", naverConfig.getClientSecret());
+                    })
+                    .retrieve()
+                    .toEntity(String.class)
+                    .getBody();
+        } catch (RestClientException _) {
+            throw new NaverClientException("Naver API returned an error response.");
+        }
 
-        ResponseEntity<String> respEntity = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
-        if (respEntity.getStatusCode().is5xxServerError() || respEntity.getBody() == null) {
+        if (body == null) {
             throw new NaverClientException("Naver API returned an error response.");
         }
 
         try {
-            return objectMapper.readValue(respEntity.getBody(), NaverBookResponse.class);
+            return objectMapper.readValue(body, NaverBookResponse.class);
         } catch (JacksonException _) {
             throw new NaverClientException("Failed to parse Naver API response.");
         }
