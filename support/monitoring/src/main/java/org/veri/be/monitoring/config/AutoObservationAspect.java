@@ -1,4 +1,4 @@
-package org.veri.be.global.config;
+package org.veri.be.monitoring.config;
 
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationRegistry;
