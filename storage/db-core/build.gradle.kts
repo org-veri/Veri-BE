@@ -15,6 +15,4 @@ dependencies {
         isChanging = true
     }
 
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
 }
