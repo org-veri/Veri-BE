@@ -11,6 +11,4 @@ dependencies {
     implementation(platform("software.amazon.awssdk:bom:2.25.1"))
     implementation("software.amazon.awssdk:s3")
 
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
 }
