@@ -8,6 +8,7 @@ dependencies {
     testImplementation(project(mapOf("path" to ":core:core-api", "configuration" to "runtimeElements")))
     testImplementation(project(":core:core-enum"))
     testImplementation(project(":clients:client-ocr"))
+    testImplementation(project(":clients:client-aws"))
     testImplementation(project(":clients:client-search"))
     testImplementation(project(":storage:db-core"))
     testImplementation(project(":support:common"))
