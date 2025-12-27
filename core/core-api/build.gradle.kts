@@ -5,9 +5,6 @@ plugins {
 
 dependencies {
     implementation(project(":core:core-enum"))
-    implementation(project(":clients:client-ocr"))
-    implementation(project(":clients:client-aws"))
-    implementation(project(":clients:client-search"))
     implementation(project(":support:common"))
     implementation(project(":support:logging"))
     implementation(project(":support:monitoring"))

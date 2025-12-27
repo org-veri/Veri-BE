@@ -17,7 +17,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.veri.be.domain.image.client.OcrClient;
+import org.veri.be.domain.image.client.OcrPort;
 import org.veri.be.domain.image.entity.OcrResult;
 import org.veri.be.domain.image.exception.ImageErrorCode;
 import org.veri.be.domain.image.repository.OcrResultRepository;
@@ -32,7 +32,7 @@ class MistralOcrServiceTest {
     OcrResultRepository ocrResultRepository;
 
     @Mock
-    OcrClient ocrClient;
+    OcrPort ocrClient;
 
     @Mock
     SleepSupport sleepSupport;

@@ -5,5 +5,5 @@ WORKDIR /app
 ENV SPRING_PROFILES_ACTIVE=prod
 
 FROM base AS final
-COPY core/core-api/build/libs/*.jar app.jar
+COPY core/core-app/build/libs/*.jar app.jar
 ENTRYPOINT ["java", "-jar", "app.jar"]

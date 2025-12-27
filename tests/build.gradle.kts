@@ -5,6 +5,7 @@ plugins {
 
 dependencies {
     testImplementation(project(":core:core-api"))
+    testImplementation(project(":core:core-app"))
     testImplementation(project(mapOf("path" to ":core:core-api", "configuration" to "runtimeElements")))
     testImplementation(project(":core:core-enum"))
     testImplementation(project(":clients:client-ocr"))

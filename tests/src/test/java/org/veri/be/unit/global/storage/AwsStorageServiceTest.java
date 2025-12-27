@@ -17,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.veri.be.global.storage.dto.PresignedPostFormResponse;
 import org.veri.be.global.storage.dto.PresignedUrlResponse;
 import org.veri.be.global.storage.service.AwsStorageService;
 import org.veri.be.global.storage.service.StorageKeyGenerator;
@@ -115,14 +116,15 @@ class AwsStorageServiceTest {
             given(storageKeyGenerator.generate("image/*", "public")).willReturn("public/key.png");
             given(extendedS3Presigner.presignPostObject(any())).willReturn(form);
 
-            PresignedPostForm result = awsStorageService.generatePresignedPost(
+            PresignedPostFormResponse result = awsStorageService.generatePresignedPost(
                     "image/*",
                     1024L,
                     "public",
                     Duration.ofMinutes(5)
             );
 
-            assertThat(result).isEqualTo(form);
+            assertThat(result.url()).isEqualTo(form.url());
+            assertThat(result.fields()).isEqualTo(form.formFields());
         }
     }
 }

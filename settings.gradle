@@ -12,3 +12,5 @@ include(
     'support:monitoring',
     'tests'
 )
+
+include 'core:core-app'

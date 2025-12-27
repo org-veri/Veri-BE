@@ -2,11 +2,11 @@ package org.veri.be.global.storage.service;
 
 import io.github.miensoap.s3.core.ExtendedS3Presigner;
 import io.github.miensoap.s3.core.post.dto.PostObjectPresignRequest;
-import io.github.miensoap.s3.core.post.dto.PresignedPostForm;
 import io.github.miensoap.s3.core.post.s3policy.PostConditions;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.veri.be.global.storage.dto.PresignedPostFormResponse;
 import org.veri.be.global.storage.dto.PresignedUrlResponse;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
@@ -64,7 +64,7 @@ public class AwsStorageService implements StorageService {
         return new PresignedUrlResponse(presignedRequest.url().toString(), getPublicUrl(key));
     }
 
-    public PresignedPostForm generatePresignedPost(
+    public PresignedPostFormResponse generatePresignedPost(
             String contentType,
             long fileSize,
             String prefix,
@@ -84,7 +84,8 @@ public class AwsStorageService implements StorageService {
                 .signatureDuration(duration)
                 .build();
 
-        return extendedS3Presigner.presignPostObject(presignRequest);
+        var presignedPostForm = extendedS3Presigner.presignPostObject(presignRequest);
+        return new PresignedPostFormResponse(presignedPostForm.url(), presignedPostForm.formFields());
     }
 
     private String getPublicUrl(String key) {

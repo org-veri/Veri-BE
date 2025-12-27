@@ -1,7 +1,7 @@
 package org.veri.be.global.storage.service;
 
 
-import io.github.miensoap.s3.core.post.dto.PresignedPostForm;
+import org.veri.be.global.storage.dto.PresignedPostFormResponse;
 import org.veri.be.global.storage.dto.PresignedUrlResponse;
 
 import java.time.Duration;
@@ -21,9 +21,9 @@ public interface StorageService {
                                                        long contentLength
     );
 
-    PresignedPostForm generatePresignedPost(String contentType,
-                                            long fileSize,
-                                            String prefix,
-                                            Duration duration
+    PresignedPostFormResponse generatePresignedPost(String contentType,
+                                                    long fileSize,
+                                                    String prefix,
+                                                    Duration duration
     );
 }

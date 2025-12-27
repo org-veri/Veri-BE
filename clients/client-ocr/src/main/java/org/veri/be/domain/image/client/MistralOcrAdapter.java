@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class MistralOcrClientAdapter implements OcrClient {
+public class MistralOcrAdapter implements OcrPort {
 
     private final MistralOcrClient mistralOcrClient;
 
