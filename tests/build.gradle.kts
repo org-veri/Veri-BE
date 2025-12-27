@@ -1,11 +1,10 @@
 plugins {
-    java
     jacoco
 }
 
 dependencies {
-    testImplementation(project(":core:core-api"))
     testImplementation(project(":core:core-app"))
+    testImplementation(project(":core:core-api"))
     testImplementation(project(mapOf("path" to ":core:core-api", "configuration" to "runtimeElements")))
     testImplementation(project(":core:core-enum"))
     testImplementation(project(":clients:client-ocr"))
@@ -19,9 +18,9 @@ dependencies {
     testImplementation(platform("org.testcontainers:testcontainers-bom:1.19.7"))
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:mysql")
+    testRuntimeOnly("com.h2database:h2")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testRuntimeOnly("com.h2database:h2")
 }
 
 tasks.named<Test>("test") {
