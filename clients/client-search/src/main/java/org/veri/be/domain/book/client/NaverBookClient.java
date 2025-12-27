@@ -6,7 +6,7 @@ import org.veri.be.domain.book.dto.book.NaverBookResponse;
 
 @Component
 @RequiredArgsConstructor
-public class NaverBookSearchAdapter implements BookSearchClient {
+public class NaverBookClient implements BookSearchClient {
 
     private final NaverBookSearchClient naverBookSearchClient;
 

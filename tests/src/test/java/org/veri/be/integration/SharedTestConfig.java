@@ -19,7 +19,7 @@ public class SharedTestConfig {
         return new ObjectMapper().findAndRegisterModules();
     }
 
-    // MistralOcrService depends on OcrClient and Executor which are complex to stub directly 
+    // MistralOcrService depends on OcrPort and Executor which are complex to stub directly 
     // if we want to replace the whole service. 
     // However, MistralOcrService is a class. 
     // The ImageCommandService injects `OcrService`.

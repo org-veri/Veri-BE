@@ -1,8 +1,3 @@
-plugins {
-    `java-library`
-    id("io.spring.dependency-management")
-}
-
 dependencies {
     api("org.springframework:spring-context")
     api("ch.qos.logback:logback-core")

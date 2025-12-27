@@ -1,6 +1,6 @@
 package org.veri.be.unit.card;
 
-import io.github.miensoap.s3.core.post.dto.PresignedPostForm;
+import org.veri.be.global.storage.dto.PresignedPostFormResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -243,11 +243,11 @@ class CardCommandServiceTest {
         @Test
         @DisplayName("Presigned Post 폼을 반환한다")
         void returnsPresignedPost() {
-            PresignedPostForm form = new PresignedPostForm("https://example.com", java.util.Map.of());
+            PresignedPostFormResponse form = new PresignedPostFormResponse("https://example.com", java.util.Map.of());
             given(storageService.generatePresignedPost("image/*", 3 * 1024 * 1024L, "public", Duration.ofMinutes(5)))
                     .willReturn(form);
 
-            PresignedPostForm result = cardCommandService.getPresignedPost();
+            PresignedPostFormResponse result = cardCommandService.getPresignedPost();
 
             assertThat(result).isEqualTo(form);
         }

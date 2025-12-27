@@ -1,6 +1,6 @@
 package org.veri.be.integration.support.stub;
 
-import io.github.miensoap.s3.core.post.dto.PresignedPostForm;
+import org.veri.be.global.storage.dto.PresignedPostFormResponse;
 import org.veri.be.global.storage.dto.PresignedUrlResponse;
 import org.veri.be.global.storage.service.StorageService;
 
@@ -18,7 +18,7 @@ public class StubStorageService implements StorageService {
     }
 
     @Override
-    public PresignedPostForm generatePresignedPost(String contentType, long fileSize, String prefix, Duration duration) {
-        return new PresignedPostForm("http://stub.s3.url", java.util.Map.of("key", "value"));
+    public PresignedPostFormResponse generatePresignedPost(String contentType, long fileSize, String prefix, Duration duration) {
+        return new PresignedPostFormResponse("http://stub.s3.url", java.util.Map.of("key", "value"));
     }
 }

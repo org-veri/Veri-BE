@@ -6,7 +6,7 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import io.github.miensoap.s3.core.post.dto.PresignedPostForm;
+import org.veri.be.global.storage.dto.PresignedPostFormResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -43,7 +43,7 @@ class CardControllerV2Test {
         @Test
         @DisplayName("presigned post form을 반환한다")
         void returnsPresignedPostForm() throws Exception {
-            PresignedPostForm form = mock(PresignedPostForm.class);
+            PresignedPostFormResponse form = mock(PresignedPostFormResponse.class);
             given(cardCommandService.getPresignedPost()).willReturn(form);
 
             mockMvc.perform(post("/api/v2/cards/image"))

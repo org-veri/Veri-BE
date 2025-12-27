@@ -3,7 +3,7 @@ package org.veri.be.domain.image.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.veri.be.domain.image.client.OcrClient;
+import org.veri.be.domain.image.client.OcrPort;
 import org.veri.be.domain.image.exception.ImageErrorCode;
 import org.veri.be.domain.image.repository.OcrResultRepository;
 import org.veri.be.lib.exception.ApplicationException;
@@ -18,13 +18,13 @@ import java.util.concurrent.Executor;
 @Service
 public class MistralOcrService extends AbstractOcrService {
 
-    private final OcrClient ocrClient;
+    private final OcrPort ocrClient;
     private final SleepSupport sleepSupport;
     private final Executor ocrExecutor;
 
     public MistralOcrService(
             OcrResultRepository ocrResultRepository,
-            OcrClient ocrClient,
+            OcrPort ocrClient,
             SleepSupport sleepSupport,
             @Qualifier("ocrExecutor") Executor ocrExecutor
     ) {

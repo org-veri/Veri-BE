@@ -1,6 +1,6 @@
 package org.veri.be.domain.card.service;
 
-import io.github.miensoap.s3.core.post.dto.PresignedPostForm;
+import org.veri.be.global.storage.dto.PresignedPostFormResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -118,7 +118,7 @@ public class CardCommandService {
         );
     }
 
-    public PresignedPostForm getPresignedPost() {
+    public PresignedPostFormResponse getPresignedPost() {
         String allowedContentType = "image/*";
         int expirationMinutes = 5;
         long allowedSize = 3 * MB; // 1MB
