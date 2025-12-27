@@ -11,7 +11,7 @@ DOCKERFILE   ?= ./Dockerfile
 BUILD_CONTEXT?= .
 
 build:
-	./gradlew :app:clean :app:build -x test
+	./gradlew :core:core-api:clean :core:core-api:build -x test
 	docker build -f $(DOCKERFILE) -t $(IMAGE):$(APP_TAG) $(BUILD_CONTEXT)
 	docker tag $(IMAGE):$(APP_TAG) $(IMAGE):$(TIMESTAMP_TAG)
 	@if [ "$(APP_TAG)" != "latest" ]; then \
@@ -28,7 +28,7 @@ ensure-builder:
 	@docker buildx inspect --bootstrap >/dev/null
 
 buildx-and-push: ensure-builder
-	./gradlew :app:clean :app:build -x test
+	./gradlew :core:core-api:clean :core:core-api:build -x test
 	@if [ "$(APP_TAG)" != "latest" ]; then \
 	  EXTRA_TAGS="-t $(IMAGE):latest"; \
 	else \

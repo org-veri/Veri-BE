@@ -16,15 +16,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 import org.veri.be.domain.book.client.NaverBookSearchClient;
+import org.veri.be.domain.book.client.NaverClientException;
 import org.veri.be.domain.book.config.NaverConfig;
 import org.veri.be.domain.book.dto.book.NaverBookResponse;
-import org.veri.be.domain.book.exception.BookErrorCode;
-import org.veri.be.support.assertion.ExceptionAssertions;
 import tools.jackson.databind.ObjectMapper;
 
 import java.net.URI;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -72,10 +72,8 @@ class NaverBookSearchClientTest {
         @Test
         @DisplayName("start가 1000을 초과하면 예외가 발생한다")
         void throwsWhenStartTooLarge() {
-            ExceptionAssertions.assertApplicationException(
-                    () -> client.search("query", 101, 10),
-                    BookErrorCode.BAD_REQUEST
-            );
+            assertThatThrownBy(() -> client.search("query", 101, 10))
+                    .isInstanceOf(NaverClientException.class);
         }
 
         @Test
@@ -84,10 +82,8 @@ class NaverBookSearchClientTest {
             given(restTemplate.exchange(any(URI.class), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class)))
                     .willReturn(new ResponseEntity<>("", HttpStatus.INTERNAL_SERVER_ERROR));
 
-            ExceptionAssertions.assertApplicationException(
-                    () -> client.search("query", 1, 10),
-                    BookErrorCode.BAD_REQUEST
-            );
+            assertThatThrownBy(() -> client.search("query", 1, 10))
+                    .isInstanceOf(NaverClientException.class);
         }
 
         @Test
@@ -96,10 +92,8 @@ class NaverBookSearchClientTest {
             given(restTemplate.exchange(any(URI.class), eq(HttpMethod.GET), any(HttpEntity.class), eq(String.class)))
                     .willReturn(new ResponseEntity<>("invalid-json", HttpStatus.OK));
 
-            ExceptionAssertions.assertApplicationException(
-                    () -> client.search("query", 1, 10),
-                    BookErrorCode.BAD_REQUEST
-            );
+            assertThatThrownBy(() -> client.search("query", 1, 10))
+                    .isInstanceOf(NaverClientException.class);
         }
 
         private void verifyRequestUri() {

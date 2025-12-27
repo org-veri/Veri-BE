@@ -1,3 +1,13 @@
 rootProject.name = 'Veri-BE'
 
-include('app', 'support:logging', 'support:monitoring', 'tests')
+include(
+    'clients:client-ocr',
+    'clients:client-search',
+    'core:core-api',
+    'core:core-enum',
+    'storage:db-core',
+    'support:common',
+    'support:logging',
+    'support:monitoring',
+    'tests'
+)

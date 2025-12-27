@@ -1,6 +1,7 @@
 package org.veri.be.unit.image;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -23,8 +24,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 import org.veri.be.domain.image.client.MistralOcrClient;
-import org.veri.be.domain.image.exception.ImageErrorCode;
-import org.veri.be.support.assertion.ExceptionAssertions;
+import org.veri.be.domain.image.client.MistralOcrClientException;
 
 @ExtendWith(MockitoExtension.class)
 class MistralOcrClientTest {
@@ -88,10 +88,8 @@ class MistralOcrClientTest {
                     .body(any(Class.class)))
                     .thenReturn(null);
 
-            ExceptionAssertions.assertApplicationException(
-                    () -> client.requestOcr("https://example.com/ocr/image.png"),
-                    ImageErrorCode.OCR_PROCESSING_FAILED
-            );
+            assertThatThrownBy(() -> client.requestOcr("https://example.com/ocr/image.png"))
+                    .isInstanceOf(MistralOcrClientException.class);
         }
 
         @Test
@@ -106,10 +104,8 @@ class MistralOcrClientTest {
                     .body(any(Class.class)))
                     .thenReturn(response);
 
-            ExceptionAssertions.assertApplicationException(
-                    () -> client.requestOcr("https://example.com/ocr/image.png"),
-                    ImageErrorCode.OCR_PROCESSING_FAILED
-            );
+            assertThatThrownBy(() -> client.requestOcr("https://example.com/ocr/image.png"))
+                    .isInstanceOf(MistralOcrClientException.class);
         }
 
         @Test
@@ -123,10 +119,8 @@ class MistralOcrClientTest {
                     .body(eq(responseClass)))
                     .thenThrow(new RestClientException("fail"));
 
-            ExceptionAssertions.assertApplicationException(
-                    () -> client.requestOcr("https://example.com/ocr/image.png"),
-                    ImageErrorCode.OCR_PROCESSING_FAILED
-            );
+            assertThatThrownBy(() -> client.requestOcr("https://example.com/ocr/image.png"))
+                    .isInstanceOf(MistralOcrClientException.class);
         }
 
         @Test
@@ -135,10 +129,8 @@ class MistralOcrClientTest {
             org.mockito.Mockito.lenient().when(restClient.post())
                     .thenThrow(new RestClientException("fail"));
 
-            ExceptionAssertions.assertApplicationException(
-                    () -> client.requestOcr("https://example.com/ocr/image.png"),
-                    ImageErrorCode.OCR_PROCESSING_FAILED
-            );
+            assertThatThrownBy(() -> client.requestOcr("https://example.com/ocr/image.png"))
+                    .isInstanceOf(MistralOcrClientException.class);
         }
     }
 

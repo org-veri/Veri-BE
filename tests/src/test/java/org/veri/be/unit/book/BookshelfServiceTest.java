@@ -26,6 +26,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.veri.be.domain.book.controller.enums.ReadingSortType;
 import org.veri.be.domain.book.dto.book.BookPopularResponse;
+import org.veri.be.domain.book.repository.dto.BookPopularQueryResult;
 import org.veri.be.domain.book.dto.reading.ReadingConverter;
 import org.veri.be.domain.book.dto.reading.response.ReadingDetailResponse;
 import org.veri.be.domain.book.dto.reading.response.ReadingVisibilityUpdateResponse;
@@ -202,7 +203,7 @@ class BookshelfServiceTest {
         @DisplayName("주간 인기 도서를 조회한다")
         void queriesWeeklyPopular() {
             given(readingRepository.findMostPopularBook(any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class)))
-                    .willReturn(new PageImpl<>(List.of(new BookPopularResponse("img", "title", "author", "pub", "isbn"))));
+                    .willReturn(new PageImpl<>(List.of(new BookPopularQueryResult("img", "title", "author", "pub", "isbn"))));
 
             Page<BookPopularResponse> result = bookshelfService.searchWeeklyPopular(0, 10);
 
