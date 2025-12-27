@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.veri.be.domain.book.dto.reading.response.ReadingResponse;
+import org.veri.be.domain.book.repository.dto.ReadingQueryResult;
 import org.veri.be.domain.book.entity.Book;
 import org.veri.be.domain.book.entity.Reading;
 import org.veri.be.domain.book.entity.enums.ReadingStatus;
@@ -80,7 +80,7 @@ class ReadingRepositoryTest extends PersistenceSliceTestSupport {
             saveReading(member, book, ReadingStatus.DONE);
             saveReading(member, book, ReadingStatus.NOT_START);
 
-            Page<ReadingResponse> page = readingRepository.findReadingPage(
+            Page<ReadingQueryResult> page = readingRepository.findReadingPage(
                     member.getId(),
                     List.of(ReadingStatus.READING, ReadingStatus.DONE),
                     PageRequest.of(0, 10, Sort.by("id").ascending())

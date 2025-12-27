@@ -4,8 +4,13 @@ plugins {
 }
 
 dependencies {
-    testImplementation(project(":app"))
-    testImplementation(project(mapOf("path" to ":app", "configuration" to "runtimeElements")))
+    testImplementation(project(":core:core-api"))
+    testImplementation(project(mapOf("path" to ":core:core-api", "configuration" to "runtimeElements")))
+    testImplementation(project(":core:core-enum"))
+    testImplementation(project(":clients:client-ocr"))
+    testImplementation(project(":clients:client-search"))
+    testImplementation(project(":storage:db-core"))
+    testImplementation(project(":support:common"))
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
@@ -36,8 +41,8 @@ tasks.jacocoTestReport {
         html.required.set(true)
     }
 
-    val appMainClasses = project(":app").layout.buildDirectory.dir("classes/java/main").get().asFile
-    val appKotlinClasses = project(":app").layout.buildDirectory.dir("classes/kotlin/main").get().asFile
+    val appMainClasses = project(":core:core-api").layout.buildDirectory.dir("classes/java/main").get().asFile
+    val appKotlinClasses = project(":core:core-api").layout.buildDirectory.dir("classes/kotlin/main").get().asFile
     val classTrees = listOf(appMainClasses, appKotlinClasses).map { classesDir ->
         fileTree(classesDir) {
             exclude(
