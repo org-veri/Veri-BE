@@ -1,8 +1,3 @@
-plugins {
-    id("org.springframework.boot")
-    id("io.spring.dependency-management")
-}
-
 dependencies {
     implementation(project(":core:core-enum"))
     implementation(project(":support:common"))

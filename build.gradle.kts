@@ -1,37 +1,12 @@
-import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
-
 plugins {
     java
-    id("io.spring.dependency-management") version "1.1.7" apply false
-    id("org.springframework.boot") version "4.0.0" apply false
+    id("org.springframework.boot") apply false
+    id("io.spring.dependency-management")
 }
 
-group = "org.veri"
-
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(25))
-    }
-}
-
-repositories {
-    mavenCentral()
-    maven {
-        url = uri("https://central.sonatype.com/repository/maven-snapshots/")
-    }
-}
-
-subprojects {
-    apply(plugin = "java")
-    apply(plugin = "io.spring.dependency-management")
-
-    group = "org.veri"
-
-    java {
-        toolchain {
-            languageVersion.set(JavaLanguageVersion.of(25))
-        }
-    }
+allprojects {
+    group = "${property("projectGroup")}"
+    version = "${property("applicationVersion")}"
 
     repositories {
         mavenCentral()
@@ -39,12 +14,13 @@ subprojects {
             url = uri("https://central.sonatype.com/repository/maven-snapshots/")
         }
     }
+}
 
-    configure<DependencyManagementExtension> {
-        imports {
-            mavenBom("org.springframework.boot:spring-boot-dependencies:4.0.0")
-        }
-    }
+subprojects {
+    apply(plugin = "java")
+    apply(plugin = "java-library")
+    apply(plugin = "org.springframework.boot")
+    apply(plugin = "io.spring.dependency-management")
 
     dependencies {
         compileOnly("org.projectlombok:lombok")
@@ -53,9 +29,23 @@ subprojects {
         testAnnotationProcessor("org.projectlombok:lombok")
     }
 
-    configurations {
-        compileOnly {
-            extendsFrom(configurations.annotationProcessor.get())
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of("${property("javaVersion")}")
+        }
+    }
+
+    tasks.named<Jar>("bootJar").configure {
+        enabled = false
+    }
+
+    tasks.named<Jar>("jar").configure {
+        enabled = true
+    }
+
+    tasks.test {
+        useJUnitPlatform {
+            excludeTags("develop", "restdocs")
         }
     }
 }

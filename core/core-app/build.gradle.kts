@@ -1,12 +1,9 @@
-plugins {
-    id("java")
+tasks.named<Jar>("bootJar").configure {
+    enabled = true
 }
 
-group = "org.veri"
-version = "unspecified"
-
-repositories {
-    mavenCentral()
+tasks.named<Jar>("jar").configure {
+    enabled = true
 }
 
 dependencies {
