@@ -17,6 +17,7 @@ import org.veri.be.member.entity.Member;
 import org.veri.be.member.entity.enums.ProviderType;
 import org.veri.be.member.repository.MemberRepository;
 import org.veri.be.member.service.MemberQueryService;
+import org.veri.be.auth.storage.TokenStorageService;
 
 import java.time.Clock;
 import java.time.Instant;

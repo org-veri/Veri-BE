@@ -20,6 +20,7 @@
 - [ ] **Adjust module declarations** for new package locations.
 
 ## Phase 3: Visibility Enforcement
+- [x] **Align auth token storage package** to co-locate repositories and service for future package-private access.
 - [ ] **Demote internal visibility** (repositories/services/DTOs) to package-private where safe.
 - [ ] **Re-run Modulith verification** after visibility changes.
 
@@ -36,4 +37,15 @@
      core/core-api/src/main/java/org/veri/be/**/repository/**
      core/core-api/src/main/resources/storage.yml
      core/core-api/src/main/resources/storage-local.yml
+     ```
+ - **2025-12-30**: **Auth storage package aligned** to colocate token repositories and service.
+   - **Modified Files**:
+     ```
+     core/core-api/src/main/java/org/veri/be/auth/storage/TokenStorageService.java
+     core/core-api/src/main/java/org/veri/be/auth/storage/BlacklistedTokenRepository.java
+     core/core-api/src/main/java/org/veri/be/auth/storage/RefreshTokenRepository.java
+     core/core-api/src/main/java/org/veri/be/auth/service/AuthService.java
+     tests/src/test/java/org/veri/be/integration/usecase/AuthIntegrationTest.java
+     tests/src/test/java/org/veri/be/unit/auth/AuthServiceTest.java
+     tests/src/test/java/org/veri/be/unit/auth/TokenStorageServiceTest.java
      ```

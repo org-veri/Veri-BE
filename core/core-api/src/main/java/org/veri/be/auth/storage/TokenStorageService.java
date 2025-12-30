@@ -1,11 +1,9 @@
-package org.veri.be.auth.service;
+package org.veri.be.auth.storage;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.veri.be.auth.entity.BlacklistedToken;
 import org.veri.be.auth.entity.RefreshToken;
-import org.veri.be.auth.repository.BlacklistedTokenRepository;
-import org.veri.be.auth.repository.RefreshTokenRepository;
 import org.veri.be.lib.auth.token.TokenBlacklistStore;
 
 import java.time.Clock;
