@@ -14,24 +14,22 @@ import org.veri.be.lib.auth.token.TokenProvider;
 import org.veri.be.lib.exception.CommonErrorCode;
 import org.veri.be.lib.exception.ApplicationException;
 import org.veri.be.member.entity.Member;
-import org.veri.be.member.entity.enums.ProviderType;
-import org.veri.be.member.service.MemberRepository;
+import org.veri.be.member.service.MemberCommandService;
 import org.veri.be.member.service.MemberQueryService;
 import org.veri.be.auth.storage.TokenStorageService;
 
 import java.time.Clock;
 import java.time.Instant;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService implements Authenticator {
 
     private final MemberQueryService memberQueryService;
+    private final MemberCommandService memberCommandService;
     private final TokenStorageService tokenStorageService;
     private final TokenBlacklistStore tokenBlacklistStore;
 
-    private final MemberRepository memberRepository;
     private final TokenProvider tokenProvider;
     private final Clock clock;
 
@@ -106,29 +104,7 @@ public class AuthService implements Authenticator {
     }
 
     public LoginResponse loginWithOAuth2(OAuth2UserInfo userInfo) {
-        Member member = saveOrGetMember(userInfo);
+        Member member = memberCommandService.saveOrGetOAuthMember(userInfo);
         return this.login(member);
-    }
-
-    private Member saveOrGetMember(OAuth2UserInfo request) {
-        ProviderType providerType = ProviderType.valueOf(request.getProviderType());
-        Optional<Member> optional = memberRepository.findByProviderIdAndProviderType(request.getProviderId(), providerType);
-        if (optional.isPresent()) {
-            return optional.get();
-        } else {
-            Member member = Member.builder()
-                    .email(request.getEmail())
-                    .nickname(request.getNickname())
-                    .profileImageUrl(request.getImage())
-                    .providerId(request.getProviderId())
-                    .providerType(providerType)
-                    .build();
-            if (memberQueryService.existsByNickname(member.getNickname())) {
-                member.updateInfo(
-                        member.getNickname() + "_" + clock.millis(),
-                        member.getProfileImageUrl());
-            }
-            return memberRepository.save(member);
-        }
     }
 }

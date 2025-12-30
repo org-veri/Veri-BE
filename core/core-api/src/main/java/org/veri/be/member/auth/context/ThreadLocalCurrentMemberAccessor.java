@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.veri.be.lib.auth.context.MemberContext;
 import org.veri.be.member.entity.Member;
-import org.veri.be.member.service.MemberRepository;
+import org.veri.be.member.service.MemberQueryService;
 
 import java.util.Optional;
 
@@ -12,7 +12,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ThreadLocalCurrentMemberAccessor implements CurrentMemberAccessor {
 
-    private final MemberRepository memberRepository;
+    private final MemberQueryService memberQueryService;
 
     @Override
     public Optional<Member> getCurrentMember() {
@@ -22,13 +22,10 @@ public class ThreadLocalCurrentMemberAccessor implements CurrentMemberAccessor {
         }
 
         return MemberContext.getCurrentMemberId()
-                .flatMap(memberId -> {
-                    if (memberRepository == null) {
-                        return Optional.empty();
-                    }
-                    Optional<Member> member = memberRepository.findById(memberId);
-                    member.ifPresent(MemberRequestContext::setCurrentMember);
-                    return member;
-                });
+                .flatMap(memberId -> memberQueryService.findOptionalById(memberId)
+                        .map(member -> {
+                            MemberRequestContext.setCurrentMember(member);
+                            return member;
+                        }));
     }
 }

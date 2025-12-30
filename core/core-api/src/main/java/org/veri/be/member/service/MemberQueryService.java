@@ -4,11 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.veri.be.member.converter.MemberConverter;
 import org.veri.be.member.dto.MemberResponse;
 import org.veri.be.member.entity.Member;
+import org.veri.be.member.entity.enums.ProviderType;
 import org.veri.be.member.exception.MemberErrorCode;
 import org.veri.be.member.service.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.veri.be.lib.exception.ApplicationException;
+
+import java.util.Optional;
 
 @Transactional(readOnly = true)
 @Service
@@ -22,6 +25,14 @@ public class MemberQueryService {
     public Member findById(Long id) {
         return memberRepository.findById(id).orElseThrow(() ->
                 ApplicationException.of(MemberErrorCode.NOT_FOUND));
+    }
+
+    public Optional<Member> findOptionalById(Long id) {
+        return memberRepository.findById(id);
+    }
+
+    public Optional<Member> findByProviderIdAndProviderType(String providerId, ProviderType providerType) {
+        return memberRepository.findByProviderIdAndProviderType(providerId, providerType);
     }
 
     public MemberResponse.MemberInfoResponse findMyInfo(Member member) {
