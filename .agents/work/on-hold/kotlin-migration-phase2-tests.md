@@ -1,6 +1,6 @@
 # Plan: Kotlin Migration Phase 2 Test Foundations
 
-**Status**: In Progress
+**Status**: On Hold
 **Date**: 2025-12-30
 **Goal**: Introduce Kotlin-friendly testing dependencies and structure to enable new tests in Kotlin.
 
@@ -49,3 +49,10 @@
     tests/src/test/kotlin/org/veri/be/unit/auth/MemberGuardTest.kt
     tests/src/test/java/org/veri/be/unit/auth/MemberGuardTest.java
     ```
+- **2025-12-30**: **Phase 2 updates**. Migrated member context unit test to Kotlin.
+  - **Modified Files**:
+    ```
+    tests/src/test/kotlin/org/veri/be/unit/auth/MemberContextTest.kt
+    tests/src/test/java/org/veri/be/unit/auth/MemberContextTest.java
+    ```
+- **2025-12-30**: **Phase 2 paused**. Kotlin test migration is on hold per request.
