@@ -14,6 +14,7 @@ import org.veri.be.lib.auth.token.TokenProvider;
 import org.veri.be.lib.exception.CommonErrorCode;
 import org.veri.be.lib.exception.ApplicationException;
 import org.veri.be.member.entity.Member;
+import org.veri.be.member.entity.enums.ProviderType;
 import org.veri.be.member.service.MemberCommandService;
 import org.veri.be.member.service.MemberQueryService;
 import org.veri.be.auth.storage.TokenStorageService;
@@ -104,7 +105,14 @@ public class AuthService implements Authenticator {
     }
 
     public LoginResponse loginWithOAuth2(OAuth2UserInfo userInfo) {
-        Member member = memberCommandService.saveOrGetOAuthMember(userInfo);
+        ProviderType providerType = ProviderType.valueOf(userInfo.getProviderType());
+        Member member = memberCommandService.saveOrGetOAuthMember(
+                userInfo.getEmail(),
+                userInfo.getNickname(),
+                userInfo.getImage(),
+                userInfo.getProviderId(),
+                providerType
+        );
         return this.login(member);
     }
 }

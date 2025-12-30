@@ -10,8 +10,6 @@ import org.veri.be.member.service.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.veri.be.lib.exception.ApplicationException;
-import org.veri.be.global.auth.oauth2.dto.OAuth2UserInfo;
-
 import java.time.Clock;
 import java.util.Optional;
 
@@ -35,18 +33,17 @@ public class MemberCommandService {
     }
 
     @Transactional
-    public Member saveOrGetOAuthMember(OAuth2UserInfo request) {
-        ProviderType providerType = ProviderType.valueOf(request.getProviderType());
-        Optional<Member> optional = memberQueryService.findByProviderIdAndProviderType(request.getProviderId(), providerType);
+    public Member saveOrGetOAuthMember(String email, String nickname, String image, String providerId, ProviderType providerType) {
+        Optional<Member> optional = memberQueryService.findByProviderIdAndProviderType(providerId, providerType);
         if (optional.isPresent()) {
             return optional.get();
         }
 
         Member member = Member.builder()
-                .email(request.getEmail())
-                .nickname(request.getNickname())
-                .profileImageUrl(request.getImage())
-                .providerId(request.getProviderId())
+                .email(email)
+                .nickname(nickname)
+                .profileImageUrl(image)
+                .providerId(providerId)
                 .providerType(providerType)
                 .build();
         if (memberQueryService.existsByNickname(member.getNickname())) {
