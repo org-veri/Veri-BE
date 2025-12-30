@@ -29,7 +29,9 @@ public class MockTokenController {
 
 
         return LoginResponse.builder()
-                .accessToken(tokenProvider.generateAccessToken(JwtClaimsPayload.from(member)).token())
+                .accessToken(tokenProvider.generateAccessToken(
+                        JwtClaimsPayload.of(member.getId(), member.getEmail(), member.getNickname(), false)
+                ).token())
                 .refreshToken(tokenProvider.generateRefreshToken(member.getId()).token())
                 .build();
     }

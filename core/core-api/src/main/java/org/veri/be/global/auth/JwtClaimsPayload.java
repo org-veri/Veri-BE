@@ -1,8 +1,5 @@
 package org.veri.be.global.auth;
 
-
-import org.veri.be.member.entity.Member;
-
 public record JwtClaimsPayload(
         Long id,
         String email,
@@ -10,7 +7,7 @@ public record JwtClaimsPayload(
         Boolean isAdmin
 ) {
 
-    public static JwtClaimsPayload from(Member member) {
-        return new JwtClaimsPayload(member.getId(), member.getEmail(), member.getNickname(), false);
+    public static JwtClaimsPayload of(Long id, String email, String nickName, boolean isAdmin) {
+        return new JwtClaimsPayload(id, email, nickName, isAdmin);
     }
 }

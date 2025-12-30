@@ -2,9 +2,6 @@ package org.veri.be.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.veri.be.member.entity.Member;
-import org.veri.be.member.repository.MemberRepository;
-import org.veri.be.member.service.MemberQueryService;
 import org.veri.be.global.auth.AuthErrorInfo;
 import org.veri.be.global.auth.Authenticator;
 import org.veri.be.global.auth.JwtClaimsPayload;
@@ -16,6 +13,10 @@ import org.veri.be.global.auth.token.TokenBlacklistStore;
 import org.veri.be.global.auth.token.TokenProvider;
 import org.veri.be.lib.exception.CommonErrorCode;
 import org.veri.be.lib.exception.ApplicationException;
+import org.veri.be.member.entity.Member;
+import org.veri.be.member.entity.enums.ProviderType;
+import org.veri.be.member.repository.MemberRepository;
+import org.veri.be.member.service.MemberQueryService;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -33,14 +34,19 @@ public class AuthService implements Authenticator {
     private final TokenProvider tokenProvider;
     private final Clock clock;
 
-    public LoginResponse login(Member member) {
-        TokenProvider.TokenGeneration accessToken = tokenProvider.generateAccessToken(JwtClaimsPayload.from(member));
-        TokenProvider.TokenGeneration refreshToken = tokenProvider.generateRefreshToken(member.getId());
-        tokenStorageService.addRefreshToken(member.getId(), refreshToken.token(), refreshToken.expiredAt());
+    @Override
+    public LoginResponse login(JwtClaimsPayload claimsPayload) {
+        TokenProvider.TokenGeneration accessToken = tokenProvider.generateAccessToken(claimsPayload);
+        TokenProvider.TokenGeneration refreshToken = tokenProvider.generateRefreshToken(claimsPayload.id());
+        tokenStorageService.addRefreshToken(claimsPayload.id(), refreshToken.token(), refreshToken.expiredAt());
         return LoginResponse.builder()
                 .accessToken(accessToken.token())
                 .refreshToken(refreshToken.token())
                 .build();
+    }
+
+    public LoginResponse login(Member member) {
+        return login(JwtClaimsPayload.of(member.getId(), member.getEmail(), member.getNickname(), false));
     }
 
     public ReissueTokenResponse reissueToken(ReissueTokenRequest request) {
@@ -64,7 +70,7 @@ public class AuthService implements Authenticator {
 
         Member member = memberQueryService.findById(id);
         String accessToken = tokenProvider.generateAccessToken(
-                new JwtClaimsPayload(member.getId(), member.getEmail(), member.getNickname(), false)
+                JwtClaimsPayload.of(member.getId(), member.getEmail(), member.getNickname(), false)
         ).token();
 
         return ReissueTokenResponse.builder()
@@ -104,11 +110,18 @@ public class AuthService implements Authenticator {
     }
 
     private Member saveOrGetMember(OAuth2UserInfo request) {
-        Optional<Member> optional = memberRepository.findByProviderIdAndProviderType(request.getProviderId(), request.getProviderType());
+        ProviderType providerType = ProviderType.valueOf(request.getProviderType());
+        Optional<Member> optional = memberRepository.findByProviderIdAndProviderType(request.getProviderId(), providerType);
         if (optional.isPresent()) {
             return optional.get();
         } else {
-            Member member = request.toMember();
+            Member member = Member.builder()
+                    .email(request.getEmail())
+                    .nickname(request.getNickname())
+                    .profileImageUrl(request.getImage())
+                    .providerId(request.getProviderId())
+                    .providerType(providerType)
+                    .build();
             if (memberQueryService.existsByNickname(member.getNickname())) {
                 member.updateInfo(
                         member.getNickname() + "_" + clock.millis(),

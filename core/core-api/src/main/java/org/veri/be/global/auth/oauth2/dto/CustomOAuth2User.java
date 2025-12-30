@@ -4,7 +4,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
-import org.veri.be.member.entity.enums.ProviderType;
 
 import java.util.Collection;
 import java.util.Map;
@@ -13,7 +12,7 @@ import java.util.Map;
 @Getter
 public class CustomOAuth2User extends DefaultOAuth2User {
 
-    private final ProviderType providerType;
+    private final String providerType;
 
     /**
      * Constructs a {@code CustomOAuth2User} using the provided parameters.
@@ -32,6 +31,6 @@ public class CustomOAuth2User extends DefaultOAuth2User {
     ) {
 
         super(authorities, attributes, nameAttributeKey);
-        this.providerType = ProviderType.valueOf(registrationId.toUpperCase());
+        this.providerType = registrationId.toUpperCase();
     }
 }

@@ -1,7 +1,6 @@
 package org.veri.be.global.auth.oauth2.dto;
 
 import lombok.experimental.UtilityClass;
-import org.veri.be.member.entity.enums.ProviderType;
 import org.veri.be.global.auth.AuthErrorInfo;
 import org.veri.be.lib.exception.ApplicationException;
 
@@ -19,8 +18,8 @@ public class OAuth2UserInfoMapper {
         return mapper.apply(oAuth2User.getAttributes());
     }
 
-    private static final Map<ProviderType, Function<Map<String, Object>, OAuth2UserInfo>> providerMappers = Map.of(
-            ProviderType.KAKAO, OAuth2UserInfoMapper::ofKakao
+    private static final Map<String, Function<Map<String, Object>, OAuth2UserInfo>> providerMappers = Map.of(
+            "KAKAO", OAuth2UserInfoMapper::ofKakao
     );
 
 
@@ -33,8 +32,7 @@ public class OAuth2UserInfoMapper {
                 .nickname((String) profile.get("nickname"))
                 .image((String) profile.get("profile_image_url"))
                 .providerId(attributes.get("id").toString())
-                .providerType(ProviderType.KAKAO)
+                .providerType("KAKAO")
                 .build();
     }
 }
-
