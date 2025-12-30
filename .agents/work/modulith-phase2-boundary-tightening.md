@@ -120,3 +120,17 @@
     core/core-api/src/main/java/org/veri/be/member/package-info.java
     core/core-api/src/main/java/org/veri/be/card/package-info.java
     ```
+- **2025-12-30**: **Card module reopened**. **book-card cycle** logged and card set to **OPEN** pending refactor.
+  - **Issue**:
+    ```
+    .agents/issue/modulith-book-card-cycle.md
+    ```
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/card/package-info.java
+    ```
+- **2025-12-30**: **Book dependency update**. Allow `card::card-entity` to reflect Reading-card association.
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/book/package-info.java
+    ```
