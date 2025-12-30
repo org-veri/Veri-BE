@@ -3,7 +3,7 @@ package org.veri.be.domain.post.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.veri.be.domain.member.repository.dto.MemberProfileQueryResult;
+import org.veri.be.member.repository.dto.MemberProfileQueryResult;
 import org.veri.be.domain.post.entity.LikePost;
 import org.veri.be.domain.post.repository.LikePostRepository;
 import org.veri.be.domain.post.repository.dto.DetailLikeInfoQueryResult;

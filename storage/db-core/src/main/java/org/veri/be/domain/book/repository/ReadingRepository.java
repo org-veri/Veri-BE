@@ -4,7 +4,7 @@ import org.veri.be.domain.book.entity.Reading;
 import org.veri.be.domain.book.entity.enums.ReadingStatus;
 import org.veri.be.domain.book.repository.dto.BookPopularQueryResult;
 import org.veri.be.domain.book.repository.dto.ReadingQueryResult;
-import org.veri.be.domain.member.entity.Member;
+import org.veri.be.member.entity.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

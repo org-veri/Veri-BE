@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.veri.be.domain.comment.dto.request.CommentPostRequest;
 import org.veri.be.domain.comment.entity.Comment;
 import org.veri.be.domain.comment.repository.CommentRepository;
-import org.veri.be.domain.member.entity.Member;
+import org.veri.be.member.entity.Member;
 import org.veri.be.domain.post.entity.Post;
 import org.veri.be.domain.post.service.PostQueryService;
 

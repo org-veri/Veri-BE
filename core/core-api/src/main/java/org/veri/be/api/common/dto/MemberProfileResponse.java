@@ -1,7 +1,7 @@
 package org.veri.be.api.common.dto;
 
-import org.veri.be.domain.member.entity.Member;
-import org.veri.be.domain.member.repository.dto.MemberProfileQueryResult;
+import org.veri.be.member.entity.Member;
+import org.veri.be.member.repository.dto.MemberProfileQueryResult;
 
 public record MemberProfileResponse(
         Long id,

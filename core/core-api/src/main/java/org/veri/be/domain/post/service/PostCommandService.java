@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.veri.be.domain.book.entity.Book;
 import org.veri.be.domain.book.service.BookService;
 import org.veri.be.domain.card.entity.CardErrorInfo;
-import org.veri.be.domain.member.entity.Member;
+import org.veri.be.member.entity.Member;
 import org.veri.be.domain.post.dto.request.PostCreateRequest;
 import org.veri.be.domain.post.dto.response.LikeInfoResponse;
 import org.veri.be.domain.post.entity.LikePost;

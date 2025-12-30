@@ -2,8 +2,8 @@ package org.veri.be.global.auth.oauth2.dto;
 
 import lombok.Builder;
 import lombok.Getter;
-import org.veri.be.domain.member.entity.Member;
-import org.veri.be.domain.member.entity.enums.ProviderType;
+import org.veri.be.member.entity.Member;
+import org.veri.be.member.entity.enums.ProviderType;
 
 @Getter
 @Builder

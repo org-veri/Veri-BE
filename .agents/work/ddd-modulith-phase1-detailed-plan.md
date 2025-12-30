@@ -398,6 +398,7 @@
       -> `storage/db-core/src/main/java/org/veri/be/member/**`
   - **검증**
     - 컴파일 + `tests`의 `Member` 관련 테스트 최소 실행
+  - **Status**: 패키지 이동 및 import 수정 완료, 컴파일 검증 대기
 - [ ] **Step 3: Book 모듈 전환**
   - **컨트롤러 이동**
     - `BookshelfController`, `SocialReadingController`
@@ -493,4 +494,23 @@
     tests/src/test/java/org/veri/be/unit/auth/AuthConfigTest.java
     tests/src/test/java/org/veri/be/unit/auth/TokenStorageServiceTest.java
     tests/src/test/java/org/veri/be/integration/usecase/AuthIntegrationTest.java
+    ```
+- **2025-12-30**: **Member 모듈 이동 적용**. 패키지 이동 및 import 갱신 완료, 컴파일 검증 대기.
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/member/MemberController.java
+    core/core-api/src/main/java/org/veri/be/member/converter/MemberConverter.java
+    core/core-api/src/main/java/org/veri/be/member/dto/MemberResponse.java
+    core/core-api/src/main/java/org/veri/be/member/dto/UpdateMemberInfoRequest.java
+    core/core-api/src/main/java/org/veri/be/member/exception/MemberErrorCode.java
+    core/core-api/src/main/java/org/veri/be/member/service/MemberCommandService.java
+    core/core-api/src/main/java/org/veri/be/member/service/MemberQueryService.java
+    storage/db-core/src/main/java/org/veri/be/member/entity/Member.java
+    storage/db-core/src/main/java/org/veri/be/member/repository/MemberRepository.java
+    storage/db-core/src/main/java/org/veri/be/member/repository/dto/MemberProfileQueryResult.java
+    tests/src/test/java/org/veri/be/slice/web/MemberControllerTest.java
+    tests/src/test/java/org/veri/be/unit/auth/AuthServiceTest.java
+    tests/src/test/java/org/veri/be/integration/usecase/AuthIntegrationTest.java
+    tests/src/test/java/org/veri/be/integration/usecase/MemberIntegrationTest.java
+    tests/src/test/java/org/veri/be/slice/persistence/member/MemberRepositoryTest.java
     ```

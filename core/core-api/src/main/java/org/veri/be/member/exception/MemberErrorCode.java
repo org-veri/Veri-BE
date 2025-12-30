@@ -1,4 +1,4 @@
-package org.veri.be.domain.member.exception;
+package org.veri.be.member.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

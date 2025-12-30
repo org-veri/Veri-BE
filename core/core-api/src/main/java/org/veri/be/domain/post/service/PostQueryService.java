@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.veri.be.domain.comment.service.CommentQueryService;
-import org.veri.be.domain.member.entity.Member;
+import org.veri.be.member.entity.Member;
 import org.veri.be.domain.post.controller.enums.PostSortType;
 import org.veri.be.domain.post.dto.response.PostDetailResponse;
 import org.veri.be.domain.post.dto.response.PostFeedResponseItem;

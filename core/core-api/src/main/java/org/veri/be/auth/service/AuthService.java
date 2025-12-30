@@ -2,9 +2,9 @@ package org.veri.be.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.veri.be.domain.member.entity.Member;
-import org.veri.be.domain.member.repository.MemberRepository;
-import org.veri.be.domain.member.service.MemberQueryService;
+import org.veri.be.member.entity.Member;
+import org.veri.be.member.repository.MemberRepository;
+import org.veri.be.member.service.MemberQueryService;
 import org.veri.be.global.auth.AuthErrorInfo;
 import org.veri.be.global.auth.Authenticator;
 import org.veri.be.global.auth.JwtClaimsPayload;

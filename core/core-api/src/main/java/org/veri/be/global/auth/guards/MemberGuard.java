@@ -2,7 +2,7 @@ package org.veri.be.global.auth.guards;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.veri.be.domain.member.entity.Member;
+import org.veri.be.member.entity.Member;
 import org.veri.be.lib.auth.guard.Guard;
 import org.veri.be.lib.exception.CommonErrorCode;
 import org.veri.be.lib.exception.ApplicationException;

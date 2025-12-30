@@ -4,7 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
-import org.veri.be.domain.member.entity.enums.ProviderType;
+import org.veri.be.member.entity.enums.ProviderType;
 
 import java.util.Collection;
 import java.util.Map;

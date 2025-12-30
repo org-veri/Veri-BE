@@ -2,7 +2,7 @@ package org.veri.be.global.auth.context;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.veri.be.domain.member.entity.Member;
+import org.veri.be.member.entity.Member;
 import org.veri.be.global.auth.AuthErrorInfo;
 import org.veri.be.lib.exception.ApplicationException;
 

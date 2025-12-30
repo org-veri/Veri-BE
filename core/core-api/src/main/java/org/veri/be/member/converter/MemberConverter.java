@@ -1,8 +1,8 @@
-package org.veri.be.domain.member.converter;
+package org.veri.be.member.converter;
 
 import lombok.RequiredArgsConstructor;
-import org.veri.be.domain.member.dto.MemberResponse;
-import org.veri.be.domain.member.entity.Member;
+import org.veri.be.member.dto.MemberResponse;
+import org.veri.be.member.entity.Member;
 
 @RequiredArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class MemberConverter {

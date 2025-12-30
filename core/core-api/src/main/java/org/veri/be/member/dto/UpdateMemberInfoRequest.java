@@ -1,4 +1,4 @@
-package org.veri.be.domain.member.dto;
+package org.veri.be.member.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import org.hibernate.validator.constraints.URL;

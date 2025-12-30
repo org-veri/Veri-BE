@@ -1,6 +1,6 @@
-package org.veri.be.domain.member.repository.dto;
+package org.veri.be.member.repository.dto;
 
-import org.veri.be.domain.member.entity.Member;
+import org.veri.be.member.entity.Member;
 
 public record MemberProfileQueryResult(
         Long id,

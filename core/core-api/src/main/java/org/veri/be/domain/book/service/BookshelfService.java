@@ -20,7 +20,7 @@ import org.veri.be.domain.book.repository.BookRepository;
 import org.veri.be.domain.book.repository.ReadingRepository;
 import org.veri.be.domain.book.repository.dto.BookPopularQueryResult;
 import org.veri.be.domain.book.repository.dto.ReadingQueryResult;
-import org.veri.be.domain.member.entity.Member;
+import org.veri.be.member.entity.Member;
 import org.veri.be.global.auth.context.CurrentMemberAccessor;
 import org.veri.be.lib.exception.ApplicationException;
 import org.veri.be.lib.exception.CommonErrorCode;

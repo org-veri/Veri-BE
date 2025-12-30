@@ -1,6 +1,6 @@
 package org.veri.be.domain.post.repository.dto;
 
-import org.veri.be.domain.member.repository.dto.MemberProfileQueryResult;
+import org.veri.be.member.repository.dto.MemberProfileQueryResult;
 
 import java.util.List;
 

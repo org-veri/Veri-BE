@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.veri.be.domain.image.entity.Image;
 import org.veri.be.domain.image.exception.ImageErrorCode;
 import org.veri.be.domain.image.repository.ImageRepository;
-import org.veri.be.domain.member.entity.Member;
+import org.veri.be.member.entity.Member;
 import org.veri.be.lib.exception.ApplicationException;
 
 @Service

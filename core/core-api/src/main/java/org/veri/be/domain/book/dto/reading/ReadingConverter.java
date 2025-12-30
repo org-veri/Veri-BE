@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.veri.be.domain.book.dto.reading.response.ReadingDetailResponse;
 import org.veri.be.domain.book.entity.Reading;
-import org.veri.be.domain.member.entity.Member;
+import org.veri.be.member.entity.Member;
 import org.veri.be.global.auth.context.CurrentMemberAccessor;
 
 @Component

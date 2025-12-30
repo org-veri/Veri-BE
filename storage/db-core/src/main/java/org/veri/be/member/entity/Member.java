@@ -1,4 +1,4 @@
-package org.veri.be.domain.member.entity;
+package org.veri.be.member.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.veri.be.domain.member.entity.enums.ProviderType;
+import org.veri.be.member.entity.enums.ProviderType;
 import org.veri.be.global.entity.Authorizable;
 import org.veri.be.global.entity.BaseEntity;
 

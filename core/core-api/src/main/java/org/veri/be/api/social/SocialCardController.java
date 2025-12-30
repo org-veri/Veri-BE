@@ -9,7 +9,7 @@ import org.veri.be.domain.card.controller.dto.response.CardVisibilityUpdateRespo
 import org.veri.be.domain.card.controller.enums.CardSortType;
 import org.veri.be.domain.card.service.CardCommandService;
 import org.veri.be.domain.card.service.CardQueryService;
-import org.veri.be.domain.member.entity.Member;
+import org.veri.be.member.entity.Member;
 import org.veri.be.global.auth.context.AuthenticatedMember;
 import org.veri.be.lib.response.ApiResponse;
 import org.springframework.web.bind.annotation.*;

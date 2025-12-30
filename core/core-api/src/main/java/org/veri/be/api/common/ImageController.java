@@ -8,7 +8,7 @@ import org.veri.be.global.auth.context.AuthenticatedMember;
 import org.veri.be.global.response.PageResponse;
 import org.veri.be.domain.image.service.ImageCommandService;
 import org.veri.be.domain.image.service.ImageQueryService;
-import org.veri.be.domain.member.entity.Member;
+import org.veri.be.member.entity.Member;
 import org.veri.be.lib.response.ApiResponse;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

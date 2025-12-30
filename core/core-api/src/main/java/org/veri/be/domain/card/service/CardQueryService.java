@@ -14,7 +14,7 @@ import org.veri.be.domain.card.entity.CardErrorInfo;
 import org.veri.be.domain.card.repository.CardRepository;
 import org.veri.be.domain.card.repository.dto.CardFeedItem;
 import org.veri.be.domain.card.repository.dto.CardListItem;
-import org.veri.be.domain.member.entity.Member;
+import org.veri.be.member.entity.Member;
 import org.veri.be.lib.exception.ApplicationException;
 import org.veri.be.lib.exception.CommonErrorCode;
 

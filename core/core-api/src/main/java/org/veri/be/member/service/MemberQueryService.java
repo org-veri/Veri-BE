@@ -1,13 +1,13 @@
-package org.veri.be.domain.member.service;
+package org.veri.be.member.service;
 
 import lombok.RequiredArgsConstructor;
 import org.veri.be.domain.book.repository.ReadingRepository;
 import org.veri.be.domain.card.repository.CardRepository;
-import org.veri.be.domain.member.converter.MemberConverter;
-import org.veri.be.domain.member.dto.MemberResponse;
-import org.veri.be.domain.member.entity.Member;
-import org.veri.be.domain.member.exception.MemberErrorCode;
-import org.veri.be.domain.member.repository.MemberRepository;
+import org.veri.be.member.converter.MemberConverter;
+import org.veri.be.member.dto.MemberResponse;
+import org.veri.be.member.entity.Member;
+import org.veri.be.member.exception.MemberErrorCode;
+import org.veri.be.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.veri.be.lib.exception.ApplicationException;

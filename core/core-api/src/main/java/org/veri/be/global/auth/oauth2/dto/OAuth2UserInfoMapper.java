@@ -1,7 +1,7 @@
 package org.veri.be.global.auth.oauth2.dto;
 
 import lombok.experimental.UtilityClass;
-import org.veri.be.domain.member.entity.enums.ProviderType;
+import org.veri.be.member.entity.enums.ProviderType;
 import org.veri.be.global.auth.AuthErrorInfo;
 import org.veri.be.lib.exception.ApplicationException;
 
