@@ -134,3 +134,12 @@
     ```
     core/core-api/src/main/java/org/veri/be/book/package-info.java
     ```
+- **2025-12-30**: **Comment module closed**. Named interfaces added for DTO/service/entity/repository with post and member dependencies.
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/comment/package-info.java
+    core/core-api/src/main/java/org/veri/be/comment/service/package-info.java
+    core/core-api/src/main/java/org/veri/be/comment/dto/request/package-info.java
+    storage/db-core/src/main/java/org/veri/be/comment/entity/package-info.java
+    storage/db-core/src/main/java/org/veri/be/comment/repository/package-info.java
+    ```
