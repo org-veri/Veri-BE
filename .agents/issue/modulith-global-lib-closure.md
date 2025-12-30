@@ -55,3 +55,26 @@ Attempting to switch **global** and **lib** modules to **CLOSED** triggered Modu
 - Split **auth context** ownership to remove **global -> member** dependency (move `AuthenticatedMember`/`CurrentMemberAccessor` to **member** or replace with `memberId`-only accessor).
 - Decouple **global <-> lib** by relocating error/guard utilities or introducing a lib-owned interface that global can implement.
 - Reattempt **global** closure after auth-context refactor.
+
+## Update
+**Date**: 2025-12-30
+**Status**: Open
+
+### Findings
+- **global -> member** dependency removed by moving auth context/guards into **member** and trimming **MemberContext** to `memberId` and `token`.
+- OAuth2 DTOs no longer import **member** enums/entities; **JwtClaimsPayload** no longer depends on **Member**.
+
+### Next Steps
+- Re-run Modulith verification to confirm the **global/member** cycle is gone.
+- Reassess remaining **global/lib** cycles and decide if **global** can be moved to **CLOSED** with explicit dependencies.
+
+## Update
+**Date**: 2025-12-30
+**Status**: Open
+
+### Findings
+- Moved **TokenProvider/TokenBlacklistStore** and **MemberContext** into **lib** to remove **lib -> global** references.
+- Updated **global** to **CLOSED** with explicit **lib** dependencies for auth/util/exception/response packages.
+
+### Next Steps
+- Run Modulith verification to confirm **global** closure and identify any remaining hidden dependencies.

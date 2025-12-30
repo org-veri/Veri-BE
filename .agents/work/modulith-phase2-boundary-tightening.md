@@ -12,17 +12,18 @@
 ## Phase 1: Baseline Constraints
 - [x] **Inventory current dependencies** using Modulith verification output.
 - [x] **Define dependency rules** per module (Auth, Member, Book, Card, Comment, Post, Image, Global, Lib).
-- [ ] **Order of tightening**: Global/Lib first, then core domains, then social modules.
+- [x] **Order of tightening**: Global/Lib first, then core domains, then social modules.
 
 ## Phase 2: Module-by-Module Closure
-- [ ] **Global/Lib**: identify shared abstractions and stabilize public APIs.
+- [x] **Global/Lib**: identify shared abstractions and stabilize public APIs.
 - [x] **Auth**: reduce dependence on Global DTOs and Authenticator coupling.
-- [ ] **Member**: isolate entity exposure and create boundary DTOs where needed.
 - [x] **Member**: isolate entity exposure and create boundary DTOs where needed.
-- [ ] **Book/Card/Comment/Post/Image**: replace cross-entity exposure with DTOs or service interfaces.
+- [x] **Member**: isolate entity exposure and create boundary DTOs where needed.
+- [x] **Book/Card/Comment/Post/Image**: replace cross-entity exposure with DTOs or service interfaces.
   - **Card**: closed with DTO/service/entity/repository exposures and member/book dependencies.
   - **Book**: closed with explicit member service dependency for reading count.
   - **Note**: Book module closure is blocked by **book-member cycle**; module remains **OPEN** for now.
+  - **Update**: Book/card cycles resolved; both modules are **CLOSED** with explicit dependencies.
 
 ## Phase 3: Verification
 - [ ] **Re-enable strict verification** with **CLOSED** modules.
@@ -302,4 +303,78 @@
   - **Issue**:
     ```
     .agents/issue/modulith-global-lib-closure.md
+    ```
+- **2025-12-30**: **Auth context moved to member**. Member auth context/guards moved to member module, global context slimmed to memberId/token, and resolver cleanup interceptor added.
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/global/auth/context/MemberContext.java
+    core/core-api/src/main/java/org/veri/be/global/config/InterceptorConfig.java
+    core/core-api/src/main/java/org/veri/be/member/auth/context/AuthenticatedMember.java
+    core/core-api/src/main/java/org/veri/be/member/auth/context/AuthenticatedMemberResolver.java
+    core/core-api/src/main/java/org/veri/be/member/auth/context/CurrentMemberAccessor.java
+    core/core-api/src/main/java/org/veri/be/member/auth/context/MemberRequestContext.java
+    core/core-api/src/main/java/org/veri/be/member/auth/context/ThreadLocalCurrentMemberAccessor.java
+    core/core-api/src/main/java/org/veri/be/member/auth/context/package-info.java
+    core/core-api/src/main/java/org/veri/be/member/auth/guards/MemberGuard.java
+    core/core-api/src/main/java/org/veri/be/member/auth/guards/package-info.java
+    core/core-api/src/main/java/org/veri/be/member/config/MemberArgumentResolverConfig.java
+    core/core-api/src/main/java/org/veri/be/member/config/MemberContextCleanupInterceptor.java
+    core/core-api/src/main/java/org/veri/be/book/BookshelfController.java
+    core/core-api/src/main/java/org/veri/be/book/dto/reading/ReadingConverter.java
+    core/core-api/src/main/java/org/veri/be/book/service/BookshelfService.java
+    core/core-api/src/main/java/org/veri/be/book/package-info.java
+    core/core-api/src/main/java/org/veri/be/comment/CommentController.java
+    core/core-api/src/main/java/org/veri/be/comment/package-info.java
+    core/core-api/src/main/java/org/veri/be/image/ImageController.java
+    core/core-api/src/main/java/org/veri/be/image/package-info.java
+    core/core-api/src/main/java/org/veri/be/member/MemberController.java
+    core/core-api/src/main/java/org/veri/be/post/PostController.java
+    core/core-api/src/main/java/org/veri/be/post/package-info.java
+    tests/src/test/java/org/veri/be/integration/IntegrationTestSupport.java
+    tests/src/test/java/org/veri/be/integration/usecase/GlobalUnauthorizedTest.java
+    tests/src/test/java/org/veri/be/slice/web/BookshelfControllerTest.java
+    tests/src/test/java/org/veri/be/slice/web/CardControllerTest.java
+    tests/src/test/java/org/veri/be/slice/web/CommentControllerTest.java
+    tests/src/test/java/org/veri/be/slice/web/ImageControllerTest.java
+    tests/src/test/java/org/veri/be/slice/web/MemberControllerTest.java
+    tests/src/test/java/org/veri/be/slice/web/PostControllerTest.java
+    tests/src/test/java/org/veri/be/slice/web/SocialCardControllerTest.java
+    tests/src/test/java/org/veri/be/unit/auth/CurrentMemberAccessorTest.java
+    tests/src/test/java/org/veri/be/unit/auth/MemberContextTest.java
+    tests/src/test/java/org/veri/be/unit/auth/MemberGuardTest.java
+    tests/src/test/java/org/veri/be/unit/auth/ThreadLocalCurrentMemberAccessorTest.java
+    tests/src/test/java/org/veri/be/unit/book/BookshelfServiceTest.java
+    tests/src/test/java/org/veri/be/unit/book/ReadingConverterTest.java
+    ```
+- **2025-12-30**: **Global/lib decoupling**. Moved token interfaces and member-id context into **lib**, updated module dependencies, and closed **global** with explicit allowed dependencies.
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/global/package-info.java
+    core/core-api/src/main/java/org/veri/be/global/auth/AuthConfig.java
+    core/core-api/src/main/java/org/veri/be/global/auth/token/JwtExceptionHandlingTokenProvider.java
+    core/core-api/src/main/java/org/veri/be/global/auth/token/TokenProviderConfig.java
+    core/core-api/src/main/java/org/veri/be/lib/package-info.java
+    core/core-api/src/main/java/org/veri/be/lib/auth/context/MemberContext.java
+    core/core-api/src/main/java/org/veri/be/lib/auth/context/package-info.java
+    core/core-api/src/main/java/org/veri/be/lib/auth/token/TokenBlacklistStore.java
+    core/core-api/src/main/java/org/veri/be/lib/auth/token/TokenProvider.java
+    core/core-api/src/main/java/org/veri/be/lib/auth/token/package-info.java
+    core/core-api/src/main/java/org/veri/be/lib/auth/jwt/JwtFilter.java
+    core/core-api/src/main/java/org/veri/be/lib/auth/jwt/JwtService.java
+    core/core-api/src/main/java/org/veri/be/member/auth/context/ThreadLocalCurrentMemberAccessor.java
+    core/core-api/src/main/java/org/veri/be/member/package-info.java
+    core/core-api/src/main/java/org/veri/be/auth/package-info.java
+    core/core-api/src/main/java/org/veri/be/auth/service/AuthService.java
+    core/core-api/src/main/java/org/veri/be/auth/service/TokenStorageService.java
+    core/core-api/src/main/java/org/veri/be/mock/MockTokenController.java
+    tests/src/test/java/org/veri/be/unit/auth/AuthConfigTest.java
+    tests/src/test/java/org/veri/be/unit/auth/AuthServiceTest.java
+    tests/src/test/java/org/veri/be/unit/auth/MemberContextTest.java
+    tests/src/test/java/org/veri/be/unit/auth/ThreadLocalCurrentMemberAccessorTest.java
+    tests/src/test/java/org/veri/be/integration/usecase/AuthIntegrationTest.java
+    ```
+- **2025-12-30**: **Card module closed**. Added explicit allowed dependencies after resolving book-card cycle.
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/card/package-info.java
     ```
