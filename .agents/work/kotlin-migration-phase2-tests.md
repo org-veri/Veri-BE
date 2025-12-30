@@ -14,7 +14,7 @@
 - [x] **Add Kotlin test dependencies** to the tests module.
 
 ## Phase 2: Structure
-- [ ] **Create Kotlin test source root** and migrate a low-risk test when ready.
+- [x] **Create Kotlin test source root** and migrate a low-risk test when ready.
 
 ## Phase 3: Verification
 - [ ] **Run test suite** after a full phase is complete.
@@ -24,4 +24,10 @@
   - **Modified Files**:
     ```
     tests/build.gradle.kts
+    ```
+- **2025-12-30**: **Phase 2 updates**. Migrated a low-risk unit test to Kotlin and created the Kotlin test source root.
+  - **Modified Files**:
+    ```
+    tests/src/test/kotlin/org/veri/be/unit/book/ReadingDetailResponseTest.kt
+    tests/src/test/java/org/veri/be/unit/book/ReadingDetailResponseTest.java
     ```
