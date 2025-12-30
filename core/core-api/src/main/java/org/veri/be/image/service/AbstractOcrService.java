@@ -2,7 +2,7 @@ package org.veri.be.image.service;
 
 import lombok.RequiredArgsConstructor;
 import org.veri.be.image.entity.OcrResult;
-import org.veri.be.image.repository.OcrResultRepository;
+import org.veri.be.image.service.OcrResultRepository;
 
 @RequiredArgsConstructor
 public abstract class AbstractOcrService implements OcrService {

@@ -1,4 +1,4 @@
-package org.veri.be.post.repository;
+package org.veri.be.post.service;
 
 import me.miensoap.fluent.FluentRepository;
 import org.springframework.stereotype.Repository;

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.veri.be.comment.service.PostExistenceProvider;
 import org.veri.be.lib.exception.ApplicationException;
 import org.veri.be.lib.exception.CommonErrorCode;
-import org.veri.be.post.repository.PostRepository;
+import org.veri.be.post.service.PostRepository;
 
 @Service
 @RequiredArgsConstructor

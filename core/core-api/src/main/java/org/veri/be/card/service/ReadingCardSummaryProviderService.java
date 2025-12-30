@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.veri.be.book.service.ReadingCardSummary;
 import org.veri.be.book.service.ReadingCardSummaryProvider;
 import org.veri.be.card.entity.Card;
-import org.veri.be.card.repository.CardRepository;
+import org.veri.be.card.service.CardRepository;
 
 @Service
 @RequiredArgsConstructor

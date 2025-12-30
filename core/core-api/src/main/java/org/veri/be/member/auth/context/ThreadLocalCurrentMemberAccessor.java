@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.veri.be.lib.auth.context.MemberContext;
 import org.veri.be.member.entity.Member;
-import org.veri.be.member.repository.MemberRepository;
+import org.veri.be.member.service.MemberRepository;
 
 import java.util.Optional;
 

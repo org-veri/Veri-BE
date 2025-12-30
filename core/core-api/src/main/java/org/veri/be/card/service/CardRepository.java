@@ -1,4 +1,4 @@
-package org.veri.be.card.repository;
+package org.veri.be.card.service;
 
 import org.veri.be.card.entity.Card;
 import org.veri.be.card.repository.dto.CardListItem;

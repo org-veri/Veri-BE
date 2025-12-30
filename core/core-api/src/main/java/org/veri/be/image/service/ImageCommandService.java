@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.veri.be.image.entity.Image;
 import org.veri.be.image.exception.ImageErrorCode;
-import org.veri.be.image.repository.ImageRepository;
+import org.veri.be.image.service.ImageRepository;
 import org.veri.be.member.entity.Member;
 import org.veri.be.lib.exception.ApplicationException;
 

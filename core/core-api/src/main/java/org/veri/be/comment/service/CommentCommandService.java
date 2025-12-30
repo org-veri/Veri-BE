@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.veri.be.comment.dto.request.CommentPostRequest;
 import org.veri.be.comment.entity.Comment;
-import org.veri.be.comment.repository.CommentRepository;
+import org.veri.be.comment.service.CommentRepository;
 import org.veri.be.member.entity.Member;
 
 import java.time.Clock;

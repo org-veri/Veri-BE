@@ -11,7 +11,7 @@ import org.veri.be.card.controller.dto.response.CardDetailResponse;
 import org.veri.be.card.controller.enums.CardSortType;
 import org.veri.be.card.entity.Card;
 import org.veri.be.card.entity.CardErrorInfo;
-import org.veri.be.card.repository.CardRepository;
+import org.veri.be.card.service.CardRepository;
 import org.veri.be.card.repository.dto.CardFeedItem;
 import org.veri.be.card.repository.dto.CardListItem;
 import org.veri.be.member.entity.Member;

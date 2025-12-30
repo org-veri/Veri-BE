@@ -2,7 +2,7 @@ package org.veri.be.comment.service;
 
 import lombok.RequiredArgsConstructor;
 import org.veri.be.comment.entity.Comment;
-import org.veri.be.comment.repository.CommentRepository;
+import org.veri.be.comment.service.CommentRepository;
 import org.veri.be.lib.exception.CommonErrorCode;
 import org.veri.be.lib.exception.ApplicationException;
 import org.springframework.stereotype.Service;

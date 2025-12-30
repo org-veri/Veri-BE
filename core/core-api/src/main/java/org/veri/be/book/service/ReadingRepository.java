@@ -1,4 +1,4 @@
-package org.veri.be.book.repository;
+package org.veri.be.book.service;
 
 import org.veri.be.book.entity.Reading;
 import org.veri.be.book.entity.enums.ReadingStatus;

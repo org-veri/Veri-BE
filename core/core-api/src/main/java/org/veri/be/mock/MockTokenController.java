@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.veri.be.member.entity.Member;
-import org.veri.be.member.repository.MemberRepository;
+import org.veri.be.member.service.MemberRepository;
 import org.veri.be.global.auth.JwtClaimsPayload;
 import org.veri.be.global.auth.dto.LoginResponse;
 import org.veri.be.lib.auth.token.TokenProvider;

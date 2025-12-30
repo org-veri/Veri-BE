@@ -3,7 +3,7 @@ package org.veri.be.book.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.veri.be.book.repository.ReadingRepository;
+import org.veri.be.book.service.ReadingRepository;
 import org.veri.be.member.service.ReadingCountProvider;
 
 @Transactional(readOnly = true)

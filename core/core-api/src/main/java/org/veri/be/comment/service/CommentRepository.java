@@ -1,4 +1,4 @@
-package org.veri.be.comment.repository;
+package org.veri.be.comment.service;
 
 import org.veri.be.comment.entity.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -7,7 +7,7 @@ import org.veri.be.book.dto.book.BookConverter;
 import org.veri.be.book.dto.book.BookSearchResponse;
 import org.veri.be.book.entity.Book;
 import org.veri.be.book.exception.BookErrorCode;
-import org.veri.be.book.repository.BookRepository;
+import org.veri.be.book.service.BookRepository;
 import org.veri.be.lib.exception.CommonErrorCode;
 import org.veri.be.lib.exception.ApplicationException;
 import org.springframework.stereotype.Service;

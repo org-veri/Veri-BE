@@ -1,4 +1,4 @@
-package org.veri.be.image.repository;
+package org.veri.be.image.service;
 
 import org.veri.be.image.entity.Image;
 import org.springframework.data.domain.Page;

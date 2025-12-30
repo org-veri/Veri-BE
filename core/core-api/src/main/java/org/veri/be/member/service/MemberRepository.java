@@ -1,4 +1,4 @@
-package org.veri.be.member.repository;
+package org.veri.be.member.service;
 
 import org.veri.be.member.entity.Member;
 import org.veri.be.member.entity.enums.ProviderType;

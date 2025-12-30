@@ -1,4 +1,4 @@
-package org.veri.be.book.repository;
+package org.veri.be.book.service;
 
 import org.veri.be.book.entity.Book;
 import org.springframework.data.jpa.repository.JpaRepository;

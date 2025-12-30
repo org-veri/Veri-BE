@@ -1,4 +1,4 @@
-package org.veri.be.post.repository;
+package org.veri.be.post.service;
 
 import org.veri.be.post.entity.Post;
 import org.veri.be.post.repository.dto.PostFeedQueryResult;

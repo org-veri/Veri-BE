@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.veri.be.image.client.OcrPort;
 import org.veri.be.image.exception.ImageErrorCode;
-import org.veri.be.image.repository.OcrResultRepository;
+import org.veri.be.image.service.OcrResultRepository;
 import org.veri.be.lib.exception.ApplicationException;
 import org.veri.be.lib.time.SleepSupport;
 
