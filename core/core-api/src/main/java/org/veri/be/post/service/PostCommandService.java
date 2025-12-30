@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.veri.be.book.entity.Book;
-import org.veri.be.book.service.BookService;
+import org.veri.be.book.service.BookQueryService;
 import org.veri.be.card.entity.CardErrorInfo;
 import org.veri.be.comment.service.CommentCommandService;
 import org.veri.be.member.entity.Member;
@@ -28,7 +28,7 @@ public class PostCommandService {
 
     private final PostRepository postRepository;
     private final PostQueryService postQueryService;
-    private final BookService bookService;
+    private final BookQueryService bookService;
     private final StorageService storageService;
     private final LikePostRepository likePostRepository;
     private final CommentCommandService commentCommandService;

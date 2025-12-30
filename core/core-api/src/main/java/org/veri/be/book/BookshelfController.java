@@ -18,7 +18,8 @@ import org.veri.be.book.dto.reading.response.ReadingListResponse;
 import org.veri.be.book.dto.reading.response.ReadingResponse;
 import org.veri.be.book.dto.reading.response.ReadingVisibilityUpdateResponse;
 import org.veri.be.book.entity.Reading;
-import org.veri.be.book.service.BookService;
+import org.veri.be.book.service.BookCommandService;
+import org.veri.be.book.service.BookQueryService;
 import org.veri.be.book.service.BookshelfService;
 import org.veri.be.member.entity.Member;
 import org.veri.be.member.auth.context.AuthenticatedMember;
@@ -37,7 +38,8 @@ import org.veri.be.lib.response.ApiResponse;
 public class BookshelfController {
 
     private final BookshelfService bookshelfService;
-    private final BookService bookService;
+    private final BookCommandService bookCommandService;
+    private final BookQueryService bookQueryService;
 
     @Operation(summary = "내 책장 전체 조회",
             description = """
@@ -67,7 +69,7 @@ public class BookshelfController {
     @PostMapping
     public ApiResponse<ReadingAddResponse> addBook(@RequestBody @Valid AddBookRequest request, @AuthenticatedMember Member member) {
 
-        Long bookId = bookService.addBook(
+        Long bookId = bookCommandService.addBook(
                 request.title(),
                 request.image(),
                 request.author(),
@@ -89,7 +91,7 @@ public class BookshelfController {
         if (page < 1 || size < 1) {
             throw ApplicationException.of(CommonErrorCode.INVALID_REQUEST);
         }
-        BookSearchResponse bookResponses = bookService.searchBook(query, page, size);
+        BookSearchResponse bookResponses = bookQueryService.searchBook(query, page, size);
 
         return ApiResponse.ok(bookResponses);
     }
