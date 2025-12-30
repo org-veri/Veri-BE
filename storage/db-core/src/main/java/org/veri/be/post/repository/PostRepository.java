@@ -22,7 +22,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                 p.author,
                 p.book,
                 (SELECT COUNT(l) FROM LikePost l WHERE l.post = p),
-                (SELECT COUNT(c) FROM Comment c WHERE c.post = p),
+                (SELECT COUNT(c) FROM Comment c WHERE c.postId = p.id),
                 p.createdAt,
                 p.isPublic
             )
@@ -42,7 +42,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                 p.author,
                 p.book,
                 (SELECT COUNT(l) FROM LikePost l WHERE l.post = p),
-                (SELECT COUNT(c) FROM Comment c WHERE c.post = p),
+                (SELECT COUNT(c) FROM Comment c WHERE c.postId = p.id),
                 p.createdAt,
                 p.isPublic
             )

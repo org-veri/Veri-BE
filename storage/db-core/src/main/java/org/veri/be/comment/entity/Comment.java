@@ -5,7 +5,6 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.veri.be.member.entity.Member;
-import org.veri.be.post.entity.Post;
 import org.veri.be.global.entity.Authorizable;
 import org.veri.be.global.entity.BaseEntity;
 import org.veri.be.lib.exception.ApplicationException;
@@ -31,9 +30,8 @@ public class Comment extends BaseEntity implements Authorizable {
     @Column(name = "content", nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
-    private Post post;
+    @Column(name = "post_id", nullable = false)
+    private Long postId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -63,7 +61,7 @@ public class Comment extends BaseEntity implements Authorizable {
 
     public Comment replyBy(Member member, String content) {
         Comment reply = Comment.builder()
-                .post(this.post)
+                .postId(this.postId)
                 .author(member)
                 .content(content)
                 .parent(this)

@@ -26,9 +26,12 @@ public record PostDetailResponse(
         long commentCount,
         LocalDateTime createdAt
 ) {
-    public static PostDetailResponse from(Post post, DetailLikeInfoQueryResult likeInfo, List<CommentResponse> comments) {
+    public static PostDetailResponse from(Post post, DetailLikeInfoQueryResult likeInfo, List<Comment> comments) {
         List<String> imageUrls = post.getImages().stream()
                 .map(PostImage::getImageUrl)
+                .toList();
+        List<CommentResponse> commentResponses = comments.stream()
+                .map(CommentResponse::fromEntity)
                 .toList();
 
         return PostDetailResponse.builder()
@@ -43,8 +46,8 @@ public record PostDetailResponse(
                 .likedMembers(likeInfo.likedMembers().stream()
                         .map(MemberProfileResponse::from)
                         .toList())
-                .comments(comments)
-                .commentCount(post.getCommentCount())
+                .comments(commentResponses)
+                .commentCount(commentResponses.size())
                 .createdAt(post.getCreatedAt())
                 .build();
     }
@@ -63,7 +66,7 @@ public record PostDetailResponse(
                     .map(CommentResponse::fromEntity)
                     .toList();
 
-            boolean isDeleted = comment.isDeleted(); // 삭제 댓글은 작성자/내용 마스킹
+            boolean isDeleted = comment.isDeleted();
 
             return new CommentResponse(
                     isDeleted ? null : comment.getId(),

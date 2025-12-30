@@ -3,7 +3,6 @@ package org.veri.be.comment.service;
 import lombok.RequiredArgsConstructor;
 import org.veri.be.comment.entity.Comment;
 import org.veri.be.comment.repository.CommentRepository;
-import org.veri.be.post.dto.response.PostDetailResponse;
 import org.veri.be.lib.exception.CommonErrorCode;
 import org.veri.be.lib.exception.ApplicationException;
 import org.springframework.stereotype.Service;
@@ -18,12 +17,8 @@ public class CommentQueryService {
 
     private final CommentRepository commentRepository;
 
-    public List<PostDetailResponse.CommentResponse> getCommentsByPostId(Long postId) {
-        List<Comment> comments = commentRepository.findByPostIdWithRepliesAndAuthor(postId);
-
-        return comments.stream()
-                .map(PostDetailResponse.CommentResponse::fromEntity)
-                .toList();
+    public List<Comment> getCommentsByPostId(Long postId) {
+        return commentRepository.findByPostIdWithRepliesAndAuthor(postId);
     }
 
     public Comment getCommentById(Long parentCommentId) {

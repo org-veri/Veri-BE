@@ -7,8 +7,6 @@ import org.veri.be.comment.dto.request.CommentPostRequest;
 import org.veri.be.comment.entity.Comment;
 import org.veri.be.comment.repository.CommentRepository;
 import org.veri.be.member.entity.Member;
-import org.veri.be.post.entity.Post;
-import org.veri.be.post.service.PostQueryService;
 
 import java.time.Clock;
 
@@ -18,20 +16,19 @@ public class CommentCommandService {
 
     private final CommentRepository commentRepository;
     private final CommentQueryService commentQueryService;
-    private final PostQueryService postQueryService;
+    private final PostExistenceProvider postExistenceProvider;
     private final Clock clock;
 
     @Transactional
     public Long postComment(CommentPostRequest request, Member member) {
-        Post post = postQueryService.getPostById(request.postId());
+        postExistenceProvider.ensureExists(request.postId());
 
         Comment comment = Comment.builder()
-                .post(post)
+                .postId(request.postId())
                 .author(member)
                 .content(request.content())
                 .build();
 
-        post.addComment(comment);
         return commentRepository.save(comment).getId();
     }
 
@@ -55,5 +52,10 @@ public class CommentCommandService {
         Comment comment = commentQueryService.getCommentById(commentId);
         comment.deleteBy(member, clock);
         commentRepository.save(comment);
+    }
+
+    @Transactional
+    public void deleteCommentsByPostId(Long postId) {
+        commentRepository.deleteByPostId(postId);
     }
 }

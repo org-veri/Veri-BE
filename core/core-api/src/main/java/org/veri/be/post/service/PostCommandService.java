@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.veri.be.book.entity.Book;
 import org.veri.be.book.service.BookService;
 import org.veri.be.card.entity.CardErrorInfo;
+import org.veri.be.comment.service.CommentCommandService;
 import org.veri.be.member.entity.Member;
 import org.veri.be.post.dto.request.PostCreateRequest;
 import org.veri.be.post.dto.response.LikeInfoResponse;
@@ -30,6 +31,7 @@ public class PostCommandService {
     private final BookService bookService;
     private final StorageService storageService;
     private final LikePostRepository likePostRepository;
+    private final CommentCommandService commentCommandService;
 
     @Transactional
     public Long createPost(PostCreateRequest request, Member member) {
@@ -54,6 +56,7 @@ public class PostCommandService {
     public void deletePost(Long postId, Member member) {
         Post post = this.postQueryService.getPostById(postId);
         post.authorizeOrThrow(member.getId());
+        commentCommandService.deleteCommentsByPostId(postId);
         this.postRepository.deleteById(postId);
     }
 

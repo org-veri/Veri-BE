@@ -19,8 +19,10 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             LEFT JOIN FETCH c.author
             LEFT JOIN FETCH c.replies r
             LEFT JOIN FETCH r.author
-            WHERE c.post.id = :postId AND c.parent IS NULL
+            WHERE c.postId = :postId AND c.parent IS NULL
             ORDER BY c.createdAt ASC
             """)
     List<Comment> findByPostIdWithRepliesAndAuthor(@Param("postId") Long postId);
+
+    void deleteByPostId(Long postId);
 }

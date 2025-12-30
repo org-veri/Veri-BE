@@ -248,3 +248,32 @@
     ```
     core/core-api/src/main/java/org/veri/be/global/package-info.java
     ```
+- **2025-12-30**: **Comment-post cycle resolved**. Comment stores `postId`, post maps comments internally, and comment module closed.
+  - **Issue**:
+    ```
+    .agents/issue/completed/modulith-comment-post-cycle.md
+    ```
+  - **Modified Files**:
+    ```
+    storage/db-core/src/main/java/org/veri/be/comment/entity/Comment.java
+    storage/db-core/src/main/java/org/veri/be/comment/repository/CommentRepository.java
+    core/core-api/src/main/java/org/veri/be/comment/service/CommentCommandService.java
+    core/core-api/src/main/java/org/veri/be/comment/service/CommentQueryService.java
+    core/core-api/src/main/java/org/veri/be/comment/service/PostExistenceProvider.java
+    core/core-api/src/main/java/org/veri/be/comment/package-info.java
+    core/core-api/src/main/java/org/veri/be/post/service/PostExistenceProviderService.java
+    core/core-api/src/main/java/org/veri/be/post/service/PostCommandService.java
+    core/core-api/src/main/java/org/veri/be/post/service/PostQueryService.java
+    core/core-api/src/main/java/org/veri/be/post/dto/response/PostDetailResponse.java
+    core/core-api/src/main/java/org/veri/be/post/package-info.java
+    storage/db-core/src/main/java/org/veri/be/post/entity/Post.java
+    storage/db-core/src/main/java/org/veri/be/post/repository/PostRepository.java
+    tests/src/test/java/org/veri/be/unit/comment/CommentCommandServiceTest.java
+    tests/src/test/java/org/veri/be/unit/comment/CommentQueryServiceTest.java
+    tests/src/test/java/org/veri/be/unit/comment/CommentTest.java
+    tests/src/test/java/org/veri/be/slice/persistence/comment/CommentRepositoryTest.java
+    tests/src/test/java/org/veri/be/slice/persistence/post/PostRepositoryTest.java
+    tests/src/test/java/org/veri/be/unit/post/PostCommandServiceTest.java
+    tests/src/test/java/org/veri/be/unit/post/PostQueryServiceTest.java
+    tests/src/test/java/org/veri/be/unit/post/PostResponseMappingTest.java
+    ```
