@@ -18,6 +18,7 @@
 - [ ] **Global/Lib**: identify shared abstractions and stabilize public APIs.
 - [x] **Auth**: reduce dependence on Global DTOs and Authenticator coupling.
 - [ ] **Member**: isolate entity exposure and create boundary DTOs where needed.
+- [x] **Member**: isolate entity exposure and create boundary DTOs where needed.
 - [ ] **Book/Card/Comment/Post/Image**: replace cross-entity exposure with DTOs or service interfaces.
 
 ## Phase 3: Verification
@@ -45,4 +46,26 @@
   - **Modified Files**:
     ```
     core/core-api/src/main/java/org/veri/be/auth/service/package-info.java
+    ```
+- **2025-12-30**: **Member module closed**. Named interfaces added for entity/repository exposure; allowed dependencies set.
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/member/package-info.java
+    storage/db-core/src/main/java/org/veri/be/member/entity/package-info.java
+    storage/db-core/src/main/java/org/veri/be/member/repository/package-info.java
+    storage/db-core/src/main/java/org/veri/be/member/repository/dto/package-info.java
+    ```
+- **2025-12-30**: **Member exposure 확장**. `member-dto`, `member-enums` 공개 및 **auth** 허용 의존성 보강.
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/member/dto/package-info.java
+    core/core-enum/build.gradle.kts
+    core/core-enum/src/main/java/org/veri/be/member/entity/enums/package-info.java
+    core/core-api/src/main/java/org/veri/be/auth/package-info.java
+    ```
+- **2025-12-30**: **Member service 공개**. `member-service` NamedInterface 추가 및 **auth** 허용 의존성 갱신.
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/member/service/package-info.java
+    core/core-api/src/main/java/org/veri/be/auth/package-info.java
     ```
