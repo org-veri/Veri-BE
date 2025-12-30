@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface ReadingRepository extends JpaRepository<Reading, Long> {
+interface ReadingRepository extends JpaRepository<Reading, Long> {
 
     @Query("SELECT mb FROM Reading mb " +
             "JOIN FETCH mb.book " +

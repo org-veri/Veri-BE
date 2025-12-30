@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.veri.be.book.entity.Reading;
-import org.veri.be.book.service.ReadingRepository;
+import org.veri.be.book.service.BookshelfService;
 import org.veri.be.card.controller.dto.CardConverter;
 import org.veri.be.card.controller.dto.response.CardUpdateResponse;
 import org.veri.be.card.controller.dto.response.CardVisibilityUpdateResponse;
@@ -29,13 +29,12 @@ import static org.veri.be.global.storage.service.StorageConstants.MB;
 public class CardCommandService {
 
     private final CardRepository cardRepository;
-    private final ReadingRepository readingRepository;
+    private final BookshelfService bookshelfService;
     private final StorageService storageService;
 
     @Transactional
     public Long createCard(Member member, String content, String imageUrl, Long memberBookId, Boolean isPublic) {
-        Reading reading = readingRepository.findById(memberBookId)
-                .orElseThrow(() -> ApplicationException.of(CommonErrorCode.INVALID_REQUEST));
+        Reading reading = bookshelfService.getReadingByIdOrInvalid(memberBookId);
 
         Card card = Card.builder()
                 .member(member)

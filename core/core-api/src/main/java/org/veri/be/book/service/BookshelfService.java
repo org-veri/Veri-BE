@@ -123,7 +123,7 @@ public class BookshelfService {
 
     @Transactional
     public void modifyBook(Member member, Double score, LocalDateTime startedAt, LocalDateTime endedAt, Long memberBookId) {
-        Reading reading = getReadingById(memberBookId);
+        Reading reading = findReadingOrThrow(memberBookId);
         reading.authorizeOrThrow(member.getId());
 
         reading.updateProgress(score, startedAt, endedAt);
@@ -132,7 +132,7 @@ public class BookshelfService {
 
     @Transactional
     public void rateScore(Member member, Double score, Long memberBookId) {
-        Reading reading = getReadingById(memberBookId);
+        Reading reading = findReadingOrThrow(memberBookId);
         reading.authorizeOrThrow(member.getId());
 
         reading.updateScore(score);
@@ -141,7 +141,7 @@ public class BookshelfService {
 
     @Transactional
     public void readStart(Member member, Long memberBookId) {
-        Reading reading = getReadingById(memberBookId);
+        Reading reading = findReadingOrThrow(memberBookId);
         reading.authorizeOrThrow(member.getId());
 
         reading.start(clock);
@@ -150,7 +150,7 @@ public class BookshelfService {
 
     @Transactional
     public void readOver(Member member, Long memberBookId) {
-        Reading reading = getReadingById(memberBookId);
+        Reading reading = findReadingOrThrow(memberBookId);
         reading.authorizeOrThrow(member.getId());
 
         reading.finish(clock);
@@ -159,7 +159,7 @@ public class BookshelfService {
 
     @Transactional
     public void deleteBook(Member member, Long memberBookId) {
-        Reading reading = getReadingById(memberBookId);
+        Reading reading = findReadingOrThrow(memberBookId);
         reading.authorizeOrThrow(member.getId());
 
         readingRepository.delete(reading);
@@ -167,7 +167,7 @@ public class BookshelfService {
 
     @Transactional
     public ReadingVisibilityUpdateResponse modifyVisibility(Member member, Long readingId, boolean isPublic) {
-        Reading reading = getReadingById(readingId);
+        Reading reading = findReadingOrThrow(readingId);
         reading.authorizeOrThrow(member.getId());
 
         if (isPublic) {
@@ -181,7 +181,16 @@ public class BookshelfService {
         return new ReadingVisibilityUpdateResponse(reading.getId(), reading.isPublic());
     }
 
-    private Reading getReadingById(Long readingId) {
+    public Reading getReadingById(Long readingId) {
+        return findReadingOrThrow(readingId);
+    }
+
+    public Reading getReadingByIdOrInvalid(Long readingId) {
+        return readingRepository.findById(readingId)
+                .orElseThrow(() -> ApplicationException.of(CommonErrorCode.INVALID_REQUEST));
+    }
+
+    private Reading findReadingOrThrow(Long readingId) {
         return readingRepository.findById(readingId)
                 .orElseThrow(() -> ApplicationException.of(CommonErrorCode.RESOURCE_NOT_FOUND));
     }
