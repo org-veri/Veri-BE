@@ -1,7 +1,7 @@
 # Issue: Modulith Global/Lib Closure Violations
 
 **Severity**: Low
-**Status**: Open
+**Status**: Completed
 **Date**: 2025-12-30
 
 ## Description
@@ -78,3 +78,13 @@ Attempting to switch **global** and **lib** modules to **CLOSED** triggered Modu
 
 ### Next Steps
 - Run Modulith verification to confirm **global** closure and identify any remaining hidden dependencies.
+
+## Update
+**Date**: 2025-12-30
+**Status**: Completed
+
+### Findings
+- Modulith verification passed after moving auth token/context into **lib** and adjusting module dependencies.
+
+### Resolution
+- **global** and **lib** are **CLOSED** with explicit allowed dependencies.

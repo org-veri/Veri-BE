@@ -20,3 +20,10 @@ Attempting to apply package-private visibility across repositories/services is b
 - Consider co-locating repositories with services under the same package (or move repositories into the core module package) so package-private can apply.
 - Alternatively, introduce module-private access patterns (e.g., internal interfaces in the same package, or move orchestration into storage module) instead of relying on Java visibility.
 - Defer visibility demotion until package layout decisions are made.
+
+## Update
+**Date**: 2025-12-30
+**Status**: On Hold
+
+### Decision
+- Proceed with **storage module removal** and **core integration** to enable package-private visibility enforcement.

@@ -1,6 +1,6 @@
 # Plan: Modulith Phase 2 Boundary Tightening
 
-**Status**: In Progress
+**Status**: Completed
 **Date**: 2025-12-30
 **Goal**: Transition module declarations from **OPEN** to **CLOSED** with explicit **allowedDependencies**, resolving cross-module coupling incrementally.
 
@@ -26,8 +26,8 @@
   - **Update**: Book/card cycles resolved; both modules are **CLOSED** with explicit dependencies.
 
 ## Phase 3: Verification
-- [ ] **Re-enable strict verification** with **CLOSED** modules.
-- [ ] **Test pass** with `:tests:test` and Modulith verification.
+- [x] **Re-enable strict verification** with **CLOSED** modules.
+- [x] **Test pass** with `:tests:test` and Modulith verification.
 
 ## History
 - **2025-12-30**: **Phase 2 started**. **Global/Lib** modules set to **CLOSED** with **allowedDependencies** derived from current usage.
@@ -374,6 +374,37 @@
     tests/src/test/java/org/veri/be/integration/usecase/AuthIntegrationTest.java
     ```
 - **2025-12-30**: **Card module closed**. Added explicit allowed dependencies after resolving book-card cycle.
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/card/package-info.java
+    ```
+- **2025-12-30**: **Modulith violations triage**. Updated module allowed dependencies based on verification output (member/auth/card).
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/auth/package-info.java
+    core/core-api/src/main/java/org/veri/be/card/package-info.java
+    core/core-api/src/main/java/org/veri/be/member/package-info.java
+    ```
+- **2025-12-30**: **Card/book dependency relaxation**. Temporarily allowed the **book** module for card to resolve remaining Modulith violation tied to book DTO usage.
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/card/package-info.java
+    ```
+- **2025-12-30**: **Card summary interface refactor**. Provider now returns a book-service summary type and book DTO mapping happens inside book, removing card -> book DTO coupling.
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/book/dto/reading/ReadingConverter.java
+    core/core-api/src/main/java/org/veri/be/book/dto/reading/response/ReadingCardSummaryResponse.java
+    core/core-api/src/main/java/org/veri/be/book/dto/reading/response/ReadingDetailResponse.java
+    core/core-api/src/main/java/org/veri/be/book/service/ReadingCardSummary.java
+    core/core-api/src/main/java/org/veri/be/book/service/ReadingCardSummaryProvider.java
+    core/core-api/src/main/java/org/veri/be/card/service/ReadingCardSummaryProviderService.java
+    tests/src/test/java/org/veri/be/slice/web/SocialReadingControllerTest.java
+    tests/src/test/java/org/veri/be/unit/book/ReadingConverterTest.java
+    tests/src/test/java/org/veri/be/unit/book/ReadingDetailResponseTest.java
+    ```
+- **2025-12-30**: **Modulith verification passed**. `:tests:test` for Modulith architecture succeeded after dependency adjustments.
+- **2025-12-30**: **Card dependency tightening**. Removed temporary `book` allowance after refactor and re-verified Modulith.
   - **Modified Files**:
     ```
     core/core-api/src/main/java/org/veri/be/card/package-info.java
