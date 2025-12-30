@@ -1,14 +1,14 @@
-package org.veri.be.api.social;
+package org.veri.be.card;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import org.veri.be.domain.card.controller.dto.response.CardListResponse;
-import org.veri.be.domain.card.controller.dto.response.CardVisibilityUpdateResponse;
-import org.veri.be.domain.card.controller.enums.CardSortType;
-import org.veri.be.domain.card.service.CardCommandService;
-import org.veri.be.domain.card.service.CardQueryService;
+import org.veri.be.card.controller.dto.response.CardListResponse;
+import org.veri.be.card.controller.dto.response.CardVisibilityUpdateResponse;
+import org.veri.be.card.controller.enums.CardSortType;
+import org.veri.be.card.service.CardCommandService;
+import org.veri.be.card.service.CardQueryService;
 import org.veri.be.member.entity.Member;
 import org.veri.be.global.auth.context.AuthenticatedMember;
 import org.veri.be.lib.response.ApiResponse;

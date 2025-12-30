@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.veri.be.book.entity.enums.ReadingStatus;
-import org.veri.be.domain.card.entity.Card;
+import org.veri.be.card.entity.Card;
 import org.veri.be.member.entity.Member;
 import org.veri.be.global.entity.Authorizable;
 import org.veri.be.global.entity.BaseEntity;

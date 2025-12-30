@@ -1,4 +1,4 @@
-package org.veri.be.domain.card.service;
+package org.veri.be.card.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -6,14 +6,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.veri.be.domain.card.controller.dto.CardConverter;
-import org.veri.be.domain.card.controller.dto.response.CardDetailResponse;
-import org.veri.be.domain.card.controller.enums.CardSortType;
-import org.veri.be.domain.card.entity.Card;
-import org.veri.be.domain.card.entity.CardErrorInfo;
-import org.veri.be.domain.card.repository.CardRepository;
-import org.veri.be.domain.card.repository.dto.CardFeedItem;
-import org.veri.be.domain.card.repository.dto.CardListItem;
+import org.veri.be.card.controller.dto.CardConverter;
+import org.veri.be.card.controller.dto.response.CardDetailResponse;
+import org.veri.be.card.controller.enums.CardSortType;
+import org.veri.be.card.entity.Card;
+import org.veri.be.card.entity.CardErrorInfo;
+import org.veri.be.card.repository.CardRepository;
+import org.veri.be.card.repository.dto.CardFeedItem;
+import org.veri.be.card.repository.dto.CardListItem;
 import org.veri.be.member.entity.Member;
 import org.veri.be.lib.exception.ApplicationException;
 import org.veri.be.lib.exception.CommonErrorCode;

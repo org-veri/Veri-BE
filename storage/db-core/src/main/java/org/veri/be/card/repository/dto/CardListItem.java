@@ -1,4 +1,4 @@
-package org.veri.be.domain.card.repository.dto;
+package org.veri.be.card.repository.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

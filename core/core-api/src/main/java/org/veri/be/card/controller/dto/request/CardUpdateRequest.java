@@ -1,4 +1,4 @@
-package org.veri.be.domain.card.controller.dto.request;
+package org.veri.be.card.controller.dto.request;
 
 
 import jakarta.validation.constraints.NotNull;

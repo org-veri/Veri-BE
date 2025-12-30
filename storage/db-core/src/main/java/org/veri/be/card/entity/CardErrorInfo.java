@@ -1,4 +1,4 @@
-package org.veri.be.domain.card.entity;
+package org.veri.be.card.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

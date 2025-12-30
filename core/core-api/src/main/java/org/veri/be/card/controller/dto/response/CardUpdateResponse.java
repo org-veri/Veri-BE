@@ -1,7 +1,7 @@
-package org.veri.be.domain.card.controller.dto.response;
+package org.veri.be.card.controller.dto.response;
 
 import java.time.LocalDateTime;
-import org.veri.be.domain.card.entity.Card;
+import org.veri.be.card.entity.Card;
 
 public record CardUpdateResponse(
         Long id,

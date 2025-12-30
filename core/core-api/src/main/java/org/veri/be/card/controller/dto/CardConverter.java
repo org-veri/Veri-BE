@@ -1,9 +1,9 @@
-package org.veri.be.domain.card.controller.dto;
+package org.veri.be.card.controller.dto;
 
 import lombok.experimental.UtilityClass;
-import org.veri.be.domain.card.controller.dto.response.CardDetailResponse;
-import org.veri.be.domain.card.controller.dto.response.CardUpdateResponse;
-import org.veri.be.domain.card.entity.Card;
+import org.veri.be.card.controller.dto.response.CardDetailResponse;
+import org.veri.be.card.controller.dto.response.CardUpdateResponse;
+import org.veri.be.card.entity.Card;
 import org.veri.be.member.entity.Member;
 
 @UtilityClass

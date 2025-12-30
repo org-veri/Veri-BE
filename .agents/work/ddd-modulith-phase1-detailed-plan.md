@@ -422,6 +422,7 @@
       -> `storage/db-core/src/main/java/org/veri/be/card/**`
   - **검증**
     - 컴파일 + `Card` 슬라이스 테스트
+  - **Status**: 패키지 이동 및 import 수정 완료, 컴파일 검증 대기
 - [ ] **Step 5: Comment 모듈 전환**
   - **컨트롤러 이동**
     - `CommentController`
@@ -559,4 +560,38 @@
     tests/src/test/java/org/veri/be/unit/book/ReadingTest.java
     tests/src/test/java/org/veri/be/integration/usecase/BookshelfIntegrationTest.java
     tests/src/test/java/org/veri/be/integration/usecase/SocialReadingIntegrationTest.java
+    ```
+- **2025-12-30**: **Card 모듈 이동 적용**. 패키지 이동 및 import 갱신 완료, 컴파일 검증 대기.
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/card/CardController.java
+    core/core-api/src/main/java/org/veri/be/card/CardControllerV2.java
+    core/core-api/src/main/java/org/veri/be/card/SocialCardController.java
+    core/core-api/src/main/java/org/veri/be/card/controller/enums/CardSortType.java
+    core/core-api/src/main/java/org/veri/be/card/controller/dto/CardConverter.java
+    core/core-api/src/main/java/org/veri/be/card/controller/dto/request/CardCreateRequest.java
+    core/core-api/src/main/java/org/veri/be/card/controller/dto/request/CardUpdateRequest.java
+    core/core-api/src/main/java/org/veri/be/card/controller/dto/response/CardCreateResponse.java
+    core/core-api/src/main/java/org/veri/be/card/controller/dto/response/CardDetailResponse.java
+    core/core-api/src/main/java/org/veri/be/card/controller/dto/response/CardListResponse.java
+    core/core-api/src/main/java/org/veri/be/card/controller/dto/response/CardUpdateResponse.java
+    core/core-api/src/main/java/org/veri/be/card/controller/dto/response/CardVisibilityUpdateResponse.java
+    core/core-api/src/main/java/org/veri/be/card/service/CardCommandService.java
+    core/core-api/src/main/java/org/veri/be/card/service/CardQueryService.java
+    storage/db-core/src/main/java/org/veri/be/card/entity/Card.java
+    storage/db-core/src/main/java/org/veri/be/card/entity/CardErrorInfo.java
+    storage/db-core/src/main/java/org/veri/be/card/repository/CardRepository.java
+    storage/db-core/src/main/java/org/veri/be/card/repository/dto/CardFeedItem.java
+    storage/db-core/src/main/java/org/veri/be/card/repository/dto/CardListItem.java
+    tests/src/test/java/org/veri/be/slice/web/CardControllerTest.java
+    tests/src/test/java/org/veri/be/slice/web/CardControllerV2Test.java
+    tests/src/test/java/org/veri/be/slice/web/SocialCardControllerTest.java
+    tests/src/test/java/org/veri/be/slice/persistence/card/CardEntityMappingTest.java
+    tests/src/test/java/org/veri/be/slice/persistence/card/CardRepositoryTest.java
+    tests/src/test/java/org/veri/be/unit/card/CardCommandServiceTest.java
+    tests/src/test/java/org/veri/be/unit/card/CardQueryServiceTest.java
+    tests/src/test/java/org/veri/be/unit/card/CardResponseMappingTest.java
+    tests/src/test/java/org/veri/be/unit/card/CardTest.java
+    tests/src/test/java/org/veri/be/integration/usecase/CardIntegrationTest.java
+    tests/src/test/java/org/veri/be/integration/usecase/SocialCardIntegrationTest.java
     ```

@@ -1,8 +1,8 @@
-package org.veri.be.domain.card.repository;
+package org.veri.be.card.repository;
 
-import org.veri.be.domain.card.entity.Card;
-import org.veri.be.domain.card.repository.dto.CardListItem;
-import org.veri.be.domain.card.repository.dto.CardFeedItem;
+import org.veri.be.card.entity.Card;
+import org.veri.be.card.repository.dto.CardListItem;
+import org.veri.be.card.repository.dto.CardFeedItem;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,7 +16,7 @@ import java.util.Optional;
 public interface CardRepository extends JpaRepository<Card, Long> {
 
     @Query(
-            "SELECT new org.veri.be.domain.card.repository.dto.CardListItem(" +
+            "SELECT new org.veri.be.card.repository.dto.CardListItem(" +
                     "c.id, " +
                     "c.reading.book.title, " +
                     "c.content, " +
@@ -32,7 +32,7 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     int countAllByMemberId(@Param("memberId") Long memberId);
 
     @Query(
-            "SELECT new org.veri.be.domain.card.repository.dto.CardFeedItem(" +
+            "SELECT new org.veri.be.card.repository.dto.CardFeedItem(" +
                     "c.id, " +
                     "c.member, " + // Note. 이후 연관 관계 조회시 유의
                     "c.reading.book.title, " +

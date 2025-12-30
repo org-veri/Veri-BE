@@ -1,4 +1,4 @@
-package org.veri.be.domain.card.controller.enums;
+package org.veri.be.card.controller.enums;
 
 import lombok.Getter;
 import org.springframework.data.domain.Sort;

@@ -1,10 +1,10 @@
-package org.veri.be.api.personal;
+package org.veri.be.card;
 
 import org.veri.be.global.storage.dto.PresignedPostFormResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.veri.be.domain.card.service.CardCommandService;
+import org.veri.be.card.service.CardCommandService;
 import org.veri.be.lib.response.ApiResponse;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

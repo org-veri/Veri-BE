@@ -1,4 +1,4 @@
-package org.veri.be.domain.card.controller.dto.response;
+package org.veri.be.card.controller.dto.response;
 
 public record CardVisibilityUpdateResponse(
         Long id,

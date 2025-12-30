@@ -1,4 +1,4 @@
-package org.veri.be.domain.card.entity;
+package org.veri.be.card.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

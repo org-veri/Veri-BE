@@ -1,7 +1,7 @@
-package org.veri.be.domain.card.controller.dto.response;
+package org.veri.be.card.controller.dto.response;
 
-import org.veri.be.domain.card.repository.dto.CardListItem;
-import org.veri.be.domain.card.repository.dto.CardFeedItem;
+import org.veri.be.card.repository.dto.CardListItem;
+import org.veri.be.card.repository.dto.CardFeedItem;
 import org.veri.be.member.entity.Member;
 import org.springframework.data.domain.Page;
 

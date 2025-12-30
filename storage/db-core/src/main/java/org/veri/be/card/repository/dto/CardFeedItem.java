@@ -1,4 +1,4 @@
-package org.veri.be.domain.card.repository.dto;
+package org.veri.be.card.repository.dto;
 
 import org.veri.be.member.entity.Member;
 import org.veri.be.member.repository.dto.MemberProfileQueryResult;
