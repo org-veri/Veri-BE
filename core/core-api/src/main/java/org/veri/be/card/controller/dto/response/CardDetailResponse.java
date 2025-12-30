@@ -1,7 +1,7 @@
 package org.veri.be.card.controller.dto.response;
 
 import org.veri.be.book.entity.Reading;
-import org.veri.be.api.common.dto.MemberProfileResponse;
+import org.veri.be.member.dto.MemberProfileResponse;
 import org.veri.be.card.entity.Card;
 import org.veri.be.member.entity.Member;
 

@@ -1,7 +1,7 @@
 package org.veri.be.post.dto.response;
 
 import org.veri.be.book.dto.book.BookResponse;
-import org.veri.be.api.common.dto.MemberProfileResponse;
+import org.veri.be.member.dto.MemberProfileResponse;
 import org.veri.be.post.repository.dto.PostFeedQueryResult;
 
 import java.time.LocalDateTime;

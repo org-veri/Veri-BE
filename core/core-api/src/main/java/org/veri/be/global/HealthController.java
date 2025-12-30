@@ -1,4 +1,4 @@
-package org.veri.be.api.common;
+package org.veri.be.global;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

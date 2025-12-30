@@ -385,7 +385,7 @@
       -> `storage/db-core/src/main/java/org/veri/be/auth/**`
   - **검증**
     - 컴파일 (`:core:core-api:compileJava`, `:storage:db-core:compileJava`)
-  - **Status**: 패키지 이동 및 import 수정 완료, 컴파일 검증 대기
+  - **Status**: 패키지 이동 및 import 수정 완료, **compileJava 검증 완료**
 - [ ] **Step 2: Member 모듈 전환**
   - **컨트롤러 이동**
     - `core/core-api/src/main/java/org/veri/be/api/personal/MemberController.java`
@@ -398,7 +398,7 @@
       -> `storage/db-core/src/main/java/org/veri/be/member/**`
   - **검증**
     - 컴파일 + `tests`의 `Member` 관련 테스트 최소 실행
-  - **Status**: 패키지 이동 및 import 수정 완료, 컴파일 검증 대기
+  - **Status**: 패키지 이동 및 import 수정 완료, **compileJava 검증 완료**
 - [ ] **Step 3: Book 모듈 전환**
   - **컨트롤러 이동**
     - `BookshelfController`, `SocialReadingController`
@@ -410,7 +410,7 @@
       -> `storage/db-core/src/main/java/org/veri/be/book/**`
   - **검증**
     - 컴파일 + `Book/Reading` 슬라이스 테스트
-  - **Status**: 패키지 이동 및 import 수정 완료, 컴파일 검증 대기
+  - **Status**: 패키지 이동 및 import 수정 완료, **compileJava 검증 완료**
 - [ ] **Step 4: Card 모듈 전환**
   - **컨트롤러 이동**
     - `CardController`, `CardControllerV2`, `SocialCardController`
@@ -422,7 +422,7 @@
       -> `storage/db-core/src/main/java/org/veri/be/card/**`
   - **검증**
     - 컴파일 + `Card` 슬라이스 테스트
-  - **Status**: 패키지 이동 및 import 수정 완료, 컴파일 검증 대기
+  - **Status**: 패키지 이동 및 import 수정 완료, **compileJava 검증 완료**
 - [ ] **Step 5: Comment 모듈 전환**
   - **컨트롤러 이동**
     - `CommentController`
@@ -434,7 +434,7 @@
       -> `storage/db-core/src/main/java/org/veri/be/comment/**`
   - **검증**
     - 컴파일 + `Comment` 슬라이스 테스트
-  - **Status**: 패키지 이동 및 import 수정 완료, 컴파일 검증 대기
+  - **Status**: 패키지 이동 및 import 수정 완료, **compileJava 검증 완료**
 - [ ] **Step 6: Post 모듈 전환**
   - **컨트롤러 이동**
     - `PostController`
@@ -446,7 +446,7 @@
       -> `storage/db-core/src/main/java/org/veri/be/post/**`
   - **검증**
     - 컴파일 + `Post` 슬라이스/단위 테스트
-  - **Status**: 패키지 이동 및 import 수정 완료, 컴파일 검증 대기
+  - **Status**: 패키지 이동 및 import 수정 완료, **compileJava 검증 완료**
 - [ ] **Step 7: Image 모듈 전환**
   - **컨트롤러 이동**
     - `ImageController`
@@ -458,7 +458,7 @@
       -> `storage/db-core/src/main/java/org/veri/be/image/**`
   - **검증**
     - 컴파일 + `Image` 슬라이스 테스트
-  - **Status**: 패키지 이동 및 import 수정 완료, 컴파일 검증 대기
+  - **Status**: 패키지 이동 및 import 수정 완료, **compileJava 검증 완료**
 - [ ] **Step 8: 공통/전역 정리**
   - **대상**
     - `api/common/HealthController`는 `global`로 이동 유지
@@ -468,6 +468,7 @@
     - import 정리 및 패키지 참조 수정
   - **검증**
     - `:tests:test` 최소 실행 또는 `:core:core-api:test` 범위 확인
+  - **Status**: HealthController/공용 DTO 이동 및 빈 패키지 정리 완료, **compileJava 검증 완료**
 
 ## History
 - **2025-12-30**: **Plan created**. Detailed Phase 1 plan aligned with current module structure and DDD Week 1 guidance.
@@ -671,3 +672,17 @@
     tests/src/test/java/org/veri/be/unit/image/ImageCommandServiceTest.java
     tests/src/test/java/org/veri/be/integration/usecase/ImageIntegrationTest.java
     ```
+- **2025-12-30**: **공통/전역 정리 적용**. **HealthController** 이동, **MemberProfileResponse** 이동, 빈 `api/domain` 패키지 제거.
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/global/HealthController.java
+    core/core-api/src/main/java/org/veri/be/member/dto/MemberProfileResponse.java
+    tests/src/test/java/org/veri/be/slice/web/PostControllerTest.java
+    tests/src/test/java/org/veri/be/slice/web/SocialReadingControllerTest.java
+    tests/src/test/java/org/veri/be/unit/book/ReadingDetailResponseTest.java
+    tests/src/test/java/org/veri/be/unit/card/CardResponseMappingTest.java
+    tests/src/test/java/org/veri/be/unit/comment/CommentQueryServiceTest.java
+    tests/src/test/java/org/veri/be/unit/post/PostQueryServiceTest.java
+    tests/src/test/java/org/veri/be/unit/post/PostResponseMappingTest.java
+    ```
+- **2025-12-30**: **Compile 검증 완료**. `:core:core-api:compileJava`, `:storage:db-core:compileJava` 성공.

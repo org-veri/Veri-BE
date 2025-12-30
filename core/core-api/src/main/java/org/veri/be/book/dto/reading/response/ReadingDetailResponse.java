@@ -2,7 +2,7 @@ package org.veri.be.book.dto.reading.response;
 
 import lombok.Builder;
 import org.veri.be.book.entity.enums.ReadingStatus;
-import org.veri.be.api.common.dto.MemberProfileResponse;
+import org.veri.be.member.dto.MemberProfileResponse;
 
 import org.veri.be.book.entity.Reading;
 import org.veri.be.member.entity.Member;
