@@ -458,6 +458,7 @@
       -> `storage/db-core/src/main/java/org/veri/be/image/**`
   - **검증**
     - 컴파일 + `Image` 슬라이스 테스트
+  - **Status**: 패키지 이동 및 import 수정 완료, 컴파일 검증 대기
 - [ ] **Step 8: 공통/전역 정리**
   - **대상**
     - `api/common/HealthController`는 `global`로 이동 유지
@@ -647,4 +648,26 @@
     tests/src/test/java/org/veri/be/unit/post/PostResponseMappingTest.java
     tests/src/test/java/org/veri/be/unit/post/PostTest.java
     tests/src/test/java/org/veri/be/integration/usecase/PostIntegrationTest.java
+    ```
+- **2025-12-30**: **Image 모듈 이동 적용**. 패키지 이동 및 import 갱신 완료, 컴파일 검증 대기.
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/image/ImageController.java
+    core/core-api/src/main/java/org/veri/be/image/client/OcrPort.java
+    core/core-api/src/main/java/org/veri/be/image/config/OcrConfig.java
+    core/core-api/src/main/java/org/veri/be/image/dto/OcrResult.java
+    core/core-api/src/main/java/org/veri/be/image/exception/ImageErrorCode.java
+    core/core-api/src/main/java/org/veri/be/image/service/AbstractOcrService.java
+    core/core-api/src/main/java/org/veri/be/image/service/ImageCommandService.java
+    core/core-api/src/main/java/org/veri/be/image/service/ImageQueryService.java
+    core/core-api/src/main/java/org/veri/be/image/service/MistralOcrService.java
+    core/core-api/src/main/java/org/veri/be/image/service/OcrService.java
+    storage/db-core/src/main/java/org/veri/be/image/entity/Image.java
+    storage/db-core/src/main/java/org/veri/be/image/entity/OcrResult.java
+    storage/db-core/src/main/java/org/veri/be/image/repository/ImageRepository.java
+    storage/db-core/src/main/java/org/veri/be/image/repository/OcrResultRepository.java
+    tests/src/test/java/org/veri/be/slice/web/ImageControllerTest.java
+    tests/src/test/java/org/veri/be/slice/persistence/image/ImageRepositoryTest.java
+    tests/src/test/java/org/veri/be/unit/image/ImageCommandServiceTest.java
+    tests/src/test/java/org/veri/be/integration/usecase/ImageIntegrationTest.java
     ```

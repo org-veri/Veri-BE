@@ -1,4 +1,4 @@
-package org.veri.be.domain.image.dto;
+package org.veri.be.image.dto;
 
 public record OcrResult(
         String imageUrl,

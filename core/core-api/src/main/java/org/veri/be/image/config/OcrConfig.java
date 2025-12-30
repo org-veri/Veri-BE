@@ -1,4 +1,4 @@
-package org.veri.be.domain.image.config;
+package org.veri.be.image.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

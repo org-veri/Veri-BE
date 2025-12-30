@@ -1,4 +1,4 @@
-package org.veri.be.domain.image.entity;
+package org.veri.be.image.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

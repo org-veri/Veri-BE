@@ -1,6 +1,6 @@
-package org.veri.be.domain.image.repository;
+package org.veri.be.image.repository;
 
-import org.veri.be.domain.image.entity.Image;
+import org.veri.be.image.entity.Image;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

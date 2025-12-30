@@ -1,11 +1,11 @@
-package org.veri.be.domain.image.service;
+package org.veri.be.image.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.veri.be.domain.image.entity.Image;
-import org.veri.be.domain.image.exception.ImageErrorCode;
-import org.veri.be.domain.image.repository.ImageRepository;
+import org.veri.be.image.entity.Image;
+import org.veri.be.image.exception.ImageErrorCode;
+import org.veri.be.image.repository.ImageRepository;
 import org.veri.be.member.entity.Member;
 import org.veri.be.lib.exception.ApplicationException;
 

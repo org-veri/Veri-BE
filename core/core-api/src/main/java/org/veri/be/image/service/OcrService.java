@@ -1,4 +1,4 @@
-package org.veri.be.domain.image.service;
+package org.veri.be.image.service;
 
 public interface OcrService {
 
