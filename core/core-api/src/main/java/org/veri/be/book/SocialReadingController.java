@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.veri.be.book.dto.book.BookPopularListResponseV2;
 import org.veri.be.book.dto.book.BookPopularResponse;
 import org.veri.be.book.dto.reading.response.ReadingDetailResponse;
-import org.veri.be.book.service.BookshelfService;
+import org.veri.be.book.service.BookshelfQueryService;
 import org.veri.be.lib.response.ApiResponse;
 
 @Tag(name = "소셜")
@@ -21,7 +21,7 @@ import org.veri.be.lib.response.ApiResponse;
 @RequiredArgsConstructor
 public class SocialReadingController {
 
-    private final BookshelfService bookshelfService;
+    private final BookshelfQueryService bookshelfService;
 
     @Operation(summary = "주간 인기 도서 조회", description = "인기 도서 상위 10개를 조회합니다. (책장에 최근 7일간 가장 많이 추가된 책)")
     @GetMapping("/popular")

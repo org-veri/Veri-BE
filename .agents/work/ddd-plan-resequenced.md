@@ -29,7 +29,7 @@
 ## Phase 3: Domain Refactor (DDD Core)
 - [ ] **Reconcile domain model layout** (aggregate roots, entities, VOs).
 - [ ] **Define domain repositories** in module-aligned packages.
-- [ ] **Split domain services** into **Command/Query** where applicable.
+- [x] **Split domain services** into **Command/Query** where applicable.
 - [ ] **Extract domain events** and publish through application services.
 - [ ] **Remove legacy layered package remnants** (if any remain).
 
@@ -78,4 +78,20 @@
     tests/src/test/java/org/veri/be/integration/usecase/CommentIntegrationTest.java
     tests/src/test/java/org/veri/be/integration/usecase/SocialCardIntegrationTest.java
     tests/src/test/java/org/veri/be/integration/usecase/PostIntegrationTest.java
+    ```
+- **2025-12-30**: **Phase 3 continued** with **bookshelf command/query service split**.
+  - **Updated Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/book/service/BookshelfCommandService.java
+    core/core-api/src/main/java/org/veri/be/book/service/BookshelfQueryService.java
+    core/core-api/src/main/java/org/veri/be/book/BookshelfController.java
+    core/core-api/src/main/java/org/veri/be/book/SocialReadingController.java
+    core/core-api/src/main/java/org/veri/be/card/service/CardCommandService.java
+    tests/src/test/java/org/veri/be/unit/book/BookshelfCommandServiceTest.java
+    tests/src/test/java/org/veri/be/unit/book/BookshelfQueryServiceTest.java
+    tests/src/test/java/org/veri/be/unit/card/CardCommandServiceTest.java
+    tests/src/test/java/org/veri/be/slice/web/BookshelfControllerTest.java
+    tests/src/test/java/org/veri/be/slice/web/SocialReadingControllerTest.java
+    tests/src/test/java/org/veri/be/integration/usecase/SocialReadingIntegrationTest.java
+    tests/src/test/java/org/veri/be/integration/usecase/SocialCardIntegrationTest.java
     ```

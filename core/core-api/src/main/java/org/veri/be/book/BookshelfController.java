@@ -20,7 +20,8 @@ import org.veri.be.book.dto.reading.response.ReadingVisibilityUpdateResponse;
 import org.veri.be.book.entity.Reading;
 import org.veri.be.book.service.BookCommandService;
 import org.veri.be.book.service.BookQueryService;
-import org.veri.be.book.service.BookshelfService;
+import org.veri.be.book.service.BookshelfCommandService;
+import org.veri.be.book.service.BookshelfQueryService;
 import org.veri.be.member.entity.Member;
 import org.veri.be.member.auth.context.AuthenticatedMember;
 import org.veri.be.member.auth.guards.MemberGuard;
@@ -37,7 +38,8 @@ import org.veri.be.lib.response.ApiResponse;
 @Validated
 public class BookshelfController {
 
-    private final BookshelfService bookshelfService;
+    private final BookshelfCommandService bookshelfCommandService;
+    private final BookshelfQueryService bookshelfQueryService;
     private final BookCommandService bookCommandService;
     private final BookQueryService bookQueryService;
 
@@ -57,7 +59,7 @@ public class BookshelfController {
         if (request.getPage() < 1 || request.getSize() < 1) {
             throw ApplicationException.of(CommonErrorCode.INVALID_REQUEST);
         }
-        Page<ReadingResponse> pageData = bookshelfService.searchAllReadingOfMember(
+        Page<ReadingResponse> pageData = bookshelfQueryService.searchAllReadingOfMember(
                 member.getId(),
                 request.getStatuses(),
                 request.getPage() - 1, request.getSize(), request.getSortType());
@@ -76,7 +78,7 @@ public class BookshelfController {
                 request.publisher(),
                 request.isbn());
 
-        Reading reading = bookshelfService.addToBookshelf(member, bookId, request.isPublic());
+        Reading reading = bookshelfCommandService.addToBookshelf(member, bookId, request.isPublic());
 
         return ApiResponse.created(new ReadingAddResponse(reading.getId(), reading.getCreatedAt()));
     }
@@ -100,7 +102,7 @@ public class BookshelfController {
     @Operation(summary = "내 완독 책 개수 조회", description = "내가 완독한 책의 개수를 조회합니다.")
     @GetMapping("/my/count")
     public ApiResponse<Integer> getMyBookCount(@AuthenticatedMember Member member) {
-        Integer count = bookshelfService.searchMyReadingDoneCount(member.getId());
+        Integer count = bookshelfQueryService.searchMyReadingDoneCount(member.getId());
 
         return ApiResponse.ok(count);
     }
@@ -111,7 +113,7 @@ public class BookshelfController {
             @AuthenticatedMember Member member,
             @RequestParam String title,
             @RequestParam String author) {
-        Long memberBookId = bookshelfService.searchByTitleAndAuthor(member.getId(), title, author);
+        Long memberBookId = bookshelfQueryService.searchByTitleAndAuthor(member.getId(), title, author);
 
         return ApiResponse.ok(memberBookId);
     }
@@ -123,7 +125,7 @@ public class BookshelfController {
             @PathVariable Long readingId,
             @AuthenticatedMember Member member
     ) {
-        bookshelfService.modifyBook(member, request.score(), request.startedAt(), request.endedAt(), readingId);
+        bookshelfCommandService.modifyBook(member, request.score(), request.startedAt(), request.endedAt(), readingId);
 
         return ApiResponse.noContent();
     }
@@ -134,7 +136,7 @@ public class BookshelfController {
             @RequestBody @Valid ReadingScoreRequest request,
             @PathVariable Long readingId,
             @AuthenticatedMember Member member) {
-        bookshelfService.rateScore(member, request.score(), readingId);
+        bookshelfCommandService.rateScore(member, request.score(), readingId);
 
         return ApiResponse.noContent();
     }
@@ -145,7 +147,7 @@ public class BookshelfController {
             @PathVariable Long readingId,
             @AuthenticatedMember Member member
     ) {
-        bookshelfService.readStart(member, readingId);
+        bookshelfCommandService.readStart(member, readingId);
 
         return ApiResponse.noContent();
     }
@@ -156,7 +158,7 @@ public class BookshelfController {
             @PathVariable Long readingId,
             @AuthenticatedMember Member member
     ) {
-        bookshelfService.readOver(member, readingId);
+        bookshelfCommandService.readOver(member, readingId);
 
         return ApiResponse.noContent();
     }
@@ -168,7 +170,7 @@ public class BookshelfController {
             @RequestParam boolean isPublic,
             @AuthenticatedMember Member member
     ) {
-        return ApiResponse.ok(bookshelfService.modifyVisibility(member, readingId, isPublic));
+        return ApiResponse.ok(bookshelfCommandService.modifyVisibility(member, readingId, isPublic));
     }
 
     @Operation(summary = "독서 삭제", description = "책장에 등록된 책을 삭제합니다.")
@@ -177,7 +179,7 @@ public class BookshelfController {
             @PathVariable Long readingId,
             @AuthenticatedMember Member member
     ) {
-        bookshelfService.deleteBook(member, readingId);
+        bookshelfCommandService.deleteBook(member, readingId);
 
         return ApiResponse.noContent();
     }
