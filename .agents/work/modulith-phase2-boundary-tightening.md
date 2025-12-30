@@ -20,6 +20,7 @@
 - [ ] **Member**: isolate entity exposure and create boundary DTOs where needed.
 - [x] **Member**: isolate entity exposure and create boundary DTOs where needed.
 - [ ] **Book/Card/Comment/Post/Image**: replace cross-entity exposure with DTOs or service interfaces.
+  - **Book**: closed with explicit member service dependency for reading count.
   - **Note**: Book module closure is blocked by **book-member cycle**; module remains **OPEN** for now.
 
 ## Phase 3: Verification
@@ -84,11 +85,7 @@
     core/core-enum/src/main/java/org/veri/be/book/entity/enums/package-info.java
     core/core-api/src/main/java/org/veri/be/member/package-info.java
     ```
-- **2025-12-30**: **Book closure blocked**. Modulith cycle detected; book kept **OPEN** and issue logged.
-  - **Issue**:
-    ```
-    .agents/issue/modulith-book-member-cycle.md
-    ```
+- **2025-12-30**: **Book module closed**. `member::member-service` 의존성 허용 후 Modulith 테스트 통과.
 - **2025-12-30**: **Member-book cycle workaround**. Member now depends on `ReadingCountProvider` (member-owned interface) implemented in book.
   - **Modified Files**:
     ```
