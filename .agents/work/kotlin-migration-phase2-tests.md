@@ -43,3 +43,9 @@
     tests/src/test/kotlin/org/veri/be/unit/auth/CurrentMemberAccessorTest.kt
     tests/src/test/java/org/veri/be/unit/auth/CurrentMemberAccessorTest.java
     ```
+- **2025-12-30**: **Phase 2 updates**. Migrated member guard unit test to Kotlin.
+  - **Modified Files**:
+    ```
+    tests/src/test/kotlin/org/veri/be/unit/auth/MemberGuardTest.kt
+    tests/src/test/java/org/veri/be/unit/auth/MemberGuardTest.java
+    ```
