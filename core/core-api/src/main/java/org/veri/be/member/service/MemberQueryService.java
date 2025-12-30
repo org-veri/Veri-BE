@@ -1,7 +1,6 @@
 package org.veri.be.member.service;
 
 import lombok.RequiredArgsConstructor;
-import org.veri.be.card.repository.CardRepository;
 import org.veri.be.member.converter.MemberConverter;
 import org.veri.be.member.dto.MemberResponse;
 import org.veri.be.member.entity.Member;
@@ -18,7 +17,7 @@ public class MemberQueryService {
 
     private final MemberRepository memberRepository;
     private final ReadingCountProvider readingCountProvider;
-    private final CardRepository cardRepository;
+    private final CardCountProvider cardCountProvider;
 
     public Member findById(Long id) {
         return memberRepository.findById(id).orElseThrow(() ->
@@ -27,7 +26,7 @@ public class MemberQueryService {
 
     public MemberResponse.MemberInfoResponse findMyInfo(Member member) {
         int bookCount = Math.toIntExact(readingCountProvider.countReadingsByMemberId(member.getId()));
-        int cardCount = cardRepository.countAllByMemberId(member.getId());
+        int cardCount = Math.toIntExact(cardCountProvider.countCardsByMemberId(member.getId()));
         return MemberConverter.toMemberInfoResponse(member, bookCount, cardCount);
     }
 

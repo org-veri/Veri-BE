@@ -20,6 +20,7 @@
 - [ ] **Member**: isolate entity exposure and create boundary DTOs where needed.
 - [x] **Member**: isolate entity exposure and create boundary DTOs where needed.
 - [ ] **Book/Card/Comment/Post/Image**: replace cross-entity exposure with DTOs or service interfaces.
+  - **Card**: closed with DTO/service/entity/repository exposures and member/book dependencies.
   - **Book**: closed with explicit member service dependency for reading count.
   - **Note**: Book module closure is blocked by **book-member cycle**; module remains **OPEN** for now.
 
@@ -86,6 +87,19 @@
     core/core-api/src/main/java/org/veri/be/member/package-info.java
     ```
 - **2025-12-30**: **Book module closed**. `member::member-service` 의존성 허용 후 Modulith 테스트 통과.
+- **2025-12-30**: **Card module closed**. DTO/Service/Entity/Repository 노출 인터페이스 추가 및 의존성 지정.
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/card/package-info.java
+    core/core-api/src/main/java/org/veri/be/card/service/package-info.java
+    core/core-api/src/main/java/org/veri/be/card/controller/dto/package-info.java
+    core/core-api/src/main/java/org/veri/be/card/controller/dto/request/package-info.java
+    core/core-api/src/main/java/org/veri/be/card/controller/dto/response/package-info.java
+    core/core-api/src/main/java/org/veri/be/card/controller/enums/package-info.java
+    storage/db-core/src/main/java/org/veri/be/card/entity/package-info.java
+    storage/db-core/src/main/java/org/veri/be/card/repository/package-info.java
+    storage/db-core/src/main/java/org/veri/be/card/repository/dto/package-info.java
+    ```
 - **2025-12-30**: **Member-book cycle workaround**. Member now depends on `ReadingCountProvider` (member-owned interface) implemented in book.
   - **Modified Files**:
     ```
@@ -95,4 +109,14 @@
     storage/db-core/src/main/java/org/veri/be/book/repository/ReadingRepository.java
     tests/src/test/java/org/veri/be/unit/member/MemberQueryServiceTest.java
     core/core-api/src/main/java/org/veri/be/member/package-info.java
+    ```
+- **2025-12-30**: **Member-card cycle workaround**. Member now depends on `CardCountProvider` (member-owned interface) implemented in card.
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/member/service/CardCountProvider.java
+    core/core-api/src/main/java/org/veri/be/card/service/CardCountProviderService.java
+    core/core-api/src/main/java/org/veri/be/member/service/MemberQueryService.java
+    tests/src/test/java/org/veri/be/unit/member/MemberQueryServiceTest.java
+    core/core-api/src/main/java/org/veri/be/member/package-info.java
+    core/core-api/src/main/java/org/veri/be/card/package-info.java
     ```
