@@ -6,7 +6,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.veri.be.global.auth.context.AuthenticatedMember;
+import org.veri.be.member.auth.context.AuthenticatedMember;
 import org.veri.be.member.entity.Member;
 import org.veri.be.post.controller.enums.PostSortType;
 import org.veri.be.post.dto.request.PostCreateRequest;

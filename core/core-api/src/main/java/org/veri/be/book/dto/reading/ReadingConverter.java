@@ -6,7 +6,7 @@ import org.veri.be.book.dto.reading.response.ReadingDetailResponse;
 import org.veri.be.book.entity.Reading;
 import org.veri.be.book.service.ReadingCardSummaryProvider;
 import org.veri.be.member.entity.Member;
-import org.veri.be.global.auth.context.CurrentMemberAccessor;
+import org.veri.be.member.auth.context.CurrentMemberAccessor;
 
 @Component
 @RequiredArgsConstructor

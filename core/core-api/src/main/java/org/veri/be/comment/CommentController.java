@@ -9,7 +9,7 @@ import org.veri.be.comment.dto.request.CommentPostRequest;
 import org.veri.be.comment.dto.request.ReplyPostRequest;
 import org.veri.be.comment.service.CommentCommandService;
 import org.veri.be.member.entity.Member;
-import org.veri.be.global.auth.context.AuthenticatedMember;
+import org.veri.be.member.auth.context.AuthenticatedMember;
 import org.veri.be.lib.response.ApiResponse;
 import org.springframework.web.bind.annotation.*;
 

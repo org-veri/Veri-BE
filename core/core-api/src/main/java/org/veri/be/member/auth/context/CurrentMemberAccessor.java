@@ -1,4 +1,4 @@
-package org.veri.be.global.auth.context;
+package org.veri.be.member.auth.context;
 
 import org.veri.be.member.entity.Member;
 import org.veri.be.global.auth.AuthErrorInfo;

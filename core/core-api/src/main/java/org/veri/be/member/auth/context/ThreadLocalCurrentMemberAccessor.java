@@ -1,7 +1,8 @@
-package org.veri.be.global.auth.context;
+package org.veri.be.member.auth.context;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.veri.be.global.auth.context.MemberContext;
 import org.veri.be.member.entity.Member;
 import org.veri.be.member.repository.MemberRepository;
 
@@ -15,15 +16,18 @@ public class ThreadLocalCurrentMemberAccessor implements CurrentMemberAccessor {
 
     @Override
     public Optional<Member> getCurrentMember() {
-        Optional<Member> cachedMember = MemberContext.getCurrentMember();
+        Optional<Member> cachedMember = MemberRequestContext.getCurrentMember();
         if (cachedMember.isPresent()) {
             return cachedMember;
         }
 
         return MemberContext.getCurrentMemberId()
                 .flatMap(memberId -> {
+                    if (memberRepository == null) {
+                        return Optional.empty();
+                    }
                     Optional<Member> member = memberRepository.findById(memberId);
-                    member.ifPresent(MemberContext::setCurrentMember);
+                    member.ifPresent(MemberRequestContext::setCurrentMember);
                     return member;
                 });
     }

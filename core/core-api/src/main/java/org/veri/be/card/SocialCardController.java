@@ -10,7 +10,7 @@ import org.veri.be.card.controller.enums.CardSortType;
 import org.veri.be.card.service.CardCommandService;
 import org.veri.be.card.service.CardQueryService;
 import org.veri.be.member.entity.Member;
-import org.veri.be.global.auth.context.AuthenticatedMember;
+import org.veri.be.member.auth.context.AuthenticatedMember;
 import org.veri.be.lib.response.ApiResponse;
 import org.springframework.web.bind.annotation.*;
 

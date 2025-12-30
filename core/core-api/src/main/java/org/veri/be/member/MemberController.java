@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.veri.be.global.auth.context.AuthenticatedMember;
+import org.veri.be.member.auth.context.AuthenticatedMember;
 import org.veri.be.member.dto.MemberResponse;
 import org.veri.be.member.dto.UpdateMemberInfoRequest;
 import org.veri.be.member.entity.Member;

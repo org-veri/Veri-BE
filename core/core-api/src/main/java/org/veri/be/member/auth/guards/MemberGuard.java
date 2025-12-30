@@ -1,7 +1,8 @@
-package org.veri.be.global.auth.guards;
+package org.veri.be.member.auth.guards;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.veri.be.member.auth.context.CurrentMemberAccessor;
 import org.veri.be.member.entity.Member;
 import org.veri.be.lib.auth.guard.Guard;
 import org.veri.be.lib.exception.CommonErrorCode;
@@ -13,7 +14,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MemberGuard implements Guard {
 
-    private final org.veri.be.global.auth.context.CurrentMemberAccessor currentMemberAccessor;
+    private final CurrentMemberAccessor currentMemberAccessor;
 
     @Override
     public void canActivate() {
