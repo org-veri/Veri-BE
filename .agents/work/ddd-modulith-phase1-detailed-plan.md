@@ -686,3 +686,4 @@
     tests/src/test/java/org/veri/be/unit/post/PostResponseMappingTest.java
     ```
 - **2025-12-30**: **Compile 검증 완료**. `:core:core-api:compileJava`, `:storage:db-core:compileJava` 성공.
+- **2025-12-30**: **테스트 실행 상태 갱신**. `:tests:test`에서 **ModulithArchitectureTest** 위반 발생, 모듈 경계 확정 전까지 테스트를 **비활성화**.
