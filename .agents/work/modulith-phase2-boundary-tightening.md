@@ -277,3 +277,29 @@
     tests/src/test/java/org/veri/be/unit/post/PostQueryServiceTest.java
     tests/src/test/java/org/veri/be/unit/post/PostResponseMappingTest.java
     ```
+- **2025-12-30**: **Book-card cycle resolved**. Reading no longer owns cards; card summaries/visibility are provided via book service interface.
+  - **Issue**:
+    ```
+    .agents/issue/completed/modulith-book-card-cycle.md
+    ```
+  - **Modified Files**:
+    ```
+    storage/db-core/src/main/java/org/veri/be/book/entity/Reading.java
+    storage/db-core/src/main/java/org/veri/be/book/repository/ReadingRepository.java
+    core/core-api/src/main/java/org/veri/be/book/dto/reading/ReadingConverter.java
+    core/core-api/src/main/java/org/veri/be/book/dto/reading/response/ReadingDetailResponse.java
+    core/core-api/src/main/java/org/veri/be/book/service/BookshelfService.java
+    core/core-api/src/main/java/org/veri/be/book/service/ReadingCardSummaryProvider.java
+    core/core-api/src/main/java/org/veri/be/book/package-info.java
+    core/core-api/src/main/java/org/veri/be/card/service/ReadingCardSummaryProviderService.java
+    storage/db-core/src/main/java/org/veri/be/card/repository/CardRepository.java
+    tests/src/test/java/org/veri/be/slice/persistence/reading/ReadingRepositoryTest.java
+    tests/src/test/java/org/veri/be/unit/book/BookshelfServiceTest.java
+    tests/src/test/java/org/veri/be/unit/book/ReadingConverterTest.java
+    tests/src/test/java/org/veri/be/unit/book/ReadingTest.java
+    ```
+- **2025-12-30**: **Global/member closure analysis**. Logged next refactor steps for auth-context ownership and global-lib decoupling.
+  - **Issue**:
+    ```
+    .agents/issue/modulith-global-lib-closure.md
+    ```

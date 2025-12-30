@@ -28,7 +28,6 @@ import org.veri.be.lib.exception.CommonErrorCode;
 import java.time.Clock;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,6 +42,7 @@ public class BookshelfService {
     private final ReadingRepository readingRepository;
     private final BookRepository bookRepository;
     private final ReadingConverter readingConverter;
+    private final ReadingCardSummaryProvider readingCardSummaryProvider;
     private final CurrentMemberAccessor currentMemberAccessor;
     private final Clock clock;
 
@@ -64,7 +64,6 @@ public class BookshelfService {
                 .startedAt(null)
                 .endedAt(null)
                 .status(NOT_START)
-                .cards(new ArrayList<>())
                 .isPublic(isPublic)
                 .build();
 
@@ -88,7 +87,7 @@ public class BookshelfService {
 
     @Transactional(readOnly = true)
     public ReadingDetailResponse searchDetail(Long memberBookId) {
-        Reading reading = readingRepository.findByIdWithCardsAndBook(memberBookId)
+        Reading reading = readingRepository.findByIdWithBook(memberBookId)
                 .orElseThrow(() -> ApplicationException.of(BookErrorCode.BAD_REQUEST));
 
         if (!reading.isPublic() && !reading.authorizeMember(currentMemberAccessor.getMemberOrThrow().getId())) {
@@ -175,6 +174,7 @@ public class BookshelfService {
             reading.setPublic();
         } else {
             reading.setPrivate();
+            readingCardSummaryProvider.setCardsPrivate(readingId);
         }
 
         readingRepository.save(reading);

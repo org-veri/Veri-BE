@@ -2,10 +2,9 @@ package org.veri.be.book.dto.reading.response;
 
 import lombok.Builder;
 import org.veri.be.book.entity.enums.ReadingStatus;
-import org.veri.be.member.dto.MemberProfileResponse;
-
 import org.veri.be.book.entity.Reading;
 import org.veri.be.member.entity.Member;
+import org.veri.be.member.dto.MemberProfileResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,18 +23,15 @@ public record ReadingDetailResponse(
         List<CardSummaryResponse> cardSummaries,
         boolean isPublic
 ) {
-    public static ReadingDetailResponse from(Reading reading, Member viewer) {
-        List<CardSummaryResponse> summaries = reading.getCards().stream()
-                .map(card -> new CardSummaryResponse(card.getId(), card.getImage(), card.isPublic()))
-                .toList();
-
+    public static ReadingDetailResponse from(
+            Reading reading,
+            Member viewer,
+            List<CardSummaryResponse> summaries
+    ) {
         boolean isOwner = viewer != null && reading.getMember().getId().equals(viewer.getId());
-
-        if (!isOwner) {
-            summaries = summaries.stream()
-                    .filter(CardSummaryResponse::isPublic)
-                    .toList();
-        }
+        List<CardSummaryResponse> filteredSummaries = isOwner
+                ? summaries
+                : summaries.stream().filter(CardSummaryResponse::isPublic).toList();
 
         return ReadingDetailResponse.builder()
                 .memberBookId(reading.getId())
@@ -47,7 +43,7 @@ public record ReadingDetailResponse(
                 .author(reading.getBook().getAuthor())
                 .startedAt(reading.getStartedAt())
                 .endedAt(reading.getEndedAt())
-                .cardSummaries(summaries)
+                .cardSummaries(filteredSummaries)
                 .isPublic(reading.isPublic())
                 .build();
     }

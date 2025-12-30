@@ -18,10 +18,9 @@ import java.util.Optional;
 public interface ReadingRepository extends JpaRepository<Reading, Long> {
 
     @Query("SELECT mb FROM Reading mb " +
-            "LEFT JOIN FETCH mb.cards " +
             "JOIN FETCH mb.book " +
             "WHERE mb.id = :memberBookId")
-    Optional<Reading> findByIdWithCardsAndBook(@Param("memberBookId") Long memberBookId);
+    Optional<Reading> findByIdWithBook(@Param("memberBookId") Long memberBookId);
 
     int countAllByMember(Member member);
 

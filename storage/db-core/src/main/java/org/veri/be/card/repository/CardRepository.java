@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -53,4 +54,7 @@ public interface CardRepository extends JpaRepository<Card, Long> {
             WHERE c.id = :cardId
             """)
     Optional<Card> findByIdWithAllAssociations(@Param("cardId") Long cardId);
+
+    @Query("SELECT c FROM Card c WHERE c.reading.id = :readingId")
+    List<Card> findAllByReadingId(@Param("readingId") Long readingId);
 }

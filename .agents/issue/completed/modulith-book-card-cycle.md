@@ -24,3 +24,12 @@ core/core-api/src/main/java/org/veri/be/card/service/CardCommandService.java
 ## Recommendation
 - Decide a single module boundary owner for **Reading-Card** association, or introduce an abstraction (interface/DTO) to remove direct entity references.
 - Until refactoring, keep **card** module **OPEN** to avoid cyclic Modulith violations.
+
+## Update
+**Date**: 2025-12-30
+**Status**: Completed
+
+### Resolution
+- Removed **Reading -> Card** collection and book-side card access.
+- Added **ReadingCardSummaryProvider** abstraction so card module supplies summaries and privacy updates.
+- Book module no longer depends on card module, resolving the cycle.

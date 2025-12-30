@@ -4,15 +4,12 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.veri.be.book.entity.enums.ReadingStatus;
-import org.veri.be.card.entity.Card;
 import org.veri.be.member.entity.Member;
 import org.veri.be.global.entity.Authorizable;
 import org.veri.be.global.entity.BaseEntity;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @SuperBuilder(toBuilder = true)
@@ -51,9 +48,6 @@ public class Reading extends BaseEntity implements Authorizable {
     @Column(name = "is_public")
     private boolean isPublic = true;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "reading")
-    private List<Card> cards = new ArrayList<>();
 
     public void setPublic() {
         this.isPublic = true;
@@ -64,7 +58,6 @@ public class Reading extends BaseEntity implements Authorizable {
      */
     public void setPrivate() {
         this.isPublic = false;
-        this.cards.forEach(Card::setPrivate);
     }
 
     public boolean authorizeMember(Long memberId) {

@@ -46,3 +46,12 @@ Attempting to switch **global** and **lib** modules to **CLOSED** triggered Modu
 ### Recommendation
 - Keep **global** **OPEN** while **lib** is closed.
 - To close **global**, refactor auth context to avoid direct **member** entity/repository usage, or move those types behind an interface owned by **member**.
+
+## Update
+**Date**: 2025-12-30
+**Status**: Open
+
+### Next Steps
+- Split **auth context** ownership to remove **global -> member** dependency (move `AuthenticatedMember`/`CurrentMemberAccessor` to **member** or replace with `memberId`-only accessor).
+- Decouple **global <-> lib** by relocating error/guard utilities or introducing a lib-owned interface that global can implement.
+- Reattempt **global** closure after auth-context refactor.
