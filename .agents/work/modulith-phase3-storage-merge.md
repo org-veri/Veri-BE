@@ -10,13 +10,13 @@
 ```
 
 ## Phase 1: Preparation
-- [ ] **Map storage packages** (`storage/db-core`) to their destination packages under **core**.
-- [ ] **Enumerate cross-module usage** to avoid breaking dependencies during the move.
-- [ ] **Update module boundaries plan** for the new package layout.
+- [x] **Map storage packages** (`storage/db-core`) to their destination packages under **core**.
+- [x] **Enumerate cross-module usage** to avoid breaking dependencies during the move.
+- [x] **Update module boundaries plan** for the new package layout.
 
 ## Phase 2: Migration
-- [ ] **Move repository/entity classes** into core module packages.
-- [ ] **Update imports/build scripts** to remove `storage` module references.
+- [x] **Move repository/entity classes** into core module packages.
+- [x] **Update imports/build scripts** to remove `storage` module references.
 - [ ] **Adjust module declarations** for new package locations.
 
 ## Phase 3: Visibility Enforcement
@@ -25,3 +25,15 @@
 
 ## History
  - **2025-12-30**: **Plan created**. Storage module integration planned to unblock visibility enforcement.
+ - **2025-12-30**: **Phase 1 complete**. Prepared storage-to-core mapping and dependencies audit.
+ - **2025-12-30**: **Phase 2 partial**. Moved storage entities/repositories and removed storage module from Gradle/settings.
+   - **Modified Files**:
+     ```
+     settings.gradle.kts
+     core/core-api/build.gradle.kts
+     tests/build.gradle.kts
+     core/core-api/src/main/java/org/veri/be/**/entity/**
+     core/core-api/src/main/java/org/veri/be/**/repository/**
+     core/core-api/src/main/resources/storage.yml
+     core/core-api/src/main/resources/storage-local.yml
+     ```

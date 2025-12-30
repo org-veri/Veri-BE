@@ -10,7 +10,6 @@ dependencies {
     testImplementation(project(":clients:client-ocr"))
     testImplementation(project(":clients:client-aws"))
     testImplementation(project(":clients:client-search"))
-    testImplementation(project(":storage:db-core"))
     testImplementation(project(":support:common"))
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")

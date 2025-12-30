@@ -21,7 +21,6 @@ include(
     "core:core-api",
     "core:core-app",
     "core:core-enum",
-    "storage:db-core",
     "support:common",
     "support:logging",
     "support:monitoring",
