@@ -1,4 +1,4 @@
-package org.veri.be.domain.image.client;
+package org.veri.be.image.client;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -1,4 +1,4 @@
-package org.veri.be.domain.image.client;
+package org.veri.be.image.client;
 
 public class MistralOcrClientException extends RuntimeException {
 

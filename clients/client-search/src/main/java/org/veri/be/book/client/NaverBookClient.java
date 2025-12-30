@@ -1,8 +1,8 @@
-package org.veri.be.domain.book.client;
+package org.veri.be.book.client;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.veri.be.domain.book.dto.book.NaverBookResponse;
+import org.veri.be.book.dto.book.NaverBookResponse;
 
 @Component
 @RequiredArgsConstructor
