@@ -4,7 +4,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.veri.be.book.dto.reading.response.ReadingDetailResponse;
+import org.veri.be.book.service.ReadingCardSummary;
 import org.veri.be.book.service.ReadingCardSummaryProvider;
 import org.veri.be.card.entity.Card;
 import org.veri.be.card.repository.CardRepository;
@@ -17,9 +17,9 @@ public class ReadingCardSummaryProviderService implements ReadingCardSummaryProv
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReadingDetailResponse.CardSummaryResponse> getCardSummaries(Long readingId) {
+    public List<ReadingCardSummary> getCardSummaries(Long readingId) {
         return cardRepository.findAllByReadingId(readingId).stream()
-                .map(card -> new ReadingDetailResponse.CardSummaryResponse(
+                .map(card -> new ReadingCardSummary(
                         card.getId(),
                         card.getImage(),
                         card.isPublic()

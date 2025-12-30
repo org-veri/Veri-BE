@@ -20,18 +20,18 @@ public record ReadingDetailResponse(
         Double score,
         LocalDateTime startedAt,
         LocalDateTime endedAt,
-        List<CardSummaryResponse> cardSummaries,
+        List<ReadingCardSummaryResponse> cardSummaries,
         boolean isPublic
 ) {
     public static ReadingDetailResponse from(
             Reading reading,
             Member viewer,
-            List<CardSummaryResponse> summaries
+            List<ReadingCardSummaryResponse> summaries
     ) {
         boolean isOwner = viewer != null && reading.getMember().getId().equals(viewer.getId());
-        List<CardSummaryResponse> filteredSummaries = isOwner
+        List<ReadingCardSummaryResponse> filteredSummaries = isOwner
                 ? summaries
-                : summaries.stream().filter(CardSummaryResponse::isPublic).toList();
+                : summaries.stream().filter(ReadingCardSummaryResponse::isPublic).toList();
 
         return ReadingDetailResponse.builder()
                 .memberBookId(reading.getId())
@@ -46,12 +46,5 @@ public record ReadingDetailResponse(
                 .cardSummaries(filteredSummaries)
                 .isPublic(reading.isPublic())
                 .build();
-    }
-
-    public record CardSummaryResponse(
-            Long cardId,
-            String cardImage,
-            boolean isPublic
-    ) {
     }
 }
