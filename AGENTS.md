@@ -26,6 +26,7 @@ The agent workspace is isolated in the `.agents/` directory. Do not store contex
 | **`.agents/context/`** | **Read-Only** | Project goals, tech stack, and architectural constraints. |
 | **`.agents/inspiration/`** | **Read-Only** | Design inspirations and reference docs (**Human Developers Only**). |
 | **`.agents/work/`** | **Read/Write** | Unified task documents using the plan style, with history appended in the same file. (Subdirs: **`backlog/`**, **`completed/`**, **`on-hold/`**) |
+| **`.agents/result/`** | **Read/Write** | Final deliverables for requests like "write a document" or "write to a file". Results must be clearly separated from work planning documents. |
 | **`.agents/review/`** | **Write** | Self-review notes, test results, and QA logs before completion. (Subdirs: **`completed/`**, **`on-hold/`**) |
 | **`.agents/issue/`** | **Write** | Detailed analysis of bugs, errors, or blockers encountered. (Subdirs: **`completed/`**, **`on-hold/`**) |
 
@@ -53,6 +54,12 @@ Agents must follow these structures for consistency:
 *   **Body**: Breakdown into **Phases** or **Steps** using checklists (`- [ ]`).
 *   **History**: Append entries under `## History` at the end of the file.
 
+#### **Result Document (`.agents/result/`)**
+*   **Header**: `# Result: [Title]`
+*   **Metadata**: Status, Date, Source Request.
+*   **Body**: The final deliverable content.
+*   **Language**: Write in Korean by default unless the user specifies otherwise.
+
 #### **Issue Document (`.agents/issue/`)**
 *   **Header**: `# Issue: [Short Description]`
 *   **Metadata**: Severity (Critical/High/Low), Status, Date.
@@ -77,6 +84,9 @@ Agents must follow these structures for consistency:
 
 ### Phase 0: Conversational Tasks Exception
 For purely conversational tasks that do not require writing documents or modifying files, skip creating or updating any `.agents/` work, review, or issue documents.
+
+### Phase 0.5: Result-Only Requests
+If the user asks for "write a document" or "write to a file" (or similar), create the deliverable in **`.agents/result/`** and do not place the content in **`.agents/work/`**. Use **`.agents/work/`** only for planning and execution tracking.
 
 ### Phase 2: Execution
 1.  **Implement**: Write the code in the project source directories.
