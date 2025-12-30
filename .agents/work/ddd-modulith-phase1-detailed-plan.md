@@ -410,6 +410,7 @@
       -> `storage/db-core/src/main/java/org/veri/be/book/**`
   - **검증**
     - 컴파일 + `Book/Reading` 슬라이스 테스트
+  - **Status**: 패키지 이동 및 import 수정 완료, 컴파일 검증 대기
 - [ ] **Step 4: Card 모듈 전환**
   - **컨트롤러 이동**
     - `CardController`, `CardControllerV2`, `SocialCardController`
@@ -513,4 +514,49 @@
     tests/src/test/java/org/veri/be/integration/usecase/AuthIntegrationTest.java
     tests/src/test/java/org/veri/be/integration/usecase/MemberIntegrationTest.java
     tests/src/test/java/org/veri/be/slice/persistence/member/MemberRepositoryTest.java
+    ```
+- **2025-12-30**: **Book 모듈 이동 적용**. 패키지 이동 및 import 갱신 완료, 컴파일 검증 대기.
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/book/BookshelfController.java
+    core/core-api/src/main/java/org/veri/be/book/SocialReadingController.java
+    core/core-api/src/main/java/org/veri/be/book/client/BookSearchClient.java
+    core/core-api/src/main/java/org/veri/be/book/client/NaverClientException.java
+    core/core-api/src/main/java/org/veri/be/book/controller/enums/ReadingSortType.java
+    core/core-api/src/main/java/org/veri/be/book/dto/book/AddBookRequest.java
+    core/core-api/src/main/java/org/veri/be/book/dto/book/BookConverter.java
+    core/core-api/src/main/java/org/veri/be/book/dto/book/BookPopularListResponse.java
+    core/core-api/src/main/java/org/veri/be/book/dto/book/BookPopularListResponseV2.java
+    core/core-api/src/main/java/org/veri/be/book/dto/book/BookPopularResponse.java
+    core/core-api/src/main/java/org/veri/be/book/dto/book/BookResponse.java
+    core/core-api/src/main/java/org/veri/be/book/dto/book/BookSearchResponse.java
+    core/core-api/src/main/java/org/veri/be/book/dto/book/NaverBookItem.java
+    core/core-api/src/main/java/org/veri/be/book/dto/book/NaverBookResponse.java
+    core/core-api/src/main/java/org/veri/be/book/dto/reading/ReadingConverter.java
+    core/core-api/src/main/java/org/veri/be/book/dto/reading/request/ReadingModifyRequest.java
+    core/core-api/src/main/java/org/veri/be/book/dto/reading/request/ReadingPageRequest.java
+    core/core-api/src/main/java/org/veri/be/book/dto/reading/request/ReadingScoreRequest.java
+    core/core-api/src/main/java/org/veri/be/book/dto/reading/response/ReadingAddResponse.java
+    core/core-api/src/main/java/org/veri/be/book/dto/reading/response/ReadingDetailResponse.java
+    core/core-api/src/main/java/org/veri/be/book/dto/reading/response/ReadingListResponse.java
+    core/core-api/src/main/java/org/veri/be/book/dto/reading/response/ReadingResponse.java
+    core/core-api/src/main/java/org/veri/be/book/dto/reading/response/ReadingVisibilityUpdateResponse.java
+    core/core-api/src/main/java/org/veri/be/book/exception/BookErrorCode.java
+    core/core-api/src/main/java/org/veri/be/book/service/BookService.java
+    core/core-api/src/main/java/org/veri/be/book/service/BookshelfService.java
+    storage/db-core/src/main/java/org/veri/be/book/entity/Book.java
+    storage/db-core/src/main/java/org/veri/be/book/entity/Reading.java
+    storage/db-core/src/main/java/org/veri/be/book/repository/BookRepository.java
+    storage/db-core/src/main/java/org/veri/be/book/repository/ReadingRepository.java
+    storage/db-core/src/main/java/org/veri/be/book/repository/dto/BookPopularQueryResult.java
+    storage/db-core/src/main/java/org/veri/be/book/repository/dto/ReadingQueryResult.java
+    tests/src/test/java/org/veri/be/slice/web/BookshelfControllerTest.java
+    tests/src/test/java/org/veri/be/slice/web/SocialReadingControllerTest.java
+    tests/src/test/java/org/veri/be/slice/persistence/book/BookRepositoryTest.java
+    tests/src/test/java/org/veri/be/slice/persistence/reading/ReadingRepositoryTest.java
+    tests/src/test/java/org/veri/be/unit/book/BookshelfServiceTest.java
+    tests/src/test/java/org/veri/be/unit/book/ReadingConverterTest.java
+    tests/src/test/java/org/veri/be/unit/book/ReadingTest.java
+    tests/src/test/java/org/veri/be/integration/usecase/BookshelfIntegrationTest.java
+    tests/src/test/java/org/veri/be/integration/usecase/SocialReadingIntegrationTest.java
     ```

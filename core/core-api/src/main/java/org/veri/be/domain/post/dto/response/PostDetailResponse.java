@@ -1,7 +1,7 @@
 package org.veri.be.domain.post.dto.response;
 
 import lombok.Builder;
-import org.veri.be.domain.book.dto.book.BookResponse;
+import org.veri.be.book.dto.book.BookResponse;
 import org.veri.be.domain.comment.entity.Comment;
 import org.veri.be.api.common.dto.MemberProfileResponse;
 import org.veri.be.domain.post.entity.Post;

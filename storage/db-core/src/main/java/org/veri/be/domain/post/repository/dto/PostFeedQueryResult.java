@@ -1,6 +1,6 @@
 package org.veri.be.domain.post.repository.dto;
 
-import org.veri.be.domain.book.entity.Book;
+import org.veri.be.book.entity.Book;
 import org.veri.be.member.entity.Member;
 
 import java.time.LocalDateTime;

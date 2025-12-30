@@ -1,7 +1,7 @@
 package org.veri.be.member.service;
 
 import lombok.RequiredArgsConstructor;
-import org.veri.be.domain.book.repository.ReadingRepository;
+import org.veri.be.book.repository.ReadingRepository;
 import org.veri.be.domain.card.repository.CardRepository;
 import org.veri.be.member.converter.MemberConverter;
 import org.veri.be.member.dto.MemberResponse;

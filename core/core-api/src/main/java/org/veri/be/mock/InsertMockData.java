@@ -2,8 +2,8 @@ package org.veri.be.mock;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.veri.be.domain.book.entity.Book;
-import org.veri.be.domain.book.entity.Reading;
+import org.veri.be.book.entity.Book;
+import org.veri.be.book.entity.Reading;
 import org.veri.be.domain.card.entity.Card;
 import org.veri.be.member.entity.Member;
 import org.veri.be.member.entity.enums.ProviderType;

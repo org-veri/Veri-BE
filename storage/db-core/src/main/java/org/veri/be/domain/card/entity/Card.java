@@ -3,7 +3,7 @@ package org.veri.be.domain.card.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.veri.be.domain.book.entity.Reading;
+import org.veri.be.book.entity.Reading;
 import org.veri.be.member.entity.Member;
 import org.veri.be.global.entity.Authorizable;
 import org.veri.be.global.entity.BaseEntity;
