@@ -446,6 +446,7 @@
       -> `storage/db-core/src/main/java/org/veri/be/post/**`
   - **검증**
     - 컴파일 + `Post` 슬라이스/단위 테스트
+  - **Status**: 패키지 이동 및 import 수정 완료, 컴파일 검증 대기
 - [ ] **Step 7: Image 모듈 전환**
   - **컨트롤러 이동**
     - `ImageController`
@@ -613,4 +614,37 @@
     tests/src/test/java/org/veri/be/unit/comment/CommentQueryServiceTest.java
     tests/src/test/java/org/veri/be/unit/comment/CommentTest.java
     tests/src/test/java/org/veri/be/integration/usecase/CommentIntegrationTest.java
+    ```
+- **2025-12-30**: **Post 모듈 이동 적용**. 패키지 이동 및 import 갱신 완료, 컴파일 검증 대기.
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/post/PostController.java
+    core/core-api/src/main/java/org/veri/be/post/controller/enums/PostSortType.java
+    core/core-api/src/main/java/org/veri/be/post/dto/request/PostCreateRequest.java
+    core/core-api/src/main/java/org/veri/be/post/dto/response/LikeInfoResponse.java
+    core/core-api/src/main/java/org/veri/be/post/dto/response/PostDetailResponse.java
+    core/core-api/src/main/java/org/veri/be/post/dto/response/PostFeedResponse.java
+    core/core-api/src/main/java/org/veri/be/post/dto/response/PostFeedResponseItem.java
+    core/core-api/src/main/java/org/veri/be/post/dto/response/PostListResponse.java
+    core/core-api/src/main/java/org/veri/be/post/service/LikePostQueryService.java
+    core/core-api/src/main/java/org/veri/be/post/service/PostCommandService.java
+    core/core-api/src/main/java/org/veri/be/post/service/PostQueryService.java
+    storage/db-core/src/main/java/org/veri/be/post/entity/LikePost.java
+    storage/db-core/src/main/java/org/veri/be/post/entity/Post.java
+    storage/db-core/src/main/java/org/veri/be/post/entity/PostImage.java
+    storage/db-core/src/main/java/org/veri/be/post/repository/LikePostRepository.java
+    storage/db-core/src/main/java/org/veri/be/post/repository/PostRepository.java
+    storage/db-core/src/main/java/org/veri/be/post/repository/dto/DetailLikeInfoQueryResult.java
+    storage/db-core/src/main/java/org/veri/be/post/repository/dto/LikeInfoQueryResult.java
+    storage/db-core/src/main/java/org/veri/be/post/repository/dto/PostFeedQueryResult.java
+    tests/src/test/java/org/veri/be/slice/web/PostControllerTest.java
+    tests/src/test/java/org/veri/be/slice/persistence/post/LikePostRepositoryTest.java
+    tests/src/test/java/org/veri/be/slice/persistence/post/PostRepositoryTest.java
+    tests/src/test/java/org/veri/be/unit/post/LikePostQueryServiceTest.java
+    tests/src/test/java/org/veri/be/unit/post/LikePostTest.java
+    tests/src/test/java/org/veri/be/unit/post/PostCommandServiceTest.java
+    tests/src/test/java/org/veri/be/unit/post/PostQueryServiceTest.java
+    tests/src/test/java/org/veri/be/unit/post/PostResponseMappingTest.java
+    tests/src/test/java/org/veri/be/unit/post/PostTest.java
+    tests/src/test/java/org/veri/be/integration/usecase/PostIntegrationTest.java
     ```

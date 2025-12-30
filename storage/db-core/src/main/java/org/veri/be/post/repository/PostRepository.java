@@ -1,7 +1,7 @@
-package org.veri.be.domain.post.repository;
+package org.veri.be.post.repository;
 
-import org.veri.be.domain.post.entity.Post;
-import org.veri.be.domain.post.repository.dto.PostFeedQueryResult;
+import org.veri.be.post.entity.Post;
+import org.veri.be.post.repository.dto.PostFeedQueryResult;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,7 +16,7 @@ import java.util.Optional;
 public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("""
-            SELECT new org.veri.be.domain.post.repository.dto.PostFeedQueryResult(
+            SELECT new org.veri.be.post.repository.dto.PostFeedQueryResult(
                 p.id, p.title, p.content,
                 pi.imageUrl,
                 p.author,
@@ -36,7 +36,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
 
     @Query("""
-            SELECT new org.veri.be.domain.post.repository.dto.PostFeedQueryResult(
+            SELECT new org.veri.be.post.repository.dto.PostFeedQueryResult(
                 p.id, p.title, p.content,
                 pi.imageUrl,
                 p.author,

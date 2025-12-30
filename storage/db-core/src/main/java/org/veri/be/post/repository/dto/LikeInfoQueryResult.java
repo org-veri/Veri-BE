@@ -1,4 +1,4 @@
-package org.veri.be.domain.post.repository.dto;
+package org.veri.be.post.repository.dto;
 
 public record LikeInfoQueryResult(
         long likeCount,

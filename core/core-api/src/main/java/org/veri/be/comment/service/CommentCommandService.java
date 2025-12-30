@@ -7,8 +7,8 @@ import org.veri.be.comment.dto.request.CommentPostRequest;
 import org.veri.be.comment.entity.Comment;
 import org.veri.be.comment.repository.CommentRepository;
 import org.veri.be.member.entity.Member;
-import org.veri.be.domain.post.entity.Post;
-import org.veri.be.domain.post.service.PostQueryService;
+import org.veri.be.post.entity.Post;
+import org.veri.be.post.service.PostQueryService;
 
 import java.time.Clock;
 

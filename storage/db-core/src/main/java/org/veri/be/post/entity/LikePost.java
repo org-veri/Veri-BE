@@ -1,4 +1,4 @@
-package org.veri.be.domain.post.entity;
+package org.veri.be.post.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

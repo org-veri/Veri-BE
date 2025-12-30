@@ -1,4 +1,4 @@
-package org.veri.be.domain.post.controller.enums;
+package org.veri.be.post.controller.enums;
 
 import lombok.Getter;
 import org.springframework.data.domain.Sort;

@@ -1,4 +1,4 @@
-package org.veri.be.domain.post.dto.request;
+package org.veri.be.post.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

@@ -1,12 +1,12 @@
-package org.veri.be.domain.post.dto.response;
+package org.veri.be.post.dto.response;
 
 import lombok.Builder;
 import org.veri.be.book.dto.book.BookResponse;
 import org.veri.be.comment.entity.Comment;
 import org.veri.be.api.common.dto.MemberProfileResponse;
-import org.veri.be.domain.post.entity.Post;
-import org.veri.be.domain.post.entity.PostImage;
-import org.veri.be.domain.post.repository.dto.DetailLikeInfoQueryResult;
+import org.veri.be.post.entity.Post;
+import org.veri.be.post.entity.PostImage;
+import org.veri.be.post.repository.dto.DetailLikeInfoQueryResult;
 
 import java.time.LocalDateTime;
 import java.util.List;

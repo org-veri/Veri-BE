@@ -1,10 +1,10 @@
-package org.veri.be.domain.post.repository;
+package org.veri.be.post.repository;
 
 import me.miensoap.fluent.FluentRepository;
 import org.springframework.stereotype.Repository;
-import org.veri.be.domain.post.entity.LikePost;
-import org.veri.be.domain.post.entity.Post;
-import org.veri.be.domain.post.repository.dto.LikeInfoQueryResult;
+import org.veri.be.post.entity.LikePost;
+import org.veri.be.post.entity.Post;
+import org.veri.be.post.repository.dto.LikeInfoQueryResult;
 
 @Repository
 public interface LikePostRepository extends FluentRepository<LikePost, Long> {

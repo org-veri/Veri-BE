@@ -1,4 +1,4 @@
-package org.veri.be.domain.post.service;
+package org.veri.be.post.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -8,14 +8,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.veri.be.comment.service.CommentQueryService;
 import org.veri.be.member.entity.Member;
-import org.veri.be.domain.post.controller.enums.PostSortType;
-import org.veri.be.domain.post.dto.response.PostDetailResponse;
-import org.veri.be.domain.post.dto.response.PostFeedResponseItem;
-import org.veri.be.domain.post.entity.Post;
-import org.veri.be.domain.post.repository.LikePostRepository;
-import org.veri.be.domain.post.repository.PostRepository;
-import org.veri.be.domain.post.repository.dto.DetailLikeInfoQueryResult;
-import org.veri.be.domain.post.repository.dto.PostFeedQueryResult;
+import org.veri.be.post.controller.enums.PostSortType;
+import org.veri.be.post.dto.response.PostDetailResponse;
+import org.veri.be.post.dto.response.PostFeedResponseItem;
+import org.veri.be.post.entity.Post;
+import org.veri.be.post.repository.LikePostRepository;
+import org.veri.be.post.repository.PostRepository;
+import org.veri.be.post.repository.dto.DetailLikeInfoQueryResult;
+import org.veri.be.post.repository.dto.PostFeedQueryResult;
 import org.veri.be.lib.exception.CommonErrorCode;
 import org.veri.be.lib.exception.ApplicationException;
 

@@ -1,6 +1,6 @@
-package org.veri.be.domain.post.dto.response;
+package org.veri.be.post.dto.response;
 
-import org.veri.be.domain.post.repository.dto.PostFeedQueryResult;
+import org.veri.be.post.repository.dto.PostFeedQueryResult;
 import org.springframework.data.domain.Page;
 
 import java.util.List;

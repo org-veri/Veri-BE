@@ -1,4 +1,4 @@
-package org.veri.be.domain.post.dto.response;
+package org.veri.be.post.dto.response;
 
 import java.util.List;
 

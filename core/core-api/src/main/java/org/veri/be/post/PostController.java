@@ -1,4 +1,4 @@
-package org.veri.be.api.social;
+package org.veri.be.post;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -8,14 +8,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.veri.be.global.auth.context.AuthenticatedMember;
 import org.veri.be.member.entity.Member;
-import org.veri.be.domain.post.controller.enums.PostSortType;
-import org.veri.be.domain.post.dto.request.PostCreateRequest;
-import org.veri.be.domain.post.dto.response.LikeInfoResponse;
-import org.veri.be.domain.post.dto.response.PostDetailResponse;
-import org.veri.be.domain.post.dto.response.PostFeedResponse;
-import org.veri.be.domain.post.dto.response.PostListResponse;
-import org.veri.be.domain.post.service.PostCommandService;
-import org.veri.be.domain.post.service.PostQueryService;
+import org.veri.be.post.controller.enums.PostSortType;
+import org.veri.be.post.dto.request.PostCreateRequest;
+import org.veri.be.post.dto.response.LikeInfoResponse;
+import org.veri.be.post.dto.response.PostDetailResponse;
+import org.veri.be.post.dto.response.PostFeedResponse;
+import org.veri.be.post.dto.response.PostListResponse;
+import org.veri.be.post.service.PostCommandService;
+import org.veri.be.post.service.PostQueryService;
 import org.veri.be.lib.exception.CommonErrorCode;
 import org.veri.be.lib.exception.ApplicationException;
 import org.veri.be.lib.response.ApiResponse;

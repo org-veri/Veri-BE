@@ -5,7 +5,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.veri.be.member.entity.Member;
-import org.veri.be.domain.post.entity.Post;
+import org.veri.be.post.entity.Post;
 import org.veri.be.global.entity.Authorizable;
 import org.veri.be.global.entity.BaseEntity;
 import org.veri.be.lib.exception.ApplicationException;

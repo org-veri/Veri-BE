@@ -1,4 +1,4 @@
-package org.veri.be.domain.post.service;
+package org.veri.be.post.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -7,12 +7,12 @@ import org.veri.be.book.entity.Book;
 import org.veri.be.book.service.BookService;
 import org.veri.be.card.entity.CardErrorInfo;
 import org.veri.be.member.entity.Member;
-import org.veri.be.domain.post.dto.request.PostCreateRequest;
-import org.veri.be.domain.post.dto.response.LikeInfoResponse;
-import org.veri.be.domain.post.entity.LikePost;
-import org.veri.be.domain.post.entity.Post;
-import org.veri.be.domain.post.repository.LikePostRepository;
-import org.veri.be.domain.post.repository.PostRepository;
+import org.veri.be.post.dto.request.PostCreateRequest;
+import org.veri.be.post.dto.response.LikeInfoResponse;
+import org.veri.be.post.entity.LikePost;
+import org.veri.be.post.entity.Post;
+import org.veri.be.post.repository.LikePostRepository;
+import org.veri.be.post.repository.PostRepository;
 import org.veri.be.global.storage.dto.PresignedUrlRequest;
 import org.veri.be.global.storage.dto.PresignedUrlResponse;
 import org.veri.be.global.storage.service.StorageService;
