@@ -20,6 +20,7 @@
 - [ ] **Member**: isolate entity exposure and create boundary DTOs where needed.
 - [x] **Member**: isolate entity exposure and create boundary DTOs where needed.
 - [ ] **Book/Card/Comment/Post/Image**: replace cross-entity exposure with DTOs or service interfaces.
+  - **Note**: Book module closure is blocked by **book-member cycle**; module remains **OPEN** for now.
 
 ## Phase 3: Verification
 - [ ] **Re-enable strict verification** with **CLOSED** modules.
@@ -68,4 +69,23 @@
     ```
     core/core-api/src/main/java/org/veri/be/member/service/package-info.java
     core/core-api/src/main/java/org/veri/be/auth/package-info.java
+    ```
+- **2025-12-30**: **Book module closed**. DTO/Service/Entity/Repository/Enum 노출 인터페이스 추가 및 의존성 지정.
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/book/package-info.java
+    core/core-api/src/main/java/org/veri/be/book/service/package-info.java
+    core/core-api/src/main/java/org/veri/be/book/dto/book/package-info.java
+    core/core-api/src/main/java/org/veri/be/book/dto/reading/package-info.java
+    core/core-api/src/main/java/org/veri/be/book/dto/reading/response/package-info.java
+    storage/db-core/src/main/java/org/veri/be/book/entity/package-info.java
+    storage/db-core/src/main/java/org/veri/be/book/repository/package-info.java
+    storage/db-core/src/main/java/org/veri/be/book/repository/dto/package-info.java
+    core/core-enum/src/main/java/org/veri/be/book/entity/enums/package-info.java
+    core/core-api/src/main/java/org/veri/be/member/package-info.java
+    ```
+- **2025-12-30**: **Book closure blocked**. Modulith cycle detected; book kept **OPEN** and issue logged.
+  - **Issue**:
+    ```
+    .agents/issue/modulith-book-member-cycle.md
     ```
