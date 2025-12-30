@@ -12,6 +12,7 @@ import org.veri.be.global.auth.dto.LoginResponse;
 import org.veri.be.global.auth.dto.ReissueTokenRequest;
 import org.veri.be.global.auth.dto.ReissueTokenResponse;
 import org.veri.be.global.auth.oauth2.dto.OAuth2UserInfo;
+import org.veri.be.global.auth.token.TokenBlacklistStore;
 import org.veri.be.global.auth.token.TokenProvider;
 import org.veri.be.lib.exception.CommonErrorCode;
 import org.veri.be.lib.exception.ApplicationException;

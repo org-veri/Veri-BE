@@ -223,3 +223,14 @@
     core/core-api/src/main/java/org/veri/be/global/package-info.java
     core/core-api/src/main/java/org/veri/be/lib/package-info.java
     ```
+- **2025-12-30**: **Auth blacklist boundary cleanup**. `TokenBlacklistStore` moved to **global** to remove lib/auth dependency.
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/global/auth/token/TokenBlacklistStore.java
+    core/core-api/src/main/java/org/veri/be/global/auth/AuthConfig.java
+    core/core-api/src/main/java/org/veri/be/lib/auth/jwt/JwtFilter.java
+    core/core-api/src/main/java/org/veri/be/auth/service/AuthService.java
+    core/core-api/src/main/java/org/veri/be/auth/service/TokenStorageService.java
+    tests/src/test/java/org/veri/be/unit/auth/AuthConfigTest.java
+    tests/src/test/java/org/veri/be/unit/auth/AuthServiceTest.java
+    ```
