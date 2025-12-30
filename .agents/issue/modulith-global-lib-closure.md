@@ -24,3 +24,15 @@ Attempting to switch **global** and **lib** modules to **CLOSED** triggered Modu
 - Refactor **JwtService/JwtFilter** to avoid `lib` -> `global` dependency where possible.
 - Gradually migrate `auth` to depend on exposed interfaces or module-specific DTOs.
 - Reattempt **CLOSED** transition after each refactor step.
+
+## Update
+**Date**: 2025-12-30
+
+### Findings
+- Closing **global/lib** still triggers cycles involving **auth**, **global**, and **lib** due to `TokenBlacklistStore`, `JwtFilter`, and `TokenProvider` wiring.
+- **global** depends on **auth-service** via `AuthConfig`, and **lib** depends on **auth-service** via `JwtFilter`, forming **auth -> global -> lib -> auth** cycles.
+- **global** also participates in a **global -> member -> global** cycle through `MemberContext`/`MemberRepository` usage.
+
+### Recommendation
+- Keep **global/lib** as **OPEN** until auth-related dependencies are refactored (e.g., move blacklist into global or extract a global-owned interface).
+- Revisit module boundaries after resolving auth-global-lib dependency direction.

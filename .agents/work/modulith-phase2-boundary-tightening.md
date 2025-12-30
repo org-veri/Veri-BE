@@ -177,3 +177,49 @@
     storage/db-core/src/main/java/org/veri/be/image/entity/package-info.java
     storage/db-core/src/main/java/org/veri/be/image/repository/package-info.java
     ```
+- **2025-12-30**: **Global/Lib exposure prep**. Added named interfaces to global/lib subpackages for future closure.
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/global/auth/package-info.java
+    core/core-api/src/main/java/org/veri/be/global/auth/dto/package-info.java
+    core/core-api/src/main/java/org/veri/be/global/auth/token/package-info.java
+    core/core-api/src/main/java/org/veri/be/global/auth/context/package-info.java
+    core/core-api/src/main/java/org/veri/be/global/auth/oauth2/package-info.java
+    core/core-api/src/main/java/org/veri/be/global/auth/oauth2/dto/package-info.java
+    core/core-api/src/main/java/org/veri/be/global/auth/guards/package-info.java
+    core/core-api/src/main/java/org/veri/be/global/response/package-info.java
+    core/core-api/src/main/java/org/veri/be/global/storage/package-info.java
+    core/core-api/src/main/java/org/veri/be/global/storage/dto/package-info.java
+    core/core-api/src/main/java/org/veri/be/global/storage/service/package-info.java
+    core/core-api/src/main/java/org/veri/be/global/interceptors/package-info.java
+    core/core-api/src/main/java/org/veri/be/global/config/package-info.java
+    core/core-api/src/main/java/org/veri/be/lib/response/package-info.java
+    core/core-api/src/main/java/org/veri/be/lib/exception/package-info.java
+    core/core-api/src/main/java/org/veri/be/lib/exception/handler/package-info.java
+    core/core-api/src/main/java/org/veri/be/lib/auth/package-info.java
+    core/core-api/src/main/java/org/veri/be/lib/auth/jwt/package-info.java
+    core/core-api/src/main/java/org/veri/be/lib/auth/jwt/data/package-info.java
+    core/core-api/src/main/java/org/veri/be/lib/auth/util/package-info.java
+    core/core-api/src/main/java/org/veri/be/lib/auth/guard/package-info.java
+    core/core-api/src/main/java/org/veri/be/lib/time/package-info.java
+    storage/db-core/src/main/java/org/veri/be/global/entity/package-info.java
+    ```
+- **2025-12-30**: **Named interface dependencies aligned**. Updated closed modules to allow global/lib named interface usage.
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/auth/package-info.java
+    core/core-api/src/main/java/org/veri/be/book/package-info.java
+    core/core-api/src/main/java/org/veri/be/image/package-info.java
+    core/core-api/src/main/java/org/veri/be/member/package-info.java
+    core/core-api/src/main/java/org/veri/be/post/package-info.java
+    ```
+- **2025-12-30**: **Global/Lib closure attempt reverted**. Cycles with **auth/global/lib** and **global/member** persist; kept **OPEN** and updated issue log.
+  - **Issue**:
+    ```
+    .agents/issue/modulith-global-lib-closure.md
+    ```
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/global/package-info.java
+    core/core-api/src/main/java/org/veri/be/lib/package-info.java
+    ```
