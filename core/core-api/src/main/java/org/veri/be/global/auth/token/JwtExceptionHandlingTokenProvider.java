@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.veri.be.global.auth.AuthErrorInfo;
+import org.veri.be.lib.auth.token.TokenProvider;
 import org.veri.be.lib.exception.ApplicationException;
 
 @RequiredArgsConstructor

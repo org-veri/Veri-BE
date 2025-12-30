@@ -4,7 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
-import org.veri.be.global.auth.token.TokenProvider;
+import org.veri.be.lib.auth.token.TokenProvider;
 import org.veri.be.lib.auth.jwt.data.JwtProperties;
 import tools.jackson.databind.ObjectMapper;
 

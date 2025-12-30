@@ -16,8 +16,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.veri.be.global.auth.oauth2.CustomAuthFailureHandler;
 import org.veri.be.global.auth.oauth2.CustomOAuth2SuccessHandler;
 import org.veri.be.global.auth.oauth2.CustomOAuth2UserService;
-import org.veri.be.global.auth.token.TokenBlacklistStore;
-import org.veri.be.global.auth.token.TokenProvider;
+import org.veri.be.lib.auth.token.TokenBlacklistStore;
+import org.veri.be.lib.auth.token.TokenProvider;
 import org.veri.be.lib.auth.jwt.JwtFilter;
 
 import java.util.Collections;

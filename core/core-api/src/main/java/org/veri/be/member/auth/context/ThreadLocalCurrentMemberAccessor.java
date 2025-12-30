@@ -2,7 +2,7 @@ package org.veri.be.member.auth.context;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.veri.be.global.auth.context.MemberContext;
+import org.veri.be.lib.auth.context.MemberContext;
 import org.veri.be.member.entity.Member;
 import org.veri.be.member.repository.MemberRepository;
 

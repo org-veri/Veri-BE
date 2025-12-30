@@ -1,4 +1,4 @@
-package org.veri.be.global.auth.context;
+package org.veri.be.lib.auth.context;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -6,9 +6,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.veri.be.global.auth.context.MemberContext;
-import org.veri.be.global.auth.token.TokenBlacklistStore;
-import org.veri.be.global.auth.token.TokenProvider;
+import org.veri.be.lib.auth.context.MemberContext;
+import org.veri.be.lib.auth.token.TokenBlacklistStore;
+import org.veri.be.lib.auth.token.TokenProvider;
 
 import java.io.IOException;
 

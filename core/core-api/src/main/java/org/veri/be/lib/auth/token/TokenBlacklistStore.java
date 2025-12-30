@@ -1,4 +1,4 @@
-package org.veri.be.global.auth.token;
+package org.veri.be.lib.auth.token;
 
 public interface TokenBlacklistStore {
 

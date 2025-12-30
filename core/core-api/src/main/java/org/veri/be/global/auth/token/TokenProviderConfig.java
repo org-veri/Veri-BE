@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.veri.be.lib.auth.token.TokenProvider;
 
 @Configuration
 public class TokenProviderConfig {

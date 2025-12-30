@@ -6,7 +6,7 @@ import org.veri.be.auth.entity.BlacklistedToken;
 import org.veri.be.auth.entity.RefreshToken;
 import org.veri.be.auth.repository.BlacklistedTokenRepository;
 import org.veri.be.auth.repository.RefreshTokenRepository;
-import org.veri.be.global.auth.token.TokenBlacklistStore;
+import org.veri.be.lib.auth.token.TokenBlacklistStore;
 
 import java.time.Clock;
 import java.time.Instant;

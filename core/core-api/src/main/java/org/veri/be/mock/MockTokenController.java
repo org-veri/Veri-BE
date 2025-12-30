@@ -9,7 +9,7 @@ import org.veri.be.member.entity.Member;
 import org.veri.be.member.repository.MemberRepository;
 import org.veri.be.global.auth.JwtClaimsPayload;
 import org.veri.be.global.auth.dto.LoginResponse;
-import org.veri.be.global.auth.token.TokenProvider;
+import org.veri.be.lib.auth.token.TokenProvider;
 import org.veri.be.lib.exception.ApplicationException;
 import org.veri.be.lib.exception.CommonErrorCode;
 
