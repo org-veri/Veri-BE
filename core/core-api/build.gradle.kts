@@ -9,6 +9,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-restclient")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
+    implementation(platform("org.springframework.modulith:spring-modulith-bom:2.0.1"))
+    implementation("org.springframework.modulith:spring-modulith-starter-core")
 
     // JWT
     implementation("io.jsonwebtoken:jjwt-api:0.13.0")
