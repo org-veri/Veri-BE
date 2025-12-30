@@ -165,3 +165,15 @@
     core/core-api/src/main/java/org/veri/be/comment/package-info.java
     core/core-api/src/main/java/org/veri/be/post/package-info.java
     ```
+- **2025-12-30**: **Image module closed**. Named interfaces added for service/client/dto/config/exception/entity/repository.
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/image/package-info.java
+    core/core-api/src/main/java/org/veri/be/image/service/package-info.java
+    core/core-api/src/main/java/org/veri/be/image/client/package-info.java
+    core/core-api/src/main/java/org/veri/be/image/dto/package-info.java
+    core/core-api/src/main/java/org/veri/be/image/exception/package-info.java
+    core/core-api/src/main/java/org/veri/be/image/config/package-info.java
+    storage/db-core/src/main/java/org/veri/be/image/entity/package-info.java
+    storage/db-core/src/main/java/org/veri/be/image/repository/package-info.java
+    ```
