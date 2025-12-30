@@ -14,6 +14,8 @@ dependencies {
     testImplementation(project(":support:common"))
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation(platform("org.springframework.modulith:spring-modulith-bom:2.0.1"))
+    testImplementation("org.springframework.modulith:spring-modulith-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("io.mockk:mockk:1.13.12")
