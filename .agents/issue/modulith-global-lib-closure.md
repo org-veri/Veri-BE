@@ -36,3 +36,13 @@ Attempting to switch **global** and **lib** modules to **CLOSED** triggered Modu
 ### Recommendation
 - Keep **global/lib** as **OPEN** until auth-related dependencies are refactored (e.g., move blacklist into global or extract a global-owned interface).
 - Revisit module boundaries after resolving auth-global-lib dependency direction.
+
+## Update
+**Date**: 2025-12-30
+
+### Findings
+- Closing **global** still produces cycles with **lib** (global uses lib exceptions/guards; lib uses global auth context/token) and with **member** (global auth context and OAuth2 DTOs reference member types).
+
+### Recommendation
+- Keep **global** **OPEN** while **lib** is closed.
+- To close **global**, refactor auth context to avoid direct **member** entity/repository usage, or move those types behind an interface owned by **member**.

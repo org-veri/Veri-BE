@@ -234,3 +234,17 @@
     tests/src/test/java/org/veri/be/unit/auth/AuthConfigTest.java
     tests/src/test/java/org/veri/be/unit/auth/AuthServiceTest.java
     ```
+- **2025-12-30**: **Lib module closed**. Allowed global auth context/token dependencies.
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/lib/package-info.java
+    ```
+- **2025-12-30**: **Global closure attempt reverted**. Cycles with **lib** and **member** remain; updated issue log.
+  - **Issue**:
+    ```
+    .agents/issue/modulith-global-lib-closure.md
+    ```
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/global/package-info.java
+    ```
