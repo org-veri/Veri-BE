@@ -31,3 +31,9 @@
     tests/src/test/kotlin/org/veri/be/unit/book/ReadingDetailResponseTest.kt
     tests/src/test/java/org/veri/be/unit/book/ReadingDetailResponseTest.java
     ```
+- **2025-12-30**: **Phase 2 updates**. Migrated JWT claims payload unit test to Kotlin.
+  - **Modified Files**:
+    ```
+    tests/src/test/kotlin/org/veri/be/unit/auth/JwtClaimsPayloadTest.kt
+    tests/src/test/java/org/veri/be/unit/auth/JwtClaimsPayloadTest.java
+    ```
