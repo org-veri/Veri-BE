@@ -1,4 +1,4 @@
-package org.veri.be.api.common;
+package org.veri.be.auth;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.veri.be.domain.auth.service.AuthService;
+import org.veri.be.auth.service.AuthService;
 import org.veri.be.global.auth.dto.ReissueTokenRequest;
 import org.veri.be.global.auth.dto.ReissueTokenResponse;
 import org.veri.be.lib.exception.ApplicationException;

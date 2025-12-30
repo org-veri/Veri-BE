@@ -1,6 +1,6 @@
-package org.veri.be.domain.auth.repository;
+package org.veri.be.auth.repository;
 
-import org.veri.be.domain.auth.entity.RefreshToken;
+import org.veri.be.auth.entity.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {

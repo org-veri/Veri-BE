@@ -13,7 +13,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.veri.be.domain.auth.service.TokenBlacklistStore;
+import org.veri.be.auth.service.TokenBlacklistStore;
 import org.veri.be.global.auth.oauth2.CustomAuthFailureHandler;
 import org.veri.be.global.auth.oauth2.CustomOAuth2SuccessHandler;
 import org.veri.be.global.auth.oauth2.CustomOAuth2UserService;

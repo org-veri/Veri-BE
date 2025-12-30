@@ -1,4 +1,4 @@
-package org.veri.be.domain.auth.entity;
+package org.veri.be.auth.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,13 +9,11 @@ import java.time.Instant;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class RefreshToken {
+public class BlacklistedToken {
     @Id
-    private Long userId;
-
-    @Column(nullable = false, length = 512)
+    @Column(length = 512)
     private String token;
 
     @Column(nullable = false)
     private Instant expiredAt;
-}
+} 

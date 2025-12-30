@@ -1,4 +1,4 @@
-package org.veri.be.domain.auth.service;
+package org.veri.be.auth.service;
 
 public interface TokenBlacklistStore {
 
