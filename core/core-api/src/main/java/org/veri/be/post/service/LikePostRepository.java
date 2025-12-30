@@ -7,7 +7,7 @@ import org.veri.be.post.entity.Post;
 import org.veri.be.post.repository.dto.LikeInfoQueryResult;
 
 @Repository
-public interface LikePostRepository extends FluentRepository<LikePost, Long> {
+interface LikePostRepository extends FluentRepository<LikePost, Long> {
 
     Long countByPostId(Long postId);
 

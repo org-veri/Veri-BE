@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface CardRepository extends JpaRepository<Card, Long> {
+interface CardRepository extends JpaRepository<Card, Long> {
 
     @Query(
             "SELECT new org.veri.be.card.repository.dto.CardListItem(" +

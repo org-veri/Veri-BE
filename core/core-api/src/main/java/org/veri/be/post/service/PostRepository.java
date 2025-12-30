@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface PostRepository extends JpaRepository<Post, Long> {
+interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("""
             SELECT new org.veri.be.post.repository.dto.PostFeedQueryResult(

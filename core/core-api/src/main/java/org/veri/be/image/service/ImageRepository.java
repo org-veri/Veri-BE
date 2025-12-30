@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface ImageRepository extends JpaRepository<Image, Long> {
+interface ImageRepository extends JpaRepository<Image, Long> {
 
     @Query("SELECT i.imageUrl FROM Image i WHERE i.member.id = :memberId")
     Page<String> findByMemberId(@Param("memberId") Long memberId, Pageable pageable);
