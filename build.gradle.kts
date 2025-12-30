@@ -55,6 +55,11 @@ subprojects {
         useJUnitPlatform {
             excludeTags("develop", "restdocs")
         }
+        jvmArgs("--enable-preview")
+    }
+
+    tasks.withType<JavaCompile>().configureEach {
+        options.compilerArgs.add("--enable-preview")
     }
 
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
