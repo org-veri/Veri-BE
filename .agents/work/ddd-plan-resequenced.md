@@ -30,7 +30,7 @@
 - [ ] **Reconcile domain model layout** (aggregate roots, entities, VOs).
 - [ ] **Define domain repositories** in module-aligned packages.
 - [x] **Split domain services** into **Command/Query** where applicable.
-- [ ] **Extract domain events** and publish through application services.
+- [x] **Extract domain events** and publish through application services.
 - [ ] **Remove legacy layered package remnants** (if any remain).
 
 ## Phase 4: CQRS + FluentQuery
@@ -94,4 +94,16 @@
     tests/src/test/java/org/veri/be/slice/web/SocialReadingControllerTest.java
     tests/src/test/java/org/veri/be/integration/usecase/SocialReadingIntegrationTest.java
     tests/src/test/java/org/veri/be/integration/usecase/SocialCardIntegrationTest.java
+    ```
+- **2025-12-30**: **Phase 3 continued** with **reading visibility domain event**.
+  - **Updated Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/book/event/ReadingVisibilityChangedEvent.java
+    core/core-api/src/main/java/org/veri/be/book/event/package-info.java
+    core/core-api/src/main/java/org/veri/be/book/service/BookshelfCommandService.java
+    core/core-api/src/main/java/org/veri/be/book/service/ReadingCardSummaryProvider.java
+    core/core-api/src/main/java/org/veri/be/card/service/ReadingVisibilityEventHandler.java
+    core/core-api/src/main/java/org/veri/be/card/service/ReadingCardSummaryProviderService.java
+    core/core-api/src/main/java/org/veri/be/card/package-info.java
+    tests/src/test/java/org/veri/be/unit/book/BookshelfCommandServiceTest.java
     ```

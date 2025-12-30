@@ -5,6 +5,4 @@ import java.util.List;
 public interface ReadingCardSummaryProvider {
 
     List<ReadingCardSummary> getCardSummaries(Long readingId);
-
-    void setCardsPrivate(Long readingId);
 }

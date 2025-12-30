@@ -3,10 +3,12 @@ package org.veri.be.book.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.context.ApplicationEventPublisher;
 import org.veri.be.book.dto.reading.response.ReadingVisibilityUpdateResponse;
 import org.veri.be.book.entity.Book;
 import org.veri.be.book.entity.Reading;
 import org.veri.be.book.exception.BookErrorCode;
+import org.veri.be.book.event.ReadingVisibilityChangedEvent;
 import org.veri.be.lib.exception.ApplicationException;
 import org.veri.be.lib.exception.CommonErrorCode;
 import org.veri.be.member.entity.Member;
@@ -24,8 +26,8 @@ public class BookshelfCommandService {
 
     private final ReadingRepository readingRepository;
     private final BookRepository bookRepository;
-    private final ReadingCardSummaryProvider readingCardSummaryProvider;
     private final Clock clock;
+    private final ApplicationEventPublisher eventPublisher;
 
     public Reading addToBookshelf(Member member, Long bookId, boolean isPublic) {
         Book book = bookRepository.findById(bookId)
@@ -96,10 +98,10 @@ public class BookshelfCommandService {
             reading.setPublic();
         } else {
             reading.setPrivate();
-            readingCardSummaryProvider.setCardsPrivate(readingId);
         }
 
         readingRepository.save(reading);
+        eventPublisher.publishEvent(new ReadingVisibilityChangedEvent(reading.getId(), reading.isPublic()));
         return new ReadingVisibilityUpdateResponse(reading.getId(), reading.isPublic());
     }
 

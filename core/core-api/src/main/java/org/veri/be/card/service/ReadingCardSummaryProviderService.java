@@ -27,10 +27,4 @@ public class ReadingCardSummaryProviderService implements ReadingCardSummaryProv
                 .toList();
     }
 
-    @Override
-    @Transactional
-    public void setCardsPrivate(Long readingId) {
-        List<Card> cards = cardRepository.findAllByReadingId(readingId);
-        cards.forEach(Card::setPrivate);
-    }
 }
