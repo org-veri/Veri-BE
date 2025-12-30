@@ -143,3 +143,25 @@
     storage/db-core/src/main/java/org/veri/be/comment/entity/package-info.java
     storage/db-core/src/main/java/org/veri/be/comment/repository/package-info.java
     ```
+- **2025-12-30**: **Post module closed**. Named interfaces added for DTO/service/entity/repository with book/comment/member dependencies.
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/post/package-info.java
+    core/core-api/src/main/java/org/veri/be/post/service/package-info.java
+    core/core-api/src/main/java/org/veri/be/post/controller/enums/package-info.java
+    core/core-api/src/main/java/org/veri/be/post/dto/request/package-info.java
+    core/core-api/src/main/java/org/veri/be/post/dto/response/package-info.java
+    storage/db-core/src/main/java/org/veri/be/post/entity/package-info.java
+    storage/db-core/src/main/java/org/veri/be/post/repository/package-info.java
+    storage/db-core/src/main/java/org/veri/be/post/repository/dto/package-info.java
+    ```
+- **2025-12-30**: **Comment module reopened**. **comment-post cycle** logged and post dependency list expanded for cross-module DTO usage.
+  - **Issue**:
+    ```
+    .agents/issue/modulith-comment-post-cycle.md
+    ```
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/comment/package-info.java
+    core/core-api/src/main/java/org/veri/be/post/package-info.java
+    ```
