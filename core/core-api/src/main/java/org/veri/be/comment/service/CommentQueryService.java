@@ -1,8 +1,8 @@
-package org.veri.be.domain.comment.service;
+package org.veri.be.comment.service;
 
 import lombok.RequiredArgsConstructor;
-import org.veri.be.domain.comment.entity.Comment;
-import org.veri.be.domain.comment.repository.CommentRepository;
+import org.veri.be.comment.entity.Comment;
+import org.veri.be.comment.repository.CommentRepository;
 import org.veri.be.domain.post.dto.response.PostDetailResponse;
 import org.veri.be.lib.exception.CommonErrorCode;
 import org.veri.be.lib.exception.ApplicationException;

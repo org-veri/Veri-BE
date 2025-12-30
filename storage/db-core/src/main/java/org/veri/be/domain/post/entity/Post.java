@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.veri.be.book.entity.Book;
-import org.veri.be.domain.comment.entity.Comment;
+import org.veri.be.comment.entity.Comment;
 import org.veri.be.member.entity.Member;
 import org.veri.be.global.entity.Authorizable;
 import org.veri.be.global.entity.BaseEntity;

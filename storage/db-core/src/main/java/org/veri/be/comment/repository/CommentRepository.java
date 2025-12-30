@@ -1,6 +1,6 @@
-package org.veri.be.domain.comment.repository;
+package org.veri.be.comment.repository;
 
-import org.veri.be.domain.comment.entity.Comment;
+import org.veri.be.comment.entity.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

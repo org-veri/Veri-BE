@@ -434,6 +434,7 @@
       -> `storage/db-core/src/main/java/org/veri/be/comment/**`
   - **검증**
     - 컴파일 + `Comment` 슬라이스 테스트
+  - **Status**: 패키지 이동 및 import 수정 완료, 컴파일 검증 대기
 - [ ] **Step 6: Post 모듈 전환**
   - **컨트롤러 이동**
     - `PostController`
@@ -594,4 +595,22 @@
     tests/src/test/java/org/veri/be/unit/card/CardTest.java
     tests/src/test/java/org/veri/be/integration/usecase/CardIntegrationTest.java
     tests/src/test/java/org/veri/be/integration/usecase/SocialCardIntegrationTest.java
+    ```
+- **2025-12-30**: **Comment 모듈 이동 적용**. 패키지 이동 및 import 갱신 완료, 컴파일 검증 대기.
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/comment/CommentController.java
+    core/core-api/src/main/java/org/veri/be/comment/dto/request/CommentEditRequest.java
+    core/core-api/src/main/java/org/veri/be/comment/dto/request/CommentPostRequest.java
+    core/core-api/src/main/java/org/veri/be/comment/dto/request/ReplyPostRequest.java
+    core/core-api/src/main/java/org/veri/be/comment/service/CommentCommandService.java
+    core/core-api/src/main/java/org/veri/be/comment/service/CommentQueryService.java
+    storage/db-core/src/main/java/org/veri/be/comment/entity/Comment.java
+    storage/db-core/src/main/java/org/veri/be/comment/repository/CommentRepository.java
+    tests/src/test/java/org/veri/be/slice/web/CommentControllerTest.java
+    tests/src/test/java/org/veri/be/slice/persistence/comment/CommentRepositoryTest.java
+    tests/src/test/java/org/veri/be/unit/comment/CommentCommandServiceTest.java
+    tests/src/test/java/org/veri/be/unit/comment/CommentQueryServiceTest.java
+    tests/src/test/java/org/veri/be/unit/comment/CommentTest.java
+    tests/src/test/java/org/veri/be/integration/usecase/CommentIntegrationTest.java
     ```

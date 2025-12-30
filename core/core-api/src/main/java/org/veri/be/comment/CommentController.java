@@ -1,13 +1,13 @@
-package org.veri.be.api.social;
+package org.veri.be.comment;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.veri.be.domain.comment.dto.request.CommentEditRequest;
-import org.veri.be.domain.comment.dto.request.CommentPostRequest;
-import org.veri.be.domain.comment.dto.request.ReplyPostRequest;
-import org.veri.be.domain.comment.service.CommentCommandService;
+import org.veri.be.comment.dto.request.CommentEditRequest;
+import org.veri.be.comment.dto.request.CommentPostRequest;
+import org.veri.be.comment.dto.request.ReplyPostRequest;
+import org.veri.be.comment.service.CommentCommandService;
 import org.veri.be.member.entity.Member;
 import org.veri.be.global.auth.context.AuthenticatedMember;
 import org.veri.be.lib.response.ApiResponse;

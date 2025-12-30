@@ -1,4 +1,4 @@
-package org.veri.be.domain.comment.entity;
+package org.veri.be.comment.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
