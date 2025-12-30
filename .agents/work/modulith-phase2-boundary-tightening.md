@@ -89,3 +89,13 @@
     ```
     .agents/issue/modulith-book-member-cycle.md
     ```
+- **2025-12-30**: **Member-book cycle workaround**. Member now depends on `ReadingCountProvider` (member-owned interface) implemented in book.
+  - **Modified Files**:
+    ```
+    core/core-api/src/main/java/org/veri/be/member/service/ReadingCountProvider.java
+    core/core-api/src/main/java/org/veri/be/book/service/BookReadingCountProvider.java
+    core/core-api/src/main/java/org/veri/be/member/service/MemberQueryService.java
+    storage/db-core/src/main/java/org/veri/be/book/repository/ReadingRepository.java
+    tests/src/test/java/org/veri/be/unit/member/MemberQueryServiceTest.java
+    core/core-api/src/main/java/org/veri/be/member/package-info.java
+    ```

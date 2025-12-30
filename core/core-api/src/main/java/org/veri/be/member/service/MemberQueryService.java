@@ -1,7 +1,6 @@
 package org.veri.be.member.service;
 
 import lombok.RequiredArgsConstructor;
-import org.veri.be.book.repository.ReadingRepository;
 import org.veri.be.card.repository.CardRepository;
 import org.veri.be.member.converter.MemberConverter;
 import org.veri.be.member.dto.MemberResponse;
@@ -18,7 +17,7 @@ import org.veri.be.lib.exception.ApplicationException;
 public class MemberQueryService {
 
     private final MemberRepository memberRepository;
-    private final ReadingRepository readingRepository;
+    private final ReadingCountProvider readingCountProvider;
     private final CardRepository cardRepository;
 
     public Member findById(Long id) {
@@ -27,7 +26,9 @@ public class MemberQueryService {
     }
 
     public MemberResponse.MemberInfoResponse findMyInfo(Member member) {
-        return MemberConverter.toMemberInfoResponse(member, readingRepository.countAllByMember(member), cardRepository.countAllByMemberId(member.getId()));
+        int bookCount = Math.toIntExact(readingCountProvider.countReadingsByMemberId(member.getId()));
+        int cardCount = cardRepository.countAllByMemberId(member.getId());
+        return MemberConverter.toMemberInfoResponse(member, bookCount, cardCount);
     }
 
     public boolean existsByNickname(String nickname) {

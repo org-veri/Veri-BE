@@ -23,3 +23,6 @@ Closing the **book** module created a cycle with **member**. The **book** module
   - Moving `ReadingRepository` usage behind a `BookQueryPort` interface in **book** module.
   - Or inverting dependency by introducing a **read model** in member and an adapter in book.
 - Once dependency is removed, switch **book** to **CLOSED** with explicit allowedDependencies.
+
+## Update
+- **2025-12-30**: 적용 방향 변경. **Member-owned interface**(`ReadingCountProvider`)를 도입하고 **book** 모듈에서 구현하여 의존성을 단방향으로 조정.
