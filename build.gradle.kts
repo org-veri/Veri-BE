@@ -2,9 +2,9 @@ plugins {
     java
     id("org.springframework.boot") apply false
     id("io.spring.dependency-management")
-    kotlin("jvm") version "2.1.0" apply false
-    kotlin("plugin.spring") version "2.1.0" apply false
-    kotlin("plugin.jpa") version "2.1.0" apply false
+    kotlin("jvm") version "2.3.0" apply false
+    kotlin("plugin.spring") version "2.3.0" apply false
+    kotlin("plugin.jpa") version "2.3.0" apply false
 }
 
 allprojects {
@@ -59,7 +59,7 @@ subprojects {
 
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
         compilerOptions {
-            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_25)
         }
     }
 }

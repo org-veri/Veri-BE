@@ -112,3 +112,4 @@ When committing changes, follow these guidelines:
     * `chore.`: Maintenance tasks (build process, dependencies, etc.)
 * **Atomic Commits**: Each commit should represent a single logical change.
 * **Descriptive Messages**: Use clear, concise commit messages that describe the change.
+* **Docs Coupling Rule**: If a work change requires documentation updates or completion notes, commit the docs in the same commit as the work change (no separate docs-only commit immediately after).

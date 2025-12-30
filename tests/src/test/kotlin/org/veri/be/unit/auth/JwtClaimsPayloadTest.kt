@@ -15,7 +15,7 @@ class JwtClaimsPayloadTest {
         @Test
         @DisplayName("클레임 정보를 생성한다")
         fun mapsFieldsToClaims() {
-            val payload = JwtClaimsPayload.of(1L, "member@test.com", "member", false)
+            val payload = JwtClaimsPayload(1L, "member@test.com", "member", false)
 
             assertThat(payload.id()).isEqualTo(1L)
             assertThat(payload.email()).isEqualTo("member@test.com")

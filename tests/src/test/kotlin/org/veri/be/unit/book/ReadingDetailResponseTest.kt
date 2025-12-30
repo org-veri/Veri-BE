@@ -4,10 +4,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.veri.be.book.dto.reading.response.ReadingCardSummaryResponse
-import org.veri.be.book.dto.reading.response.ReadingDetailResponse
-import org.veri.be.book.entity.enums.ReadingStatus
-import org.veri.be.member.dto.MemberProfileResponse
+import org.veri.be.api.common.dto.MemberProfileResponse
+import org.veri.be.domain.book.dto.reading.response.ReadingDetailResponse
+import org.veri.be.domain.book.entity.enums.ReadingStatus
 
 class ReadingDetailResponseTest {
 
@@ -18,7 +17,7 @@ class ReadingDetailResponseTest {
         @Test
         @DisplayName("필드가 올바르게 세팅된다")
         fun buildsResponse() {
-            val cardSummary = ReadingCardSummaryResponse(
+            val cardSummary = ReadingDetailResponse.CardSummaryResponse(
                 1L,
                 "https://example.com/1.png",
                 true
