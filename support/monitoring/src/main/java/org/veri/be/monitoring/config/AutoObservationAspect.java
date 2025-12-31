@@ -45,19 +45,18 @@ public class AutoObservationAspect {
             "&& (within(@org.springframework.stereotype.Service *)" +
             "|| within(@org.springframework.web.bind.annotation.RestController *)" +
             "|| within(@org.springframework.stereotype.Repository *)" +
-            "|| within(org.veri.be.domain..service..*))")
+            "|| within(org.veri.be..service..*))")
     public void targetTargets() {
     }
 
     @Around("targetTargets() && excludeInfrastructure()")
     public Object observeAll(ProceedingJoinPoint pjp) throws Throwable {
         Class<?> targetClass = ClassUtils.getUserClass(pjp.getTarget());
-        String className = targetClass.getSimpleName();
-
-        if (isExcluded(className)) {
+        if (isExcluded(targetClass)) {
             return pjp.proceed();
         }
 
+        String className = targetClass.getSimpleName();
         String method = pjp.getSignature().getName();
         String spanName = className + "." + method;
 
@@ -68,7 +67,8 @@ public class AutoObservationAspect {
         return obs.observeChecked(() -> pjp.proceed());
     }
 
-    private boolean isExcluded(String className) {
-        return EXCLUDED_PACKAGES.stream().anyMatch(className::contains);
+    private boolean isExcluded(Class<?> targetClass) {
+        String fqcn = targetClass.getName();
+        return EXCLUDED_PACKAGES.stream().anyMatch(fqcn::contains);
     }
 }
