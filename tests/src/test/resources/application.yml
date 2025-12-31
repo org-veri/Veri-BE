@@ -5,9 +5,7 @@ spring:
     active: test
   config:
     import:
-      - classpath:client-aws-test.yml
-      - classpath:client-ocr-test.yml
-      - classpath:client-search-test.yml
+      - classpath:client-test.yml
   datasource:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:testdb

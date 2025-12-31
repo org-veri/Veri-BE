@@ -8,9 +8,7 @@ tasks.named<Jar>("jar").configure {
 
 dependencies {
     implementation(project(":core:core-api"))
-    implementation(project(":clients:client-aws"))
-    implementation(project(":clients:client-ocr"))
-    implementation(project(":clients:client-search"))
+    implementation(project(":clients"))
 
     implementation("org.springframework.boot:spring-boot-starter")
 }
