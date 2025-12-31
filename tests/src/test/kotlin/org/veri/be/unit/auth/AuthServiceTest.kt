@@ -23,12 +23,15 @@ import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.domain.member.repository.MemberRepository
 import org.veri.be.domain.member.service.MemberQueryService
+import org.veri.be.global.auth.AuthErrorInfo
 import org.veri.be.global.auth.dto.LoginResponse
 import org.veri.be.global.auth.dto.ReissueTokenRequest
 import org.veri.be.global.auth.dto.ReissueTokenResponse
 import org.veri.be.global.auth.JwtClaimsPayload
 import org.veri.be.global.auth.oauth2.dto.OAuth2UserInfo
 import org.veri.be.global.auth.token.TokenProvider
+import org.veri.be.lib.exception.ApplicationException
+import org.veri.be.lib.exception.CommonErrorCode
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId
@@ -114,6 +117,69 @@ class AuthServiceTest {
 
             assertThat(response.accessToken).isEqualTo("new-access")
         }
+
+        @Test
+        @DisplayName("리프레시 토큰이 null이면 예외를 발생한다")
+        fun throwsExceptionWhenRefreshTokenIsNull() {
+            val request = ReissueTokenRequest()
+            ReflectionTestUtils.setField(request, "refreshToken", null)
+
+            org.junit.jupiter.api.assertThrows<ApplicationException> {
+                authService.reissueToken(request)
+            }.apply {
+                assertThat(errorCode).isEqualTo(CommonErrorCode.INVALID_REQUEST)
+            }
+        }
+
+        @Test
+        @DisplayName("리프레시 토큰이 blank이면 예외를 발생한다")
+        fun throwsExceptionWhenRefreshTokenIsBlank() {
+            val request = ReissueTokenRequest()
+            ReflectionTestUtils.setField(request, "refreshToken", "   ")
+
+            org.junit.jupiter.api.assertThrows< ApplicationException> {
+                authService.reissueToken(request)
+            }.apply {
+                assertThat(errorCode).isEqualTo(CommonErrorCode.INVALID_REQUEST)
+            }
+        }
+
+        @Test
+        @DisplayName("리프레시 토큰이 블랙리스트에 있으면 예외를 발생한다")
+        fun throwsExceptionWhenTokenIsBlacklisted() {
+            given(tokenBlacklistStore.isBlackList("blacklisted-refresh")).willReturn(true)
+
+            val request = ReissueTokenRequest()
+            ReflectionTestUtils.setField(request, "refreshToken", "blacklisted-refresh")
+
+            val exception = org.junit.jupiter.api.assertThrows<ApplicationException> {
+                authService.reissueToken(request)
+            }
+
+            assertThat(exception.errorCode).isEqualTo(AuthErrorInfo.UNAUTHORIZED)
+            verify(tokenBlacklistStore).isBlackList("blacklisted-refresh")
+            // 블랙리스트에 있으므로 tokenProvider.parseRefreshToken과 tokenStorageService.getRefreshToken은 호출되지 않아야 함
+            verify(tokenProvider, never()).parseRefreshToken(any())
+            verify(tokenStorageService, never()).getRefreshToken(any())
+        }
+
+        @Test
+        @DisplayName("저장된 토큰과 일치하지 않으면 예외를 발생한다")
+        fun throwsExceptionWhenTokenMismatch() {
+            val claims: Claims = Jwts.claims().add("id", 1L).build()
+            given(tokenProvider.parseRefreshToken("different-refresh")).willReturn(claims)
+            given(tokenBlacklistStore.isBlackList("different-refresh")).willReturn(false)
+            given(tokenStorageService.getRefreshToken(1L)).willReturn("stored-refresh")
+
+            val request = ReissueTokenRequest()
+            ReflectionTestUtils.setField(request, "refreshToken", "different-refresh")
+
+            org.junit.jupiter.api.assertThrows<ApplicationException> {
+                authService.reissueToken(request)
+            }.apply {
+                assertThat(errorCode).isEqualTo(AuthErrorInfo.UNAUTHORIZED)
+            }
+        }
     }
 
     @Nested
@@ -184,6 +250,36 @@ class AuthServiceTest {
             val response: LoginResponse = authService.loginWithOAuth2(info)
 
             assertThat(response.accessToken).isEqualTo("access")
+        }
+
+        @Test
+        @DisplayName("신규 회원이면 닉네임 그대로 저장한다")
+        fun savesNewMemberWithOriginalNickname() {
+            val info = OAuth2UserInfo.builder()
+                .email("new@test.com")
+                .nickname("newbie")
+                .image("https://example.com/profile.png")
+                .providerId("provider-2")
+                .providerType(ProviderType.KAKAO)
+                .build()
+            given(memberRepository.findByProviderIdAndProviderType("provider-2", ProviderType.KAKAO))
+                .willReturn(Optional.empty())
+            given(memberQueryService.existsByNickname("newbie")).willReturn(false)
+            given(memberRepository.save(any(Member::class.java))).willAnswer { invocation ->
+                val saved = invocation.getArgument<Member>(0)
+                ReflectionTestUtils.setField(saved, "id", 2L)
+                saved
+            }
+            given(tokenProvider.generateAccessToken(any<JwtClaimsPayload>()))
+                .willReturn(TokenProvider.TokenGeneration("access", fixedClock.millis() + 1000))
+            given(tokenProvider.generateRefreshToken(2L))
+                .willReturn(TokenProvider.TokenGeneration("refresh", fixedClock.millis() + 2000))
+
+            authService.loginWithOAuth2(info)
+
+            verify(memberRepository).save(memberCaptor.capture())
+            val saved = memberCaptor.value
+            assertThat(saved.nickname).isEqualTo("newbie")
         }
 
         @Test
