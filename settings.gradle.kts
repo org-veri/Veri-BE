@@ -15,9 +15,7 @@ pluginManagement {
 }
 
 include(
-    "clients:client-aws",
-    "clients:client-ocr",
-    "clients:client-search",
+    "clients",
     "core:core-api",
     "core:core-app",
     "core:core-enum",

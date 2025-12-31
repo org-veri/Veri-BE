@@ -1,0 +1,18 @@
+cloud:
+  aws:
+    region: ap-northeast-2
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    s3:
+      bucket: ${AWS_S3_BUCKET}
+
+mistral:
+  ocr:
+    url: https://api.mistral.ai/v1/ocr
+    key: ${MISTRAL_OCR_KEY}
+    model: mistral-ocr-latest
+
+naver:
+  client-id: ${NAVER_CLIENT_ID}
+  client-secret: ${NAVER_CLIENT_SECRET}
