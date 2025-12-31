@@ -1,7 +1,7 @@
 # Issue: Visibility Enforcement Blocked by Package Layout
 
 **Severity**: Low
-**Status**: On Hold
+**Status**: Closed
 **Date**: 2025-12-30
 
 ## Description
@@ -23,7 +23,14 @@ Attempting to apply package-private visibility across repositories/services is b
 
 ## Update
 **Date**: 2025-12-30
-**Status**: On Hold
+**Status**: Closed
 
 ### Decision
 - Proceed with **storage module removal** and **core integration** to enable package-private visibility enforcement.
+
+### Resolution
+- **Storage module merged into core**, repositories co-located with services, and package-private enforcement applied.
+  - **Reference**:
+    ```
+    .agents/work/completed/modulith-phase3-storage-merge.md
+    ```

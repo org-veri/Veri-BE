@@ -1,6 +1,6 @@
 # Plan: Modulith Phase 3 Storage Merge
 
-**Status**: In Progress
+**Status**: Completed
 **Date**: 2025-12-30
 **Goal**: Remove the **storage** module by integrating repository/entity packages into **core** so package-private visibility can be enforced.
 
@@ -22,8 +22,8 @@
 ## Phase 3: Visibility Enforcement
 - [x] **Align auth token storage package** to co-locate repositories and service for future package-private access.
 - [x] **Align domain repositories** (book/card/comment/image/member/post) into service packages for package-private enforcement.
-- [ ] **Demote internal visibility** (repositories/services/DTOs) to package-private where safe.
-- [ ] **Re-run Modulith verification** after visibility changes.
+- [x] **Demote internal visibility** (repositories/services/DTOs) to package-private where safe.
+- [x] **Re-run Modulith verification** after visibility changes.
 
 ## History
  - **2025-12-30**: **Plan created**. Storage module integration planned to unblock visibility enforcement.
@@ -75,4 +75,67 @@
      ```
      Execution failed for task ':tests:compileTestKotlin'.
      e: java.lang.IllegalArgumentException: 25
+     ```
+ - **2025-12-30**: **Repository visibility tightened** with package-private access for internal repositories.
+   - **Modified Files**:
+     ```
+     core/core-api/src/main/java/org/veri/be/auth/storage/BlacklistedTokenRepository.java
+     core/core-api/src/main/java/org/veri/be/auth/storage/RefreshTokenRepository.java
+     core/core-api/src/main/java/org/veri/be/book/service/BookRepository.java
+     core/core-api/src/main/java/org/veri/be/card/service/CardRepository.java
+     core/core-api/src/main/java/org/veri/be/comment/service/CommentRepository.java
+     core/core-api/src/main/java/org/veri/be/image/service/ImageRepository.java
+     core/core-api/src/main/java/org/veri/be/image/service/OcrResultRepository.java
+     core/core-api/src/main/java/org/veri/be/post/service/PostRepository.java
+     core/core-api/src/main/java/org/veri/be/post/service/LikePostRepository.java
+     ```
+ - **2025-12-30**: **Tests aligned** to repository visibility and integration setup via services.
+   - **Modified Files**:
+     ```
+     tests/src/test/java/org/veri/be/integration/usecase/CommentIntegrationTest.java
+     tests/src/test/java/org/veri/be/integration/usecase/PostIntegrationTest.java
+     tests/src/test/java/org/veri/be/integration/usecase/SocialCardIntegrationTest.java
+     tests/src/test/java/org/veri/be/integration/usecase/SocialReadingIntegrationTest.java
+     tests/src/test/java/org/veri/be/slice/persistence/**/*
+     tests/src/test/java/org/veri/be/unit/**/*
+     ```
+ - **2025-12-30**: **Modulith verification succeeded** with JDK 21 runtime.
+   - **Command**:
+     ```
+     JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home ./gradlew :tests:test --tests "org.veri.be.modulith.ModulithArchitectureTest"
+     ```
+ - **2025-12-30**: **Member access routed through services** to allow repository visibility tightening.
+   - **Modified Files**:
+     ```
+     core/core-api/src/main/java/org/veri/be/auth/service/AuthService.java
+     core/core-api/src/main/java/org/veri/be/member/service/MemberCommandService.java
+     core/core-api/src/main/java/org/veri/be/member/service/MemberQueryService.java
+     core/core-api/src/main/java/org/veri/be/member/service/MemberRepository.java
+     core/core-api/src/main/java/org/veri/be/member/auth/context/ThreadLocalCurrentMemberAccessor.java
+     core/core-api/src/main/java/org/veri/be/mock/MockTokenController.java
+     ```
+ - **2025-12-30**: **Reading access routed through bookshelf service** and repository visibility tightened.
+   - **Modified Files**:
+     ```
+     core/core-api/src/main/java/org/veri/be/book/service/BookshelfService.java
+     core/core-api/src/main/java/org/veri/be/book/service/ReadingRepository.java
+     core/core-api/src/main/java/org/veri/be/card/service/CardCommandService.java
+     ```
+ - **2025-12-30**: **Tests realigned** for member/reading visibility changes.
+   - **Modified Files**:
+     ```
+     tests/src/test/java/org/veri/be/integration/**/*
+     tests/src/test/java/org/veri/be/slice/persistence/**/*
+     tests/src/test/java/org/veri/be/unit/**/*
+     ```
+ - **2025-12-30**: **Modulith verification re-run** after member/reading changes.
+   - **Command**:
+     ```
+     JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home ./gradlew :tests:test --tests "org.veri.be.modulith.ModulithArchitectureTest"
+     ```
+ - **2025-12-30**: **Phase 3 complete**. Repository visibility tightened and module boundaries validated.
+   - **Modified Files**:
+     ```
+     core/core-api/src/main/java/org/veri/be/**
+     tests/src/test/java/org/veri/be/**
      ```
