@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-interface OcrResultRepository extends JpaRepository<OcrResult, Long> {
+public interface OcrResultRepository extends JpaRepository<OcrResult, Long> {
 }
