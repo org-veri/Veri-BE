@@ -17,4 +17,7 @@ dependencies {
 
     // swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.0")
+
+    // caffeine cache
+    implementation("com.github.ben-manes.caffeine:caffeine")
 }
