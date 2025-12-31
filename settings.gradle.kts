@@ -15,9 +15,7 @@ pluginManagement {
 }
 
 include(
-    "clients:client-aws",
-    "clients:client-ocr",
-    "clients:client-search",
+    "clients",  // Merged client-aws, client-ocr, client-search
     "core:core-api",
     "core:core-app",
     "core:core-domain",  // v2.1: Pure domain module (enums merged from core-enum)

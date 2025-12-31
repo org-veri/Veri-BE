@@ -7,9 +7,7 @@ dependencies {
     testImplementation(project(":core:core-api"))
     testImplementation(project(mapOf("path" to ":core:core-api", "configuration" to "runtimeElements")))
     testImplementation(project(":core:core-domain"))  // v2.1: Add for ArchUnit tests (enums merged in)
-    testImplementation(project(":clients:client-ocr"))
-    testImplementation(project(":clients:client-aws"))
-    testImplementation(project(":clients:client-search"))
+    testImplementation(project(":clients"))  // Merged client-aws, client-ocr, client-search
     testImplementation(project(":storage:db-core"))
     testImplementation(project(":support:common"))
 
