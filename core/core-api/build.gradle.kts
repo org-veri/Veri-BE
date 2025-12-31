@@ -1,5 +1,5 @@
 dependencies {
-    implementation(project(":core:core-enum"))
+    implementation(project(":core:core-domain"))  // v2.1: Add pure domain module dependency (enums merged in)
     implementation(project(":support:common"))
     implementation(project(":support:logging"))
     implementation(project(":support:monitoring"))

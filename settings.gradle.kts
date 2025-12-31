@@ -20,7 +20,7 @@ include(
     "clients:client-search",
     "core:core-api",
     "core:core-app",
-    "core:core-enum",
+    "core:core-domain",  // v2.1: Pure domain module (enums merged from core-enum)
     "storage:db-core",
     "support:common",
     "support:logging",

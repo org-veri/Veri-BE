@@ -1,5 +1,5 @@
 dependencies {
-    implementation(project(":core:core-enum"))
+    implementation(project(":core:core-domain"))  // v2.1: enums merged from core-enum
     implementation(project(":support:common"))
 
     api("org.springframework.boot:spring-boot-starter-data-jpa")

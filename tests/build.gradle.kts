@@ -6,7 +6,7 @@ dependencies {
     testImplementation(project(":core:core-app"))
     testImplementation(project(":core:core-api"))
     testImplementation(project(mapOf("path" to ":core:core-api", "configuration" to "runtimeElements")))
-    testImplementation(project(":core:core-enum"))
+    testImplementation(project(":core:core-domain"))  // v2.1: Add for ArchUnit tests (enums merged in)
     testImplementation(project(":clients:client-ocr"))
     testImplementation(project(":clients:client-aws"))
     testImplementation(project(":clients:client-search"))
@@ -20,6 +20,7 @@ dependencies {
     testImplementation(platform("org.testcontainers:testcontainers-bom:1.19.7"))
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:mysql")
+    testImplementation("com.tngtech.archunit:archunit:1.2.1")  // v2.1: Add ArchUnit
     testRuntimeOnly("com.h2database:h2")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
