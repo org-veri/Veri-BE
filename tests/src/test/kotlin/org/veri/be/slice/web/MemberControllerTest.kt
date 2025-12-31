@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.BDDMockito.given
+import org.mockito.Mockito.lenient
 import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.web.servlet.MockMvc
@@ -16,17 +17,19 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import org.veri.be.api.personal.MemberController
-import org.veri.be.domain.member.dto.MemberResponse
-import org.veri.be.domain.member.dto.UpdateMemberInfoRequest
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
-import org.veri.be.domain.member.service.MemberCommandService
-import org.veri.be.domain.member.service.MemberQueryService
-import org.veri.be.global.auth.context.AuthenticatedMemberResolver
-import org.veri.be.global.auth.context.MemberContext
-import org.veri.be.global.auth.context.ThreadLocalCurrentMemberAccessor
+import org.veri.be.member.MemberController
+import org.veri.be.member.dto.MemberResponse
+import org.veri.be.member.dto.UpdateMemberInfoRequest
+import org.veri.be.member.entity.Member
+import org.veri.be.member.entity.enums.ProviderType
+import org.veri.be.member.service.MemberCommandService
+import org.veri.be.member.service.MemberQueryService
+import org.veri.be.member.auth.context.AuthenticatedMemberResolver
+import org.veri.be.lib.auth.context.MemberContext
+import org.veri.be.member.auth.context.MemberRequestContext
+import org.veri.be.member.auth.context.ThreadLocalCurrentMemberAccessor
 import org.veri.be.lib.response.ApiResponseAdvice
+import java.util.Optional
 
 @ExtendWith(MockitoExtension::class)
 class MemberControllerTest {
@@ -53,13 +56,14 @@ class MemberControllerTest {
             .providerId("provider-1")
             .providerType(ProviderType.KAKAO)
             .build()
-        MemberContext.setCurrentMember(member)
+        MemberContext.setCurrentMemberId(member.id)
+        lenient().`when`(memberQueryService.findOptionalById(member.id)).thenReturn(Optional.of(member))
 
         val controller = MemberController(memberCommandService, memberQueryService)
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
             .setControllerAdvice(ApiResponseAdvice())
             .setCustomArgumentResolvers(
-                AuthenticatedMemberResolver(ThreadLocalCurrentMemberAccessor(null))
+                AuthenticatedMemberResolver(ThreadLocalCurrentMemberAccessor(memberQueryService))
             )
             .build()
     }
@@ -67,6 +71,7 @@ class MemberControllerTest {
     @AfterEach
     fun tearDown() {
         MemberContext.clear()
+        MemberRequestContext.clear()
     }
 
     @Nested

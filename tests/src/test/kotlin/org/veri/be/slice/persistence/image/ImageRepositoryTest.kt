@@ -7,11 +7,11 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
-import org.veri.be.domain.image.entity.Image
-import org.veri.be.domain.image.repository.ImageRepository
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
-import org.veri.be.domain.member.repository.MemberRepository
+import org.veri.be.image.entity.Image
+import org.veri.be.image.service.ImageRepository
+import org.veri.be.member.entity.Member
+import org.veri.be.member.entity.enums.ProviderType
+import org.veri.be.member.service.MemberRepository
 import org.veri.be.slice.persistence.PersistenceSliceTestSupport
 
 class ImageRepositoryTest : PersistenceSliceTestSupport() {

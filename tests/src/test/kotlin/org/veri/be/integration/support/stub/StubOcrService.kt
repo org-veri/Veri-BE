@@ -1,6 +1,6 @@
 package org.veri.be.integration.support.stub
 
-import org.veri.be.domain.image.service.OcrService
+import org.veri.be.image.service.OcrService
 
 class StubOcrService : OcrService {
     override fun extract(imageUrl: String?): String {

@@ -18,8 +18,8 @@ import org.springframework.http.MediaType
 import org.springframework.test.util.ReflectionTestUtils
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestClientException
-import org.veri.be.domain.image.client.MistralOcrClient
-import org.veri.be.domain.image.client.MistralOcrClientException
+import org.veri.be.image.client.MistralOcrClient
+import org.veri.be.image.client.MistralOcrClientException
 import java.lang.reflect.Constructor
 
 @ExtendWith(MockitoExtension::class)
@@ -41,8 +41,8 @@ class MistralOcrClientTest {
         given(restClientBuilder.baseUrl("https://mistral.test")).willReturn(restClientBuilder)
         given(restClientBuilder.build()).willReturn(restClient)
         client = MistralOcrClient(restClientBuilder, "https://mistral.test", "api-key", "ocr-model")
-        responseClass = Class.forName("org.veri.be.domain.image.client.MistralOcrClient\$MistralOcrResponse")
-        pageClass = Class.forName("org.veri.be.domain.image.client.MistralOcrClient\$Page")
+        responseClass = Class.forName("org.veri.be.image.client.MistralOcrClient\$MistralOcrResponse")
+        pageClass = Class.forName("org.veri.be.image.client.MistralOcrClient\$Page")
     }
 
     @Nested

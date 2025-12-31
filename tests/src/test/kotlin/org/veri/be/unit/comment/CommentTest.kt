@@ -5,11 +5,9 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.veri.be.domain.book.entity.Book
-import org.veri.be.domain.comment.entity.Comment
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
-import org.veri.be.domain.post.entity.Post
+import org.veri.be.comment.entity.Comment
+import org.veri.be.member.entity.Member
+import org.veri.be.member.entity.enums.ProviderType
 import org.veri.be.lib.exception.ApplicationException
 import org.veri.be.lib.exception.CommonErrorCode
 import java.time.Clock
@@ -27,10 +25,10 @@ class CommentTest {
         fun createsReplyWithParentAndAuthor() {
             val author = member(1L, "author@test.com", "author")
             val replier = member(2L, "replier@test.com", "replier")
-            val post = post(author)
+            val postId = 10L
             val parent = Comment.builder()
                 .author(author)
-                .post(post)
+                .postId(postId)
                 .content("parent")
                 .build()
 
@@ -38,7 +36,7 @@ class CommentTest {
 
             assertThat(reply.parent).isEqualTo(parent)
             assertThat(reply.author).isEqualTo(replier)
-            assertThat(reply.post).isEqualTo(post)
+            assertThat(reply.postId).isEqualTo(postId)
             assertThat(parent.replies).contains(reply)
         }
     }
@@ -158,22 +156,6 @@ class CommentTest {
             .profileImageUrl("https://example.com/profile.png")
             .providerId("provider-$nickname")
             .providerType(ProviderType.KAKAO)
-            .build()
-    }
-
-    private fun post(author: Member): Post {
-        val book = Book.builder()
-            .image("https://example.com/book.png")
-            .title("book")
-            .author("author")
-            .isbn("isbn-1")
-            .build()
-        return Post.builder()
-            .author(author)
-            .book(book)
-            .title("title")
-            .content("content")
-            .isPublic(true)
             .build()
     }
 }

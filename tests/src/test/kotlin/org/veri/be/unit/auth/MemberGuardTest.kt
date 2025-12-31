@@ -9,10 +9,10 @@ import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.veri.be.lib.exception.CommonErrorCode
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
-import org.veri.be.global.auth.context.CurrentMemberAccessor
-import org.veri.be.global.auth.guards.MemberGuard
+import org.veri.be.member.entity.Member
+import org.veri.be.member.entity.enums.ProviderType
+import org.veri.be.member.auth.context.CurrentMemberAccessor
+import org.veri.be.member.auth.guards.MemberGuard
 import org.veri.be.support.assertion.ExceptionAssertions
 import java.util.Optional
 import org.mockito.BDDMockito.given

@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import org.veri.be.domain.image.service.OcrService
+import org.veri.be.image.service.OcrService
 import org.veri.be.integration.IntegrationTestSupport
 
 class ImageIntegrationTest : IntegrationTestSupport() {

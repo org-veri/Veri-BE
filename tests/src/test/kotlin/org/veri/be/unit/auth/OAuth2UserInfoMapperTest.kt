@@ -6,10 +6,10 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.security.core.GrantedAuthority
-import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.global.auth.oauth2.dto.CustomOAuth2User
 import org.veri.be.global.auth.oauth2.dto.OAuth2UserInfo
 import org.veri.be.global.auth.oauth2.dto.OAuth2UserInfoMapper
+import org.veri.be.lib.exception.ApplicationException
 
 class OAuth2UserInfoMapperTest {
 
@@ -38,17 +38,20 @@ class OAuth2UserInfoMapperTest {
             assertThat(info.nickname).isEqualTo("member")
             assertThat(info.image).isEqualTo("https://example.com/profile.png")
             assertThat(info.providerId).isEqualTo("12345")
-            assertThat(info.providerType).isEqualTo(ProviderType.KAKAO)
+            assertThat(info.providerType).isEqualTo("KAKAO")
         }
 
         @Test
         @DisplayName("지원하지 않는 ProviderType이면 예외가 발생한다")
         fun throwsWhenUnsupported() {
-            val attributes = mapOf<String, Any>()
+            val attributes = mapOf<String, Any>(
+                "id" to 1L
+            )
             val authorities = listOf<GrantedAuthority>()
 
-            assertThrows(IllegalArgumentException::class.java) {
-                CustomOAuth2User(authorities, attributes, "id", "google")
+            assertThrows(ApplicationException::class.java) {
+                val user = CustomOAuth2User(authorities, attributes, "id", "google")
+                OAuth2UserInfoMapper.of(user)
             }
         }
     }

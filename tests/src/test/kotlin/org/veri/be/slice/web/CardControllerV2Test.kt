@@ -13,8 +13,8 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import org.veri.be.api.personal.CardControllerV2
-import org.veri.be.domain.card.service.CardCommandService
+import org.veri.be.card.CardControllerV2
+import org.veri.be.card.service.CardCommandService
 import org.veri.be.global.storage.dto.PresignedPostFormResponse
 import org.veri.be.lib.response.ApiResponseAdvice
 

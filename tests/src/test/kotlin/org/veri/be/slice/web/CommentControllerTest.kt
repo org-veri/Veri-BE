@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.BDDMockito.given
+import org.mockito.Mockito.lenient
 import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.web.servlet.MockMvc
@@ -17,17 +18,20 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import org.veri.be.api.social.CommentController
-import org.veri.be.domain.comment.dto.request.CommentEditRequest
-import org.veri.be.domain.comment.dto.request.CommentPostRequest
-import org.veri.be.domain.comment.dto.request.ReplyPostRequest
-import org.veri.be.domain.comment.service.CommentCommandService
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
-import org.veri.be.global.auth.context.AuthenticatedMemberResolver
-import org.veri.be.global.auth.context.MemberContext
-import org.veri.be.global.auth.context.ThreadLocalCurrentMemberAccessor
+import org.veri.be.comment.CommentController
+import org.veri.be.comment.dto.request.CommentEditRequest
+import org.veri.be.comment.dto.request.CommentPostRequest
+import org.veri.be.comment.dto.request.ReplyPostRequest
+import org.veri.be.comment.service.CommentCommandService
+import org.veri.be.member.entity.Member
+import org.veri.be.member.entity.enums.ProviderType
+import org.veri.be.member.auth.context.AuthenticatedMemberResolver
+import org.veri.be.lib.auth.context.MemberContext
+import org.veri.be.member.auth.context.MemberRequestContext
+import org.veri.be.member.auth.context.ThreadLocalCurrentMemberAccessor
+import org.veri.be.member.service.MemberQueryService
 import org.veri.be.lib.response.ApiResponseAdvice
+import java.util.Optional
 
 @ExtendWith(MockitoExtension::class)
 class CommentControllerTest {
@@ -37,6 +41,9 @@ class CommentControllerTest {
 
     @org.mockito.Mock
     private lateinit var commentCommandService: CommentCommandService
+
+    @org.mockito.Mock
+    private lateinit var memberQueryService: MemberQueryService
 
     private lateinit var member: Member
 
@@ -51,13 +58,14 @@ class CommentControllerTest {
             .providerId("provider-1")
             .providerType(ProviderType.KAKAO)
             .build()
-        MemberContext.setCurrentMember(member)
+        MemberContext.setCurrentMemberId(member.id)
+        lenient().`when`(memberQueryService.findOptionalById(member.id)).thenReturn(Optional.of(member))
 
         val controller = CommentController(commentCommandService)
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
             .setControllerAdvice(ApiResponseAdvice())
             .setCustomArgumentResolvers(
-                AuthenticatedMemberResolver(ThreadLocalCurrentMemberAccessor(null))
+                AuthenticatedMemberResolver(ThreadLocalCurrentMemberAccessor(memberQueryService))
             )
             .build()
     }
@@ -65,6 +73,7 @@ class CommentControllerTest {
     @AfterEach
     fun tearDown() {
         MemberContext.clear()
+        MemberRequestContext.clear()
     }
 
     @Nested

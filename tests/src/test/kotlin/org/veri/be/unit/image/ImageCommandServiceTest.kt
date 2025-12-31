@@ -11,13 +11,13 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
-import org.veri.be.domain.image.entity.Image
-import org.veri.be.domain.image.exception.ImageErrorCode
-import org.veri.be.domain.image.repository.ImageRepository
-import org.veri.be.domain.image.service.ImageCommandService
-import org.veri.be.domain.image.service.OcrService
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
+import org.veri.be.image.entity.Image
+import org.veri.be.image.exception.ImageErrorCode
+import org.veri.be.image.service.ImageRepository
+import org.veri.be.image.service.ImageCommandService
+import org.veri.be.image.service.OcrService
+import org.veri.be.member.entity.Member
+import org.veri.be.member.entity.enums.ProviderType
 import org.veri.be.lib.exception.ApplicationException
 import org.veri.be.support.assertion.ExceptionAssertions
 

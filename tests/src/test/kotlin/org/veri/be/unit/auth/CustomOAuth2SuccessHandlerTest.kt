@@ -18,7 +18,6 @@ import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.global.auth.Authenticator
 import org.veri.be.global.auth.dto.LoginResponse
 import org.veri.be.global.auth.oauth2.CustomOAuth2SuccessHandler
@@ -77,7 +76,7 @@ class CustomOAuth2SuccessHandlerTest {
             assertThat(captured.email).isEqualTo("member@test.com")
             assertThat(captured.nickname).isEqualTo("member")
             assertThat(captured.providerId).isEqualTo("10")
-            assertThat(captured.providerType).isEqualTo(ProviderType.KAKAO)
+            assertThat(captured.providerType).isEqualTo("KAKAO")
 
             assertThat(response.contentType).contains(ContentType.APPLICATION_JSON.type)
             assertThat(response.characterEncoding).isEqualTo("UTF-8")

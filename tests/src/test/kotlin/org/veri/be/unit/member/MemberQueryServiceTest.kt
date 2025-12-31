@@ -8,14 +8,14 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.BDDMockito.given
 import org.mockito.junit.jupiter.MockitoExtension
-import org.veri.be.domain.book.repository.ReadingRepository
-import org.veri.be.domain.card.repository.CardRepository
-import org.veri.be.domain.member.dto.MemberResponse
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
-import org.veri.be.domain.member.exception.MemberErrorCode
-import org.veri.be.domain.member.repository.MemberRepository
-import org.veri.be.domain.member.service.MemberQueryService
+import org.veri.be.member.dto.MemberResponse
+import org.veri.be.member.entity.Member
+import org.veri.be.member.entity.enums.ProviderType
+import org.veri.be.member.exception.MemberErrorCode
+import org.veri.be.member.service.CardCountProvider
+import org.veri.be.member.service.MemberRepository
+import org.veri.be.member.service.MemberQueryService
+import org.veri.be.member.service.ReadingCountProvider
 import org.veri.be.support.assertion.ExceptionAssertions
 import java.util.Optional
 
@@ -26,16 +26,16 @@ class MemberQueryServiceTest {
     private lateinit var memberRepository: MemberRepository
 
     @org.mockito.Mock
-    private lateinit var readingRepository: ReadingRepository
+    private lateinit var readingCountProvider: ReadingCountProvider
 
     @org.mockito.Mock
-    private lateinit var cardRepository: CardRepository
+    private lateinit var cardCountProvider: CardCountProvider
 
     private lateinit var memberQueryService: MemberQueryService
 
     @BeforeEach
     fun setUp() {
-        memberQueryService = MemberQueryService(memberRepository, readingRepository, cardRepository)
+        memberQueryService = MemberQueryService(memberRepository, readingCountProvider, cardCountProvider)
     }
 
     @Nested
@@ -74,8 +74,8 @@ class MemberQueryServiceTest {
         fun returnsMemberInfo() {
             val member = member(1L, "member@test.com", "member")
 
-            given(readingRepository.countAllByMember(member)).willReturn(3)
-            given(cardRepository.countAllByMemberId(1L)).willReturn(2)
+            given(readingCountProvider.countReadingsByMemberId(1L)).willReturn(3)
+            given(cardCountProvider.countCardsByMemberId(1L)).willReturn(2)
 
             val response: MemberResponse.MemberInfoResponse = memberQueryService.findMyInfo(member)
 

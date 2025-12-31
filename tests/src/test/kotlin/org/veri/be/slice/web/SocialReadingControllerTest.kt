@@ -14,12 +14,13 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import org.veri.be.api.common.dto.MemberProfileResponse
-import org.veri.be.api.social.SocialReadingController
-import org.veri.be.domain.book.dto.book.BookPopularResponse
-import org.veri.be.domain.book.dto.reading.response.ReadingDetailResponse
-import org.veri.be.domain.book.entity.enums.ReadingStatus
-import org.veri.be.domain.book.service.BookshelfService
+import org.veri.be.member.dto.MemberProfileResponse
+import org.veri.be.book.SocialReadingController
+import org.veri.be.book.dto.book.BookPopularResponse
+import org.veri.be.book.dto.reading.response.ReadingCardSummaryResponse
+import org.veri.be.book.dto.reading.response.ReadingDetailResponse
+import org.veri.be.book.entity.enums.ReadingStatus
+import org.veri.be.book.service.BookshelfQueryService
 import org.veri.be.lib.response.ApiResponseAdvice
 import java.time.LocalDateTime
 
@@ -29,7 +30,7 @@ class SocialReadingControllerTest {
     private lateinit var mockMvc: MockMvc
 
     @org.mockito.Mock
-    private lateinit var bookshelfService: BookshelfService
+    private lateinit var bookshelfService: BookshelfQueryService
 
     @BeforeEach
     fun setUp() {
@@ -83,7 +84,7 @@ class SocialReadingControllerTest {
                 .score(4.5)
                 .startedAt(LocalDateTime.of(2024, 1, 1, 0, 0))
                 .endedAt(LocalDateTime.of(2024, 1, 2, 0, 0))
-                .cardSummaries(listOf(ReadingDetailResponse.CardSummaryResponse(1L, "img", true)))
+                .cardSummaries(listOf(ReadingCardSummaryResponse(1L, "img", true)))
                 .isPublic(true)
                 .build()
             given(bookshelfService.searchDetail(10L)).willReturn(response)

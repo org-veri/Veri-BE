@@ -4,11 +4,11 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.veri.be.domain.book.dto.book.BookConverter
-import org.veri.be.domain.book.dto.book.BookResponse
-import org.veri.be.domain.book.dto.book.BookSearchResponse
-import org.veri.be.domain.book.dto.book.NaverBookItem
-import org.veri.be.domain.book.dto.book.NaverBookResponse
+import org.veri.be.book.dto.book.BookConverter
+import org.veri.be.book.dto.book.BookResponse
+import org.veri.be.book.dto.book.BookSearchResponse
+import org.veri.be.book.dto.book.NaverBookItem
+import org.veri.be.book.dto.book.NaverBookResponse
 
 class BookConverterTest {
 

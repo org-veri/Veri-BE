@@ -19,13 +19,13 @@ import org.springframework.security.oauth2.client.registration.InMemoryClientReg
 import org.springframework.security.oauth2.core.AuthorizationGrantType
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher
-import org.veri.be.domain.auth.service.TokenBlacklistStore
-import org.veri.be.domain.member.service.MemberQueryService
+import org.veri.be.lib.auth.token.TokenBlacklistStore
+import org.veri.be.member.service.MemberQueryService
 import org.veri.be.global.auth.AuthConfig
 import org.veri.be.global.auth.oauth2.CustomAuthFailureHandler
 import org.veri.be.global.auth.oauth2.CustomOAuth2SuccessHandler
 import org.veri.be.global.auth.oauth2.CustomOAuth2UserService
-import org.veri.be.global.auth.token.TokenProvider
+import org.veri.be.lib.auth.token.TokenProvider
 
 class AuthConfigTest {
 

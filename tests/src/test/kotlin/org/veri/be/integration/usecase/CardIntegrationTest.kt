@@ -12,9 +12,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import org.veri.be.domain.book.dto.book.AddBookRequest
-import org.veri.be.domain.card.controller.dto.request.CardCreateRequest
-import org.veri.be.domain.card.controller.dto.request.CardUpdateRequest
+import org.veri.be.book.dto.book.AddBookRequest
+import org.veri.be.card.controller.dto.request.CardCreateRequest
+import org.veri.be.card.controller.dto.request.CardUpdateRequest
 import org.veri.be.global.storage.dto.PresignedUrlRequest
 import org.veri.be.global.storage.service.StorageService
 import org.veri.be.integration.IntegrationTestSupport

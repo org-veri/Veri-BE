@@ -5,11 +5,11 @@ import org.assertj.core.api.Assertions.assertThatNoException
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.veri.be.domain.book.entity.Reading
-import org.veri.be.domain.card.entity.Card
-import org.veri.be.domain.card.entity.CardErrorInfo
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
+import org.veri.be.book.entity.Reading
+import org.veri.be.card.entity.Card
+import org.veri.be.card.entity.CardErrorInfo
+import org.veri.be.member.entity.Member
+import org.veri.be.member.entity.enums.ProviderType
 import org.veri.be.support.assertion.ExceptionAssertions
 
 class CardTest {

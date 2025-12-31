@@ -6,16 +6,16 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.veri.be.domain.book.entity.Book
-import org.veri.be.domain.book.repository.BookRepository
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
-import org.veri.be.domain.member.repository.MemberRepository
-import org.veri.be.domain.post.entity.LikePost
-import org.veri.be.domain.post.entity.Post
-import org.veri.be.domain.post.repository.LikePostRepository
-import org.veri.be.domain.post.repository.PostRepository
-import org.veri.be.domain.post.repository.dto.LikeInfoQueryResult
+import org.veri.be.book.entity.Book
+import org.veri.be.book.service.BookRepository
+import org.veri.be.member.entity.Member
+import org.veri.be.member.entity.enums.ProviderType
+import org.veri.be.member.service.MemberRepository
+import org.veri.be.post.entity.LikePost
+import org.veri.be.post.entity.Post
+import org.veri.be.post.service.LikePostRepository
+import org.veri.be.post.service.PostRepository
+import org.veri.be.post.repository.dto.LikeInfoQueryResult
 import org.veri.be.slice.persistence.PersistenceSliceTestSupport
 
 class LikePostRepositoryTest : PersistenceSliceTestSupport() {

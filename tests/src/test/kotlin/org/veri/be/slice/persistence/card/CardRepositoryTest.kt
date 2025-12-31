@@ -9,17 +9,17 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
-import org.veri.be.domain.book.entity.Book
-import org.veri.be.domain.book.entity.Reading
-import org.veri.be.domain.book.repository.BookRepository
-import org.veri.be.domain.book.repository.ReadingRepository
-import org.veri.be.domain.card.entity.Card
-import org.veri.be.domain.card.repository.CardRepository
-import org.veri.be.domain.card.repository.dto.CardFeedItem
-import org.veri.be.domain.card.repository.dto.CardListItem
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
-import org.veri.be.domain.member.repository.MemberRepository
+import org.veri.be.book.entity.Book
+import org.veri.be.book.entity.Reading
+import org.veri.be.book.service.BookRepository
+import org.veri.be.book.service.ReadingRepository
+import org.veri.be.card.entity.Card
+import org.veri.be.card.service.CardRepository
+import org.veri.be.card.repository.dto.CardFeedItem
+import org.veri.be.card.repository.dto.CardListItem
+import org.veri.be.member.entity.Member
+import org.veri.be.member.entity.enums.ProviderType
+import org.veri.be.member.service.MemberRepository
 import org.veri.be.slice.persistence.PersistenceSliceTestSupport
 
 class CardRepositoryTest : PersistenceSliceTestSupport() {

@@ -13,22 +13,22 @@ import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.veri.be.api.common.dto.MemberProfileResponse
-import org.veri.be.domain.book.entity.Book
-import org.veri.be.domain.comment.entity.Comment
-import org.veri.be.domain.comment.service.CommentQueryService
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
-import org.veri.be.domain.member.repository.dto.MemberProfileQueryResult
-import org.veri.be.domain.post.controller.enums.PostSortType
-import org.veri.be.domain.post.dto.response.PostDetailResponse
-import org.veri.be.domain.post.dto.response.PostFeedResponseItem
-import org.veri.be.domain.post.entity.Post
-import org.veri.be.domain.post.repository.PostRepository
-import org.veri.be.domain.post.repository.dto.DetailLikeInfoQueryResult
-import org.veri.be.domain.post.repository.dto.PostFeedQueryResult
-import org.veri.be.domain.post.service.LikePostQueryService
-import org.veri.be.domain.post.service.PostQueryService
+import org.veri.be.member.dto.MemberProfileResponse
+import org.veri.be.book.entity.Book
+import org.veri.be.comment.entity.Comment
+import org.veri.be.comment.service.CommentQueryService
+import org.veri.be.member.entity.Member
+import org.veri.be.member.entity.enums.ProviderType
+import org.veri.be.member.repository.dto.MemberProfileQueryResult
+import org.veri.be.post.controller.enums.PostSortType
+import org.veri.be.post.dto.response.PostDetailResponse
+import org.veri.be.post.dto.response.PostFeedResponseItem
+import org.veri.be.post.entity.Post
+import org.veri.be.post.service.PostRepository
+import org.veri.be.post.repository.dto.DetailLikeInfoQueryResult
+import org.veri.be.post.repository.dto.PostFeedQueryResult
+import org.veri.be.post.service.LikePostQueryService
+import org.veri.be.post.service.PostQueryService
 import org.veri.be.lib.exception.CommonErrorCode
 import org.veri.be.support.assertion.ExceptionAssertions
 import java.time.LocalDateTime
@@ -146,14 +146,19 @@ class PostQueryServiceTest {
                 .content("content")
                 .build()
             post.addImage("https://example.com/1.png", 1)
-            post.addComment(Comment.builder().author(author).post(post).content("comment").build())
 
             val likeInfo = DetailLikeInfoQueryResult(
                 listOf(MemberProfileQueryResult(2L, "requester", "https://example.com/profile.png")),
                 1L,
                 true
             )
-            val comments: List<PostDetailResponse.CommentResponse> = listOf()
+            val comments: List<Comment> = listOf(
+                Comment.builder()
+                    .postId(1L)
+                    .author(author)
+                    .content("comment")
+                    .build()
+            )
 
             given(postRepository.findByIdWithAllAssociations(1L)).willReturn(java.util.Optional.of(post))
             given(likePostQueryService.getDetailLikeInfoOfPost(1L, 2L)).willReturn(likeInfo)

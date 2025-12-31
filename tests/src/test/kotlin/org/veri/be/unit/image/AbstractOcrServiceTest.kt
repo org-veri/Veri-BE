@@ -13,10 +13,10 @@ import org.mockito.Captor
 import org.mockito.Mock
 import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
-import org.veri.be.domain.image.entity.OcrResult
-import org.veri.be.domain.image.repository.OcrResultRepository
-import org.veri.be.domain.image.service.AbstractOcrService
-import org.veri.be.domain.image.service.OcrService
+import org.veri.be.image.entity.OcrResult
+import org.veri.be.image.service.OcrResultRepository
+import org.veri.be.image.service.AbstractOcrService
+import org.veri.be.image.service.OcrService
 import java.util.stream.Stream
 
 @ExtendWith(MockitoExtension::class)

@@ -7,8 +7,8 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import org.veri.be.domain.book.dto.book.AddBookRequest
-import org.veri.be.global.auth.context.MemberContext
+import org.veri.be.book.dto.book.AddBookRequest
+import org.veri.be.lib.auth.context.MemberContext
 import org.veri.be.integration.IntegrationTestSupport
 
 class GlobalUnauthorizedTest : IntegrationTestSupport() {

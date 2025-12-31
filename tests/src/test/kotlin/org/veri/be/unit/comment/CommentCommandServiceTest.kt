@@ -12,15 +12,14 @@ import org.mockito.BDDMockito.given
 import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
-import org.veri.be.domain.comment.dto.request.CommentPostRequest
-import org.veri.be.domain.comment.entity.Comment
-import org.veri.be.domain.comment.repository.CommentRepository
-import org.veri.be.domain.comment.service.CommentCommandService
-import org.veri.be.domain.comment.service.CommentQueryService
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
-import org.veri.be.domain.post.entity.Post
-import org.veri.be.domain.post.service.PostQueryService
+import org.veri.be.comment.dto.request.CommentPostRequest
+import org.veri.be.comment.entity.Comment
+import org.veri.be.comment.service.CommentRepository
+import org.veri.be.comment.service.CommentCommandService
+import org.veri.be.comment.service.CommentQueryService
+import org.veri.be.comment.service.PostExistenceProvider
+import org.veri.be.member.entity.Member
+import org.veri.be.member.entity.enums.ProviderType
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId
@@ -35,7 +34,7 @@ class CommentCommandServiceTest {
     private lateinit var commentQueryService: CommentQueryService
 
     @org.mockito.Mock
-    private lateinit var postQueryService: PostQueryService
+    private lateinit var postExistenceProvider: PostExistenceProvider
 
     private val fixedClock: Clock = Clock.fixed(Instant.parse("2024-01-01T00:00:00Z"), ZoneId.of("UTC"))
 
@@ -49,7 +48,7 @@ class CommentCommandServiceTest {
         commentCommandService = CommentCommandService(
             commentRepository,
             commentQueryService,
-            postQueryService,
+            postExistenceProvider,
             fixedClock
         )
     }
@@ -62,10 +61,8 @@ class CommentCommandServiceTest {
         @DisplayName("댓글을 저장하고 ID를 반환한다")
         fun savesComment() {
             val member = member(1L, "member@test.com", "member")
-            val post = Post.builder().id(10L).title("title").content("content").build()
             val request = CommentPostRequest(10L, "content")
 
-            given(postQueryService.getPostById(10L)).willReturn(post)
             given(commentRepository.save(any(Comment::class.java)))
                 .willAnswer { invocation ->
                     val saved = invocation.getArgument<Comment>(0)
@@ -77,7 +74,7 @@ class CommentCommandServiceTest {
 
             verify(commentRepository).save(commentCaptor.capture())
             val saved = commentCaptor.value
-            assertThat(saved.post).isEqualTo(post)
+            assertThat(saved.postId).isEqualTo(10L)
             assertThat(saved.author).isEqualTo(member)
             assertThat(saved.content).isEqualTo("content")
             assertThat(result).isEqualTo(1L)
@@ -92,8 +89,7 @@ class CommentCommandServiceTest {
         @DisplayName("대댓글을 저장하고 ID를 반환한다")
         fun savesReply() {
             val member = member(2L, "reply@test.com", "reply")
-            val post = Post.builder().id(10L).title("title").content("content").build()
-            val parent = Comment.builder().id(5L).post(post).author(member).content("parent").build()
+            val parent = Comment.builder().id(5L).postId(10L).author(member).content("parent").build()
 
             given(commentQueryService.getCommentById(5L)).willReturn(parent)
             given(commentRepository.save(any(Comment::class.java)))
@@ -108,7 +104,7 @@ class CommentCommandServiceTest {
             verify(commentRepository).save(commentCaptor.capture())
             val saved = commentCaptor.value
             assertThat(saved.parent).isEqualTo(parent)
-            assertThat(saved.post).isEqualTo(post)
+            assertThat(saved.postId).isEqualTo(10L)
             assertThat(saved.author).isEqualTo(member)
             assertThat(saved.content).isEqualTo("reply")
             assertThat(result).isEqualTo(6L)

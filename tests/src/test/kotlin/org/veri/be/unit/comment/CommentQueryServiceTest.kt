@@ -9,13 +9,11 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
-import org.veri.be.api.common.dto.MemberProfileResponse
-import org.veri.be.domain.comment.entity.Comment
-import org.veri.be.domain.comment.repository.CommentRepository
-import org.veri.be.domain.comment.service.CommentQueryService
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
-import org.veri.be.domain.post.dto.response.PostDetailResponse
+import org.veri.be.comment.entity.Comment
+import org.veri.be.comment.service.CommentRepository
+import org.veri.be.comment.service.CommentQueryService
+import org.veri.be.member.entity.Member
+import org.veri.be.member.entity.enums.ProviderType
 import org.veri.be.lib.exception.CommonErrorCode
 import org.veri.be.support.assertion.ExceptionAssertions
 import java.time.LocalDateTime
@@ -61,11 +59,11 @@ class CommentQueryServiceTest {
 
             assertThat(responses).hasSize(1)
             val response = responses[0]
-            assertThat(response.commentId()).isEqualTo(1L)
-            assertThat(response.content()).isEqualTo("root")
-            assertThat(response.author()).isEqualTo(MemberProfileResponse.from(author))
-            assertThat(response.replies()).hasSize(1)
-            assertThat(response.replies()[0].commentId()).isEqualTo(2L)
+            assertThat(response.id).isEqualTo(1L)
+            assertThat(response.content).isEqualTo("root")
+            assertThat(response.author).isEqualTo(author)
+            assertThat(response.replies).hasSize(1)
+            assertThat(response.replies[0].id).isEqualTo(2L)
         }
 
         @Test
@@ -85,10 +83,8 @@ class CommentQueryServiceTest {
 
             assertThat(responses).hasSize(1)
             val response = responses[0]
-            assertThat(response.commentId() as Long?).isNull()
-            assertThat(response.content()).isEqualTo("삭제된 댓글입니다.")
-            assertThat(response.author()).isNull()
-            assertThat(response.isDeleted()).isTrue()
+            assertThat(response.id).isEqualTo(1L)
+            assertThat(response.deletedAt).isNotNull()
         }
     }
 

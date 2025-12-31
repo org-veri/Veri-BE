@@ -12,16 +12,16 @@ import org.mockito.BDDMockito.given
 import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
-import org.veri.be.domain.book.entity.Reading
-import org.veri.be.domain.book.repository.ReadingRepository
-import org.veri.be.domain.card.controller.dto.response.CardUpdateResponse
-import org.veri.be.domain.card.controller.dto.response.CardVisibilityUpdateResponse
-import org.veri.be.domain.card.entity.Card
-import org.veri.be.domain.card.entity.CardErrorInfo
-import org.veri.be.domain.card.repository.CardRepository
-import org.veri.be.domain.card.service.CardCommandService
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
+import org.veri.be.book.entity.Reading
+import org.veri.be.book.service.BookshelfQueryService
+import org.veri.be.card.controller.dto.response.CardUpdateResponse
+import org.veri.be.card.controller.dto.response.CardVisibilityUpdateResponse
+import org.veri.be.card.entity.Card
+import org.veri.be.card.entity.CardErrorInfo
+import org.veri.be.card.service.CardRepository
+import org.veri.be.card.service.CardCommandService
+import org.veri.be.member.entity.Member
+import org.veri.be.member.entity.enums.ProviderType
 import org.veri.be.global.storage.dto.PresignedPostFormResponse
 import org.veri.be.global.storage.dto.PresignedUrlRequest
 import org.veri.be.global.storage.dto.PresignedUrlResponse
@@ -37,7 +37,7 @@ class CardCommandServiceTest {
     private lateinit var cardRepository: CardRepository
 
     @org.mockito.Mock
-    private lateinit var readingRepository: ReadingRepository
+    private lateinit var bookshelfQueryService: BookshelfQueryService
 
     @org.mockito.Mock
     private lateinit var storageService: StorageService
@@ -51,7 +51,7 @@ class CardCommandServiceTest {
     fun setUp() {
         cardCommandService = CardCommandService(
             cardRepository,
-            readingRepository,
+            bookshelfQueryService,
             storageService
         )
     }
@@ -66,7 +66,7 @@ class CardCommandServiceTest {
             val member = member(1L, "member@test.com", "member")
             val reading = Reading.builder().id(10L).isPublic(false).build()
 
-            given(readingRepository.findById(10L)).willReturn(Optional.of(reading))
+            given(bookshelfQueryService.getReadingByIdOrInvalid(10L)).willReturn(reading)
             given(cardRepository.save(any(Card::class.java))).willAnswer { invocation ->
                 val saved = invocation.getArgument<Card>(0)
                 ReflectionTestUtils.setField(saved, "id", 1L)

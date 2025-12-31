@@ -12,20 +12,21 @@ import org.mockito.BDDMockito.given
 import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
-import org.veri.be.domain.book.entity.Book
-import org.veri.be.domain.book.service.BookService
-import org.veri.be.domain.card.entity.CardErrorInfo
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
-import org.veri.be.domain.post.dto.request.PostCreateRequest
-import org.veri.be.domain.post.dto.response.LikeInfoResponse
-import org.veri.be.domain.post.entity.LikePost
-import org.veri.be.domain.post.entity.Post
-import org.veri.be.domain.post.entity.PostImage
-import org.veri.be.domain.post.repository.LikePostRepository
-import org.veri.be.domain.post.repository.PostRepository
-import org.veri.be.domain.post.service.PostCommandService
-import org.veri.be.domain.post.service.PostQueryService
+import org.veri.be.book.entity.Book
+import org.veri.be.book.service.BookQueryService
+import org.veri.be.card.entity.CardErrorInfo
+import org.veri.be.comment.service.CommentCommandService
+import org.veri.be.member.entity.Member
+import org.veri.be.member.entity.enums.ProviderType
+import org.veri.be.post.dto.request.PostCreateRequest
+import org.veri.be.post.dto.response.LikeInfoResponse
+import org.veri.be.post.entity.LikePost
+import org.veri.be.post.entity.Post
+import org.veri.be.post.entity.PostImage
+import org.veri.be.post.service.LikePostRepository
+import org.veri.be.post.service.PostRepository
+import org.veri.be.post.service.PostCommandService
+import org.veri.be.post.service.PostQueryService
 import org.veri.be.global.storage.dto.PresignedUrlRequest
 import org.veri.be.global.storage.dto.PresignedUrlResponse
 import org.veri.be.global.storage.service.StorageService
@@ -42,13 +43,16 @@ class PostCommandServiceTest {
     private lateinit var postQueryService: PostQueryService
 
     @org.mockito.Mock
-    private lateinit var bookService: BookService
+    private lateinit var bookService: BookQueryService
 
     @org.mockito.Mock
     private lateinit var storageService: StorageService
 
     @org.mockito.Mock
     private lateinit var likePostRepository: LikePostRepository
+
+    @org.mockito.Mock
+    private lateinit var commentCommandService: CommentCommandService
 
     private lateinit var postCommandService: PostCommandService
 
@@ -65,7 +69,8 @@ class PostCommandServiceTest {
             postQueryService,
             bookService,
             storageService,
-            likePostRepository
+            likePostRepository,
+            commentCommandService
         )
     }
 
@@ -130,6 +135,7 @@ class PostCommandServiceTest {
 
             postCommandService.deletePost(1L, author)
 
+            verify(commentCommandService).deleteCommentsByPostId(1L)
             verify(postRepository).deleteById(1L)
         }
     }

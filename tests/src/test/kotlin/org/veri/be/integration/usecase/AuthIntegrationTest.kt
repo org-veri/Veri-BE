@@ -9,10 +9,10 @@ import org.springframework.test.util.ReflectionTestUtils
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import org.veri.be.domain.auth.service.TokenStorageService
+import org.veri.be.auth.storage.TokenStorageService
 import org.veri.be.global.auth.JwtClaimsPayload
 import org.veri.be.global.auth.dto.ReissueTokenRequest
-import org.veri.be.global.auth.token.TokenProvider
+import org.veri.be.lib.auth.token.TokenProvider
 import org.veri.be.integration.IntegrationTestSupport
 
 class AuthIntegrationTest : IntegrationTestSupport() {
@@ -110,8 +110,9 @@ class AuthIntegrationTest : IntegrationTestSupport() {
         @Test
         @DisplayName("정상 로그아웃")
         fun logoutSuccess() {
+            val member = getMockMember()
             val accessToken = tokenProvider.generateAccessToken(
-                JwtClaimsPayload.from(getMockMember())
+                JwtClaimsPayload.of(member.id, member.email, member.nickname, false)
             ).token()
 
             mockMvc.perform(
@@ -124,8 +125,9 @@ class AuthIntegrationTest : IntegrationTestSupport() {
         @Test
         @DisplayName("이미 블랙리스트 처리된 토큰으로 재요청")
         fun alreadyLoggedOut() {
+            val member = getMockMember()
             val accessToken = tokenProvider.generateAccessToken(
-                JwtClaimsPayload.from(getMockMember())
+                JwtClaimsPayload.of(member.id, member.email, member.nickname, false)
             ).token()
 
             mockMvc.perform(
@@ -144,8 +146,9 @@ class AuthIntegrationTest : IntegrationTestSupport() {
         @Test
         @DisplayName("refresh 토큰이 저장소에 없음")
         fun noRefreshTokenInStorage() {
+            val member = getMockMember()
             val accessToken = tokenProvider.generateAccessToken(
-                JwtClaimsPayload.from(getMockMember())
+                JwtClaimsPayload.of(member.id, member.email, member.nickname, false)
             ).token()
             tokenStorageService.deleteRefreshToken(getMockMember().id)
 

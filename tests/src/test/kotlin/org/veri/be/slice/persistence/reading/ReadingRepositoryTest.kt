@@ -9,17 +9,17 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
-import org.veri.be.domain.book.entity.Book
-import org.veri.be.domain.book.entity.Reading
-import org.veri.be.domain.book.entity.enums.ReadingStatus
-import org.veri.be.domain.book.repository.BookRepository
-import org.veri.be.domain.book.repository.ReadingRepository
-import org.veri.be.domain.book.repository.dto.ReadingQueryResult
-import org.veri.be.domain.card.entity.Card
-import org.veri.be.domain.card.repository.CardRepository
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
-import org.veri.be.domain.member.repository.MemberRepository
+import org.veri.be.book.entity.Book
+import org.veri.be.book.entity.Reading
+import org.veri.be.book.entity.enums.ReadingStatus
+import org.veri.be.book.service.BookRepository
+import org.veri.be.book.service.ReadingRepository
+import org.veri.be.book.repository.dto.ReadingQueryResult
+import org.veri.be.card.entity.Card
+import org.veri.be.card.service.CardRepository
+import org.veri.be.member.entity.Member
+import org.veri.be.member.entity.enums.ProviderType
+import org.veri.be.member.service.MemberRepository
 import org.veri.be.slice.persistence.PersistenceSliceTestSupport
 
 class ReadingRepositoryTest : PersistenceSliceTestSupport() {
@@ -40,27 +40,23 @@ class ReadingRepositoryTest : PersistenceSliceTestSupport() {
     private lateinit var entityManager: EntityManager
 
     @Nested
-    @DisplayName("findByIdWithCardsAndBook")
-    inner class FindByIdWithCardsAndBook {
+    @DisplayName("findByIdWithBook")
+    inner class FindByIdWithBook {
 
         @Test
-        @DisplayName("독서와 카드, 책을 fetch join으로 조회한다")
-        fun fetchesCardsAndBook() {
+        @DisplayName("독서와 책을 fetch join으로 조회한다")
+        fun fetchesBook() {
             val member = saveMember("reading@test.com", "reader")
             val book = saveBook("isbn-1", "book-1")
             val reading = saveReading(member, book, ReadingStatus.READING)
-            saveCard(member, reading, "content-1")
-            saveCard(member, reading, "content-2")
 
             entityManager.flush()
             entityManager.clear()
 
-            val found = readingRepository.findByIdWithCardsAndBook(reading.id).orElseThrow()
+            val found = readingRepository.findByIdWithBook(reading.id).orElseThrow()
             val util: PersistenceUnitUtil = entityManager.entityManagerFactory.persistenceUnitUtil
 
-            assertThat(util.isLoaded(found.cards)).isTrue()
             assertThat(util.isLoaded(found.book)).isTrue()
-            assertThat(found.cards).hasSize(2)
         }
     }
 

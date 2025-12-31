@@ -19,10 +19,10 @@ import org.springframework.http.ResponseEntity
 import org.springframework.test.util.ReflectionTestUtils
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestClientException
-import org.veri.be.domain.book.client.NaverBookSearchClient
-import org.veri.be.domain.book.client.NaverClientException
-import org.veri.be.domain.book.config.NaverConfig
-import org.veri.be.domain.book.dto.book.NaverBookResponse
+import org.veri.be.book.client.NaverBookSearchClient
+import org.veri.be.book.client.NaverClientException
+import org.veri.be.book.config.NaverConfig
+import org.veri.be.book.dto.book.NaverBookResponse
 import tools.jackson.databind.ObjectMapper
 import java.net.URI
 import java.util.function.Consumer

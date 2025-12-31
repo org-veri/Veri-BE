@@ -10,16 +10,16 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import org.veri.be.domain.book.entity.Book
-import org.veri.be.domain.book.repository.BookRepository
-import org.veri.be.domain.comment.dto.request.CommentEditRequest
-import org.veri.be.domain.comment.dto.request.CommentPostRequest
-import org.veri.be.domain.comment.dto.request.ReplyPostRequest
-import org.veri.be.domain.comment.service.CommentCommandService
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
-import org.veri.be.domain.post.dto.request.PostCreateRequest
-import org.veri.be.domain.post.service.PostCommandService
+import org.veri.be.book.entity.Book
+import org.veri.be.book.service.BookRepository
+import org.veri.be.comment.dto.request.CommentEditRequest
+import org.veri.be.comment.dto.request.CommentPostRequest
+import org.veri.be.comment.dto.request.ReplyPostRequest
+import org.veri.be.comment.service.CommentCommandService
+import org.veri.be.member.entity.Member
+import org.veri.be.member.entity.enums.ProviderType
+import org.veri.be.post.dto.request.PostCreateRequest
+import org.veri.be.post.service.PostCommandService
 import org.veri.be.integration.IntegrationTestSupport
 
 class CommentIntegrationTest : IntegrationTestSupport() {

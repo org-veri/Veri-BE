@@ -5,7 +5,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.veri.be.global.auth.context.MemberContext
+import org.veri.be.lib.auth.context.MemberContext
 import java.lang.reflect.Constructor
 import java.lang.reflect.Modifier
 

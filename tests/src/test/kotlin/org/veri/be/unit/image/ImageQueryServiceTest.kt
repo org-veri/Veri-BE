@@ -11,8 +11,8 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
-import org.veri.be.domain.image.repository.ImageRepository
-import org.veri.be.domain.image.service.ImageQueryService
+import org.veri.be.image.service.ImageRepository
+import org.veri.be.image.service.ImageQueryService
 import org.veri.be.global.response.PageResponse
 
 @ExtendWith(MockitoExtension::class)

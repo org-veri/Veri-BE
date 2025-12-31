@@ -4,11 +4,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.veri.be.domain.book.entity.Reading
-import org.veri.be.domain.book.entity.enums.ReadingStatus
-import org.veri.be.domain.card.entity.Card
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
+import org.veri.be.book.entity.Reading
+import org.veri.be.book.entity.enums.ReadingStatus
+import org.veri.be.member.entity.Member
+import org.veri.be.member.entity.enums.ProviderType
 import java.time.Clock
 import java.time.Instant
 import java.time.LocalDateTime
@@ -43,19 +42,15 @@ class ReadingTest {
     inner class SetPrivate {
 
         @Test
-        @DisplayName("독서를 비공개로 바꾸면 카드도 비공개 처리된다")
-        fun setsPrivateOnCards() {
-            val card1 = Card.builder().id(1L).image("https://example.com/1.png").isPublic(true).build()
-            val card2 = Card.builder().id(2L).image("https://example.com/2.png").isPublic(true).build()
+        @DisplayName("독서를 비공개로 변경한다")
+        fun setsPrivate() {
             val reading = Reading.builder()
                 .isPublic(true)
-                .cards(listOf(card1, card2))
                 .build()
 
             reading.setPrivate()
 
             assertThat(reading.isPublic).isFalse()
-            assertThat(reading.cards).allMatch { card -> !card.isPublic }
         }
     }
 

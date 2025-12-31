@@ -6,19 +6,19 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
-import org.veri.be.api.common.dto.MemberProfileResponse
-import org.veri.be.domain.book.entity.Book
-import org.veri.be.domain.book.entity.Reading
-import org.veri.be.domain.card.controller.dto.CardConverter
-import org.veri.be.domain.card.controller.dto.request.CardCreateRequest
-import org.veri.be.domain.card.controller.dto.response.CardDetailResponse
-import org.veri.be.domain.card.controller.dto.response.CardListResponse
-import org.veri.be.domain.card.controller.dto.response.CardUpdateResponse
-import org.veri.be.domain.card.entity.Card
-import org.veri.be.domain.card.repository.dto.CardFeedItem
-import org.veri.be.domain.card.repository.dto.CardListItem
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
+import org.veri.be.member.dto.MemberProfileResponse
+import org.veri.be.book.entity.Book
+import org.veri.be.book.entity.Reading
+import org.veri.be.card.controller.dto.CardConverter
+import org.veri.be.card.controller.dto.request.CardCreateRequest
+import org.veri.be.card.controller.dto.response.CardDetailResponse
+import org.veri.be.card.controller.dto.response.CardListResponse
+import org.veri.be.card.controller.dto.response.CardUpdateResponse
+import org.veri.be.card.entity.Card
+import org.veri.be.card.repository.dto.CardFeedItem
+import org.veri.be.card.repository.dto.CardListItem
+import org.veri.be.member.entity.Member
+import org.veri.be.member.entity.enums.ProviderType
 import java.time.LocalDateTime
 
 class CardResponseMappingTest {

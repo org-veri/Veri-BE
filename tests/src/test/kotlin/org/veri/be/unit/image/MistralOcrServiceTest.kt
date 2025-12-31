@@ -12,11 +12,11 @@ import org.mockito.BDDMockito.given
 import org.mockito.Mockito.doNothing
 import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
-import org.veri.be.domain.image.client.OcrPort
-import org.veri.be.domain.image.entity.OcrResult
-import org.veri.be.domain.image.exception.ImageErrorCode
-import org.veri.be.domain.image.repository.OcrResultRepository
-import org.veri.be.domain.image.service.MistralOcrService
+import org.veri.be.image.client.OcrPort
+import org.veri.be.image.entity.OcrResult
+import org.veri.be.image.exception.ImageErrorCode
+import org.veri.be.image.service.OcrResultRepository
+import org.veri.be.image.service.MistralOcrService
 import org.veri.be.lib.time.SleepSupport
 import org.veri.be.support.assertion.ExceptionAssertions
 import java.time.Duration

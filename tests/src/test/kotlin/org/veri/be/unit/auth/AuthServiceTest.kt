@@ -16,19 +16,19 @@ import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
-import org.veri.be.domain.auth.service.AuthService
-import org.veri.be.domain.auth.service.TokenBlacklistStore
-import org.veri.be.domain.auth.service.TokenStorageService
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
-import org.veri.be.domain.member.repository.MemberRepository
-import org.veri.be.domain.member.service.MemberQueryService
+import org.veri.be.auth.service.AuthService
+import org.veri.be.lib.auth.token.TokenBlacklistStore
+import org.veri.be.auth.storage.TokenStorageService
+import org.veri.be.member.entity.Member
+import org.veri.be.member.entity.enums.ProviderType
+import org.veri.be.member.service.MemberCommandService
+import org.veri.be.member.service.MemberQueryService
 import org.veri.be.global.auth.dto.LoginResponse
 import org.veri.be.global.auth.dto.ReissueTokenRequest
 import org.veri.be.global.auth.dto.ReissueTokenResponse
 import org.veri.be.global.auth.JwtClaimsPayload
 import org.veri.be.global.auth.oauth2.dto.OAuth2UserInfo
-import org.veri.be.global.auth.token.TokenProvider
+import org.veri.be.lib.auth.token.TokenProvider
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId
@@ -48,7 +48,7 @@ class AuthServiceTest {
     private lateinit var tokenBlacklistStore: TokenBlacklistStore
 
     @org.mockito.Mock
-    private lateinit var memberRepository: MemberRepository
+    private lateinit var memberCommandService: MemberCommandService
 
     @org.mockito.Mock
     private lateinit var tokenProvider: TokenProvider
@@ -64,9 +64,9 @@ class AuthServiceTest {
     fun setUp() {
         authService = AuthService(
             memberQueryService,
+            memberCommandService,
             tokenStorageService,
             tokenBlacklistStore,
-            memberRepository,
             tokenProvider,
             fixedClock
         )
@@ -172,10 +172,15 @@ class AuthServiceTest {
                 .nickname("member")
                 .image("https://example.com/profile.png")
                 .providerId("provider-1")
-                .providerType(ProviderType.KAKAO)
+                .providerType(ProviderType.KAKAO.name)
                 .build()
-            given(memberRepository.findByProviderIdAndProviderType("provider-1", ProviderType.KAKAO))
-                .willReturn(Optional.of(member))
+            given(memberCommandService.saveOrGetOAuthMember(
+                "member@test.com",
+                "member",
+                "https://example.com/profile.png",
+                "provider-1",
+                ProviderType.KAKAO
+            )).willReturn(member)
             given(tokenProvider.generateAccessToken(any<JwtClaimsPayload>()))
                 .willReturn(TokenProvider.TokenGeneration("access", fixedClock.millis() + 1000))
             given(tokenProvider.generateRefreshToken(1L))
@@ -194,26 +199,29 @@ class AuthServiceTest {
                 .nickname("dup")
                 .image("https://example.com/profile.png")
                 .providerId("provider-2")
-                .providerType(ProviderType.KAKAO)
+                .providerType(ProviderType.KAKAO.name)
                 .build()
-            given(memberRepository.findByProviderIdAndProviderType("provider-2", ProviderType.KAKAO))
-                .willReturn(Optional.empty())
-            given(memberQueryService.existsByNickname("dup")).willReturn(true)
-            given(memberRepository.save(any(Member::class.java))).willAnswer { invocation ->
-                val saved = invocation.getArgument<Member>(0)
-                ReflectionTestUtils.setField(saved, "id", 2L)
-                saved
-            }
+            val savedMember = member(2L, "new@test.com", "dup_1234")
+            given(memberCommandService.saveOrGetOAuthMember(
+                "new@test.com",
+                "dup",
+                "https://example.com/profile.png",
+                "provider-2",
+                ProviderType.KAKAO
+            )).willReturn(savedMember)
             given(tokenProvider.generateAccessToken(any<JwtClaimsPayload>()))
                 .willReturn(TokenProvider.TokenGeneration("access", fixedClock.millis() + 1000))
             given(tokenProvider.generateRefreshToken(2L))
                 .willReturn(TokenProvider.TokenGeneration("refresh", fixedClock.millis() + 2000))
 
             authService.loginWithOAuth2(info)
-
-            verify(memberRepository).save(memberCaptor.capture())
-            val saved = memberCaptor.value
-            assertThat(saved.nickname).startsWith("dup_")
+            verify(memberCommandService).saveOrGetOAuthMember(
+                "new@test.com",
+                "dup",
+                "https://example.com/profile.png",
+                "provider-2",
+                ProviderType.KAKAO
+            )
         }
     }
 

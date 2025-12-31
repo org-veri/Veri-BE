@@ -13,8 +13,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import org.veri.be.domain.book.client.BookSearchClient
-import org.veri.be.domain.book.dto.book.AddBookRequest
+import org.veri.be.book.client.BookSearchClient
+import org.veri.be.book.dto.book.AddBookRequest
 import org.veri.be.integration.IntegrationTestSupport
 import org.veri.be.integration.SharedTestConfig
 

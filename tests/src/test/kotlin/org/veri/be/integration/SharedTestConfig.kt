@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
-import org.veri.be.domain.book.client.BookSearchClient
-import org.veri.be.domain.image.service.OcrService
+import org.veri.be.book.client.BookSearchClient
+import org.veri.be.image.service.OcrService
 import org.veri.be.global.storage.service.StorageService
 import org.veri.be.integration.support.stub.StubBookSearchClient
 import org.veri.be.integration.support.stub.StubOcrService

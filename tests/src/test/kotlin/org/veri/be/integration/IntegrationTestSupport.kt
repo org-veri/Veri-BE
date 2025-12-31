@@ -11,10 +11,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
 import org.veri.be.Application
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
-import org.veri.be.domain.member.repository.MemberRepository
-import org.veri.be.global.auth.context.MemberContext
+import org.veri.be.member.entity.Member
+import org.veri.be.member.entity.enums.ProviderType
+import org.veri.be.member.service.MemberRepository
+import org.veri.be.lib.auth.context.MemberContext
 
 @Transactional
 @SpringBootTest(classes = [Application::class])
@@ -46,7 +46,7 @@ abstract class IntegrationTestSupport {
             .providerType(ProviderType.KAKAO)
             .build()
         mockMember = memberRepository.save(mockMember)
-        MemberContext.setCurrentMember(mockMember)
+        MemberContext.setCurrentMemberId(mockMember.id)
     }
 
     fun getMockMember(): Member = mockMember

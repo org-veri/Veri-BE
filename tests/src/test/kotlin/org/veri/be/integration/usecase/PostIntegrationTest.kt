@@ -10,11 +10,11 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import org.veri.be.domain.book.entity.Book
-import org.veri.be.domain.book.repository.BookRepository
-import org.veri.be.domain.post.dto.request.PostCreateRequest
-import org.veri.be.domain.post.entity.Post
-import org.veri.be.domain.post.repository.PostRepository
+import org.veri.be.book.entity.Book
+import org.veri.be.book.service.BookRepository
+import org.veri.be.post.dto.request.PostCreateRequest
+import org.veri.be.post.entity.Post
+import org.veri.be.post.service.PostRepository
 import org.veri.be.global.storage.dto.PresignedUrlRequest
 import org.veri.be.global.storage.service.StorageService
 import org.veri.be.integration.IntegrationTestSupport

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.eq
 import org.mockito.BDDMockito.given
+import org.mockito.Mockito.lenient
 import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.data.domain.PageImpl
@@ -22,23 +23,26 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import org.veri.be.api.personal.CardController
-import org.veri.be.domain.card.controller.dto.request.CardCreateRequest
-import org.veri.be.domain.card.controller.dto.request.CardUpdateRequest
-import org.veri.be.domain.card.controller.dto.response.CardDetailResponse
-import org.veri.be.domain.card.controller.dto.response.CardUpdateResponse
-import org.veri.be.domain.card.repository.dto.CardListItem
-import org.veri.be.domain.card.service.CardCommandService
-import org.veri.be.domain.card.service.CardQueryService
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
-import org.veri.be.global.auth.context.AuthenticatedMemberResolver
-import org.veri.be.global.auth.context.MemberContext
-import org.veri.be.global.auth.context.ThreadLocalCurrentMemberAccessor
+import org.veri.be.card.CardController
+import org.veri.be.card.controller.dto.request.CardCreateRequest
+import org.veri.be.card.controller.dto.request.CardUpdateRequest
+import org.veri.be.card.controller.dto.response.CardDetailResponse
+import org.veri.be.card.controller.dto.response.CardUpdateResponse
+import org.veri.be.card.repository.dto.CardListItem
+import org.veri.be.card.service.CardCommandService
+import org.veri.be.card.service.CardQueryService
+import org.veri.be.member.entity.Member
+import org.veri.be.member.entity.enums.ProviderType
+import org.veri.be.member.auth.context.AuthenticatedMemberResolver
+import org.veri.be.lib.auth.context.MemberContext
+import org.veri.be.member.auth.context.MemberRequestContext
+import org.veri.be.member.auth.context.ThreadLocalCurrentMemberAccessor
+import org.veri.be.member.service.MemberQueryService
 import org.veri.be.global.storage.dto.PresignedUrlRequest
 import org.veri.be.global.storage.dto.PresignedUrlResponse
 import org.veri.be.lib.response.ApiResponseAdvice
 import java.time.LocalDateTime
+import java.util.Optional
 
 @ExtendWith(MockitoExtension::class)
 class CardControllerTest {
@@ -51,6 +55,9 @@ class CardControllerTest {
 
     @org.mockito.Mock
     private lateinit var cardQueryService: CardQueryService
+
+    @org.mockito.Mock
+    private lateinit var memberQueryService: MemberQueryService
 
     private lateinit var member: Member
 
@@ -65,13 +72,14 @@ class CardControllerTest {
             .providerId("provider-1")
             .providerType(ProviderType.KAKAO)
             .build()
-        MemberContext.setCurrentMember(member)
+        MemberContext.setCurrentMemberId(member.id)
+        lenient().`when`(memberQueryService.findOptionalById(member.id)).thenReturn(Optional.of(member))
 
         val controller = CardController(cardCommandService, cardQueryService)
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
             .setControllerAdvice(ApiResponseAdvice())
             .setCustomArgumentResolvers(
-                AuthenticatedMemberResolver(ThreadLocalCurrentMemberAccessor(null))
+                AuthenticatedMemberResolver(ThreadLocalCurrentMemberAccessor(memberQueryService))
             )
             .build()
     }
@@ -79,6 +87,7 @@ class CardControllerTest {
     @AfterEach
     fun tearDown() {
         MemberContext.clear()
+        MemberRequestContext.clear()
     }
 
     @Nested

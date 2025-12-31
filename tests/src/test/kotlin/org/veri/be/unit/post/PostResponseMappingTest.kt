@@ -6,17 +6,17 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
-import org.veri.be.domain.book.entity.Book
-import org.veri.be.domain.comment.entity.Comment
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
-import org.veri.be.domain.member.repository.dto.MemberProfileQueryResult
-import org.veri.be.domain.post.dto.response.PostDetailResponse
-import org.veri.be.domain.post.dto.response.PostFeedResponse
-import org.veri.be.domain.post.dto.response.PostFeedResponseItem
-import org.veri.be.domain.post.entity.Post
-import org.veri.be.domain.post.repository.dto.DetailLikeInfoQueryResult
-import org.veri.be.domain.post.repository.dto.PostFeedQueryResult
+import org.veri.be.book.entity.Book
+import org.veri.be.comment.entity.Comment
+import org.veri.be.member.entity.Member
+import org.veri.be.member.entity.enums.ProviderType
+import org.veri.be.member.repository.dto.MemberProfileQueryResult
+import org.veri.be.post.dto.response.PostDetailResponse
+import org.veri.be.post.dto.response.PostFeedResponse
+import org.veri.be.post.dto.response.PostFeedResponseItem
+import org.veri.be.post.entity.Post
+import org.veri.be.post.repository.dto.DetailLikeInfoQueryResult
+import org.veri.be.post.repository.dto.PostFeedQueryResult
 import java.time.LocalDateTime
 
 class PostResponseMappingTest {
@@ -79,14 +79,19 @@ class PostResponseMappingTest {
                 .content("content")
                 .build()
             post.addImage("https://example.com/1.png", 1)
-            post.addComment(Comment.builder().author(author).post(post).content("comment").build())
 
             val likeInfo = DetailLikeInfoQueryResult(
                 listOf(MemberProfileQueryResult(2L, "viewer", "https://example.com/profile.png")),
                 1L,
                 true
             )
-            val comments: List<PostDetailResponse.CommentResponse> = listOf()
+            val comments: List<Comment> = listOf(
+                Comment.builder()
+                    .postId(1L)
+                    .author(author)
+                    .content("comment")
+                    .build()
+            )
 
             val response = PostDetailResponse.from(post, likeInfo, comments)
 

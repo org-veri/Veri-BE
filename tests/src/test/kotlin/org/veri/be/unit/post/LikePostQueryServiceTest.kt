@@ -12,13 +12,13 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.BDDMockito.given
 import org.mockito.junit.jupiter.MockitoExtension
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
-import org.veri.be.domain.post.entity.LikePost
-import org.veri.be.domain.post.entity.Post
-import org.veri.be.domain.post.repository.LikePostRepository
-import org.veri.be.domain.post.repository.dto.DetailLikeInfoQueryResult
-import org.veri.be.domain.post.service.LikePostQueryService
+import org.veri.be.member.entity.Member
+import org.veri.be.member.entity.enums.ProviderType
+import org.veri.be.post.entity.LikePost
+import org.veri.be.post.entity.Post
+import org.veri.be.post.service.LikePostRepository
+import org.veri.be.post.repository.dto.DetailLikeInfoQueryResult
+import org.veri.be.post.service.LikePostQueryService
 
 @ExtendWith(MockitoExtension::class)
 class LikePostQueryServiceTest {

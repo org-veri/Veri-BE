@@ -18,7 +18,6 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType
 import org.springframework.security.oauth2.core.OAuth2AccessToken
 import org.springframework.security.oauth2.core.user.OAuth2User
 import org.springframework.web.client.RestOperations
-import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.global.auth.oauth2.CustomOAuth2UserService
 import org.veri.be.global.auth.oauth2.dto.CustomOAuth2User
 import java.time.Instant
@@ -54,7 +53,7 @@ class CustomOAuth2UserServiceTest {
 
             assertThat(user).isInstanceOf(CustomOAuth2User::class.java)
             val customUser = user as CustomOAuth2User
-            assertThat(customUser.providerType).isEqualTo(ProviderType.KAKAO)
+            assertThat(customUser.providerType).isEqualTo("KAKAO")
             assertThat(customUser.authorities).hasSize(1)
             val authority: GrantedAuthority = customUser.authorities.iterator().next()
             assertThat(authority.authority).isEqualTo("ROLE_USER")

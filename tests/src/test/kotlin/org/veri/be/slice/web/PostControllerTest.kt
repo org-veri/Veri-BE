@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.eq
 import org.mockito.BDDMockito.given
+import org.mockito.Mockito.lenient
 import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.data.domain.PageImpl
@@ -21,27 +22,30 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import org.veri.be.api.common.dto.MemberProfileResponse
-import org.veri.be.api.social.PostController
-import org.veri.be.domain.book.dto.book.BookResponse
-import org.veri.be.domain.book.entity.Book
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
-import org.veri.be.domain.post.controller.enums.PostSortType
-import org.veri.be.domain.post.dto.request.PostCreateRequest
-import org.veri.be.domain.post.dto.response.LikeInfoResponse
-import org.veri.be.domain.post.dto.response.PostDetailResponse
-import org.veri.be.domain.post.dto.response.PostFeedResponseItem
-import org.veri.be.domain.post.repository.dto.PostFeedQueryResult
-import org.veri.be.domain.post.service.PostCommandService
-import org.veri.be.domain.post.service.PostQueryService
-import org.veri.be.global.auth.context.AuthenticatedMemberResolver
-import org.veri.be.global.auth.context.MemberContext
-import org.veri.be.global.auth.context.ThreadLocalCurrentMemberAccessor
+import org.veri.be.member.dto.MemberProfileResponse
+import org.veri.be.post.PostController
+import org.veri.be.book.dto.book.BookResponse
+import org.veri.be.book.entity.Book
+import org.veri.be.member.entity.Member
+import org.veri.be.member.entity.enums.ProviderType
+import org.veri.be.post.controller.enums.PostSortType
+import org.veri.be.post.dto.request.PostCreateRequest
+import org.veri.be.post.dto.response.LikeInfoResponse
+import org.veri.be.post.dto.response.PostDetailResponse
+import org.veri.be.post.dto.response.PostFeedResponseItem
+import org.veri.be.post.repository.dto.PostFeedQueryResult
+import org.veri.be.post.service.PostCommandService
+import org.veri.be.post.service.PostQueryService
+import org.veri.be.member.auth.context.AuthenticatedMemberResolver
+import org.veri.be.lib.auth.context.MemberContext
+import org.veri.be.member.auth.context.MemberRequestContext
+import org.veri.be.member.auth.context.ThreadLocalCurrentMemberAccessor
+import org.veri.be.member.service.MemberQueryService
 import org.veri.be.global.storage.dto.PresignedUrlRequest
 import org.veri.be.global.storage.dto.PresignedUrlResponse
 import org.veri.be.lib.response.ApiResponseAdvice
 import java.time.LocalDateTime
+import java.util.Optional
 
 @ExtendWith(MockitoExtension::class)
 class PostControllerTest {
@@ -54,6 +58,9 @@ class PostControllerTest {
 
     @org.mockito.Mock
     private lateinit var postQueryService: PostQueryService
+
+    @org.mockito.Mock
+    private lateinit var memberQueryService: MemberQueryService
 
     private lateinit var member: Member
 
@@ -68,13 +75,14 @@ class PostControllerTest {
             .providerId("provider-1")
             .providerType(ProviderType.KAKAO)
             .build()
-        MemberContext.setCurrentMember(member)
+        MemberContext.setCurrentMemberId(member.id)
+        lenient().`when`(memberQueryService.findOptionalById(member.id)).thenReturn(Optional.of(member))
 
         val controller = PostController(postCommandService, postQueryService)
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
             .setControllerAdvice(ApiResponseAdvice())
             .setCustomArgumentResolvers(
-                AuthenticatedMemberResolver(ThreadLocalCurrentMemberAccessor(null))
+                AuthenticatedMemberResolver(ThreadLocalCurrentMemberAccessor(memberQueryService))
             )
             .build()
     }
@@ -82,6 +90,7 @@ class PostControllerTest {
     @AfterEach
     fun tearDown() {
         MemberContext.clear()
+        MemberRequestContext.clear()
     }
 
     @Nested

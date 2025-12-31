@@ -9,18 +9,19 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
-import org.veri.be.domain.member.repository.MemberRepository
-import org.veri.be.global.auth.context.MemberContext
-import org.veri.be.global.auth.context.ThreadLocalCurrentMemberAccessor
+import org.veri.be.member.entity.Member
+import org.veri.be.member.entity.enums.ProviderType
+import org.veri.be.lib.auth.context.MemberContext
+import org.veri.be.member.auth.context.MemberRequestContext
+import org.veri.be.member.auth.context.ThreadLocalCurrentMemberAccessor
+import org.veri.be.member.service.MemberQueryService
 import java.util.Optional
 
 @ExtendWith(MockitoExtension::class)
 class ThreadLocalCurrentMemberAccessorTest {
 
     @org.mockito.Mock
-    private lateinit var memberRepository: MemberRepository
+    private lateinit var memberQueryService: MemberQueryService
 
     @org.mockito.InjectMocks
     private lateinit var accessor: ThreadLocalCurrentMemberAccessor
@@ -28,6 +29,7 @@ class ThreadLocalCurrentMemberAccessorTest {
     @AfterEach
     fun tearDown() {
         MemberContext.clear()
+        MemberRequestContext.clear()
     }
 
     @Nested
@@ -38,7 +40,7 @@ class ThreadLocalCurrentMemberAccessorTest {
         @DisplayName("Context에 Member가 있으면 그대로 반환한다 (Cache)")
         fun returnsMemberFromContext() {
             val member = member(1L, "member@test.com", "member")
-            MemberContext.setCurrentMember(member)
+            MemberRequestContext.setCurrentMember(member)
 
             val result: Optional<Member> = accessor.currentMember
 
@@ -50,14 +52,14 @@ class ThreadLocalCurrentMemberAccessorTest {
         fun loadsMemberFromDbWhenIdPresent() {
             val member = member(1L, "member@test.com", "member")
             MemberContext.setCurrentMemberId(1L)
-            given(memberRepository.findById(1L)).willReturn(Optional.of(member))
+            given(memberQueryService.findOptionalById(1L)).willReturn(Optional.of(member))
 
             val result: Optional<Member> = accessor.currentMember
 
             assertThat(result).contains(member)
-            verify(memberRepository).findById(1L)
+            verify(memberQueryService).findOptionalById(1L)
 
-            assertThat(MemberContext.getCurrentMember()).contains(member)
+            assertThat(MemberRequestContext.getCurrentMember()).contains(member)
         }
 
         @Test

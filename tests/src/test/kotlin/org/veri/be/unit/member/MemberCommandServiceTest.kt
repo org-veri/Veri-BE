@@ -10,15 +10,18 @@ import org.mockito.ArgumentCaptor
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
-import org.veri.be.domain.member.dto.MemberResponse
-import org.veri.be.domain.member.dto.UpdateMemberInfoRequest
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
-import org.veri.be.domain.member.exception.MemberErrorCode
-import org.veri.be.domain.member.repository.MemberRepository
-import org.veri.be.domain.member.service.MemberCommandService
-import org.veri.be.domain.member.service.MemberQueryService
+import org.veri.be.member.dto.MemberResponse
+import org.veri.be.member.dto.UpdateMemberInfoRequest
+import org.veri.be.member.entity.Member
+import org.veri.be.member.entity.enums.ProviderType
+import org.veri.be.member.exception.MemberErrorCode
+import org.veri.be.member.service.MemberRepository
+import org.veri.be.member.service.MemberCommandService
+import org.veri.be.member.service.MemberQueryService
 import org.veri.be.support.assertion.ExceptionAssertions
+import java.time.Clock
+import java.time.Instant
+import java.time.ZoneId
 
 @ExtendWith(MockitoExtension::class)
 class MemberCommandServiceTest {
@@ -30,13 +33,14 @@ class MemberCommandServiceTest {
     private lateinit var memberRepository: MemberRepository
 
     private lateinit var memberCommandService: MemberCommandService
+    private val fixedClock: Clock = Clock.fixed(Instant.parse("2024-01-01T00:00:00Z"), ZoneId.of("UTC"))
 
     @org.mockito.Captor
     private lateinit var memberCaptor: ArgumentCaptor<Member>
 
     @BeforeEach
     fun setUp() {
-        memberCommandService = MemberCommandService(memberQueryService, memberRepository)
+        memberCommandService = MemberCommandService(memberQueryService, memberRepository, fixedClock)
     }
 
     @Nested

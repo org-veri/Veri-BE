@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.eq
 import org.mockito.BDDMockito.given
+import org.mockito.Mockito.lenient
 import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.data.domain.PageImpl
@@ -22,27 +23,32 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import org.veri.be.api.personal.BookshelfController
-import org.veri.be.domain.book.controller.enums.ReadingSortType
-import org.veri.be.domain.book.dto.book.AddBookRequest
-import org.veri.be.domain.book.dto.book.BookResponse
-import org.veri.be.domain.book.dto.book.BookSearchResponse
-import org.veri.be.domain.book.dto.reading.request.ReadingModifyRequest
-import org.veri.be.domain.book.dto.reading.request.ReadingScoreRequest
-import org.veri.be.domain.book.dto.reading.response.ReadingResponse
-import org.veri.be.domain.book.dto.reading.response.ReadingVisibilityUpdateResponse
-import org.veri.be.domain.book.entity.Reading
-import org.veri.be.domain.book.entity.enums.ReadingStatus
-import org.veri.be.domain.book.service.BookService
-import org.veri.be.domain.book.service.BookshelfService
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
-import org.veri.be.global.auth.context.AuthenticatedMemberResolver
-import org.veri.be.global.auth.context.MemberContext
-import org.veri.be.global.auth.context.ThreadLocalCurrentMemberAccessor
+import org.veri.be.book.BookshelfController
+import org.veri.be.book.controller.enums.ReadingSortType
+import org.veri.be.book.dto.book.AddBookRequest
+import org.veri.be.book.dto.book.BookResponse
+import org.veri.be.book.dto.book.BookSearchResponse
+import org.veri.be.book.dto.reading.request.ReadingModifyRequest
+import org.veri.be.book.dto.reading.request.ReadingScoreRequest
+import org.veri.be.book.dto.reading.response.ReadingResponse
+import org.veri.be.book.dto.reading.response.ReadingVisibilityUpdateResponse
+import org.veri.be.book.entity.Reading
+import org.veri.be.book.entity.enums.ReadingStatus
+import org.veri.be.book.service.BookCommandService
+import org.veri.be.book.service.BookQueryService
+import org.veri.be.book.service.BookshelfCommandService
+import org.veri.be.book.service.BookshelfQueryService
+import org.veri.be.member.entity.Member
+import org.veri.be.member.entity.enums.ProviderType
+import org.veri.be.member.auth.context.AuthenticatedMemberResolver
+import org.veri.be.lib.auth.context.MemberContext
+import org.veri.be.member.auth.context.MemberRequestContext
+import org.veri.be.member.auth.context.ThreadLocalCurrentMemberAccessor
+import org.veri.be.member.service.MemberQueryService
 import org.veri.be.lib.exception.handler.GlobalExceptionHandler
 import org.veri.be.lib.response.ApiResponseAdvice
 import java.time.LocalDateTime
+import java.util.Optional
 
 @ExtendWith(MockitoExtension::class)
 class BookshelfControllerTest {
@@ -51,10 +57,19 @@ class BookshelfControllerTest {
     private lateinit var objectMapper: ObjectMapper
 
     @org.mockito.Mock
-    private lateinit var bookService: BookService
+    private lateinit var bookCommandService: BookCommandService
 
     @org.mockito.Mock
-    private lateinit var bookshelfService: BookshelfService
+    private lateinit var bookQueryService: BookQueryService
+
+    @org.mockito.Mock
+    private lateinit var bookshelfCommandService: BookshelfCommandService
+
+    @org.mockito.Mock
+    private lateinit var bookshelfQueryService: BookshelfQueryService
+
+    @org.mockito.Mock
+    private lateinit var memberQueryService: MemberQueryService
 
     private lateinit var member: Member
 
@@ -69,13 +84,19 @@ class BookshelfControllerTest {
             .providerId("provider-1")
             .providerType(ProviderType.KAKAO)
             .build()
-        MemberContext.setCurrentMember(member)
+        MemberContext.setCurrentMemberId(member.id)
+        lenient().`when`(memberQueryService.findOptionalById(member.id)).thenReturn(Optional.of(member))
 
-        val controller = BookshelfController(bookshelfService, bookService)
+        val controller = BookshelfController(
+            bookshelfCommandService,
+            bookshelfQueryService,
+            bookCommandService,
+            bookQueryService
+        )
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
             .setControllerAdvice(ApiResponseAdvice(), GlobalExceptionHandler())
             .setCustomArgumentResolvers(
-                AuthenticatedMemberResolver(ThreadLocalCurrentMemberAccessor(null))
+                AuthenticatedMemberResolver(ThreadLocalCurrentMemberAccessor(memberQueryService))
             )
             .build()
     }
@@ -83,6 +104,7 @@ class BookshelfControllerTest {
     @AfterEach
     fun tearDown() {
         MemberContext.clear()
+        MemberRequestContext.clear()
     }
 
     @Nested
@@ -108,7 +130,7 @@ class BookshelfControllerTest {
                 PageRequest.of(0, 10),
                 1
             )
-            given(bookshelfService.searchAllReadingOfMember(eq(1L), any(), eq(0), eq(10), eq(ReadingSortType.NEWEST)))
+            given(bookshelfQueryService.searchAllReadingOfMember(eq(1L), any(), eq(0), eq(10), eq(ReadingSortType.NEWEST)))
                 .willReturn(page)
 
             mockMvc.perform(
@@ -137,12 +159,12 @@ class BookshelfControllerTest {
                 "isbn-1",
                 true
             )
-            given(bookService.addBook(any(), any(), any(), any(), any())).willReturn(10L)
+            given(bookCommandService.addBook(any(), any(), any(), any(), any())).willReturn(10L)
             val reading = Reading.builder()
                 .id(20L)
                 .createdAt(LocalDateTime.of(2024, 1, 1, 0, 0))
                 .build()
-            given(bookshelfService.addToBookshelf(member, 10L, true)).willReturn(reading)
+            given(bookshelfCommandService.addToBookshelf(member, 10L, true)).willReturn(reading)
 
             mockMvc.perform(
                 post("/api/v2/bookshelf")
@@ -189,7 +211,7 @@ class BookshelfControllerTest {
                 1,
                 1
             )
-            given(bookService.searchBook("query", 1, 10)).willReturn(response)
+            given(bookQueryService.searchBook("query", 1, 10)).willReturn(response)
 
             mockMvc.perform(
                 get("/api/v2/bookshelf/search")
@@ -233,7 +255,7 @@ class BookshelfControllerTest {
             )
                 .andExpect(status().isNoContent)
 
-            verify(bookshelfService).modifyBook(eq(member), eq(4.5), any(), any(), eq(10L))
+            verify(bookshelfCommandService).modifyBook(eq(member), eq(4.5), any(), any(), eq(10L))
         }
     }
 
@@ -244,7 +266,7 @@ class BookshelfControllerTest {
         @Test
         @DisplayName("완독 책 개수를 반환한다")
         fun returnsDoneCount() {
-            given(bookshelfService.searchMyReadingDoneCount(1L)).willReturn(3)
+            given(bookshelfQueryService.searchMyReadingDoneCount(1L)).willReturn(3)
 
             mockMvc.perform(get("/api/v2/bookshelf/my/count"))
                 .andExpect(status().isOk)
@@ -259,7 +281,7 @@ class BookshelfControllerTest {
         @Test
         @DisplayName("제목과 저자로 책장 ID를 반환한다")
         fun returnsReadingId() {
-            given(bookshelfService.searchByTitleAndAuthor(1L, "title", "author"))
+            given(bookshelfQueryService.searchByTitleAndAuthor(1L, "title", "author"))
                 .willReturn(10L)
 
             mockMvc.perform(
@@ -288,7 +310,7 @@ class BookshelfControllerTest {
             )
                 .andExpect(status().isNoContent)
 
-            verify(bookshelfService).rateScore(member, 4.5, 10L)
+            verify(bookshelfCommandService).rateScore(member, 4.5, 10L)
         }
     }
 
@@ -302,7 +324,7 @@ class BookshelfControllerTest {
             mockMvc.perform(patch("/api/v2/bookshelf/10/status/start"))
                 .andExpect(status().isNoContent)
 
-            verify(bookshelfService).readStart(member, 10L)
+            verify(bookshelfCommandService).readStart(member, 10L)
         }
     }
 
@@ -316,7 +338,7 @@ class BookshelfControllerTest {
             mockMvc.perform(patch("/api/v2/bookshelf/10/status/over"))
                 .andExpect(status().isNoContent)
 
-            verify(bookshelfService).readOver(member, 10L)
+            verify(bookshelfCommandService).readOver(member, 10L)
         }
     }
 
@@ -327,7 +349,7 @@ class BookshelfControllerTest {
         @Test
         @DisplayName("독서 공개 여부를 수정한다")
         fun modifiesVisibility() {
-            given(bookshelfService.modifyVisibility(member, 10L, true))
+            given(bookshelfCommandService.modifyVisibility(member, 10L, true))
                 .willReturn(ReadingVisibilityUpdateResponse(10L, true))
 
             mockMvc.perform(
@@ -349,7 +371,7 @@ class BookshelfControllerTest {
             mockMvc.perform(delete("/api/v2/bookshelf/10"))
                 .andExpect(status().isNoContent)
 
-            verify(bookshelfService).deleteBook(member, 10L)
+            verify(bookshelfCommandService).deleteBook(member, 10L)
         }
     }
 }

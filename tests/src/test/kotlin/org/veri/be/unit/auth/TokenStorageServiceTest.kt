@@ -10,11 +10,11 @@ import org.mockito.ArgumentCaptor
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
-import org.veri.be.domain.auth.entity.BlacklistedToken
-import org.veri.be.domain.auth.entity.RefreshToken
-import org.veri.be.domain.auth.repository.BlacklistedTokenRepository
-import org.veri.be.domain.auth.repository.RefreshTokenRepository
-import org.veri.be.domain.auth.service.TokenStorageService
+import org.veri.be.auth.entity.BlacklistedToken
+import org.veri.be.auth.entity.RefreshToken
+import org.veri.be.auth.storage.BlacklistedTokenRepository
+import org.veri.be.auth.storage.RefreshTokenRepository
+import org.veri.be.auth.storage.TokenStorageService
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId

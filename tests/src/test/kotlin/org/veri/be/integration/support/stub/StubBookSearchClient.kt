@@ -1,9 +1,9 @@
 package org.veri.be.integration.support.stub
 
 import org.springframework.test.util.ReflectionTestUtils
-import org.veri.be.domain.book.client.BookSearchClient
-import org.veri.be.domain.book.dto.book.NaverBookItem
-import org.veri.be.domain.book.dto.book.NaverBookResponse
+import org.veri.be.book.client.BookSearchClient
+import org.veri.be.book.dto.book.NaverBookItem
+import org.veri.be.book.dto.book.NaverBookResponse
 
 class StubBookSearchClient : BookSearchClient {
     override fun search(query: String, page: Int, size: Int): NaverBookResponse {

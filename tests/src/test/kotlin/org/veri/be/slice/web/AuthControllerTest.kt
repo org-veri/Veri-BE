@@ -18,8 +18,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import org.veri.be.api.common.AuthController
-import org.veri.be.domain.auth.service.AuthService
+import org.veri.be.auth.AuthController
+import org.veri.be.auth.service.AuthService
 import org.veri.be.global.auth.dto.ReissueTokenRequest
 import org.veri.be.global.auth.dto.ReissueTokenResponse
 import org.veri.be.lib.response.ApiResponseAdvice

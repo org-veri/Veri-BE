@@ -13,31 +13,25 @@ import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
-import org.veri.be.domain.book.client.BookSearchClient
-import org.veri.be.domain.book.entity.Book
-import org.veri.be.domain.book.repository.BookRepository
-import org.veri.be.domain.book.service.BookService
-import org.veri.be.lib.exception.CommonErrorCode
-import org.veri.be.support.assertion.ExceptionAssertions
+import org.veri.be.book.entity.Book
+import org.veri.be.book.service.BookRepository
+import org.veri.be.book.service.BookCommandService
 import java.util.Optional
 
 @ExtendWith(MockitoExtension::class)
-class BookServiceTest {
+class BookCommandServiceTest {
 
     @org.mockito.Mock
     private lateinit var bookRepository: BookRepository
 
-    @org.mockito.Mock
-    private lateinit var bookSearchClient: BookSearchClient
-
-    private lateinit var bookService: BookService
+    private lateinit var bookService: BookCommandService
 
     @org.mockito.Captor
     private lateinit var bookCaptor: ArgumentCaptor<Book>
 
     @BeforeEach
     fun setUp() {
-        bookService = BookService(bookRepository, bookSearchClient)
+        bookService = BookCommandService(bookRepository)
     }
 
     @Nested
@@ -84,57 +78,4 @@ class BookServiceTest {
         }
     }
 
-    @Nested
-    @DisplayName("getBookById")
-    inner class GetBookById {
-
-        @Test
-        @DisplayName("bookId가 null이면 null을 반환한다")
-        fun returnsNullWhenIdNull() {
-            val result = bookService.getBookById(null)
-
-            assertThat(result).isNull()
-        }
-
-        @Test
-        @DisplayName("존재하지 않으면 NotFoundException을 던진다")
-        fun throwsWhenNotFound() {
-            given(bookRepository.findById(1L)).willReturn(Optional.empty())
-
-            ExceptionAssertions.assertApplicationException(
-                { bookService.getBookById(1L) },
-                CommonErrorCode.RESOURCE_NOT_FOUND
-            )
-        }
-    }
-
-    @Nested
-    @DisplayName("searchBook")
-    inner class SearchBook {
-
-        @Test
-        @DisplayName("검색 결과를 변환해 반환한다")
-        fun returnsSearchResponse() {
-            val item = org.veri.be.domain.book.dto.book.NaverBookItem()
-            ReflectionTestUtils.setField(item, "title", "title")
-            ReflectionTestUtils.setField(item, "author", "author")
-            ReflectionTestUtils.setField(item, "image", "https://example.com/book.png")
-            ReflectionTestUtils.setField(item, "publisher", "publisher")
-            ReflectionTestUtils.setField(item, "isbn", "isbn-1")
-
-            val naverResponse = org.veri.be.domain.book.dto.book.NaverBookResponse()
-            ReflectionTestUtils.setField(naverResponse, "items", listOf(item))
-            ReflectionTestUtils.setField(naverResponse, "total", 1)
-            ReflectionTestUtils.setField(naverResponse, "start", 1)
-            ReflectionTestUtils.setField(naverResponse, "display", 10)
-
-            given(bookSearchClient.search("query", 1, 10)).willReturn(naverResponse)
-
-            val result = bookService.searchBook("query", 1, 10)
-
-            assertThat(result.books()).hasSize(1)
-            assertThat(result.books()[0].title).isEqualTo("title")
-            assertThat(result.books()[0].author).isEqualTo("author")
-        }
-    }
 }
