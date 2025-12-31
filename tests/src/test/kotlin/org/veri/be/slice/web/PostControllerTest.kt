@@ -97,7 +97,7 @@ class PostControllerTest {
                 listOf("https://example.com/image.png"),
                 10L
             )
-            given(postCommandService.createPost(any(PostCreateRequest::class.java), eq(member))).willReturn(99L)
+            given(postCommandService.createPost(request, member)).willReturn(99L)
 
             mockMvc.perform(
                 post("/api/v1/posts")
@@ -319,7 +319,7 @@ class PostControllerTest {
                 "https://example.com/presigned",
                 "https://example.com/public"
             )
-            given(postCommandService.getPresignedUrl(any(PresignedUrlRequest::class.java))).willReturn(response)
+            given(postCommandService.getPresignedUrl(request)).willReturn(response)
 
             mockMvc.perform(
                 post("/api/v1/posts/image")

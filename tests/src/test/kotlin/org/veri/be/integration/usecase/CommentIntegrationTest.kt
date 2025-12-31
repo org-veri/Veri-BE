@@ -131,18 +131,28 @@ class CommentIntegrationTest : IntegrationTestSupport() {
         @DisplayName("타인 댓글 수정 시도")
         fun editForbidden() {
             val postId = createPost()
-            var otherMember = Member.builder()
+
+            // Create another member and comment via direct service call
+            val otherMember = Member.builder()
                 .email("other@prompt.town")
                 .nickname("타인")
                 .profileImageUrl("https://example.com/other.png")
                 .providerId("provider-9999")
                 .providerType(ProviderType.KAKAO)
                 .build()
-            otherMember = memberRepository.save(otherMember)
+            val otherMemberSaved = memberRepository.save(otherMember)
+
+            // Set other member as current context temporarily
+            org.veri.be.global.auth.context.MemberContext.setCurrentMember(otherMemberSaved)
+
             val commentId = commentCommandService.postComment(
                 CommentPostRequest(postId, "Other comment"),
-                otherMember
+                otherMemberSaved
             )
+
+            // Restore original member context
+            org.veri.be.global.auth.context.MemberContext.setCurrentMember(getMockMember())
+
             val request = CommentEditRequest("Edited")
 
             mockMvc.perform(

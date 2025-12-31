@@ -99,24 +99,25 @@ class CommentQueryServiceTest {
         @Test
         @DisplayName("존재하지 않으면 NotFoundException을 던진다")
         fun throwsWhenNotFound() {
-            given(commentRepository.findById(1L)).willReturn(Optional.empty())
+            given(commentRepository.findByIdWithPostAndAuthor(1L)).willReturn(Optional.empty())
 
             ExceptionAssertions.assertApplicationException(
                 { commentQueryService.getCommentById(1L) },
                 CommonErrorCode.RESOURCE_NOT_FOUND
             )
+            verify(commentRepository).findByIdWithPostAndAuthor(1L)
         }
 
         @Test
         @DisplayName("댓글을 조회한다")
         fun returnsComment() {
             val comment = Comment.builder().id(1L).content("content").build()
-            given(commentRepository.findById(1L)).willReturn(Optional.of(comment))
+            given(commentRepository.findByIdWithPostAndAuthor(1L)).willReturn(Optional.of(comment))
 
             val found = commentQueryService.getCommentById(1L)
 
             assertThat(found.id).isEqualTo(1L)
-            verify(commentRepository).findById(1L)
+            verify(commentRepository).findByIdWithPostAndAuthor(1L)
         }
     }
 

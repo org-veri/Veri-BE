@@ -241,7 +241,7 @@ class CardControllerTest {
         fun returnsPresignedUrl() {
             val request = PresignedUrlRequest("image/png", 100)
             val response = PresignedUrlResponse("https://example.com/presigned", "https://example.com/public")
-            given(cardCommandService.getPresignedUrl(any(PresignedUrlRequest::class.java))).willReturn(response)
+            given(cardCommandService.getPresignedUrl(request)).willReturn(response)
 
             mockMvc.perform(
                 post("/api/v1/cards/image")
@@ -275,7 +275,7 @@ class CardControllerTest {
         fun returnsPresignedUrl() {
             val request = PresignedUrlRequest("image/png", 100)
             val response = PresignedUrlResponse("https://example.com/presigned", "https://example.com/public")
-            given(cardCommandService.getPresignedUrlForOcr(any(PresignedUrlRequest::class.java))).willReturn(response)
+            given(cardCommandService.getPresignedUrlForOcr(request)).willReturn(response)
 
             mockMvc.perform(
                 post("/api/v1/cards/image/ocr")

@@ -76,14 +76,13 @@ class CardCommandServiceTest {
                 .build()
             val reading = Reading.builder()
                 .id(10L)
-                .member(member)
-                .book(book)
+                .status(org.veri.be.domain.book.entity.enums.ReadingStatus.READING)
                 .isPublic(false)
                 .build()
 
-            // Verify reading entity has member and book set
-            println("Reading member: ${reading.member}")
-            println("Reading book: ${reading.book}")
+            // Use ReflectionTestUtils to properly set LAZY relationships
+            ReflectionTestUtils.setField(reading, "member", member)
+            ReflectionTestUtils.setField(reading, "book", book)
 
             given(readingRepository.findById(10L)).willReturn(Optional.of(reading))
             given(cardRepository.save(any(Card::class.java))).willAnswer { invocation ->
@@ -92,14 +91,7 @@ class CardCommandServiceTest {
                 saved
             }
 
-            try {
-                val id = cardCommandService.createCard(member, "content", "https://example.com/card.png", 10L, true)
-                assertThat(id).isEqualTo(1L)
-            } catch (e: Exception) {
-                println("Error: ${e.message}")
-                println("Stack trace: ${e.stackTraceToString()}")
-                throw e
-            }
+            val id = cardCommandService.createCard(member, "content", "https://example.com/card.png", 10L, true)
 
             verify(cardRepository).save(cardCaptor.capture())
             // Event publishing is verified implicitly by successful execution
@@ -116,10 +108,18 @@ class CardCommandServiceTest {
         @DisplayName("카드를 수정하고 응답을 반환한다")
         fun updatesCard() {
             val member = member(1L, "member@test.com", "member")
+            val book = org.veri.be.domain.book.entity.Book.builder()
+                .id(100L)
+                .title("Test Book")
+                .author("Test Author")
+                .build()
             val reading = Reading.builder()
                 .id(10L)
-                .member(member)
+                .status(org.veri.be.domain.book.entity.enums.ReadingStatus.READING)
                 .build()
+            ReflectionTestUtils.setField(reading, "member", member)
+            ReflectionTestUtils.setField(reading, "book", book)
+
             val card = Card.builder()
                 .id(1L)
                 .member(member)
@@ -148,8 +148,17 @@ class CardCommandServiceTest {
         @DisplayName("공개 상태를 변경한다")
         fun updatesVisibility() {
             val member = member(1L, "member@test.com", "member")
-            val reading = Reading.builder().id(10L).isPublic(true).build()
-            val card = Card.builder().id(1L).member(member).reading(reading).isPublic(false).build()
+            val reading = Reading.builder()
+                .id(10L)
+                .status(org.veri.be.domain.book.entity.enums.ReadingStatus.READING)
+                .isPublic(true)
+                .build()
+            val card = Card.builder()
+                .id(1L)
+                .member(member)
+                .reading(reading)
+                .isPublic(false)
+                .build()
 
             given(cardRepository.findById(1L)).willReturn(Optional.of(card))
 
@@ -172,8 +181,10 @@ class CardCommandServiceTest {
             val member = member(1L, "member@test.com", "member")
             val reading = Reading.builder()
                 .id(10L)
-                .member(member)
+                .status(org.veri.be.domain.book.entity.enums.ReadingStatus.READING)
                 .build()
+            ReflectionTestUtils.setField(reading, "member", member)
+
             val card = Card.builder()
                 .id(1L)
                 .member(member)
