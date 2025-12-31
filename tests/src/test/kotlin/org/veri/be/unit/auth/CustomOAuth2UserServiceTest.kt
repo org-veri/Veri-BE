@@ -32,56 +32,69 @@ class CustomOAuth2UserServiceTest {
         @Test
         @DisplayName("OAuth2 사용자 정보를 CustomOAuth2User로 변환한다")
         fun returnsCustomOAuth2User() {
+            // given
             val restOperations = Mockito.mock(RestOperations::class.java)
-            val attributes: Map<String, Any> = mapOf(
-                "id" to 10L as Any,
-                "email" to "member@test.com" as Any
+
+            val attributes = mapOf(
+                "id" to 10L,
+                "email" to "member@test.com"
             )
-            val response: ResponseEntity<Map<String, Any>> = ResponseEntity(attributes, HttpStatus.OK)
+            val response = ResponseEntity(attributes, HttpStatus.OK)
 
-            Mockito.lenient().`when`(restOperations.exchange(any(RequestEntity::class.java), eq(Map::class.java)))
-                .thenReturn(response as ResponseEntity<Map<*, *>>)
-            Mockito.lenient().`when`(
-                restOperations.exchange(any(RequestEntity::class.java), any<ParameterizedTypeReference<Map<String, Any>>>())
-            ).thenReturn(response)
+            Mockito.lenient()
+                .doReturn(response)
+                .`when`(restOperations).exchange(
+                    any(RequestEntity::class.java),
+                    eq(Map::class.java)
+                )
 
+            Mockito.lenient()
+                .doReturn(response)
+                .`when`(restOperations).exchange(
+                    any(RequestEntity::class.java),
+                    any<ParameterizedTypeReference<Map<String, Any>>>()
+                )
+
+            // when
             val service = CustomOAuth2UserService()
             service.setRestOperations(restOperations)
 
             val userRequest = OAuth2UserRequest(clientRegistration(), accessToken())
-
             val user: OAuth2User = service.loadUser(userRequest)
 
+            // then
             assertThat(user).isInstanceOf(CustomOAuth2User::class.java)
+
             val customUser = user as CustomOAuth2User
             assertThat(customUser.providerType).isEqualTo(ProviderType.KAKAO)
+            assertThat(customUser.name).isEqualTo("10")
+
             assertThat(customUser.authorities).hasSize(1)
             val authority: GrantedAuthority = customUser.authorities.iterator().next()
             assertThat(authority.authority).isEqualTo("ROLE_USER")
-            assertThat(customUser.name).isEqualTo("10")
         }
-    }
 
-    private fun clientRegistration(): ClientRegistration {
-        return ClientRegistration.withRegistrationId("kakao")
-            .clientId("client-id")
-            .clientSecret("client-secret")
-            .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-            .redirectUri("https://example.com/callback")
-            .authorizationUri("https://example.com/oauth2/authorize")
-            .tokenUri("https://example.com/oauth2/token")
-            .userInfoUri("https://example.com/userinfo")
-            .userNameAttributeName("id")
-            .scope("profile")
-            .build()
-    }
+        private fun clientRegistration(): ClientRegistration {
+            return ClientRegistration.withRegistrationId("kakao")
+                .clientId("client-id")
+                .clientSecret("client-secret")
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .redirectUri("https://example.com/callback")
+                .authorizationUri("https://example.com/oauth2/authorize")
+                .tokenUri("https://example.com/oauth2/token")
+                .userInfoUri("https://example.com/userinfo")
+                .userNameAttributeName("id")
+                .scope("profile")
+                .build()
+        }
 
-    private fun accessToken(): OAuth2AccessToken {
-        return OAuth2AccessToken(
-            OAuth2AccessToken.TokenType.BEARER,
-            "access-token",
-            Instant.now().minusSeconds(5),
-            Instant.now().plusSeconds(300)
-        )
+        private fun accessToken(): OAuth2AccessToken {
+            return OAuth2AccessToken(
+                OAuth2AccessToken.TokenType.BEARER,
+                "access-token",
+                Instant.now().minusSeconds(5),
+                Instant.now().plusSeconds(300)
+            )
+        }
     }
 }

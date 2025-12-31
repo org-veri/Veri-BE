@@ -109,10 +109,10 @@ class PostResponseMappingTest {
 
             val response = PostDetailResponse.CommentResponse.fromEntity(deleted)
 
-            assertThat(response.commentId() as Long?).isNull()
+            assertThat(response.commentId()).isNull()
             assertThat(response.content()).isEqualTo("삭제된 댓글입니다.")
             assertThat(response.author()).isNull()
-            assertThat(response.isDeleted()).isTrue()
+            assertThat(response.isDeleted).isTrue()
         }
     }
 

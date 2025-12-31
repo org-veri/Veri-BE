@@ -13,8 +13,6 @@ import org.mockito.BDDMockito.given
 import org.mockito.Mockito.lenient
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
-import org.veri.be.global.storage.dto.PresignedPostFormResponse
-import org.veri.be.global.storage.dto.PresignedUrlResponse
 import org.veri.be.global.storage.service.AwsStorageService
 import org.veri.be.global.storage.service.StorageKeyGenerator
 import software.amazon.awssdk.services.s3.S3Client
@@ -23,7 +21,7 @@ import software.amazon.awssdk.services.s3.model.GetUrlRequest
 import software.amazon.awssdk.services.s3.presigner.S3Presigner
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest
-import java.net.URL
+import java.net.URI
 import java.time.Duration
 import java.util.function.Consumer
 
@@ -70,10 +68,12 @@ class AwsStorageServiceTest {
         @DisplayName("presigned URL과 public URL을 반환한다")
         fun returnsPresignedUrl() {
             given(storageKeyGenerator.generate("image/png", "public")).willReturn("public/key.png")
-            given(s3Presigner.presignPutObject(any(PutObjectPresignRequest::class.java))).willReturn(presignedPutObjectRequest)
-            given(presignedPutObjectRequest.url()).willReturn(URL("https://example.com/presigned"))
+            given(s3Presigner.presignPutObject(any(PutObjectPresignRequest::class.java))).willReturn(
+                presignedPutObjectRequest
+            )
+            given(presignedPutObjectRequest.url()).willReturn(URI.create("https://example.com/presigned").toURL())
             given(s3Utilities.getUrl(any<Consumer<GetUrlRequest.Builder>>()))
-                .willReturn(URL("https://example.com/public/key.png"))
+                .willReturn(URI.create("https://example.com/public/key.png").toURL())
 
             val response = awsStorageService.generatePresignedUrl(
                 "image/png",
@@ -90,10 +90,12 @@ class AwsStorageServiceTest {
         @DisplayName("기본 prefix와 만료 시간으로 presigned URL을 반환한다")
         fun returnsPresignedUrlWithDefaultSettings() {
             given(storageKeyGenerator.generate("image/png", "public")).willReturn("public/key.png")
-            given(s3Presigner.presignPutObject(any(PutObjectPresignRequest::class.java))).willReturn(presignedPutObjectRequest)
-            given(presignedPutObjectRequest.url()).willReturn(URL("https://example.com/presigned"))
+            given(s3Presigner.presignPutObject(any(PutObjectPresignRequest::class.java))).willReturn(
+                presignedPutObjectRequest
+            )
+            given(presignedPutObjectRequest.url()).willReturn(URI.create("https://example.com/presigned").toURL())
             given(s3Utilities.getUrl(any<Consumer<GetUrlRequest.Builder>>()))
-                .willReturn(URL("https://example.com/public/key.png"))
+                .willReturn(URI.create("https://example.com/public/key.png").toURL())
 
             val response = awsStorageService.generatePresignedUrlOfDefault(
                 "image/png",
