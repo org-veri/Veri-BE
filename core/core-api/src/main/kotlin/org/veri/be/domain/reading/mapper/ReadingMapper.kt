@@ -38,11 +38,11 @@ object ReadingMapper {
      * Extract memberId/bookId from relationships
      */
     fun toDomain(entity: ReadingEntity): Reading {
-        val cards = entity.cards.map { toDomainCard(it) }
+        val cards = entity.cards?.map { toDomainCard(it) } ?: emptyList()
         return Reading.restore(
             id = entity.id!!,
-            memberId = entity.member?.id!!,
-            bookId = entity.book?.id!!,
+            memberId = entity.member?.id ?: throw IllegalArgumentException("Reading must have a member"),
+            bookId = entity.book?.id ?: throw IllegalArgumentException("Reading must have a book"),
             status = entity.status,
             isPublic = entity.isPublic,
             startedAt = entity.startedAt,
@@ -58,8 +58,8 @@ object ReadingMapper {
     private fun toDomainCard(card: Card): ReadingCard {
         return ReadingCard.restore(
             id = card.id!!,
-            readingId = ReadingId.of(card.reading?.id!!),
-            memberId = card.member?.id!!,
+            readingId = ReadingId.of(card.reading?.id ?: throw IllegalArgumentException("Card must have a reading")),
+            memberId = card.member?.id ?: throw IllegalArgumentException("Card must have a member"),
             content = card.content,
             imageUrl = card.image,
             deleted = !card.isPublic  // ReadingCard uses 'deleted' instead of 'isPublic'

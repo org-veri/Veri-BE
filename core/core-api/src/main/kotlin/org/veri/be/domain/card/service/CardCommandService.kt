@@ -70,12 +70,12 @@ class CardCommandService(
             .isPublic(actualIsPublic) // Reading이 비공개면 카드도 무조건 비공개
             .build()
 
-        cardRepository.save(card)
+        val savedCard = cardRepository.save(card)
 
         // Publish event
         eventPublisher.publishEvent(
             CardCreatedEvent(
-                cardId = card.id!!,
+                cardId = savedCard.id!!,
                 readingId = memberBookId,
                 memberId = member.id!!,
                 content = content,
@@ -84,7 +84,7 @@ class CardCommandService(
             )
         )
 
-        return card.id
+        return savedCard.id
     }
 
     @Transactional

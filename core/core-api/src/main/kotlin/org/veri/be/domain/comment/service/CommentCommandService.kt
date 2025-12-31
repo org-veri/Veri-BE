@@ -71,7 +71,7 @@ class CommentCommandService(
             CommentPostedEvent(
                 commentId = saved.id!!,
                 postId = post.id!!,
-                postAuthorId = post.author!!.id!!,
+                postAuthorId = post.author?.id ?: member.id!!,  // Handle null author
                 authorId = member.id!!,
                 parentCommentId = null,
                 content = request.content
