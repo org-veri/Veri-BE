@@ -163,9 +163,8 @@ class CommentDomainTest {
                     clock = fixedClock
                 )
             }
-                .isInstanceOf(DomainException::class.java)
-                .extracting("code")
-                .isEqualTo("MAX_DEPTH")
+                .isInstanceOf(IllegalArgumentException::class.java)
+                .hasMessageContaining("MAX_DEPTH")
         }
 
         @Test
@@ -187,9 +186,8 @@ class CommentDomainTest {
                     clock = fixedClock
                 )
             }
-                .isInstanceOf(DomainException::class.java)
-                .extracting("code")
-                .isEqualTo("PARENT_DELETED")
+                .isInstanceOf(IllegalStateException::class.java)
+                .hasMessageContaining("PARENT_DELETED")
         }
 
         @Test
@@ -223,9 +221,8 @@ class CommentDomainTest {
             assertThatThrownBy {
                 comment.editBy(999L, CommentContent.of("Hacked"))
             }
-                .isInstanceOf(DomainException::class.java)
-                .extracting("code")
-                .isEqualTo("UNAUTHORIZED")
+                .isInstanceOf(IllegalArgumentException::class.java)
+                .hasMessageContaining("UNAUTHORIZED")
         }
 
         @Test
@@ -261,9 +258,8 @@ class CommentDomainTest {
             )
 
             assertThatThrownBy { comment.deleteBy(999L, fixedClock) }
-                .isInstanceOf(DomainException::class.java)
-                .extracting("code")
-                .isEqualTo("UNAUTHORIZED")
+                .isInstanceOf(IllegalArgumentException::class.java)
+                .hasMessageContaining("UNAUTHORIZED")
         }
 
         @Test
@@ -280,9 +276,8 @@ class CommentDomainTest {
             assertThatThrownBy {
                 deletedComment.editBy(100L, CommentContent.of("Edit"))
             }
-                .isInstanceOf(DomainException::class.java)
-                .extracting("code")
-                .isEqualTo("ALREADY_DELETED")
+                .isInstanceOf(IllegalStateException::class.java)
+                .hasMessageContaining("ALREADY_DELETED")
         }
 
         @Test

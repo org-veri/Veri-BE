@@ -1,10 +1,8 @@
 package org.veri.be.domain.card.service
 
-import org.veri.be.global.storage.dto.PresignedPostFormResponse
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.veri.be.domain.book.entity.Reading as ReadingEntity
 import org.veri.be.domain.book.repository.ReadingRepository
 import org.veri.be.domain.card.controller.dto.CardConverter
 import org.veri.be.domain.card.controller.dto.response.CardUpdateResponse
@@ -18,10 +16,8 @@ import org.veri.be.domain.reading.event.CardDeletedEvent
 import org.veri.be.domain.reading.event.CardUpdatedEvent
 import org.veri.be.domain.reading.event.CardVisibilityChangedEvent
 import org.veri.be.domain.reading.mapper.ReadingMapper
-import org.veri.be.domain.reading.model.CardId
-import org.veri.be.domain.reading.model.CardContent
 import org.veri.be.domain.reading.model.Reading
-import org.veri.be.domain.reading.model.ReadingCard
+import org.veri.be.global.storage.dto.PresignedPostFormResponse
 import org.veri.be.global.storage.dto.PresignedUrlRequest
 import org.veri.be.global.storage.dto.PresignedUrlResponse
 import org.veri.be.global.storage.service.StorageConstants
@@ -30,6 +26,7 @@ import org.veri.be.global.storage.service.StorageUtil
 import org.veri.be.lib.exception.ApplicationException
 import org.veri.be.lib.exception.CommonErrorCode
 import java.time.Duration
+import org.veri.be.domain.book.entity.Reading as ReadingEntity
 
 /**
  * Card Command Service (v2.1)
@@ -55,6 +52,10 @@ class CardCommandService(
     ): Long {
         val readingEntity: ReadingEntity = readingRepository.findById(memberBookId)
             .orElseThrow { ApplicationException.of(CommonErrorCode.INVALID_REQUEST) }
+
+        // Validate reading entity has required relationships
+        require(readingEntity.member != null) { "Reading must have a member" }
+        require(readingEntity.book != null) { "Reading must have a book" }
 
         // Use domain model for validation
         val reading: Reading = ReadingMapper.toDomain(readingEntity)

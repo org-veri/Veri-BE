@@ -14,6 +14,8 @@ import org.veri.be.domain.comment.model.CommentContent
 import org.veri.be.domain.comment.repository.CommentRepository
 import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.post.service.PostQueryService
+import org.veri.be.lib.exception.ApplicationException
+import org.veri.be.lib.exception.CommonErrorCode
 import java.time.Clock
 
 /**
@@ -134,21 +136,40 @@ class CommentCommandService(
      *
      * v2.1: Domain model handles authorization and validation
      */
+    @Transactional
     fun editComment(commentId: Long, content: String, member: Member) {
         // 1. Load comment (as domain)
         val entity = commentQueryService.getCommentById(commentId)
         val comment = CommentMapper.toDomain(entity)
 
         // 2. Execute business logic (validates author, deleted status)
-        val edited = comment.editBy(member.id!!, CommentContent.of(content))
+        val edited = try {
+            comment.editBy(member.id!!, CommentContent.of(content))
+        } catch (e: IllegalArgumentException) {
+            when {
+                e.message?.startsWith("UNAUTHORIZED") == true ->
+                    throw ApplicationException.of(CommonErrorCode.DOES_NOT_HAVE_PERMISSION)
+                e.message?.startsWith("MAX_DEPTH") == true ->
+                    throw ApplicationException.of(CommonErrorCode.INVALID_REQUEST)
+                else -> throw e
+            }
+        } catch (e: IllegalStateException) {
+            when {
+                e.message?.startsWith("ALREADY_DELETED") == true ->
+                    throw ApplicationException.of(CommonErrorCode.INVALID_REQUEST)
+                e.message?.startsWith("PARENT_DELETED") == true ->
+                    throw ApplicationException.of(CommonErrorCode.INVALID_REQUEST)
+                else -> throw e
+            }
+        }
 
         // 3. Convert back to Entity and save (rebuild entity with updated values)
         val updatedEntity = CommentEntity.builder()
             .id(entity.id)  // Preserve ID
             .content(edited.content.value)
             .deletedAt(edited.deletedAt)
-            .post(entity.post)
-            .author(entity.author)
+            .post(entity.post)  // Preserve post relationship
+            .author(entity.author)  // Preserve author relationship
             .parent(entity.parent)
             .createdAt(entity.createdAt)
             .updatedAt(entity.updatedAt)
@@ -156,12 +177,12 @@ class CommentCommandService(
 
         commentRepository.save(updatedEntity)
 
-        // 4. Publish event
+        // 4. Publish event (use comment's author ID for safety)
         eventPublisher.publishEvent(
             CommentEditedEvent(
                 commentId = commentId,
-                postId = entity.post!!.id!!,
-                authorId = member.id!!,
+                postId = entity.post?.id ?: 0L,  // Safely get post ID
+                authorId = member.id!!,  // Use authenticated member's ID
                 content = content
             )
         )
@@ -171,6 +192,7 @@ class CommentCommandService(
      * Delete comment (soft delete)
      *
      * v2.1: Domain model handles authorization and soft delete logic
+     * Idempotent: deleting an already-deleted comment returns success
      */
     @Transactional
     fun deleteComment(commentId: Long, member: Member) {
@@ -178,16 +200,40 @@ class CommentCommandService(
         val entity = commentQueryService.getCommentById(commentId)
         val comment = CommentMapper.toDomain(entity)
 
-        // 2. Execute business logic (validates author, deleted status)
-        val deleted = comment.deleteBy(member.id!!, clock)
+        // 2. Check if already deleted (idempotent operation)
+        if (comment.isDeleted()) {
+            // Already deleted, return success without doing anything
+            return
+        }
 
-        // 3. Convert back to Entity and save (rebuild entity with updated values)
+        // 3. Execute business logic (validates author, deleted status)
+        val deleted = try {
+            comment.deleteBy(member.id!!, clock)
+        } catch (e: IllegalArgumentException) {
+            when {
+                e.message?.startsWith("UNAUTHORIZED") == true ->
+                    throw ApplicationException.of(CommonErrorCode.DOES_NOT_HAVE_PERMISSION)
+                e.message?.startsWith("MAX_DEPTH") == true ->
+                    throw ApplicationException.of(CommonErrorCode.INVALID_REQUEST)
+                else -> throw e
+            }
+        } catch (e: IllegalStateException) {
+            when {
+                e.message?.startsWith("ALREADY_DELETED") == true ->
+                    throw ApplicationException.of(CommonErrorCode.INVALID_REQUEST)
+                e.message?.startsWith("PARENT_DELETED") == true ->
+                    throw ApplicationException.of(CommonErrorCode.INVALID_REQUEST)
+                else -> throw e
+            }
+        }
+
+        // 4. Convert back to Entity and save (rebuild entity with updated values)
         val updatedEntity = CommentEntity.builder()
             .id(entity.id)  // Preserve ID
             .content(deleted.content.value)
             .deletedAt(deleted.deletedAt)
-            .post(entity.post)
-            .author(entity.author)
+            .post(entity.post)  // Preserve post relationship
+            .author(entity.author)  // Preserve author relationship
             .parent(entity.parent)
             .createdAt(entity.createdAt)
             .updatedAt(entity.updatedAt)
@@ -195,12 +241,12 @@ class CommentCommandService(
 
         commentRepository.save(updatedEntity)
 
-        // 4. Publish event
+        // 5. Publish event (use comment's author ID for safety)
         eventPublisher.publishEvent(
             CommentDeletedEvent(
                 commentId = commentId,
-                postId = entity.post!!.id!!,
-                authorId = member.id!!
+                postId = entity.post?.id ?: 0L,  // Safely get post ID
+                authorId = member.id!!  // Use authenticated member's ID
             )
         )
     }

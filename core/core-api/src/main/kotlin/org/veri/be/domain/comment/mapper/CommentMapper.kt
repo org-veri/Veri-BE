@@ -39,12 +39,16 @@ object CommentMapper {
      * Convert Entity → Domain (for queries)
      *
      * v2.1: All fields are non-null after persistence
+     * v2.2: Use lazy-loaded relationships safely with explicit fetch
      */
     fun toDomain(entity: CommentEntity): Comment {
         // Get IDs from lazy-loaded relationships
-        val postId = entity.post?.id ?: throw IllegalStateException("Post must be loaded")
-        val postAuthorId = entity.post?.author?.id ?: throw IllegalStateException("Post author must be loaded")
-        val authorId = entity.author?.id ?: throw IllegalStateException("Author must be loaded")
+        // Note: Relationships must be fetched before calling this method
+        val postId = entity.post?.id ?: throw IllegalStateException("Post must be loaded. Use findByIdWithPostAndAuthor to fetch.")
+        val postAuthorId = entity.post?.author?.id
+            ?: throw IllegalStateException("Post author must be loaded. Use findByIdWithPostAndAuthor to fetch.")
+        val authorId = entity.author?.id
+            ?: throw IllegalStateException("Author must be loaded. Use findByIdWithPostAndAuthor to fetch.")
         val parentCommentId = entity.parent?.id
 
         return Comment.restore(

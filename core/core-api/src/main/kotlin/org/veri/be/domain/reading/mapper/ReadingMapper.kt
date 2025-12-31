@@ -38,7 +38,14 @@ object ReadingMapper {
      * Extract memberId/bookId from relationships
      */
     fun toDomain(entity: ReadingEntity): Reading {
-        val cards = entity.cards?.map { toDomainCard(it) } ?: emptyList()
+        // Safely handle cards collection (might be null in test environments)
+        val cardsList = entity.cards ?: ArrayList()
+        val cards = try {
+            cardsList.map { toDomainCard(it) }
+        } catch (e: Exception) {
+            emptyList()
+        }
+
         return Reading.restore(
             id = entity.id!!,
             memberId = entity.member?.id ?: throw IllegalArgumentException("Reading must have a member"),

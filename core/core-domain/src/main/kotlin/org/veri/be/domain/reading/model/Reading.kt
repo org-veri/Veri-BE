@@ -155,12 +155,3 @@ data class Reading(
         }
     }
 }
-
-/**
- * Domain Exception for business rule violations
- * (Shared across all domains)
- */
-data class DomainException(
-    val code: String,
-    override val message: String
-) : RuntimeException("[$code] $message")

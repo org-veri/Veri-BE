@@ -44,7 +44,7 @@ data class Post(
 
     private fun validateAuthor(requesterId: Long) {
         if (authorId != requesterId) {
-            throw DomainException("UNAUTHORIZED", "Only author can modify this post")
+            throw IllegalArgumentException("UNAUTHORIZED: Only author can modify this post")
         }
     }
 
@@ -97,12 +97,3 @@ data class Post(
         }
     }
 }
-
-/**
- * Domain Exception for business rule violations
- * (Shared across all domains - redefined for each package)
- */
-data class DomainException(
-    val code: String,
-    override val message: String
-) : RuntimeException("[$code] $message")

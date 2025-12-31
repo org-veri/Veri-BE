@@ -26,8 +26,8 @@ public class CommentQueryService {
                 .toList();
     }
 
-    public Comment getCommentById(Long parentCommentId) {
-        return this.commentRepository.findById(parentCommentId)
+    public Comment getCommentById(Long commentId) {
+        return this.commentRepository.findByIdWithPostAndAuthor(commentId)
                 .orElseThrow(() -> ApplicationException.of(CommonErrorCode.RESOURCE_NOT_FOUND));
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
@@ -23,4 +24,13 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             ORDER BY c.createdAt ASC
             """)
     List<Comment> findByPostIdWithRepliesAndAuthor(@Param("postId") Long postId);
+
+    @Query("""
+            SELECT DISTINCT c FROM Comment c
+            LEFT JOIN FETCH c.post p
+            LEFT JOIN FETCH p.author
+            LEFT JOIN FETCH c.author
+            WHERE c.id = :commentId
+            """)
+    Optional<Comment> findByIdWithPostAndAuthor(@Param("commentId") Long commentId);
 }

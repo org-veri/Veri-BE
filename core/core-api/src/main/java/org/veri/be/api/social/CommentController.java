@@ -42,20 +42,22 @@ public class CommentController {
 
     @PatchMapping("/{commentId}")
     @Operation(summary = "댓글 수정", description = "댓글의 내용을 수정합니다.")
-    public void editComment(
+    public ApiResponse<Void> editComment(
             @PathVariable Long commentId,
             @RequestBody CommentEditRequest request,
             @AuthenticatedMember Member member
     ) {
         commentCommandService.editComment(commentId, request.content(), member);
+        return ApiResponse.ok(null);
     }
 
     @DeleteMapping("/{commentId}")
     @Operation(summary = "댓글 삭제", description = "댓글을 삭제합니다.")
-    public void deleteComment(
+    public ApiResponse<Void> deleteComment(
             @PathVariable Long commentId,
             @AuthenticatedMember Member member
     ) {
         commentCommandService.deleteComment(commentId, member);
+        return ApiResponse.ok(null);
     }
 }

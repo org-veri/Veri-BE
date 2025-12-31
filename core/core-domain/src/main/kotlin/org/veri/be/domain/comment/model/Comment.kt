@@ -45,7 +45,6 @@ data class Comment(
      * @param requesterId ID of member requesting edit
      * @param newContent New content
      * @return New Comment instance with updated content
-     * @throws DomainException if not authorized or already deleted
      */
     fun editBy(requesterId: Long, newContent: CommentContent): Comment {
         validateAuthor(requesterId)
@@ -64,7 +63,6 @@ data class Comment(
      * @param requesterId ID of member requesting deletion
      * @param clock Clock for timestamp
      * @return New Comment instance marked as deleted
-     * @throws DomainException if not authorized or already deleted
      */
     fun deleteBy(requesterId: Long, clock: Clock): Comment {
         validateAuthor(requesterId)
@@ -78,13 +76,13 @@ data class Comment(
 
     private fun validateAuthor(requesterId: Long) {
         if (authorId != requesterId) {
-            throw DomainException("UNAUTHORIZED", "Only author can modify this comment")
+            throw IllegalArgumentException("UNAUTHORIZED: Only author can modify this comment")
         }
     }
 
     private fun validateNotDeleted() {
         if (isDeleted()) {
-            throw DomainException("ALREADY_DELETED", "Cannot modify deleted comment")
+            throw IllegalStateException("ALREADY_DELETED: Cannot modify deleted comment")
         }
     }
 
@@ -136,7 +134,6 @@ data class Comment(
          * @param content Reply content
          * @param clock Clock for timestamp
          * @return New Comment instance (id = null)
-         * @throws DomainException if max depth exceeded or parent deleted
          */
         fun createReply(
             parent: Comment,
@@ -145,10 +142,10 @@ data class Comment(
             clock: Clock
         ): Comment {
             if (parent.depth >= MAX_DEPTH) {
-                throw DomainException("MAX_DEPTH", "Max reply depth exceeded (max $MAX_DEPTH)")
+                throw IllegalArgumentException("MAX_DEPTH: Max reply depth exceeded (max $MAX_DEPTH)")
             }
             if (parent.isDeleted()) {
-                throw DomainException("PARENT_DELETED", "Cannot reply to deleted comment")
+                throw IllegalStateException("PARENT_DELETED: Cannot reply to deleted comment")
             }
 
             val now = LocalDateTime.now(clock).withSecond(0).withNano(0)
@@ -209,11 +206,3 @@ data class Comment(
         }
     }
 }
-
-/**
- * Domain Exception for business rule violations
- */
-data class DomainException(
-    val code: String,
-    override val message: String
-) : RuntimeException("[$code] $message")

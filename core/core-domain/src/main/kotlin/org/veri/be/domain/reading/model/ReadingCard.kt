@@ -32,7 +32,7 @@ data class ReadingCard(
         // Reading visibility check is done by Reading(AR)
         // This is just owner check
         if (memberId != requesterId) {
-            throw DomainException("NOT_READABLE", "Not your card")
+            throw IllegalArgumentException("NOT_READABLE: Not your card")
         }
     }
 
