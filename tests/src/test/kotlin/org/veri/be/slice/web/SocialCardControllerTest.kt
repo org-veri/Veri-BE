@@ -107,6 +107,28 @@ class SocialCardControllerTest {
 
             verify(cardQueryService).getAllCards(0, 10, CardSortType.NEWEST)
         }
+
+        @Test
+        @DisplayName("page가 0 이하면 400을 반환한다")
+        fun returns400WhenPageIsInvalid() {
+            mockMvc.perform(
+                get("/api/v1/cards")
+                    .param("page", "0")
+                    .param("size", "10")
+            )
+                .andExpect(status().isBadRequest)
+        }
+
+        @Test
+        @DisplayName("size가 0 이하면 400을 반환한다")
+        fun returns400WhenSizeIsInvalid() {
+            mockMvc.perform(
+                get("/api/v1/cards")
+                    .param("page", "1")
+                    .param("size", "0")
+            )
+                .andExpect(status().isBadRequest)
+        }
     }
 
     @Nested
