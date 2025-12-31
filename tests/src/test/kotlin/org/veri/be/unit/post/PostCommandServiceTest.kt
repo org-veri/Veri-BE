@@ -28,6 +28,7 @@ import org.veri.be.domain.post.service.PostCommandService
 import org.veri.be.domain.post.service.PostQueryService
 import org.veri.be.global.storage.dto.PresignedUrlRequest
 import org.veri.be.global.storage.dto.PresignedUrlResponse
+import org.springframework.context.ApplicationEventPublisher
 import org.veri.be.global.storage.service.StorageService
 import org.veri.be.support.assertion.ExceptionAssertions
 import java.util.Comparator
@@ -50,6 +51,9 @@ class PostCommandServiceTest {
     @org.mockito.Mock
     private lateinit var likePostRepository: LikePostRepository
 
+    @org.mockito.Mock
+    private lateinit var eventPublisher: ApplicationEventPublisher
+
     private lateinit var postCommandService: PostCommandService
 
     @org.mockito.Captor
@@ -65,7 +69,8 @@ class PostCommandServiceTest {
             postQueryService,
             bookService,
             storageService,
-            likePostRepository
+            likePostRepository,
+            eventPublisher
         )
     }
 
@@ -92,11 +97,17 @@ class PostCommandServiceTest {
             )
 
             given(bookService.getBookById(10L)).willReturn(book)
-            given(postRepository.save(any(Post::class.java))).willAnswer { invocation -> invocation.getArgument(0) }
+            given(postRepository.save(any(Post::class.java))).willAnswer { invocation ->
+                val post = invocation.getArgument(0) as Post
+                // Simulate JPA ID generation
+                post.toBuilder().id(1L).build()
+            }
 
             postCommandService.createPost(request, author)
 
             verify(postRepository).save(postCaptor.capture())
+            verify(eventPublisher).publishEvent(any())
+
             val saved = postCaptor.value
 
             assertThat(saved.title).isEqualTo("title")
@@ -142,9 +153,17 @@ class PostCommandServiceTest {
         @DisplayName("게시글을 공개로 변경한다")
         fun publishesPost() {
             val author = member(1L, "author@test.com", "author")
+            val book = Book.builder()
+                .id(10L)
+                .title("book")
+                .author("author")
+                .image("https://example.com/book.png")
+                .isbn("isbn-1")
+                .build()
             val post = Post.builder()
                 .id(1L)
                 .author(author)
+                .book(book)
                 .isPublic(false)
                 .title("title")
                 .content("content")
@@ -155,6 +174,7 @@ class PostCommandServiceTest {
             postCommandService.publishPost(1L, author)
 
             verify(postRepository).save(postCaptor.capture())
+            verify(eventPublisher).publishEvent(any())
             assertThat(postCaptor.value.isPublic).isTrue()
         }
     }
@@ -167,9 +187,17 @@ class PostCommandServiceTest {
         @DisplayName("게시글을 비공개로 변경한다")
         fun unpublishesPost() {
             val author = member(1L, "author@test.com", "author")
+            val book = Book.builder()
+                .id(10L)
+                .title("book")
+                .author("author")
+                .image("https://example.com/book.png")
+                .isbn("isbn-1")
+                .build()
             val post = Post.builder()
                 .id(1L)
                 .author(author)
+                .book(book)
                 .isPublic(true)
                 .title("title")
                 .content("content")
@@ -180,6 +208,7 @@ class PostCommandServiceTest {
             postCommandService.unPublishPost(1L, author)
 
             verify(postRepository).save(postCaptor.capture())
+            verify(eventPublisher).publishEvent(any())
             assertThat(postCaptor.value.isPublic).isFalse()
         }
     }

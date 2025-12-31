@@ -11,6 +11,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.test.util.ReflectionTestUtils
 import org.veri.be.domain.comment.dto.request.CommentPostRequest
 import org.veri.be.domain.comment.entity.Comment
@@ -37,6 +38,9 @@ class CommentCommandServiceTest {
     @org.mockito.Mock
     private lateinit var postQueryService: PostQueryService
 
+    @org.mockito.Mock
+    private lateinit var eventPublisher: ApplicationEventPublisher
+
     private val fixedClock: Clock = Clock.fixed(Instant.parse("2024-01-01T00:00:00Z"), ZoneId.of("UTC"))
 
     private lateinit var commentCommandService: CommentCommandService
@@ -50,7 +54,8 @@ class CommentCommandServiceTest {
             commentRepository,
             commentQueryService,
             postQueryService,
-            fixedClock
+            fixedClock,
+            eventPublisher
         )
     }
 
@@ -62,7 +67,12 @@ class CommentCommandServiceTest {
         @DisplayName("댓글을 저장하고 ID를 반환한다")
         fun savesComment() {
             val member = member(1L, "member@test.com", "member")
-            val post = Post.builder().id(10L).title("title").content("content").build()
+            val post = Post.builder()
+                .id(10L)
+                .author(member)
+                .title("title")
+                .content("content")
+                .build()
             val request = CommentPostRequest(10L, "content")
 
             given(postQueryService.getPostById(10L)).willReturn(post)
@@ -76,6 +86,7 @@ class CommentCommandServiceTest {
             val result = commentCommandService.postComment(request, member)
 
             verify(commentRepository).save(commentCaptor.capture())
+            verify(eventPublisher).publishEvent(any())
             val saved = commentCaptor.value
             assertThat(saved.post).isEqualTo(post)
             assertThat(saved.author).isEqualTo(member)
@@ -92,8 +103,18 @@ class CommentCommandServiceTest {
         @DisplayName("대댓글을 저장하고 ID를 반환한다")
         fun savesReply() {
             val member = member(2L, "reply@test.com", "reply")
-            val post = Post.builder().id(10L).title("title").content("content").build()
-            val parent = Comment.builder().id(5L).post(post).author(member).content("parent").build()
+            val post = Post.builder()
+                .id(10L)
+                .author(member)
+                .title("title")
+                .content("content")
+                .build()
+            val parent = Comment.builder()
+                .id(5L)
+                .post(post)
+                .author(member)
+                .content("parent")
+                .build()
 
             given(commentQueryService.getCommentById(5L)).willReturn(parent)
             given(commentRepository.save(any(Comment::class.java)))
@@ -106,6 +127,7 @@ class CommentCommandServiceTest {
             val result = commentCommandService.postReply(5L, "reply", member)
 
             verify(commentRepository).save(commentCaptor.capture())
+            verify(eventPublisher).publishEvent(any())
             val saved = commentCaptor.value
             assertThat(saved.parent).isEqualTo(parent)
             assertThat(saved.post).isEqualTo(post)
@@ -123,13 +145,23 @@ class CommentCommandServiceTest {
         @DisplayName("댓글 내용을 수정한다")
         fun editsComment() {
             val member = member(1L, "member@test.com", "member")
-            val comment = Comment.builder().id(1L).author(member).content("before").build()
+            val post = Post.builder()
+                .id(10L)
+                .author(member)
+                .build()
+            val comment = Comment.builder()
+                .id(1L)
+                .post(post)
+                .author(member)
+                .content("before")
+                .build()
 
             given(commentQueryService.getCommentById(1L)).willReturn(comment)
 
             commentCommandService.editComment(1L, "after", member)
 
             verify(commentRepository).save(commentCaptor.capture())
+            verify(eventPublisher).publishEvent(any())
             assertThat(commentCaptor.value.content).isEqualTo("after")
         }
     }
@@ -142,13 +174,23 @@ class CommentCommandServiceTest {
         @DisplayName("댓글을 삭제 처리한다")
         fun deletesComment() {
             val member = member(1L, "member@test.com", "member")
-            val comment = Comment.builder().id(1L).author(member).content("content").build()
+            val post = Post.builder()
+                .id(10L)
+                .author(member)
+                .build()
+            val comment = Comment.builder()
+                .id(1L)
+                .post(post)
+                .author(member)
+                .content("content")
+                .build()
 
             given(commentQueryService.getCommentById(1L)).willReturn(comment)
 
             commentCommandService.deleteComment(1L, member)
 
             verify(commentRepository).save(commentCaptor.capture())
+            verify(eventPublisher).publishEvent(any())
             assertThat(commentCaptor.value.isDeleted).isTrue()
         }
     }

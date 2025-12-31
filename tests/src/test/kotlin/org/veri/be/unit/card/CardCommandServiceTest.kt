@@ -11,6 +11,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.test.util.ReflectionTestUtils
 import org.veri.be.domain.book.entity.Reading
 import org.veri.be.domain.book.repository.ReadingRepository
@@ -42,6 +43,9 @@ class CardCommandServiceTest {
     @org.mockito.Mock
     private lateinit var storageService: StorageService
 
+    @org.mockito.Mock
+    private lateinit var eventPublisher: ApplicationEventPublisher
+
     private lateinit var cardCommandService: CardCommandService
 
     @org.mockito.Captor
@@ -52,7 +56,8 @@ class CardCommandServiceTest {
         cardCommandService = CardCommandService(
             cardRepository,
             readingRepository,
-            storageService
+            storageService,
+            eventPublisher
         )
     }
 
@@ -64,7 +69,17 @@ class CardCommandServiceTest {
         @DisplayName("독서가 비공개면 카드도 비공개로 저장된다")
         fun forcesPrivateWhenReadingPrivate() {
             val member = member(1L, "member@test.com", "member")
-            val reading = Reading.builder().id(10L).isPublic(false).build()
+            val book = org.veri.be.domain.book.entity.Book.builder()
+                .id(100L)
+                .title("book")
+                .author("author")
+                .build()
+            val reading = Reading.builder()
+                .id(10L)
+                .member(member)
+                .book(book)
+                .isPublic(false)
+                .build()
 
             given(readingRepository.findById(10L)).willReturn(Optional.of(reading))
             given(cardRepository.save(any(Card::class.java))).willAnswer { invocation ->
@@ -76,6 +91,7 @@ class CardCommandServiceTest {
             val id = cardCommandService.createCard(member, "content", "https://example.com/card.png", 10L, true)
 
             verify(cardRepository).save(cardCaptor.capture())
+            verify(eventPublisher).publishEvent(any())
             assertThat(cardCaptor.value.isPublic).isFalse()
             assertThat(id).isEqualTo(1L)
         }
@@ -89,9 +105,14 @@ class CardCommandServiceTest {
         @DisplayName("카드를 수정하고 응답을 반환한다")
         fun updatesCard() {
             val member = member(1L, "member@test.com", "member")
+            val reading = Reading.builder()
+                .id(10L)
+                .member(member)
+                .build()
             val card = Card.builder()
                 .id(1L)
                 .member(member)
+                .reading(reading)
                 .content("before")
                 .image("https://example.com/before.png")
                 .build()
@@ -103,6 +124,7 @@ class CardCommandServiceTest {
 
             val result = cardCommandService.updateCard(member, 1L, "after", "https://example.com/after.png")
 
+            verify(eventPublisher).publishEvent(any())
             assertThat(result).isEqualTo(response)
         }
     }
@@ -137,13 +159,22 @@ class CardCommandServiceTest {
         @DisplayName("카드를 삭제한다")
         fun deletesCard() {
             val member = member(1L, "member@test.com", "member")
-            val card = Card.builder().id(1L).member(member).build()
+            val reading = Reading.builder()
+                .id(10L)
+                .member(member)
+                .build()
+            val card = Card.builder()
+                .id(1L)
+                .member(member)
+                .reading(reading)
+                .build()
 
             given(cardRepository.findById(1L)).willReturn(Optional.of(card))
 
             cardCommandService.deleteCard(member, 1L)
 
             verify(cardRepository).deleteById(1L)
+            verify(eventPublisher).publishEvent(any())
         }
     }
 
