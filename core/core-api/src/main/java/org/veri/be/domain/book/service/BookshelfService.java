@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.veri.be.domain.book.controller.enums.ReadingSortType;
 import org.veri.be.domain.book.dto.book.BookPopularResponse;
-import org.veri.be.domain.book.dto.reading.ReadingConverter;
 import org.veri.be.domain.book.dto.reading.response.ReadingDetailResponse;
 import org.veri.be.domain.book.dto.reading.response.ReadingResponse;
 import org.veri.be.domain.book.dto.reading.response.ReadingVisibilityUpdateResponse;
@@ -43,7 +42,6 @@ public class BookshelfService {
 
     private final ReadingRepository readingRepository;
     private final BookRepository bookRepository;
-    private final ReadingConverter readingConverter;
     private final CurrentMemberAccessor currentMemberAccessor;
     private final Clock clock;
 
@@ -97,7 +95,8 @@ public class BookshelfService {
             throw ApplicationException.of(CommonErrorCode.RESOURCE_NOT_FOUND);
         }
 
-        return readingConverter.toReadingDetailResponse(reading);
+        CurrentMemberInfo viewer = currentMemberAccessor.getCurrentMemberInfo().orElse(null);
+        return ReadingDetailResponse.from(reading, viewer);
     }
 
     @Transactional(readOnly = true)

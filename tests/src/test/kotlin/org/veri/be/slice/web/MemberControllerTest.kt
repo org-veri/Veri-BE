@@ -66,7 +66,7 @@ class MemberControllerTest {
     private fun testMemberAccessor(member: Member): CurrentMemberAccessor {
         val info = CurrentMemberInfo.from(member)
         return object : CurrentMemberAccessor {
-            override fun getCurrentMemberInfo() = Optional.of(info)
+            override fun getCurrentMemberInfoOrNull() = info
             override fun getCurrentMember() = Optional.of(member)
         }
     }

@@ -10,7 +10,6 @@ import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.BDDMockito.given
 import org.mockito.junit.jupiter.MockitoExtension
-import org.veri.be.domain.card.controller.dto.CardConverter
 import org.veri.be.domain.card.controller.dto.response.CardDetailResponse
 import org.veri.be.domain.card.controller.enums.CardSortType
 import org.veri.be.domain.card.entity.Card
@@ -71,7 +70,7 @@ class CardQueryServiceTest {
         fun returnsDetailResponse() {
             val viewer = member(1L, "member@test.com", "member")
             val card = Card.builder().id(1L).member(viewer).build()
-            val response: CardDetailResponse = CardConverter.toCardDetailResponse(card, viewer)
+            val response: CardDetailResponse = CardDetailResponse.from(card, viewer)
 
             given(cardRepository.findByIdWithAllAssociations(1L)).willReturn(Optional.of(card))
 

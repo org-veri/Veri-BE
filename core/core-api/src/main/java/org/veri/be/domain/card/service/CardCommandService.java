@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.veri.be.domain.book.entity.Reading;
 import org.veri.be.domain.book.repository.ReadingRepository;
-import org.veri.be.domain.card.controller.dto.CardConverter;
 import org.veri.be.domain.card.controller.dto.response.CardUpdateResponse;
 import org.veri.be.domain.card.controller.dto.response.CardVisibilityUpdateResponse;
 import org.veri.be.domain.card.entity.Card;
@@ -55,7 +54,7 @@ public class CardCommandService {
         Card updatedCard = card.updateContent(content, imageUrl, member);
         Card savedCard = cardRepository.save(updatedCard);
 
-        return CardConverter.toCardUpdateResponse(savedCard);
+        return CardUpdateResponse.from(savedCard);
     }
 
     public Card getCard(Long cardId) {

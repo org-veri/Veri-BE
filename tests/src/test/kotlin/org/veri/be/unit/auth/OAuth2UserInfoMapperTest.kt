@@ -9,7 +9,6 @@ import org.springframework.security.core.GrantedAuthority
 import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.global.auth.oauth2.dto.CustomOAuth2User
 import org.veri.be.global.auth.oauth2.dto.OAuth2UserInfo
-import org.veri.be.global.auth.oauth2.dto.OAuth2UserInfoMapper
 
 class OAuth2UserInfoMapperTest {
 
@@ -32,7 +31,7 @@ class OAuth2UserInfoMapperTest {
             )
             val user = CustomOAuth2User(listOf(), attributes, "id", "kakao")
 
-            val info: OAuth2UserInfo = OAuth2UserInfoMapper.of(user)
+            val info: OAuth2UserInfo = OAuth2UserInfo.from(user)
 
             assertThat(info.email).isEqualTo("member@test.com")
             assertThat(info.nickname).isEqualTo("member")

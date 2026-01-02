@@ -9,7 +9,6 @@ import org.springframework.data.domain.PageRequest
 import org.veri.be.api.common.dto.MemberProfileResponse
 import org.veri.be.domain.book.entity.Book
 import org.veri.be.domain.book.entity.Reading
-import org.veri.be.domain.card.controller.dto.CardConverter
 import org.veri.be.domain.card.controller.dto.request.CardCreateRequest
 import org.veri.be.domain.card.controller.dto.response.CardDetailResponse
 import org.veri.be.domain.card.controller.dto.response.CardListResponse
@@ -24,8 +23,8 @@ import java.time.LocalDateTime
 class CardResponseMappingTest {
 
     @Nested
-    @DisplayName("CardConverter")
-    inner class CardConverterMapping {
+    @DisplayName("CardResponse")
+    inner class CardResponseMapping {
 
         @Test
         @DisplayName("카드 상세 응답으로 변환한다")
@@ -42,7 +41,7 @@ class CardResponseMappingTest {
                 .isPublic(true)
                 .build()
 
-            val response: CardDetailResponse = CardConverter.toCardDetailResponse(card, member)
+            val response: CardDetailResponse = CardDetailResponse.from(card, member)
 
             assertThat(response.id()).isEqualTo(1L)
             assertThat(response.memberProfileResponse()).isEqualTo(MemberProfileResponse.from(member))
@@ -63,7 +62,7 @@ class CardResponseMappingTest {
                 .updatedAt(LocalDateTime.of(2024, 1, 2, 0, 0))
                 .build()
 
-            val response: CardUpdateResponse = CardConverter.toCardUpdateResponse(card)
+            val response: CardUpdateResponse = CardUpdateResponse.from(card)
 
             assertThat(response.id()).isEqualTo(1L)
             assertThat(response.updatedAt()).isEqualTo(LocalDateTime.of(2024, 1, 2, 0, 0))

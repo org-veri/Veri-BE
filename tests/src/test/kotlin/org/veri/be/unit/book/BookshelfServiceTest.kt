@@ -18,8 +18,6 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.veri.be.domain.book.controller.enums.ReadingSortType
 import org.veri.be.domain.book.dto.book.BookPopularResponse
-import org.veri.be.domain.book.dto.reading.ReadingConverter
-import org.veri.be.domain.book.dto.reading.response.ReadingDetailResponse
 import org.veri.be.domain.book.dto.reading.response.ReadingVisibilityUpdateResponse
 import org.veri.be.domain.book.entity.Book
 import org.veri.be.domain.book.entity.Reading
@@ -51,9 +49,6 @@ class BookshelfServiceTest {
     private lateinit var bookRepository: BookRepository
 
     @org.mockito.Mock
-    private lateinit var readingConverter: ReadingConverter
-
-    @org.mockito.Mock
     private lateinit var currentMemberAccessor: CurrentMemberAccessor
 
     private val fixedClock: Clock = Clock.fixed(Instant.parse("2024-01-03T12:00:00Z"), ZoneId.of("UTC"))
@@ -74,7 +69,6 @@ class BookshelfServiceTest {
         bookshelfService = BookshelfService(
             readingRepository,
             bookRepository,
-            readingConverter,
             currentMemberAccessor,
             fixedClock
         )
@@ -181,17 +175,13 @@ class BookshelfServiceTest {
         fun returnsDetailForPublic() {
             val owner = member(1L, "owner@test.com", "owner")
             val reading = reading(10L, owner, book(1L), ReadingStatus.READING, true)
-            val response = ReadingDetailResponse.builder()
-                .memberBookId(10L)
-                .build()
-
             given(readingRepository.findByIdWithCardsAndBook(10L)).willReturn(Optional.of(reading))
-            given(readingConverter.toReadingDetailResponse(reading)).willReturn(response)
+            given(currentMemberAccessor.currentMemberInfo)
+                .willReturn(Optional.of(CurrentMemberInfo.from(owner)))
 
             val result = bookshelfService.searchDetail(10L)
 
-            assertThat(result).isEqualTo(response)
-            verify(readingConverter).toReadingDetailResponse(reading)
+            assertThat(result.memberBookId()).isEqualTo(10L)
         }
     }
 

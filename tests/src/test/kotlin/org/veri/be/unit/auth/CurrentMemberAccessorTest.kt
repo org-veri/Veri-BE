@@ -73,7 +73,7 @@ class CurrentMemberAccessorTest {
         info: Optional<CurrentMemberInfo>
     ): CurrentMemberAccessor {
         return object : CurrentMemberAccessor {
-            override fun getCurrentMemberInfo(): Optional<CurrentMemberInfo> = info
+            override fun getCurrentMemberInfoOrNull(): CurrentMemberInfo? = info.orElse(null)
             override fun getCurrentMember(): Optional<Member> = member
         }
     }
