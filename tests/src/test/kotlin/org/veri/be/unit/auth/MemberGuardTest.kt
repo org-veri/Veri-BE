@@ -12,6 +12,7 @@ import org.veri.be.lib.exception.CommonErrorCode
 import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.global.auth.context.CurrentMemberAccessor
+import org.veri.be.global.auth.context.CurrentMemberInfo
 import org.veri.be.global.auth.guards.MemberGuard
 import org.veri.be.support.assertion.ExceptionAssertions
 import java.util.Optional
@@ -33,7 +34,7 @@ class MemberGuardTest {
         @Test
         @DisplayName("로그인한 사용자가 있으면 통과한다")
         fun allowsWhenMemberPresent() {
-            given(currentMemberAccessor.currentMember).willReturn(Optional.of(member()))
+            given(currentMemberAccessor.currentMemberInfo).willReturn(Optional.of(CurrentMemberInfo.from(member())))
 
             assertThatCode { guard.canActivate() }.doesNotThrowAnyException()
         }
@@ -41,7 +42,7 @@ class MemberGuardTest {
         @Test
         @DisplayName("로그인한 사용자가 없으면 예외가 발생한다")
         fun throwsWhenMemberMissing() {
-            given(currentMemberAccessor.currentMember).willReturn(Optional.empty())
+            given(currentMemberAccessor.currentMemberInfo).willReturn(Optional.empty())
 
             ExceptionAssertions.assertApplicationException(
                 guard::canActivate,

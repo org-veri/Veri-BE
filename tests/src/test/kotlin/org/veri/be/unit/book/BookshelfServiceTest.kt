@@ -32,6 +32,7 @@ import org.veri.be.domain.book.service.BookshelfService
 import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.global.auth.context.CurrentMemberAccessor
+import org.veri.be.global.auth.context.CurrentMemberInfo
 import org.veri.be.lib.exception.CommonErrorCode
 import org.veri.be.support.assertion.ExceptionAssertions
 import java.time.Clock
@@ -167,7 +168,7 @@ class BookshelfServiceTest {
             val reading = reading(10L, owner, book(1L), ReadingStatus.READING, false)
 
             given(readingRepository.findByIdWithCardsAndBook(10L)).willReturn(Optional.of(reading))
-            given(currentMemberAccessor.memberOrThrow).willReturn(viewer)
+            given(currentMemberAccessor.memberInfoOrThrow).willReturn(CurrentMemberInfo.from(viewer))
 
             ExceptionAssertions.assertApplicationException(
                 { bookshelfService.searchDetail(10L) },
