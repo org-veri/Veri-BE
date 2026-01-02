@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.veri.be.domain.comment.service.CommentQueryService;
-import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.post.controller.enums.PostSortType;
 import org.veri.be.domain.post.dto.response.PostDetailResponse;
 import org.veri.be.domain.post.dto.response.PostFeedResponseItem;
@@ -46,11 +45,11 @@ public class PostQueryService {
                 .orElseThrow(() -> ApplicationException.of(CommonErrorCode.RESOURCE_NOT_FOUND));
     }
 
-    public PostDetailResponse getPostDetail(Long postId, Member requester) {
+    public PostDetailResponse getPostDetail(Long postId, Long requesterId) {
         Post post = postRepository.findByIdWithAllAssociations(postId)
                 .orElseThrow(() -> ApplicationException.of(CommonErrorCode.RESOURCE_NOT_FOUND));
 
-        DetailLikeInfoQueryResult likeInfo = likePostQueryService.getDetailLikeInfoOfPost(postId, requester.getId());
+        DetailLikeInfoQueryResult likeInfo = likePostQueryService.getDetailLikeInfoOfPost(postId, requesterId);
         List<PostDetailResponse.CommentResponse> comments = commentQueryService.getCommentsByPostId(postId);
 
         return PostDetailResponse.from(post, likeInfo, comments);

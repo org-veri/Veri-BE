@@ -64,8 +64,7 @@ public class ReadingQueryService {
             throw ApplicationException.of(CommonErrorCode.RESOURCE_NOT_FOUND);
         }
 
-        CurrentMemberInfo viewer = currentMemberAccessor.getCurrentMemberInfo().orElse(null);
-        return ReadingDetailResponse.from(reading, viewer);
+        return ReadingDetailResponse.from(reading, memberInfo);
     }
 
     @Transactional(readOnly = true)

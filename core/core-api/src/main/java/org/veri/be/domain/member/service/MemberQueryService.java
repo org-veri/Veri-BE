@@ -9,6 +9,8 @@ import org.veri.be.domain.member.exception.MemberErrorCode;
 import org.veri.be.domain.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.veri.be.global.auth.context.CurrentMemberInfo;
+import org.veri.be.global.auth.context.ThreadLocalCurrentMemberAccessor;
 import org.veri.be.lib.exception.ApplicationException;
 
 @Transactional(readOnly = true)
@@ -19,17 +21,18 @@ public class MemberQueryService {
     private final MemberRepository memberRepository;
     private final ReadingRepository readingRepository;
     private final CardRepository cardRepository;
+    private final ThreadLocalCurrentMemberAccessor threadLocalCurrentMemberAccessor;
 
     public Member findById(Long id) {
         return memberRepository.findById(id).orElseThrow(() ->
                 ApplicationException.of(MemberErrorCode.NOT_FOUND));
     }
 
-    public MemberResponse.MemberInfoResponse findMyInfo(Member member) {
+    public MemberResponse.MemberInfoResponse findMyInfo(CurrentMemberInfo memberInfo) {
         return MemberResponse.MemberInfoResponse.from(
-                member,
-                readingRepository.countAllByMember(member),
-                cardRepository.countAllByMemberId(member.getId())
+                threadLocalCurrentMemberAccessor.getMemberOrThrow(),
+                readingRepository.countAllByMemberId(memberInfo.id()),
+                cardRepository.countAllByMemberId(memberInfo.id())
         );
     }
 

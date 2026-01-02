@@ -12,6 +12,7 @@ import org.veri.be.domain.card.entity.Card;
 import org.veri.be.domain.card.entity.CardErrorInfo;
 import org.veri.be.domain.card.repository.CardRepository;
 import org.veri.be.domain.member.entity.Member;
+import org.veri.be.domain.member.repository.MemberRepository;
 import org.veri.be.global.storage.dto.PresignedUrlRequest;
 import org.veri.be.global.storage.dto.PresignedUrlResponse;
 import org.veri.be.global.storage.service.StorageService;
@@ -30,12 +31,14 @@ public class CardCommandService {
     private final CardRepository cardRepository;
     private final ReadingRepository readingRepository;
     private final StorageService storageService;
+    private final MemberRepository memberRepository;
 
     @Transactional
-    public Long createCard(Member member, String content, String imageUrl, Long memberBookId, Boolean isPublic) {
+    public Long createCard(Long memberId, String content, String imageUrl, Long memberBookId, Boolean isPublic) {
         Reading reading = readingRepository.findById(memberBookId)
                 .orElseThrow(() -> ApplicationException.of(CommonErrorCode.INVALID_REQUEST));
 
+        Member member = memberRepository.getReferenceById(memberId);
         Card card = Card.builder()
                 .member(member)
                 .content(content)
@@ -49,9 +52,9 @@ public class CardCommandService {
     }
 
     @Transactional
-    public CardUpdateResponse updateCard(Member member, Long cardId, String content, String imageUrl) {
+    public CardUpdateResponse updateCard(Long memberId, Long cardId, String content, String imageUrl) {
         Card card = this.getCard(cardId);
-        Card updatedCard = card.updateContent(content, imageUrl, member);
+        Card updatedCard = card.updateContent(content, imageUrl, memberId);
         Card savedCard = cardRepository.save(updatedCard);
 
         return CardUpdateResponse.from(savedCard);
@@ -63,18 +66,18 @@ public class CardCommandService {
     }
 
     @Transactional
-    public CardVisibilityUpdateResponse modifyVisibility(Member member, Long cardId, boolean isPublic) {
+    public CardVisibilityUpdateResponse modifyVisibility(Long memberId, Long cardId, boolean isPublic) {
         Card card = this.getCard(cardId);
-        card.authorizeOrThrow(member.getId());
-        card.changeVisibility(member, isPublic);
+        card.authorizeOrThrow(memberId);
+        card.changeVisibility(memberId, isPublic);
         cardRepository.save(card);
         return new CardVisibilityUpdateResponse(card.getId(), card.isPublic());
     }
 
     @Transactional
-    public void deleteCard(Member member, Long cardId) {
+    public void deleteCard(Long memberId, Long cardId) {
         Card card = getCard(cardId);
-        card.authorizeOrThrow(member.getId());
+        card.authorizeOrThrow(memberId);
 
         cardRepository.deleteById(cardId);
     }

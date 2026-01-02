@@ -10,6 +10,7 @@ import org.veri.be.domain.book.exception.BookErrorCode;
 import org.veri.be.domain.book.repository.BookRepository;
 import org.veri.be.domain.book.repository.ReadingRepository;
 import org.veri.be.domain.member.entity.Member;
+import org.veri.be.domain.member.repository.MemberRepository;
 import org.veri.be.lib.exception.ApplicationException;
 import org.veri.be.lib.exception.CommonErrorCode;
 
@@ -27,19 +28,21 @@ public class BookshelfService {
 
     private final ReadingRepository readingRepository;
     private final BookRepository bookRepository;
+    private final MemberRepository memberRepository;
     private final Clock clock;
 
     @Transactional
-    public Reading addToBookshelf(Member member, Long bookId, boolean isPublic) {
+    public Reading addToBookshelf(Long memberId, Long bookId, boolean isPublic) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> ApplicationException.of(BookErrorCode.BAD_REQUEST));
 
         //Reading 중복 저장 방지 로직 추가 -> 기존 책을 응답
-        Optional<Reading> findReading = readingRepository.findByMemberAndBook(member.getId(), bookId);
+        Optional<Reading> findReading = readingRepository.findByMemberAndBook(memberId, bookId);
         if (findReading.isPresent()) {
             return findReading.get();
         }
 
+        Member member = memberRepository.getReferenceById(memberId);
         Reading reading = Reading.builder()
                 .member(member)
                 .book(book)
@@ -55,53 +58,53 @@ public class BookshelfService {
     }
 
     @Transactional
-    public void modifyBook(Member member, Double score, LocalDateTime startedAt, LocalDateTime endedAt, Long memberBookId) {
+    public void modifyBook(Long memberId, Double score, LocalDateTime startedAt, LocalDateTime endedAt, Long memberBookId) {
         Reading reading = getReadingById(memberBookId);
-        reading.authorizeOrThrow(member.getId());
+        reading.authorizeOrThrow(memberId);
 
         reading.updateProgress(score, startedAt, endedAt);
         readingRepository.save(reading);
     }
 
     @Transactional
-    public void rateScore(Member member, Double score, Long memberBookId) {
+    public void rateScore(Long memberId, Double score, Long memberBookId) {
         Reading reading = getReadingById(memberBookId);
-        reading.authorizeOrThrow(member.getId());
+        reading.authorizeOrThrow(memberId);
 
         reading.updateScore(score);
         readingRepository.save(reading);
     }
 
     @Transactional
-    public void readStart(Member member, Long memberBookId) {
+    public void readStart(Long memberId, Long memberBookId) {
         Reading reading = getReadingById(memberBookId);
-        reading.authorizeOrThrow(member.getId());
+        reading.authorizeOrThrow(memberId);
 
         reading.start(clock);
         readingRepository.save(reading);
     }
 
     @Transactional
-    public void readOver(Member member, Long memberBookId) {
+    public void readOver(Long memberId, Long memberBookId) {
         Reading reading = getReadingById(memberBookId);
-        reading.authorizeOrThrow(member.getId());
+        reading.authorizeOrThrow(memberId);
 
         reading.finish(clock);
         readingRepository.save(reading);
     }
 
     @Transactional
-    public void deleteBook(Member member, Long memberBookId) {
+    public void deleteBook(Long memberId, Long memberBookId) {
         Reading reading = getReadingById(memberBookId);
-        reading.authorizeOrThrow(member.getId());
+        reading.authorizeOrThrow(memberId);
 
         readingRepository.delete(reading);
     }
 
     @Transactional
-    public ReadingVisibilityUpdateResponse modifyVisibility(Member member, Long readingId, boolean isPublic) {
+    public ReadingVisibilityUpdateResponse modifyVisibility(Long memberId, Long readingId, boolean isPublic) {
         Reading reading = getReadingById(readingId);
-        reading.authorizeOrThrow(member.getId());
+        reading.authorizeOrThrow(memberId);
 
         if (isPublic) {
             reading.setPublic();

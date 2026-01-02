@@ -9,8 +9,8 @@ import org.veri.be.domain.card.controller.dto.response.CardVisibilityUpdateRespo
 import org.veri.be.domain.card.controller.enums.CardSortType;
 import org.veri.be.domain.card.service.CardCommandService;
 import org.veri.be.domain.card.service.CardQueryService;
-import org.veri.be.domain.member.entity.Member;
 import org.veri.be.global.auth.context.AuthenticatedMember;
+import org.veri.be.global.auth.context.CurrentMemberInfo;
 import org.veri.be.lib.response.ApiResponse;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,8 +42,8 @@ public class SocialCardController {
     public ApiResponse<CardVisibilityUpdateResponse> modifyVisibility(
             @PathVariable Long cardId,
             @RequestParam boolean isPublic,
-            @AuthenticatedMember Member member
+            @AuthenticatedMember CurrentMemberInfo memberInfo
     ) {
-        return ApiResponse.ok(cardCommandService.modifyVisibility(member, cardId, isPublic));
+        return ApiResponse.ok(cardCommandService.modifyVisibility(memberInfo.id(), cardId, isPublic));
     }
 }
