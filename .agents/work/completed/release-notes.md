@@ -1,3 +1,23 @@
+# Plan: Release Notes
+
+**Status**: Completed
+**Date**: 2025-12-21
+**Goal**: Consolidate review document into work record.
+
+## Steps
+- [x] Consolidate review into work history
+
+## History
+
+
+## Review
+**Source File**:
+```
+.agents/review/completed/release-notes-2025-12-21.md
+```
+
+### Review Content
+
 # Release Notes Review - 2025-12-21
 
 ## Metadata

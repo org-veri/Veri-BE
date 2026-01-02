@@ -27,3 +27,29 @@
 2025-02-14 14:32 KST - Fixed root Gradle plugin setup and added Spring Boot BOM import for subprojects to resolve dependency versions. Verified local profile and confirmed Loki/Tempo data delivery. Modified files: **build.gradle.kts**.
 2025-02-14 14:44 KST - Split **support** into **support:logging** and **support:monitoring** modules with resource files **logging.yml** and **monitoring.yml**. Moved **logback-spring.xml** into the logging module and wired app to import shared configs. Modified files: **settings.gradle**, **app/build.gradle.kts**, **app/src/main/resources/application.yml**, **app/src/main/resources/application-local.yml**, **support/logging/build.gradle.kts**, **support/monitoring/build.gradle.kts**, **support/logging/src/main/resources/logback/logback-spring.xml**, **support/logging/src/main/resources/logging.yml**, **support/monitoring/src/main/resources/monitoring.yml**.
 2025-02-14 14:48 KST - Corrected OTLP metrics configuration to use **url** and added support for **OTLP_ENDPOINT** overrides in **monitoring.yml**. Verified Gradle build, Docker build/run, and Loki/Tempo delivery with container runtime. Modified files: **support/monitoring/src/main/resources/monitoring.yml**, **app/src/main/resources/application.yml**, **support/logging/build.gradle.kts**, **build.gradle.kts**, **Dockerfile**, **makefile**, **settings.gradle**, **app/build.gradle.kts**.
+
+
+## Review
+**Source File**:
+```
+.agents/review/gradle-multimodule-observability-2025-02-14.md
+```
+
+### Review Content
+
+# Delivery Review - 2025-02-14
+
+**Reviewer**: Codex
+**Scope**: Gradle multi-module split with support logging/monitoring and container verification
+
+## Summary
+Converted the project into **app** and **support** Gradle modules, split support into **logging** and **monitoring**, and moved observability resources/configuration into support. Docker build/run and LGTM delivery were verified using the container runtime.
+
+## Findings
+- **Gradle**: `:app:build -x test` succeeds with multi-module setup.
+- **Docker**: `Dockerfile` builds using `app/build/libs/*.jar` and container starts with **local** profile.
+- **Observability**: Collector accepts log records/spans; Loki series and Tempo traces are present after hitting test endpoints.
+- **Config**: OTLP metrics now use **management.otlp.metrics.export.url** and support **OTLP_ENDPOINT** overrides.
+
+## Action Items
+- None.

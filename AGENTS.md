@@ -5,7 +5,7 @@
 
 ## 1. Documentation Standards
 
-When writing logs, plans, or reviews in this project, you must follow these style guidelines:
+When writing logs or plans in this project, you must follow these style guidelines:
 
 * **No Emojis**: Do not use emojis in any markdown files. Maintain a strictly professional and technical tone.
 * **High Readability**:
@@ -27,7 +27,6 @@ The agent workspace is isolated in the `.agents/` directory. Do not store contex
 | **`.agents/inspiration/`** | **Read-Only** | Design inspirations and reference docs (**Human Developers Only**). |
 | **`.agents/work/`** | **Read/Write** | Unified task documents using the plan style, with history appended in the same file. (Subdirs: **`backlog/`**, **`completed/`**, **`on-hold/`**) |
 | **`.agents/result/`** | **Read/Write** | Final deliverables for requests like "write a document" or "write to a file". Results must be clearly separated from work planning documents. |
-| **`.agents/review/`** | **Write** | Self-review notes, test results, and QA logs before completion. (Subdirs: **`completed/`**, **`on-hold/`**) |
 | **`.agents/issue/`** | **Write** | Detailed analysis of bugs, errors, or blockers encountered. (Subdirs: **`completed/`**, **`on-hold/`**) |
 
 ---
@@ -38,7 +37,7 @@ The agent workspace is isolated in the `.agents/` directory. Do not store contex
 The `.agents/inspiration` directory is reserved for human developers. **Agents are strictly forbidden from modifying, deleting, or adding files in this directory.** Agents may only read these files to gain context.
 
 ### ② File Lifecycle (The `completed/` & `on-hold/` Rules)
-To maintain a clean workspace, once a task, issue, or review is finalized or suspended:
+To maintain a clean workspace, once a task or issue is finalized or suspended:
 1.  Mark the internal status as **Completed**, **Closed**, or **On Hold**.
 2.  Move the file to a subdirectory within its respective parent:
     *   **`completed/`**: For fully finished tasks.
@@ -64,11 +63,10 @@ Agents must follow these structures for consistency:
 *   **Header**: `# Issue: [Short Description]`
 *   **Metadata**: Severity (Critical/High/Low), Status, Date.
 *   **Body**: **Description** (Problem), **Affected Files**, **Findings**, and **Recommendation** (How to fix).
-
-#### **Review Document (`.agents/review/`)**
-*   **Header**: `# [Type] Review - [Date]`
-*   **Metadata**: Reviewer, Scope (e.g., Security, Logic).
-*   **Body**: **Summary**, **Findings** (Detailed analysis), and **Action Items**.
+ 
+#### **Review Notes (Within Work Document)**
+*   **Location**: Append under `## Review` in the related **Work Document**.
+*   **Body**: **Summary**, **Findings**, and **Action Items**.
 
 ---
 
@@ -83,7 +81,7 @@ Agents must follow these structures for consistency:
     * If this task is derived from a prior task, include **Parent Task** with the path to the originating work document.
 
 ### Phase 0: Conversational Tasks Exception
-For purely conversational tasks that do not require writing documents or modifying files, skip creating or updating any `.agents/` work, review, or issue documents.
+For purely conversational tasks that do not require writing documents or modifying files, skip creating or updating any `.agents/` work or issue documents.
 
 ### Phase 0.5: Result-Only Requests
 If the user asks for "write a document" or "write to a file" (or similar), create the deliverable in **`.agents/result/`** and do not place the content in **`.agents/work/`**. Use **`.agents/work/`** only for planning and execution tracking.
@@ -93,7 +91,7 @@ If the user asks for "write a document" or "write to a file" (or similar), creat
 2.  **Update Context**: Continuously update your status in the `.agents/work/` file.
 
 ### Phase 3: Verification & Closure
-1.  **Self-Review**: Create a summary in `.agents/review/` verifying that requirements are met.
+1.  **Self-Review**: Append a summary under `## Review` in the task's **Work Document**.
 2.  **Log History**: Append a summary of the completed task under `## History` in the task's **Work Document**.
     * *Format*: Timestamp, Task Name, Summary of Changes, Modified Files.
 3.  **Update Status**: Mark the task as **Completed**, then move the file to `.agents/work/completed/`.
