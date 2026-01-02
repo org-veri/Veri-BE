@@ -2,7 +2,6 @@ package org.veri.be.slice.web
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -27,10 +26,11 @@ import org.veri.be.domain.image.service.ImageQueryService
 import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.global.auth.context.AuthenticatedMemberResolver
-import org.veri.be.global.auth.context.MemberContext
-import org.veri.be.global.auth.context.ThreadLocalCurrentMemberAccessor
+import org.veri.be.global.auth.context.CurrentMemberAccessor
+import org.veri.be.global.auth.context.CurrentMemberInfo
 import org.veri.be.global.response.PageResponse
 import org.veri.be.lib.response.ApiResponseAdvice
+import java.util.Optional
 
 @ExtendWith(MockitoExtension::class)
 class ImageControllerTest {
@@ -57,20 +57,22 @@ class ImageControllerTest {
             .providerId("provider-1")
             .providerType(ProviderType.KAKAO)
             .build()
-        MemberContext.setCurrentMember(member)
 
         val controller = ImageController(imageCommandService, imageQueryService)
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
             .setControllerAdvice(ApiResponseAdvice())
             .setCustomArgumentResolvers(
-                AuthenticatedMemberResolver(ThreadLocalCurrentMemberAccessor(null))
+                AuthenticatedMemberResolver(testMemberAccessor(member))
             )
             .build()
     }
 
-    @AfterEach
-    fun tearDown() {
-        MemberContext.clear()
+    private fun testMemberAccessor(member: Member): CurrentMemberAccessor {
+        val info = CurrentMemberInfo.from(member)
+        return object : CurrentMemberAccessor {
+            override fun getCurrentMemberInfo() = Optional.of(info)
+            override fun getCurrentMember() = Optional.of(member)
+        }
     }
 
     @Nested

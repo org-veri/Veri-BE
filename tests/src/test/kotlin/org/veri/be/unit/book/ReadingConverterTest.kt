@@ -16,6 +16,7 @@ import org.veri.be.domain.card.entity.Card
 import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.global.auth.context.CurrentMemberAccessor
+import org.veri.be.global.auth.context.CurrentMemberInfo
 import java.util.Optional
 
 @ExtendWith(MockitoExtension::class)
@@ -41,7 +42,7 @@ class ReadingConverterTest {
             val owner = member(1L, "owner@test.com", "owner")
             val reading = reading(owner, cards())
 
-            given(currentMemberAccessor.getCurrentMember()).willReturn(Optional.of(owner))
+            given(currentMemberAccessor.getCurrentMemberInfo()).willReturn(Optional.of(CurrentMemberInfo.from(owner)))
 
             val response = readingConverter.toReadingDetailResponse(reading)
 
@@ -57,7 +58,7 @@ class ReadingConverterTest {
             val viewer = member(2L, "viewer@test.com", "viewer")
             val reading = reading(owner, cards())
 
-            given(currentMemberAccessor.getCurrentMember()).willReturn(Optional.of(viewer))
+            given(currentMemberAccessor.getCurrentMemberInfo()).willReturn(Optional.of(CurrentMemberInfo.from(viewer)))
 
             val response = readingConverter.toReadingDetailResponse(reading)
 

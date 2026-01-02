@@ -1,7 +1,6 @@
 package org.veri.be.slice.web
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -36,12 +35,13 @@ import org.veri.be.domain.post.repository.dto.PostFeedQueryResult
 import org.veri.be.domain.post.service.PostCommandService
 import org.veri.be.domain.post.service.PostQueryService
 import org.veri.be.global.auth.context.AuthenticatedMemberResolver
-import org.veri.be.global.auth.context.MemberContext
-import org.veri.be.global.auth.context.ThreadLocalCurrentMemberAccessor
+import org.veri.be.global.auth.context.CurrentMemberAccessor
+import org.veri.be.global.auth.context.CurrentMemberInfo
 import org.veri.be.global.storage.dto.PresignedUrlRequest
 import org.veri.be.global.storage.dto.PresignedUrlResponse
 import org.veri.be.lib.response.ApiResponseAdvice
 import java.time.LocalDateTime
+import java.util.Optional
 
 @ExtendWith(MockitoExtension::class)
 class PostControllerTest {
@@ -68,20 +68,22 @@ class PostControllerTest {
             .providerId("provider-1")
             .providerType(ProviderType.KAKAO)
             .build()
-        MemberContext.setCurrentMember(member)
 
         val controller = PostController(postCommandService, postQueryService)
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
             .setControllerAdvice(ApiResponseAdvice())
             .setCustomArgumentResolvers(
-                AuthenticatedMemberResolver(ThreadLocalCurrentMemberAccessor(null))
+                AuthenticatedMemberResolver(testMemberAccessor(member))
             )
             .build()
     }
 
-    @AfterEach
-    fun tearDown() {
-        MemberContext.clear()
+    private fun testMemberAccessor(member: Member): CurrentMemberAccessor {
+        val info = CurrentMemberInfo.from(member)
+        return object : CurrentMemberAccessor {
+            override fun getCurrentMemberInfo() = Optional.of(info)
+            override fun getCurrentMember() = Optional.of(member)
+        }
     }
 
     @Nested

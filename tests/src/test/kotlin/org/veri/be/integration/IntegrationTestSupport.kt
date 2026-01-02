@@ -46,7 +46,7 @@ abstract class IntegrationTestSupport {
             .providerType(ProviderType.KAKAO)
             .build()
         mockMember = memberRepository.save(mockMember)
-        MemberContext.setCurrentMember(mockMember)
+        MemberContext.setCurrentMemberId(mockMember.id)
     }
 
     fun getMockMember(): Member = mockMember
