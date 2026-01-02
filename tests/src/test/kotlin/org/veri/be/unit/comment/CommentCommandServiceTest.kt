@@ -19,6 +19,7 @@ import org.veri.be.domain.comment.service.CommentCommandService
 import org.veri.be.domain.comment.service.CommentQueryService
 import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.member.entity.enums.ProviderType
+import org.veri.be.domain.member.repository.MemberRepository
 import org.veri.be.domain.post.entity.Post
 import org.veri.be.domain.post.service.PostQueryService
 import java.time.Clock
@@ -37,6 +38,9 @@ class CommentCommandServiceTest {
     @org.mockito.Mock
     private lateinit var postQueryService: PostQueryService
 
+    @org.mockito.Mock
+    private lateinit var memberRepository: MemberRepository
+
     private val fixedClock: Clock = Clock.fixed(Instant.parse("2024-01-01T00:00:00Z"), ZoneId.of("UTC"))
 
     private lateinit var commentCommandService: CommentCommandService
@@ -50,7 +54,8 @@ class CommentCommandServiceTest {
             commentRepository,
             commentQueryService,
             postQueryService,
-            fixedClock
+            fixedClock,
+            memberRepository
         )
     }
 
@@ -66,6 +71,7 @@ class CommentCommandServiceTest {
             val request = CommentPostRequest(10L, "content")
 
             given(postQueryService.getPostById(10L)).willReturn(post)
+            given(memberRepository.getReferenceById(1L)).willReturn(member)
             given(commentRepository.save(any(Comment::class.java)))
                 .willAnswer { invocation ->
                     val saved = invocation.getArgument<Comment>(0)
@@ -73,7 +79,7 @@ class CommentCommandServiceTest {
                     saved
                 }
 
-            val result = commentCommandService.postComment(request, member)
+            val result = commentCommandService.postComment(request, member.id)
 
             verify(commentRepository).save(commentCaptor.capture())
             val saved = commentCaptor.value
@@ -96,6 +102,7 @@ class CommentCommandServiceTest {
             val parent = Comment.builder().id(5L).post(post).author(member).content("parent").build()
 
             given(commentQueryService.getCommentById(5L)).willReturn(parent)
+            given(memberRepository.getReferenceById(2L)).willReturn(member)
             given(commentRepository.save(any(Comment::class.java)))
                 .willAnswer { invocation ->
                     val saved = invocation.getArgument<Comment>(0)
@@ -103,7 +110,7 @@ class CommentCommandServiceTest {
                     saved
                 }
 
-            val result = commentCommandService.postReply(5L, "reply", member)
+            val result = commentCommandService.postReply(5L, "reply", member.id)
 
             verify(commentRepository).save(commentCaptor.capture())
             val saved = commentCaptor.value
@@ -126,8 +133,9 @@ class CommentCommandServiceTest {
             val comment = Comment.builder().id(1L).author(member).content("before").build()
 
             given(commentQueryService.getCommentById(1L)).willReturn(comment)
+            given(memberRepository.getReferenceById(1L)).willReturn(member)
 
-            commentCommandService.editComment(1L, "after", member)
+            commentCommandService.editComment(1L, "after", member.id)
 
             verify(commentRepository).save(commentCaptor.capture())
             assertThat(commentCaptor.value.content).isEqualTo("after")
@@ -145,8 +153,9 @@ class CommentCommandServiceTest {
             val comment = Comment.builder().id(1L).author(member).content("content").build()
 
             given(commentQueryService.getCommentById(1L)).willReturn(comment)
+            given(memberRepository.getReferenceById(1L)).willReturn(member)
 
-            commentCommandService.deleteComment(1L, member)
+            commentCommandService.deleteComment(1L, member.id)
 
             verify(commentRepository).save(commentCaptor.capture())
             assertThat(commentCaptor.value.isDeleted).isTrue()

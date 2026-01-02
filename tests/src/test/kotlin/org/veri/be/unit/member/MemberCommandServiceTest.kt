@@ -49,10 +49,11 @@ class MemberCommandServiceTest {
             val member = member(1L, "member@test.com", "old")
             val request = UpdateMemberInfoRequest("dup", "https://example.com/profile.png")
 
+            given(memberRepository.findById(1L)).willReturn(java.util.Optional.of(member))
             given(memberQueryService.existsByNickname("dup")).willReturn(true)
 
             ExceptionAssertions.assertApplicationException(
-                { memberCommandService.updateInfo(request, member) },
+                { memberCommandService.updateInfo(request, member.id) },
                 MemberErrorCode.ALREADY_EXIST_NICKNAME
             )
         }
@@ -63,10 +64,11 @@ class MemberCommandServiceTest {
             val member = member(1L, "member@test.com", "old")
             val request = UpdateMemberInfoRequest("new", "https://example.com/new.png")
 
+            given(memberRepository.findById(1L)).willReturn(java.util.Optional.of(member))
             given(memberQueryService.existsByNickname("new")).willReturn(false)
             given(memberRepository.save(member)).willReturn(member)
 
-            val response: MemberResponse.MemberSimpleResponse = memberCommandService.updateInfo(request, member)
+            val response: MemberResponse.MemberSimpleResponse = memberCommandService.updateInfo(request, member.id)
 
             verify(memberRepository).save(memberCaptor.capture())
             val saved = memberCaptor.value

@@ -84,7 +84,7 @@ class SocialCardIntegrationTest : IntegrationTestSupport() {
         @DisplayName("비공개 -> 공개")
         fun toPublic() {
             val card = createCard(true)
-            card.changeVisibility(getMockMember(), false)
+            card.changeVisibility(getMockMember().id, false)
             cardRepository.save(card)
 
             mockMvc.perform(

@@ -34,6 +34,7 @@ import org.veri.be.domain.post.dto.response.PostFeedResponseItem
 import org.veri.be.domain.post.repository.dto.PostFeedQueryResult
 import org.veri.be.domain.post.service.PostCommandService
 import org.veri.be.domain.post.service.PostQueryService
+import org.veri.be.global.auth.JwtClaimsPayload
 import org.veri.be.global.auth.context.AuthenticatedMemberResolver
 import org.veri.be.global.auth.context.CurrentMemberAccessor
 import org.veri.be.global.auth.context.CurrentMemberInfo
@@ -56,6 +57,7 @@ class PostControllerTest {
     private lateinit var postQueryService: PostQueryService
 
     private lateinit var member: Member
+    private lateinit var memberInfo: CurrentMemberInfo
 
     @BeforeEach
     fun setUp() {
@@ -69,20 +71,20 @@ class PostControllerTest {
             .providerType(ProviderType.KAKAO)
             .build()
 
+        memberInfo = CurrentMemberInfo.from(JwtClaimsPayload(member.id, member.email, member.nickname, false))
         val controller = PostController(postCommandService, postQueryService)
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
             .setControllerAdvice(ApiResponseAdvice())
             .setCustomArgumentResolvers(
-                AuthenticatedMemberResolver(testMemberAccessor(member))
+                AuthenticatedMemberResolver(testMemberAccessor(memberInfo))
             )
             .build()
     }
 
-    private fun testMemberAccessor(member: Member): CurrentMemberAccessor {
-        val info = CurrentMemberInfo.from(member)
+    private fun testMemberAccessor(memberInfo: CurrentMemberInfo): CurrentMemberAccessor {
         return object : CurrentMemberAccessor {
-            override fun getCurrentMemberInfoOrNull() = info
-            override fun getCurrentMember() = Optional.of(member)
+            override fun getCurrentMemberInfoOrNull() = memberInfo
+            override fun getCurrentMember() = Optional.empty<Member>()
         }
     }
 
@@ -99,7 +101,7 @@ class PostControllerTest {
                 listOf("https://example.com/image.png"),
                 10L
             )
-            given(postCommandService.createPost(any(PostCreateRequest::class.java), eq(member))).willReturn(99L)
+            given(postCommandService.createPost(any(PostCreateRequest::class.java), eq(member.id))).willReturn(99L)
 
             mockMvc.perform(
                 post("/api/v1/posts")
@@ -226,7 +228,7 @@ class PostControllerTest {
                 .commentCount(1L)
                 .createdAt(LocalDateTime.of(2024, 1, 1, 0, 0))
                 .build()
-            given(postQueryService.getPostDetail(30L, member)).willReturn(response)
+            given(postQueryService.getPostDetail(30L, member.id)).willReturn(response)
 
             mockMvc.perform(get("/api/v1/posts/30"))
                 .andExpect(status().isOk)
@@ -245,7 +247,7 @@ class PostControllerTest {
             mockMvc.perform(delete("/api/v1/posts/40"))
                 .andExpect(status().isNoContent)
 
-            verify(postCommandService).deletePost(40L, member)
+            verify(postCommandService).deletePost(40L, member.id)
         }
     }
 
@@ -259,7 +261,7 @@ class PostControllerTest {
             mockMvc.perform(post("/api/v1/posts/50/publish"))
                 .andExpect(status().isNoContent)
 
-            verify(postCommandService).publishPost(50L, member)
+            verify(postCommandService).publishPost(50L, member.id)
         }
     }
 
@@ -273,7 +275,7 @@ class PostControllerTest {
             mockMvc.perform(post("/api/v1/posts/60/unpublish"))
                 .andExpect(status().isNoContent)
 
-            verify(postCommandService).unPublishPost(60L, member)
+            verify(postCommandService).unPublishPost(60L, member.id)
         }
     }
 
@@ -284,7 +286,7 @@ class PostControllerTest {
         @Test
         @DisplayName("좋아요를 추가하면 정보를 반환한다")
         fun likesPost() {
-            given(postCommandService.likePost(70L, member)).willReturn(LikeInfoResponse(5L, true))
+            given(postCommandService.likePost(70L, member.id)).willReturn(LikeInfoResponse(5L, true))
 
             mockMvc.perform(post("/api/v1/posts/like/70"))
                 .andExpect(status().isOk)
@@ -300,7 +302,7 @@ class PostControllerTest {
         @Test
         @DisplayName("좋아요를 취소하면 정보를 반환한다")
         fun unlikesPost() {
-            given(postCommandService.unlikePost(80L, member)).willReturn(LikeInfoResponse(4L, false))
+            given(postCommandService.unlikePost(80L, member.id)).willReturn(LikeInfoResponse(4L, false))
 
             mockMvc.perform(post("/api/v1/posts/unlike/80"))
                 .andExpect(status().isOk)

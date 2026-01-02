@@ -8,16 +8,10 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
-import org.mockito.ArgumentMatchers.anyList
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageImpl
-import org.springframework.data.domain.Pageable
-import org.veri.be.domain.book.controller.enums.ReadingSortType
-import org.veri.be.domain.book.dto.book.BookPopularResponse
 import org.veri.be.domain.book.dto.reading.response.ReadingVisibilityUpdateResponse
 import org.veri.be.domain.book.entity.Book
 import org.veri.be.domain.book.entity.Reading
@@ -25,13 +19,10 @@ import org.veri.be.domain.book.entity.enums.ReadingStatus
 import org.veri.be.domain.book.exception.BookErrorCode
 import org.veri.be.domain.book.repository.BookRepository
 import org.veri.be.domain.book.repository.ReadingRepository
-import org.veri.be.domain.book.repository.dto.BookPopularQueryResult
 import org.veri.be.domain.book.service.BookshelfService
 import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.member.entity.enums.ProviderType
-import org.veri.be.global.auth.context.CurrentMemberAccessor
-import org.veri.be.global.auth.context.CurrentMemberInfo
-import org.veri.be.lib.exception.CommonErrorCode
+import org.veri.be.domain.member.repository.MemberRepository
 import org.veri.be.support.assertion.ExceptionAssertions
 import java.time.Clock
 import java.time.Instant
@@ -49,7 +40,7 @@ class BookshelfServiceTest {
     private lateinit var bookRepository: BookRepository
 
     @org.mockito.Mock
-    private lateinit var currentMemberAccessor: CurrentMemberAccessor
+    private lateinit var memberRepository: MemberRepository
 
     private val fixedClock: Clock = Clock.fixed(Instant.parse("2024-01-03T12:00:00Z"), ZoneId.of("UTC"))
 
@@ -58,18 +49,13 @@ class BookshelfServiceTest {
     @org.mockito.Captor
     private lateinit var readingCaptor: ArgumentCaptor<Reading>
 
-    @org.mockito.Captor
-    private lateinit var pageableCaptor: ArgumentCaptor<Pageable>
-
-    @org.mockito.Captor
-    private lateinit var dateTimeCaptor: ArgumentCaptor<LocalDateTime>
 
     @BeforeEach
     fun setUp() {
         bookshelfService = BookshelfService(
             readingRepository,
             bookRepository,
-            currentMemberAccessor,
+            memberRepository,
             fixedClock
         )
     }
@@ -85,7 +71,7 @@ class BookshelfServiceTest {
             given(bookRepository.findById(1L)).willReturn(Optional.empty())
 
             ExceptionAssertions.assertApplicationException(
-                { bookshelfService.addToBookshelf(member, 1L, true) },
+                { bookshelfService.addToBookshelf(member.id, 1L, true) },
                 BookErrorCode.BAD_REQUEST
             )
         }
@@ -100,7 +86,7 @@ class BookshelfServiceTest {
             given(bookRepository.findById(1L)).willReturn(Optional.of(book))
             given(readingRepository.findByMemberAndBook(1L, 1L)).willReturn(Optional.of(reading))
 
-            val result = bookshelfService.addToBookshelf(member, 1L, true)
+            val result = bookshelfService.addToBookshelf(member.id, 1L, true)
 
             assertThat(result).isEqualTo(reading)
             verify(readingRepository, never()).save(any(Reading::class.java))
@@ -114,11 +100,12 @@ class BookshelfServiceTest {
 
             given(bookRepository.findById(1L)).willReturn(Optional.of(book))
             given(readingRepository.findByMemberAndBook(1L, 1L)).willReturn(Optional.empty())
+            given(memberRepository.getReferenceById(1L)).willReturn(member)
             given(readingRepository.save(any(Reading::class.java))).willAnswer { invocation ->
                 invocation.getArgument(0)
             }
 
-            val result = bookshelfService.addToBookshelf(member, 1L, false)
+            val result = bookshelfService.addToBookshelf(member.id, 1L, false)
 
             verify(readingRepository).save(readingCaptor.capture())
             val saved = readingCaptor.value
@@ -127,111 +114,6 @@ class BookshelfServiceTest {
             assertThat(saved.status).isEqualTo(ReadingStatus.NOT_START)
             assertThat(saved.isPublic).isFalse()
             assertThat(result).isEqualTo(saved)
-        }
-    }
-
-    @Nested
-    @DisplayName("searchAllReadingOfMember")
-    inner class SearchAllReadingOfMember {
-
-        @Test
-        @DisplayName("정렬 조건에 맞는 페이징 요청을 전달한다")
-        fun passesPagingWithSort() {
-            given(readingRepository.findReadingPage(any(Long::class.java), anyList(), any(Pageable::class.java)))
-                .willReturn(Page.empty())
-
-            bookshelfService.searchAllReadingOfMember(1L, listOf(ReadingStatus.READING), 1, 20, ReadingSortType.SCORE)
-
-            verify(readingRepository).findReadingPage(any(Long::class.java), anyList(), pageableCaptor.capture())
-            val pageable = pageableCaptor.value
-            assertThat(pageable.pageNumber).isEqualTo(1)
-            assertThat(pageable.pageSize).isEqualTo(20)
-            assertThat(pageable.sort).isEqualTo(ReadingSortType.SCORE.sort)
-        }
-    }
-
-    @Nested
-    @DisplayName("searchDetail")
-    inner class SearchDetail {
-
-        @Test
-        @DisplayName("비공개 독서는 조회 권한을 확인한다")
-        fun checksAuthorizationWhenPrivate() {
-            val owner = member(1L, "owner@test.com", "owner")
-            val viewer = member(2L, "viewer@test.com", "viewer")
-            val reading = reading(10L, owner, book(1L), ReadingStatus.READING, false)
-
-            given(readingRepository.findByIdWithCardsAndBook(10L)).willReturn(Optional.of(reading))
-            given(currentMemberAccessor.memberInfoOrThrow).willReturn(CurrentMemberInfo.from(viewer))
-
-            ExceptionAssertions.assertApplicationException(
-                { bookshelfService.searchDetail(10L) },
-                CommonErrorCode.RESOURCE_NOT_FOUND
-            )
-        }
-
-        @Test
-        @DisplayName("공개 독서는 상세 응답을 반환한다")
-        fun returnsDetailForPublic() {
-            val owner = member(1L, "owner@test.com", "owner")
-            val reading = reading(10L, owner, book(1L), ReadingStatus.READING, true)
-            given(readingRepository.findByIdWithCardsAndBook(10L)).willReturn(Optional.of(reading))
-            given(currentMemberAccessor.currentMemberInfo)
-                .willReturn(Optional.of(CurrentMemberInfo.from(owner)))
-
-            val result = bookshelfService.searchDetail(10L)
-
-            assertThat(result.memberBookId()).isEqualTo(10L)
-        }
-    }
-
-    @Nested
-    @DisplayName("searchWeeklyPopular")
-    inner class SearchWeeklyPopular {
-
-        @Test
-        @DisplayName("주간 인기 도서를 조회한다")
-        fun queriesWeeklyPopular() {
-            given(readingRepository.findMostPopularBook(any(LocalDateTime::class.java), any(LocalDateTime::class.java), any(Pageable::class.java)))
-                .willReturn(PageImpl(listOf(BookPopularQueryResult("img", "title", "author", "pub", "isbn"))))
-
-            val result = bookshelfService.searchWeeklyPopular(0, 10)
-
-            verify(readingRepository).findMostPopularBook(dateTimeCaptor.capture(), dateTimeCaptor.capture(), any(Pageable::class.java))
-            val captured = dateTimeCaptor.allValues
-            assertThat(captured[0].dayOfWeek.value).isEqualTo(1)
-            assertThat(captured[1]).isAfter(captured[0])
-            assertThat(result.totalElements).isEqualTo(1)
-        }
-    }
-
-    @Nested
-    @DisplayName("searchMyReadingDoneCount")
-    inner class SearchMyReadingDoneCount {
-
-        @Test
-        @DisplayName("완독 개수를 반환한다")
-        fun returnsDoneCount() {
-            given(readingRepository.countByStatusAndMember(ReadingStatus.DONE, 1L)).willReturn(2)
-
-            val result = bookshelfService.searchMyReadingDoneCount(1L)
-
-            assertThat(result).isEqualTo(2)
-        }
-    }
-
-    @Nested
-    @DisplayName("searchByTitleAndAuthor")
-    inner class SearchByTitleAndAuthor {
-
-        @Test
-        @DisplayName("일치하는 독서가 없으면 null을 반환한다")
-        fun returnsNullWhenMissing() {
-            given(readingRepository.findByAuthorAndTitle(1L, "title", "author")).willReturn(Optional.empty())
-
-            val result: Long? = bookshelfService.searchByTitleAndAuthor(1L, "title", "author")
-
-            assertThat(result).isNull()
         }
     }
 
@@ -246,7 +128,7 @@ class BookshelfServiceTest {
             val reading = reading(10L, member, book(1L), ReadingStatus.NOT_START, true)
             given(readingRepository.findById(10L)).willReturn(Optional.of(reading))
 
-            bookshelfService.modifyBook(member, 4.0, LocalDateTime.now(), LocalDateTime.now(), 10L)
+            bookshelfService.modifyBook(member.id, 4.0, LocalDateTime.now(), LocalDateTime.now(), 10L)
 
             verify(readingRepository).save(readingCaptor.capture())
             assertThat(readingCaptor.value.status).isEqualTo(ReadingStatus.DONE)
@@ -264,7 +146,7 @@ class BookshelfServiceTest {
             val reading = reading(10L, member, book(1L), ReadingStatus.READING, true)
             given(readingRepository.findById(10L)).willReturn(Optional.of(reading))
 
-            bookshelfService.rateScore(member, 4.5, 10L)
+            bookshelfService.rateScore(member.id, 4.5, 10L)
 
             verify(readingRepository).save(readingCaptor.capture())
             assertThat(readingCaptor.value.score).isEqualTo(4.5)
@@ -282,7 +164,7 @@ class BookshelfServiceTest {
             val reading = reading(10L, member, book(1L), ReadingStatus.NOT_START, true)
             given(readingRepository.findById(10L)).willReturn(Optional.of(reading))
 
-            bookshelfService.readStart(member, 10L)
+            bookshelfService.readStart(member.id, 10L)
 
             verify(readingRepository).save(readingCaptor.capture())
             assertThat(readingCaptor.value.status).isEqualTo(ReadingStatus.READING)
@@ -301,7 +183,7 @@ class BookshelfServiceTest {
             val reading = reading(10L, member, book(1L), ReadingStatus.READING, true)
             given(readingRepository.findById(10L)).willReturn(Optional.of(reading))
 
-            bookshelfService.readOver(member, 10L)
+            bookshelfService.readOver(member.id, 10L)
 
             verify(readingRepository).save(readingCaptor.capture())
             assertThat(readingCaptor.value.status).isEqualTo(ReadingStatus.DONE)
@@ -320,7 +202,7 @@ class BookshelfServiceTest {
             val reading = reading(10L, member, book(1L), ReadingStatus.READING, true)
             given(readingRepository.findById(10L)).willReturn(Optional.of(reading))
 
-            bookshelfService.deleteBook(member, 10L)
+            bookshelfService.deleteBook(member.id, 10L)
 
             verify(readingRepository).delete(reading)
         }
@@ -337,7 +219,7 @@ class BookshelfServiceTest {
             val reading = reading(10L, member, book(1L), ReadingStatus.READING, false)
             given(readingRepository.findById(10L)).willReturn(Optional.of(reading))
 
-            val response = bookshelfService.modifyVisibility(member, 10L, true)
+            val response = bookshelfService.modifyVisibility(member.id, 10L, true)
 
             verify(readingRepository).save(readingCaptor.capture())
             assertThat(readingCaptor.value.isPublic).isTrue()

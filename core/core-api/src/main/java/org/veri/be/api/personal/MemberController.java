@@ -5,9 +5,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.veri.be.global.auth.context.AuthenticatedMember;
+import org.veri.be.global.auth.context.CurrentMemberInfo;
 import org.veri.be.domain.member.dto.MemberResponse;
 import org.veri.be.domain.member.dto.UpdateMemberInfoRequest;
-import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.service.MemberCommandService;
 import org.veri.be.domain.member.service.MemberQueryService;
 import org.veri.be.lib.response.ApiResponse;
@@ -24,8 +24,10 @@ public class MemberController {
 
     @Operation(summary = "내 정보 조회", description = "로그인한 사용자의 정보를 조회합니다.")
     @GetMapping("/me")
-    public ApiResponse<MemberResponse.MemberInfoResponse> myInfo(@AuthenticatedMember Member member) {
-        MemberResponse.MemberInfoResponse response = memberQueryService.findMyInfo(member);
+    public ApiResponse<MemberResponse.MemberInfoResponse> myInfo(
+            @AuthenticatedMember CurrentMemberInfo memberInfo
+    ) {
+        MemberResponse.MemberInfoResponse response = memberQueryService.findMyInfo(memberInfo);
         return ApiResponse.ok(response);
     }
 
@@ -33,9 +35,9 @@ public class MemberController {
     @PatchMapping("/me/info")
     public ApiResponse<MemberResponse.MemberSimpleResponse> updateInfo(
             @RequestBody @Valid UpdateMemberInfoRequest request,
-            @AuthenticatedMember Member member
+            @AuthenticatedMember CurrentMemberInfo memberInfo
     ) {
-        return ApiResponse.ok(memberCommandService.updateInfo(request, member));
+        return ApiResponse.ok(memberCommandService.updateInfo(request, memberInfo.id()));
     }
 
     @Operation(summary = "닉네임 중복 확인", description = "닉네임이 이미 사용 중인지 확인합니다.")

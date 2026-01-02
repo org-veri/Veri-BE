@@ -31,6 +31,7 @@ import org.veri.be.domain.card.service.CardCommandService
 import org.veri.be.domain.card.service.CardQueryService
 import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.member.entity.enums.ProviderType
+import org.veri.be.global.auth.JwtClaimsPayload
 import org.veri.be.global.auth.context.AuthenticatedMemberResolver
 import org.veri.be.global.auth.context.CurrentMemberAccessor
 import org.veri.be.global.auth.context.CurrentMemberInfo
@@ -53,6 +54,7 @@ class CardControllerTest {
     private lateinit var cardQueryService: CardQueryService
 
     private lateinit var member: Member
+    private lateinit var memberInfo: CurrentMemberInfo
 
     @BeforeEach
     fun setUp() {
@@ -66,20 +68,20 @@ class CardControllerTest {
             .providerType(ProviderType.KAKAO)
             .build()
 
+        memberInfo = CurrentMemberInfo.from(JwtClaimsPayload(member.id, member.email, member.nickname, false))
         val controller = CardController(cardCommandService, cardQueryService)
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
             .setControllerAdvice(ApiResponseAdvice())
             .setCustomArgumentResolvers(
-                AuthenticatedMemberResolver(testMemberAccessor(member))
+                AuthenticatedMemberResolver(testMemberAccessor(memberInfo))
             )
             .build()
     }
 
-    private fun testMemberAccessor(member: Member): CurrentMemberAccessor {
-        val info = CurrentMemberInfo.from(member)
+    private fun testMemberAccessor(memberInfo: CurrentMemberInfo): CurrentMemberAccessor {
         return object : CurrentMemberAccessor {
-            override fun getCurrentMemberInfoOrNull() = info
-            override fun getCurrentMember() = Optional.of(member)
+            override fun getCurrentMemberInfoOrNull() = memberInfo
+            override fun getCurrentMember() = Optional.empty<Member>()
         }
     }
 
@@ -91,7 +93,7 @@ class CardControllerTest {
         @DisplayName("카드를 생성한다")
         fun createsCard() {
             val request = CardCreateRequest("content", "https://example.com/card.png", 10L, true)
-            given(cardCommandService.createCard(member, "content", "https://example.com/card.png", 10L, true))
+            given(cardCommandService.createCard(member.id, "content", "https://example.com/card.png", 10L, true))
                 .willReturn(1L)
 
             mockMvc.perform(
@@ -205,7 +207,7 @@ class CardControllerTest {
                 true,
                 true
             )
-            given(cardQueryService.getCardDetail(1L, member)).willReturn(response)
+            given(cardQueryService.getCardDetail(1L, member.id)).willReturn(response)
 
             mockMvc.perform(get("/api/v1/cards/1"))
                 .andExpect(status().isOk)
@@ -229,7 +231,7 @@ class CardControllerTest {
                 null,
                 null
             )
-            given(cardCommandService.updateCard(member, 1L, "content", "https://example.com/card.png"))
+            given(cardCommandService.updateCard(member.id, 1L, "content", "https://example.com/card.png"))
                 .willReturn(response)
 
             mockMvc.perform(
@@ -252,7 +254,7 @@ class CardControllerTest {
             mockMvc.perform(delete("/api/v1/cards/1"))
                 .andExpect(status().isNoContent)
 
-            verify(cardCommandService).deleteCard(member, 1L)
+            verify(cardCommandService).deleteCard(member.id, 1L)
         }
     }
 

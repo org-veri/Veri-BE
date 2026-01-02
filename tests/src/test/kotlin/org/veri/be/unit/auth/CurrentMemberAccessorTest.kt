@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test
 import org.veri.be.global.auth.AuthErrorInfo
 import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.member.entity.enums.ProviderType
+import org.veri.be.global.auth.JwtClaimsPayload
 import org.veri.be.global.auth.context.CurrentMemberAccessor
 import org.veri.be.global.auth.context.CurrentMemberInfo
 import org.veri.be.support.assertion.ExceptionAssertions
@@ -22,7 +23,7 @@ class CurrentMemberAccessorTest {
         @DisplayName("현재 회원이 있으면 반환한다")
         fun returnsMember() {
             val member = member()
-            val accessor = testAccessor(Optional.of(member), Optional.of(CurrentMemberInfo.from(member)))
+            val accessor = testAccessor(Optional.of(member), Optional.of(CurrentMemberInfo.from(JwtClaimsPayload(member.id, member.email, member.nickname, false))))
 
             val result = accessor.getMemberOrThrow()
 
@@ -49,7 +50,7 @@ class CurrentMemberAccessorTest {
         @DisplayName("현재 회원 정보가 있으면 반환한다")
         fun returnsMemberInfo() {
             val member = member()
-            val accessor = testAccessor(Optional.of(member), Optional.of(CurrentMemberInfo.from(member)))
+            val accessor = testAccessor(Optional.of(member), Optional.of(CurrentMemberInfo.from(JwtClaimsPayload(member.id, member.email, member.nickname, false))))
 
             val result = accessor.getMemberInfoOrThrow()
 

@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.veri.be.global.auth.context.AuthenticatedMember;
+import org.veri.be.global.auth.context.CurrentMemberInfo;
 import org.veri.be.domain.card.controller.dto.request.CardCreateRequest;
 import org.veri.be.domain.card.controller.dto.request.CardUpdateRequest;
 import org.veri.be.domain.card.controller.dto.response.CardCreateResponse;
@@ -16,7 +17,6 @@ import org.veri.be.domain.card.controller.dto.response.CardUpdateResponse;
 import org.veri.be.domain.card.controller.enums.CardSortType;
 import org.veri.be.domain.card.service.CardCommandService;
 import org.veri.be.domain.card.service.CardQueryService;
-import org.veri.be.domain.member.entity.Member;
 import org.veri.be.lib.response.ApiResponse;
 import org.veri.be.global.storage.dto.PresignedUrlRequest;
 import org.veri.be.global.storage.dto.PresignedUrlResponse;
@@ -38,9 +38,10 @@ public class CardController {
     @PostMapping
     public ApiResponse<CardCreateResponse> createCard(
             @RequestBody @Valid CardCreateRequest request,
-            @AuthenticatedMember Member member) {
+            @AuthenticatedMember CurrentMemberInfo memberInfo
+    ) {
         Long cardId = cardCommandService.createCard(
-                member,
+                memberInfo.id(),
                 request.content(),
                 request.imageUrl(),
                 request.memberBookId(),
@@ -51,25 +52,23 @@ public class CardController {
 
     @Operation(summary = "내 카드 개수 조회", description = "로그인한 사용자의 카드 개수를 조회합니다.")
     @GetMapping("/my/count")
-    public ApiResponse<Integer> getMyCardCount(@AuthenticatedMember Member member) {
-        return ApiResponse.ok(cardQueryService.getOwnedCardCount(member.getId()));
+    public ApiResponse<Integer> getMyCardCount(@AuthenticatedMember CurrentMemberInfo memberInfo) {
+        return ApiResponse.ok(cardQueryService.getOwnedCardCount(memberInfo.id()));
     }
 
     @Operation(summary = "내 카드 목록 조회", description = "로그인한 사용자의 카드 목록을 페이지네이션과 정렬 기준으로 조회합니다.")
     @GetMapping("/my")
     public ApiResponse<CardListResponse> getMyCards(
-            @AuthenticatedMember Member member,
             @RequestParam(defaultValue = "1") @Min(1) int page,
             @RequestParam(defaultValue = "10") @Min(1) int size,
-            @RequestParam(defaultValue = "newest") String sort
+            @RequestParam(defaultValue = "newest") String sort,
+            @AuthenticatedMember CurrentMemberInfo memberInfo
     ) {
         if (page < 1 || size < 1) {
             throw ApplicationException.of(CommonErrorCode.INVALID_REQUEST);
         }
         CardSortType sortType = CardSortType.from(sort);
-        return ApiResponse.ok(
-                CardListResponse.ofOwn(
-                        cardQueryService.getOwnedCards(member.getId(), page - 1, size, sortType), member)
+        return ApiResponse.ok(CardListResponse.ofOwn(cardQueryService.getOwnedCards(memberInfo.id(), page - 1, size, sortType))
         );
     }
 
@@ -77,9 +76,9 @@ public class CardController {
     @GetMapping("/{cardId}")
     public ApiResponse<CardDetailResponse> getCard(
             @PathVariable Long cardId,
-            @AuthenticatedMember Member member
+            @AuthenticatedMember CurrentMemberInfo memberInfo
     ) {
-        return ApiResponse.ok(cardQueryService.getCardDetail(cardId, member));
+        return ApiResponse.ok(cardQueryService.getCardDetail(cardId, memberInfo.id()));
     }
 
     @Operation(summary = "카드 수정", description = "카드 ID로 카드를 수정합니다. 본인 소유 카드만 수정할 수 있습니다.")
@@ -87,10 +86,10 @@ public class CardController {
     public ApiResponse<CardUpdateResponse> updateCard(
             @PathVariable Long cardId,
             @RequestBody @Valid CardUpdateRequest request,
-            @AuthenticatedMember Member member
+            @AuthenticatedMember CurrentMemberInfo memberInfo
     ) {
         CardUpdateResponse response = cardCommandService.updateCard(
-                member,
+                memberInfo.id(),
                 cardId,
                 request.content(),
                 request.imageUrl()
@@ -102,9 +101,9 @@ public class CardController {
     @DeleteMapping("/{cardId}")
     public ApiResponse<Void> deleteCard(
             @PathVariable Long cardId,
-            @AuthenticatedMember Member member
+            @AuthenticatedMember CurrentMemberInfo memberInfo
     ) {
-        cardCommandService.deleteCard(member, cardId);
+        cardCommandService.deleteCard(memberInfo.id(), cardId);
         return ApiResponse.noContent();
     }
 

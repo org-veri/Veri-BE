@@ -7,6 +7,7 @@ import org.veri.be.domain.image.entity.Image;
 import org.veri.be.domain.image.exception.ImageErrorCode;
 import org.veri.be.domain.image.repository.ImageRepository;
 import org.veri.be.domain.member.entity.Member;
+import org.veri.be.domain.member.repository.MemberRepository;
 import org.veri.be.lib.exception.ApplicationException;
 
 @Service
@@ -15,10 +16,11 @@ public class ImageCommandService {
 
     private final ImageRepository imageRepository;
     private final OcrService mistralOcrService;
+    private final MemberRepository memberRepository;
 
     @Transactional
-    public String processWithMistral(Member member, String imageUrl) {
-        insertImageUrl(imageUrl, member);
+    public String processWithMistral(Long memberId, String imageUrl) {
+        insertImageUrl(imageUrl, memberId);
         try {
             return mistralOcrService.extract(imageUrl);
         } catch (Exception _) {
@@ -26,7 +28,8 @@ public class ImageCommandService {
         }
     }
 
-    private void insertImageUrl(String imageUrl, Member member) {
+    private void insertImageUrl(String imageUrl, Long memberId) {
+        Member member = memberRepository.getReferenceById(memberId);
         Image image = Image.builder()
                 .member(member)
                 .imageUrl(imageUrl)

@@ -22,6 +22,7 @@ import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.domain.member.service.MemberCommandService
 import org.veri.be.domain.member.service.MemberQueryService
+import org.veri.be.global.auth.JwtClaimsPayload
 import org.veri.be.global.auth.context.AuthenticatedMemberResolver
 import org.veri.be.global.auth.context.CurrentMemberAccessor
 import org.veri.be.global.auth.context.CurrentMemberInfo
@@ -41,6 +42,7 @@ class MemberControllerTest {
     private lateinit var memberQueryService: MemberQueryService
 
     private lateinit var member: Member
+    private lateinit var memberInfo: CurrentMemberInfo
 
     @BeforeEach
     fun setUp() {
@@ -54,20 +56,20 @@ class MemberControllerTest {
             .providerType(ProviderType.KAKAO)
             .build()
 
+        memberInfo = CurrentMemberInfo.from(JwtClaimsPayload(member.id, member.email, member.nickname, false))
         val controller = MemberController(memberCommandService, memberQueryService)
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
             .setControllerAdvice(ApiResponseAdvice())
             .setCustomArgumentResolvers(
-                AuthenticatedMemberResolver(testMemberAccessor(member))
+                AuthenticatedMemberResolver(testMemberAccessor(memberInfo))
             )
             .build()
     }
 
-    private fun testMemberAccessor(member: Member): CurrentMemberAccessor {
-        val info = CurrentMemberInfo.from(member)
+    private fun testMemberAccessor(memberInfo: CurrentMemberInfo): CurrentMemberAccessor {
         return object : CurrentMemberAccessor {
-            override fun getCurrentMemberInfoOrNull() = info
-            override fun getCurrentMember() = Optional.of(member)
+            override fun getCurrentMemberInfoOrNull() = memberInfo
+            override fun getCurrentMember() = Optional.empty<Member>()
         }
     }
 
@@ -85,7 +87,7 @@ class MemberControllerTest {
                 .numOfReadBook(3)
                 .numOfCard(5)
                 .build()
-            given(memberQueryService.findMyInfo(member)).willReturn(response)
+            given(memberQueryService.findMyInfo(memberInfo)).willReturn(response)
 
             mockMvc.perform(get("/api/v1/members/me"))
                 .andExpect(status().isOk)
@@ -109,7 +111,7 @@ class MemberControllerTest {
                 .nickname("new-nickname")
                 .image("https://example.com/new.png")
                 .build()
-            given(memberCommandService.updateInfo(request, member)).willReturn(response)
+            given(memberCommandService.updateInfo(request, member.id)).willReturn(response)
 
             mockMvc.perform(
                 patch("/api/v1/members/me/info")

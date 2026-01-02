@@ -5,6 +5,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.veri.be.global.auth.JwtClaimsPayload
 import org.veri.be.global.auth.context.MemberContext
 import java.lang.reflect.Constructor
 import java.lang.reflect.Modifier
@@ -23,7 +24,7 @@ class MemberContextTest {
         @Test
         @DisplayName("저장된 멤버 ID를 반환한다")
         fun returnsStoredMemberId() {
-            MemberContext.setCurrentMemberId(10L)
+            MemberContext.setCurrentMemberInfo(JwtClaimsPayload(10L, "member@test.com", "member", false))
 
             assertThat(MemberContext.getCurrentMemberId()).contains(10L)
         }
@@ -36,7 +37,7 @@ class MemberContextTest {
         @Test
         @DisplayName("토큰과 ID를 모두 비운다")
         fun clearsContext() {
-            MemberContext.setCurrentMemberId(1L)
+            MemberContext.setCurrentMemberInfo(JwtClaimsPayload(1L, "member@test.com", "member", false))
             MemberContext.setCurrentToken("token")
 
             MemberContext.clear()

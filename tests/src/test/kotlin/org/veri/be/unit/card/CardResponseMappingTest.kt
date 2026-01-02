@@ -41,7 +41,7 @@ class CardResponseMappingTest {
                 .isPublic(true)
                 .build()
 
-            val response: CardDetailResponse = CardDetailResponse.from(card, member)
+            val response: CardDetailResponse = CardDetailResponse.from(card, member.id)
 
             assertThat(response.id()).isEqualTo(1L)
             assertThat(response.memberProfileResponse()).isEqualTo(MemberProfileResponse.from(member))
@@ -117,11 +117,11 @@ class CardResponseMappingTest {
                 6
             )
 
-            val response = CardListResponse.ofOwn(page, member)
+            val response = CardListResponse.ofOwn(page)
 
             assertThat(response.page()).isEqualTo(2)
             assertThat(response.cards()).hasSize(1)
-            assertThat(response.cards()[0].member().id()).isEqualTo(1L)
+            assertThat(response.cards()[0].member()).isNull()
         }
     }
 

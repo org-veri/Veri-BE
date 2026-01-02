@@ -19,7 +19,7 @@ import org.veri.be.api.social.SocialReadingController
 import org.veri.be.domain.book.dto.book.BookPopularResponse
 import org.veri.be.domain.book.dto.reading.response.ReadingDetailResponse
 import org.veri.be.domain.book.entity.enums.ReadingStatus
-import org.veri.be.domain.book.service.BookshelfService
+import org.veri.be.domain.book.service.ReadingQueryService
 import org.veri.be.lib.response.ApiResponseAdvice
 import java.time.LocalDateTime
 
@@ -29,11 +29,11 @@ class SocialReadingControllerTest {
     private lateinit var mockMvc: MockMvc
 
     @org.mockito.Mock
-    private lateinit var bookshelfService: BookshelfService
+    private lateinit var readingQueryService: ReadingQueryService
 
     @BeforeEach
     fun setUp() {
-        val controller = SocialReadingController(bookshelfService)
+        val controller = SocialReadingController(readingQueryService)
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
             .setControllerAdvice(ApiResponseAdvice())
             .build()
@@ -58,7 +58,7 @@ class SocialReadingControllerTest {
                 PageRequest.of(0, 10),
                 1
             )
-            given(bookshelfService.searchWeeklyPopular(0, 10)).willReturn(page)
+            given(readingQueryService.searchWeeklyPopular(0, 10)).willReturn(page)
 
             mockMvc.perform(get("/api/v2/bookshelf/popular"))
                 .andExpect(status().isOk)
@@ -86,7 +86,7 @@ class SocialReadingControllerTest {
                 .cardSummaries(listOf(ReadingDetailResponse.CardSummaryResponse(1L, "img", true)))
                 .isPublic(true)
                 .build()
-            given(bookshelfService.searchDetail(10L)).willReturn(response)
+            given(readingQueryService.searchDetail(10L)).willReturn(response)
 
             mockMvc.perform(get("/api/v2/bookshelf/10"))
                 .andExpect(status().isOk)

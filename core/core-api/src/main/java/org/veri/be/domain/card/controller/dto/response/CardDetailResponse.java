@@ -3,7 +3,6 @@ package org.veri.be.domain.card.controller.dto.response;
 import org.veri.be.domain.book.entity.Reading;
 import org.veri.be.api.common.dto.MemberProfileResponse;
 import org.veri.be.domain.card.entity.Card;
-import org.veri.be.domain.member.entity.Member;
 
 import java.time.LocalDateTime;
 
@@ -18,12 +17,12 @@ public record CardDetailResponse(
         boolean mine
 ) {
 
-    public static CardDetailResponse from(Card card, Member viewer) {
+    public static CardDetailResponse from(Card card, Long viewerId) {
         if (card == null) {
             return null;
         }
 
-        boolean mine = viewer != null && card.getMember().getId().equals(viewer.getId());
+        boolean mine = viewerId != null && card.getMember().getId().equals(viewerId);
 
         return new CardDetailResponse(
                 card.getId(),

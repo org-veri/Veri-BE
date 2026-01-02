@@ -159,7 +159,7 @@ class PostQueryServiceTest {
             given(likePostQueryService.getDetailLikeInfoOfPost(1L, 2L)).willReturn(likeInfo)
             given(commentQueryService.getCommentsByPostId(1L)).willReturn(comments)
 
-            val response = postQueryService.getPostDetail(1L, requester)
+            val response = postQueryService.getPostDetail(1L, requester.id)
 
             assertThat(response.postId()).isEqualTo(1L)
             assertThat(response.likeCount()).isEqualTo(1L)
@@ -175,7 +175,7 @@ class PostQueryServiceTest {
             given(postRepository.findByIdWithAllAssociations(1L)).willReturn(java.util.Optional.empty())
 
             ExceptionAssertions.assertApplicationException(
-                { postQueryService.getPostDetail(1L, requester) },
+                { postQueryService.getPostDetail(1L, requester.id) },
                 CommonErrorCode.RESOURCE_NOT_FOUND
             )
         }

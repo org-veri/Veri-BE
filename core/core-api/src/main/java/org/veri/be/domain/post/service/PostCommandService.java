@@ -7,6 +7,7 @@ import org.veri.be.domain.book.entity.Book;
 import org.veri.be.domain.book.service.BookService;
 import org.veri.be.domain.card.entity.CardErrorInfo;
 import org.veri.be.domain.member.entity.Member;
+import org.veri.be.domain.member.repository.MemberRepository;
 import org.veri.be.domain.post.dto.request.PostCreateRequest;
 import org.veri.be.domain.post.dto.response.LikeInfoResponse;
 import org.veri.be.domain.post.entity.LikePost;
@@ -30,10 +31,12 @@ public class PostCommandService {
     private final BookService bookService;
     private final StorageService storageService;
     private final LikePostRepository likePostRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
-    public Long createPost(PostCreateRequest request, Member member) {
+    public Long createPost(PostCreateRequest request, Long memberId) {
         Book book = this.bookService.getBookById(request.bookId());
+        Member member = memberRepository.getReferenceById(memberId);
 
         Post post = Post.builder()
                 .title(request.title())
@@ -51,22 +54,24 @@ public class PostCommandService {
     }
 
     @Transactional
-    public void deletePost(Long postId, Member member) {
+    public void deletePost(Long postId, Long memberId) {
         Post post = this.postQueryService.getPostById(postId);
-        post.authorizeOrThrow(member.getId());
+        post.authorizeOrThrow(memberId);
         this.postRepository.deleteById(postId);
     }
 
     @Transactional
-    public void publishPost(Long postId, Member member) {
+    public void publishPost(Long postId, Long memberId) {
         Post post = this.postQueryService.getPostById(postId);
+        Member member = memberRepository.getReferenceById(memberId);
         post.publishBy(member);
         postRepository.save(post);
     }
 
     @Transactional
-    public void unPublishPost(Long postId, Member member) {
+    public void unPublishPost(Long postId, Long memberId) {
         Post post = this.postQueryService.getPostById(postId);
+        Member member = memberRepository.getReferenceById(memberId);
         post.unpublishBy(member);
         postRepository.save(post);
     }
@@ -86,14 +91,14 @@ public class PostCommandService {
     }
 
     @Transactional
-    public LikeInfoResponse likePost(Long postId, Member member) {
-        if (likePostRepository.existsByPostIdAndMemberId(postId, member.getId())) {
+    public LikeInfoResponse likePost(Long postId, Long memberId) {
+        if (likePostRepository.existsByPostIdAndMemberId(postId, memberId)) {
             return new LikeInfoResponse(likePostRepository.countByPostId(postId), true);
         }
 
         LikePost likePost = LikePost.builder()
                 .post(postQueryService.getPostById(postId))
-                .member(member)
+                .member(memberRepository.getReferenceById(memberId))
                 .build();
 
         likePostRepository.save(likePost);
@@ -101,8 +106,8 @@ public class PostCommandService {
     }
 
     @Transactional
-    public LikeInfoResponse unlikePost(Long postId, Member member) {
-        likePostRepository.deleteByPostIdAndMemberId(postId, member.getId());
+    public LikeInfoResponse unlikePost(Long postId, Long memberId) {
+        likePostRepository.deleteByPostIdAndMemberId(postId, memberId);
 
         return new LikeInfoResponse(likePostRepository.countByPostId(postId), false);
     }

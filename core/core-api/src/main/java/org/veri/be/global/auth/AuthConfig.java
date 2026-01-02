@@ -20,6 +20,7 @@ import org.veri.be.global.auth.oauth2.CustomOAuth2UserService;
 import org.veri.be.global.auth.token.TokenProvider;
 import org.veri.be.lib.auth.jwt.JwtFilter;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 @Profile("!test")
@@ -60,7 +61,10 @@ public class AuthConfig {
     @Bean
     @ConditionalOnBooleanProperty(prefix = "auth.jwt", name = "use")
     public FilterRegistrationBean<OncePerRequestFilter> firstFilterRegister() {
-        log.info("Filter jwt registered");
+        log.info("JWT Filter registered. supported schema: {}",
+                Arrays.toString(JwtClaimsPayload.class.getRecordComponents())
+        );
+
         FilterRegistrationBean<OncePerRequestFilter> registrationBean =
                 new FilterRegistrationBean<>(new JwtFilter(tokenBlacklistStore, tokenProvider));
 

@@ -23,6 +23,7 @@ import org.veri.be.domain.comment.dto.request.ReplyPostRequest
 import org.veri.be.domain.comment.service.CommentCommandService
 import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.member.entity.enums.ProviderType
+import org.veri.be.global.auth.JwtClaimsPayload
 import org.veri.be.global.auth.context.AuthenticatedMemberResolver
 import org.veri.be.global.auth.context.CurrentMemberAccessor
 import org.veri.be.global.auth.context.CurrentMemberInfo
@@ -39,6 +40,7 @@ class CommentControllerTest {
     private lateinit var commentCommandService: CommentCommandService
 
     private lateinit var member: Member
+    private lateinit var memberInfo: CurrentMemberInfo
 
     @BeforeEach
     fun setUp() {
@@ -52,20 +54,20 @@ class CommentControllerTest {
             .providerType(ProviderType.KAKAO)
             .build()
 
+        memberInfo = CurrentMemberInfo.from(JwtClaimsPayload(member.id, member.email, member.nickname, false))
         val controller = CommentController(commentCommandService)
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
             .setControllerAdvice(ApiResponseAdvice())
             .setCustomArgumentResolvers(
-                AuthenticatedMemberResolver(testMemberAccessor(member))
+                AuthenticatedMemberResolver(testMemberAccessor(memberInfo))
             )
             .build()
     }
 
-    private fun testMemberAccessor(member: Member): CurrentMemberAccessor {
-        val info = CurrentMemberInfo.from(member)
+    private fun testMemberAccessor(memberInfo: CurrentMemberInfo): CurrentMemberAccessor {
         return object : CurrentMemberAccessor {
-            override fun getCurrentMemberInfoOrNull() = info
-            override fun getCurrentMember() = Optional.of(member)
+            override fun getCurrentMemberInfoOrNull() = memberInfo
+            override fun getCurrentMember() = Optional.empty<Member>()
         }
     }
 
@@ -77,7 +79,7 @@ class CommentControllerTest {
         @DisplayName("댓글을 작성하면 ID를 반환한다")
         fun returnsCommentId() {
             val request = CommentPostRequest(10L, "content")
-            given(commentCommandService.postComment(request, member)).willReturn(100L)
+            given(commentCommandService.postComment(request, member.id)).willReturn(100L)
 
             mockMvc.perform(
                 post("/api/v1/comments")
@@ -110,7 +112,7 @@ class CommentControllerTest {
         @DisplayName("대댓글을 작성하면 ID를 반환한다")
         fun returnsReplyId() {
             val request = ReplyPostRequest(20L, "reply")
-            given(commentCommandService.postReply(20L, "reply", member)).willReturn(200L)
+            given(commentCommandService.postReply(20L, "reply", member.id)).willReturn(200L)
 
             mockMvc.perform(
                 post("/api/v1/comments/reply")
@@ -138,7 +140,7 @@ class CommentControllerTest {
             )
                 .andExpect(status().isOk)
 
-            verify(commentCommandService).editComment(30L, "edited", member)
+            verify(commentCommandService).editComment(30L, "edited", member.id)
         }
     }
 
@@ -152,7 +154,7 @@ class CommentControllerTest {
             mockMvc.perform(delete("/api/v1/comments/40"))
                 .andExpect(status().isOk)
 
-            verify(commentCommandService).deleteComment(40L, member)
+            verify(commentCommandService).deleteComment(40L, member.id)
         }
     }
 }

@@ -18,6 +18,7 @@ import org.veri.be.domain.image.service.ImageCommandService
 import org.veri.be.domain.image.service.OcrService
 import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.member.entity.enums.ProviderType
+import org.veri.be.domain.member.repository.MemberRepository
 import org.veri.be.lib.exception.ApplicationException
 import org.veri.be.support.assertion.ExceptionAssertions
 
@@ -30,6 +31,9 @@ class ImageCommandServiceTest {
     @org.mockito.Mock
     private lateinit var ocrService: OcrService
 
+    @org.mockito.Mock
+    private lateinit var memberRepository: MemberRepository
+
     private lateinit var imageCommandService: ImageCommandService
 
     @org.mockito.Captor
@@ -37,7 +41,7 @@ class ImageCommandServiceTest {
 
     @BeforeEach
     fun setUp() {
-        imageCommandService = ImageCommandService(imageRepository, ocrService)
+        imageCommandService = ImageCommandService(imageRepository, ocrService, memberRepository)
     }
 
     @Nested
@@ -49,9 +53,10 @@ class ImageCommandServiceTest {
         fun returnsOcrResult() {
             val member = member(1L, "member@test.com", "member")
             given(ocrService.extract("https://example.com/image.png")).willReturn("text")
+            given(memberRepository.getReferenceById(1L)).willReturn(member)
             given(imageRepository.save(any(Image::class.java))).willAnswer { invocation -> invocation.getArgument(0) }
 
-            val result = imageCommandService.processWithMistral(member, "https://example.com/image.png")
+            val result = imageCommandService.processWithMistral(member.id, "https://example.com/image.png")
 
             assertThat(result).isEqualTo("text")
             verify(imageRepository).save(imageCaptor.capture())
@@ -65,9 +70,10 @@ class ImageCommandServiceTest {
             val member = member(1L, "member@test.com", "member")
             given(ocrService.extract("https://example.com/image.png"))
                 .willThrow(RuntimeException("boom"))
+            given(memberRepository.getReferenceById(1L)).willReturn(member)
 
             ExceptionAssertions.assertApplicationException(
-                { imageCommandService.processWithMistral(member, "https://example.com/image.png") },
+                { imageCommandService.processWithMistral(member.id, "https://example.com/image.png") },
                 ImageErrorCode.OCR_PROCESSING_FAILED
             )
         }
@@ -78,9 +84,10 @@ class ImageCommandServiceTest {
             val member = member(1L, "member@test.com", "member")
             given(ocrService.extract("https://example.com/image.png"))
                 .willThrow(ApplicationException.of(ImageErrorCode.OCR_PROCESSING_FAILED))
+            given(memberRepository.getReferenceById(1L)).willReturn(member)
 
             ExceptionAssertions.assertApplicationException(
-                { imageCommandService.processWithMistral(member, "https://example.com/image.png") },
+                { imageCommandService.processWithMistral(member.id, "https://example.com/image.png") },
                 ImageErrorCode.OCR_PROCESSING_FAILED
             )
         }

@@ -26,6 +26,13 @@ public interface ReadingRepository extends JpaRepository<Reading, Long> {
     int countAllByMember(Member member);
 
     @Query("""
+            SELECT COUNT(mb)
+            FROM Reading mb
+            WHERE mb.member.id = :memberId
+            """)
+    int countAllByMemberId(@Param("memberId") Long memberId);
+
+    @Query("""
             SELECT new org.veri.be.domain.book.repository.dto.BookPopularQueryResult(
             mb.book.image,
             mb.book.title,

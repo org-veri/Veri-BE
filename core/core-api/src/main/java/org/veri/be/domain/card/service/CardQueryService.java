@@ -9,11 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.veri.be.domain.card.controller.dto.response.CardDetailResponse;
 import org.veri.be.domain.card.controller.enums.CardSortType;
 import org.veri.be.domain.card.entity.Card;
-import org.veri.be.domain.card.entity.CardErrorInfo;
 import org.veri.be.domain.card.repository.CardRepository;
 import org.veri.be.domain.card.repository.dto.CardFeedItem;
 import org.veri.be.domain.card.repository.dto.CardListItem;
-import org.veri.be.domain.member.entity.Member;
 import org.veri.be.lib.exception.ApplicationException;
 import org.veri.be.lib.exception.CommonErrorCode;
 
@@ -30,13 +28,13 @@ public class CardQueryService {
         return cardRepository.findAllByMemberId(memberId, pageRequest);
     }
 
-    public CardDetailResponse getCardDetail(Long cardId, Member viewer) {
+    public CardDetailResponse getCardDetail(Long cardId, Long viewerId) {
         Card card = cardRepository.findByIdWithAllAssociations(cardId)
                 .orElseThrow(() -> ApplicationException.of(CommonErrorCode.RESOURCE_NOT_FOUND));
 
-        card.assertReadableBy(viewer);
+        card.assertReadableBy(viewerId);
 
-        return CardDetailResponse.from(card, viewer);
+        return CardDetailResponse.from(card, viewerId);
     }
 
     public Card getCardById(Long cardId) {
