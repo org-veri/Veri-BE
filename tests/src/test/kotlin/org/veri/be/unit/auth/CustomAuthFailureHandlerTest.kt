@@ -19,7 +19,7 @@ class CustomAuthFailureHandlerTest {
     inner class OnAuthenticationFailure {
 
         @Test
-        @DisplayName("인증 실패 시 예외가 발생한다")
+        @DisplayName("인증에 실패하면 → 예외가 발생한다")
         fun throwsWhenFailure() {
             ExceptionAssertions.assertApplicationException(
                 {

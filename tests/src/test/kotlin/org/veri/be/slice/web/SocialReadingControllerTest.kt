@@ -9,8 +9,6 @@ import org.mockito.BDDMockito.given
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
@@ -21,12 +19,11 @@ import org.veri.be.domain.book.dto.reading.response.ReadingDetailResponse
 import org.veri.be.domain.book.entity.enums.ReadingStatus
 import org.veri.be.domain.book.service.ReadingQueryService
 import org.veri.be.lib.response.ApiResponseAdvice
+import org.veri.be.support.ControllerTestSupport
 import java.time.LocalDateTime
 
 @ExtendWith(MockitoExtension::class)
-class SocialReadingControllerTest {
-
-    private lateinit var mockMvc: MockMvc
+class SocialReadingControllerTest : ControllerTestSupport() {
 
     @org.mockito.Mock
     private lateinit var readingQueryService: ReadingQueryService
@@ -44,7 +41,7 @@ class SocialReadingControllerTest {
     inner class GetPopularBooks {
 
         @Test
-        @DisplayName("주간 인기 도서 목록을 반환한다")
+        @DisplayName("요청하면 → 주간 인기 도서 목록을 반환한다")
         fun returnsPopularBooks() {
             val response = BookPopularResponse(
                 "https://example.com/book.png",
@@ -60,7 +57,7 @@ class SocialReadingControllerTest {
             )
             given(readingQueryService.searchWeeklyPopular(0, 10)).willReturn(page)
 
-            mockMvc.perform(get("/api/v2/bookshelf/popular"))
+            get("/api/v2/bookshelf/popular")
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.result.books[0].title").value("title"))
         }
@@ -71,7 +68,7 @@ class SocialReadingControllerTest {
     inner class GetBookDetail {
 
         @Test
-        @DisplayName("독서 상세 정보를 반환한다")
+        @DisplayName("독서를 조회하면 → 상세 정보를 반환한다")
         fun returnsDetail() {
             val response = ReadingDetailResponse.builder()
                 .memberBookId(10L)
@@ -88,7 +85,7 @@ class SocialReadingControllerTest {
                 .build()
             given(readingQueryService.searchDetail(10L)).willReturn(response)
 
-            mockMvc.perform(get("/api/v2/bookshelf/10"))
+            get("/api/v2/bookshelf/10")
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.result.memberBookId").value(10L))
                 .andExpect(jsonPath("$.result.title").value("title"))

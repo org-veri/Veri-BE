@@ -5,8 +5,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.veri.be.domain.member.dto.MemberResponse
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
+import org.veri.be.support.fixture.MemberFixture
 
 class MemberConverterTest {
 
@@ -15,7 +14,7 @@ class MemberConverterTest {
     inner class ToMemberInfoResponse {
 
         @Test
-        @DisplayName("멤버 정보 응답으로 변환한다")
+        @DisplayName("멤버 정보 응답으로 변환하면 → 결과를 반환한다")
         fun convertsToResponse() {
             val member = member()
 
@@ -30,15 +29,8 @@ class MemberConverterTest {
         }
     }
 
-    private fun member(): Member {
-        return Member.builder()
-            .id(1L)
-            .email("member@test.com")
-            .nickname("member")
-            .profileImageUrl("https://example.com/profile.png")
-            .providerId("provider-1")
-            .providerType(ProviderType.KAKAO)
-            .build()
+    private fun member(): org.veri.be.domain.member.entity.Member {
+        return MemberFixture.aMember().id(1L).nickname("member").build()
     }
 
 }

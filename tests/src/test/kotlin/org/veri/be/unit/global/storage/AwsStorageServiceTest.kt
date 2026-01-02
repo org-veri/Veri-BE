@@ -65,7 +65,7 @@ class AwsStorageServiceTest {
     inner class GeneratePresignedUrl {
 
         @Test
-        @DisplayName("presigned URL과 public URL을 반환한다")
+        @DisplayName("presigned URL을 생성하면 → presigned/public URL을 반환한다")
         fun returnsPresignedUrl() {
             given(storageKeyGenerator.generate("image/png", "public")).willReturn("public/key.png")
             given(s3Presigner.presignPutObject(any(PutObjectPresignRequest::class.java))).willReturn(
@@ -87,7 +87,7 @@ class AwsStorageServiceTest {
         }
 
         @Test
-        @DisplayName("기본 prefix와 만료 시간으로 presigned URL을 반환한다")
+        @DisplayName("기본 설정을 사용하면 → presigned URL을 반환한다")
         fun returnsPresignedUrlWithDefaultSettings() {
             given(storageKeyGenerator.generate("image/png", "public")).willReturn("public/key.png")
             given(s3Presigner.presignPutObject(any(PutObjectPresignRequest::class.java))).willReturn(
@@ -112,7 +112,7 @@ class AwsStorageServiceTest {
     inner class GeneratePresignedPost {
 
         @Test
-        @DisplayName("presigned post form을 반환한다")
+        @DisplayName("presigned post를 생성하면 → form을 반환한다")
         fun returnsPresignedPostForm() {
             val form = PresignedPostForm("https://example.com", mapOf())
             given(storageKeyGenerator.generate("image/*", "public")).willReturn("public/key.png")

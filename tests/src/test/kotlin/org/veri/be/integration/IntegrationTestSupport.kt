@@ -16,6 +16,7 @@ import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.domain.member.repository.MemberRepository
 import org.veri.be.global.auth.JwtClaimsPayload
 import org.veri.be.global.auth.context.MemberContext
+import org.veri.be.support.fixture.MemberFixture
 
 @Transactional
 @SpringBootTest(classes = [Application::class])
@@ -39,7 +40,7 @@ abstract class IntegrationTestSupport {
     fun setUpContext() {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).build()
 
-        mockMember = Member.builder()
+        mockMember = MemberFixture.aMember()
             .email("smoody@prompt.town")
             .nickname("스무디")
             .profileImageUrl("https://example.com/profile.png")

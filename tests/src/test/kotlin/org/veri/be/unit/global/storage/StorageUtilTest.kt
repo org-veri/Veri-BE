@@ -13,13 +13,13 @@ class StorageUtilTest {
     inner class IsImage {
 
         @Test
-        @DisplayName("image 타입이면 true를 반환한다")
+        @DisplayName("image 타입이면 → true를 반환한다")
         fun returnsTrueForImage() {
             assertThat(StorageUtil.isImage("image/png")).isTrue()
         }
 
         @Test
-        @DisplayName("image 타입이 아니면 false를 반환한다")
+        @DisplayName("image 타입이 아니면 → false를 반환한다")
         fun returnsFalseForNonImage() {
             assertThat(StorageUtil.isImage("application/pdf")).isFalse()
         }

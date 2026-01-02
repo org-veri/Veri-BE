@@ -7,12 +7,12 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
-import org.veri.be.domain.image.entity.Image
 import org.veri.be.domain.image.repository.ImageRepository
-import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.domain.member.repository.MemberRepository
 import org.veri.be.slice.persistence.PersistenceSliceTestSupport
+import org.veri.be.support.fixture.ImageFixture
+import org.veri.be.support.fixture.MemberFixture
 
 class ImageRepositoryTest : PersistenceSliceTestSupport() {
 
@@ -27,7 +27,7 @@ class ImageRepositoryTest : PersistenceSliceTestSupport() {
     inner class FindByMemberId {
 
         @Test
-        @DisplayName("회원별 이미지 URL을 페이징 조회한다")
+        @DisplayName("회원별 이미지 URL을 조회하면 → 페이징 결과를 반환한다")
         fun returnsMemberImageUrls() {
             val member = saveMember("member@test.com", "member")
             val other = saveMember("other@test.com", "other")
@@ -49,9 +49,9 @@ class ImageRepositoryTest : PersistenceSliceTestSupport() {
         }
     }
 
-    private fun saveMember(email: String, nickname: String): Member {
+    private fun saveMember(email: String, nickname: String): org.veri.be.domain.member.entity.Member {
         return memberRepository.save(
-            Member.builder()
+            MemberFixture.aMember()
                 .email(email)
                 .nickname(nickname)
                 .profileImageUrl("https://example.com/profile.png")
@@ -61,9 +61,9 @@ class ImageRepositoryTest : PersistenceSliceTestSupport() {
         )
     }
 
-    private fun saveImage(member: Member, url: String): Image {
+    private fun saveImage(member: org.veri.be.domain.member.entity.Member, url: String): org.veri.be.domain.image.entity.Image {
         return imageRepository.save(
-            Image.builder()
+            ImageFixture.anImage()
                 .member(member)
                 .imageUrl(url)
                 .build()

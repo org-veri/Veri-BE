@@ -9,18 +9,18 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
-import org.veri.be.domain.book.entity.Book
-import org.veri.be.domain.book.entity.Reading
 import org.veri.be.domain.book.entity.enums.ReadingStatus
 import org.veri.be.domain.book.repository.BookRepository
 import org.veri.be.domain.book.repository.ReadingRepository
 import org.veri.be.domain.book.repository.dto.ReadingQueryResult
-import org.veri.be.domain.card.entity.Card
 import org.veri.be.domain.card.repository.CardRepository
-import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.domain.member.repository.MemberRepository
 import org.veri.be.slice.persistence.PersistenceSliceTestSupport
+import org.veri.be.support.fixture.BookFixture
+import org.veri.be.support.fixture.CardFixture
+import org.veri.be.support.fixture.MemberFixture
+import org.veri.be.support.fixture.ReadingFixture
 
 class ReadingRepositoryTest : PersistenceSliceTestSupport() {
 
@@ -44,7 +44,7 @@ class ReadingRepositoryTest : PersistenceSliceTestSupport() {
     inner class FindByIdWithCardsAndBook {
 
         @Test
-        @DisplayName("독서와 카드, 책을 fetch join으로 조회한다")
+        @DisplayName("독서와 카드, 책을 fetch join으로 조회하면 → 로딩된다")
         fun fetchesCardsAndBook() {
             val member = saveMember("reading@test.com", "reader")
             val book = saveBook("isbn-1", "book-1")
@@ -69,7 +69,7 @@ class ReadingRepositoryTest : PersistenceSliceTestSupport() {
     inner class FindReadingPage {
 
         @Test
-        @DisplayName("상태 조건에 맞는 독서 페이징을 반환한다")
+        @DisplayName("상태 조건에 맞는 독서 페이징을 반환하면 → 결과를 반환한다")
         fun returnsReadingPageForStatuses() {
             val member = saveMember("reading@test.com", "reader")
             val book = saveBook("isbn-1", "book-1")
@@ -95,7 +95,7 @@ class ReadingRepositoryTest : PersistenceSliceTestSupport() {
     inner class CountByStatusAndMember {
 
         @Test
-        @DisplayName("상태와 회원 조건에 해당하는 독서 개수를 반환한다")
+        @DisplayName("상태와 회원 조건에 해당하면 → 독서 개수를 반환한다")
         fun returnsCountByStatusAndMember() {
             val member = saveMember("reading@test.com", "reader")
             val book = saveBook("isbn-1", "book-1")
@@ -113,7 +113,7 @@ class ReadingRepositoryTest : PersistenceSliceTestSupport() {
     inner class FindByMemberAndBook {
 
         @Test
-        @DisplayName("회원과 도서로 독서를 조회한다")
+        @DisplayName("회원과 도서로 독서를 조회하면 → 결과를 반환한다")
         fun returnsReadingByMemberAndBook() {
             val member = saveMember("reading@test.com", "reader")
             val book = saveBook("isbn-1", "book-1")
@@ -130,7 +130,7 @@ class ReadingRepositoryTest : PersistenceSliceTestSupport() {
     inner class FindByAuthorAndTitle {
 
         @Test
-        @DisplayName("회원과 도서의 저자/제목으로 독서를 조회한다")
+        @DisplayName("회원과 도서의 저자/제목으로 조회하면 → 결과를 반환한다")
         fun returnsReadingByAuthorAndTitle() {
             val member = saveMember("reading@test.com", "reader")
             val book = saveBook("isbn-1", "book-1")
@@ -143,9 +143,9 @@ class ReadingRepositoryTest : PersistenceSliceTestSupport() {
         }
     }
 
-    private fun saveMember(email: String, nickname: String): Member {
+    private fun saveMember(email: String, nickname: String): org.veri.be.domain.member.entity.Member {
         return memberRepository.save(
-            Member.builder()
+            MemberFixture.aMember()
                 .email(email)
                 .nickname(nickname)
                 .profileImageUrl("https://example.com/profile.png")
@@ -155,9 +155,9 @@ class ReadingRepositoryTest : PersistenceSliceTestSupport() {
         )
     }
 
-    private fun saveBook(isbn: String, title: String): Book {
+    private fun saveBook(isbn: String, title: String): org.veri.be.domain.book.entity.Book {
         return bookRepository.save(
-            Book.builder()
+            BookFixture.aBook()
                 .image("https://example.com/book.png")
                 .title(title)
                 .author("author")
@@ -166,9 +166,13 @@ class ReadingRepositoryTest : PersistenceSliceTestSupport() {
         )
     }
 
-    private fun saveReading(member: Member, book: Book, status: ReadingStatus): Reading {
+    private fun saveReading(
+        member: org.veri.be.domain.member.entity.Member,
+        book: org.veri.be.domain.book.entity.Book,
+        status: ReadingStatus
+    ): org.veri.be.domain.book.entity.Reading {
         return readingRepository.save(
-            Reading.builder()
+            ReadingFixture.aReading()
                 .member(member)
                 .book(book)
                 .status(status)
@@ -177,9 +181,13 @@ class ReadingRepositoryTest : PersistenceSliceTestSupport() {
         )
     }
 
-    private fun saveCard(member: Member, reading: Reading, content: String): Card {
+    private fun saveCard(
+        member: org.veri.be.domain.member.entity.Member,
+        reading: org.veri.be.domain.book.entity.Reading,
+        content: String
+    ): org.veri.be.domain.card.entity.Card {
         return cardRepository.save(
-            Card.builder()
+            CardFixture.aCard()
                 .member(member)
                 .reading(reading)
                 .content(content)

@@ -9,18 +9,17 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito.verify
+import org.mockito.BDDMockito.then
 import org.mockito.junit.jupiter.MockitoExtension
 import org.veri.be.domain.image.entity.Image
 import org.veri.be.domain.image.exception.ImageErrorCode
 import org.veri.be.domain.image.repository.ImageRepository
 import org.veri.be.domain.image.service.ImageCommandService
 import org.veri.be.domain.image.service.OcrService
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.domain.member.repository.MemberRepository
 import org.veri.be.lib.exception.ApplicationException
 import org.veri.be.support.assertion.ExceptionAssertions
+import org.veri.be.support.fixture.MemberFixture
 
 @ExtendWith(MockitoExtension::class)
 class ImageCommandServiceTest {
@@ -49,9 +48,9 @@ class ImageCommandServiceTest {
     inner class ProcessWithMistral {
 
         @Test
-        @DisplayName("이미지 저장 후 OCR 결과를 반환한다")
+        @DisplayName("이미지 저장 후 → OCR 결과를 반환한다")
         fun returnsOcrResult() {
-            val member = member(1L, "member@test.com", "member")
+            val member = member(1L, "member")
             given(ocrService.extract("https://example.com/image.png")).willReturn("text")
             given(memberRepository.getReferenceById(1L)).willReturn(member)
             given(imageRepository.save(any(Image::class.java))).willAnswer { invocation -> invocation.getArgument(0) }
@@ -59,15 +58,15 @@ class ImageCommandServiceTest {
             val result = imageCommandService.processWithMistral(member.id, "https://example.com/image.png")
 
             assertThat(result).isEqualTo("text")
-            verify(imageRepository).save(imageCaptor.capture())
+            then(imageRepository).should().save(imageCaptor.capture())
             assertThat(imageCaptor.value.imageUrl).isEqualTo("https://example.com/image.png")
             assertThat(imageCaptor.value.member).isEqualTo(member)
         }
 
         @Test
-        @DisplayName("예상치 못한 예외는 내부 서버 예외로 변환된다")
+        @DisplayName("예상치 못한 예외면 → 내부 서버 예외로 변환된다")
         fun wrapsUnexpectedException() {
-            val member = member(1L, "member@test.com", "member")
+            val member = member(1L, "member")
             given(ocrService.extract("https://example.com/image.png"))
                 .willThrow(RuntimeException("boom"))
             given(memberRepository.getReferenceById(1L)).willReturn(member)
@@ -79,9 +78,9 @@ class ImageCommandServiceTest {
         }
 
         @Test
-        @DisplayName("ApplicationException은 그대로 전달된다")
+        @DisplayName("ApplicationException이면 → 그대로 전달된다")
         fun rethrowsApplicationException() {
-            val member = member(1L, "member@test.com", "member")
+            val member = member(1L, "member")
             given(ocrService.extract("https://example.com/image.png"))
                 .willThrow(ApplicationException.of(ImageErrorCode.OCR_PROCESSING_FAILED))
             given(memberRepository.getReferenceById(1L)).willReturn(member)
@@ -93,14 +92,7 @@ class ImageCommandServiceTest {
         }
     }
 
-    private fun member(id: Long, email: String, nickname: String): Member {
-        return Member.builder()
-            .id(id)
-            .email(email)
-            .nickname(nickname)
-            .profileImageUrl("https://example.com/profile.png")
-            .providerId("provider-$nickname")
-            .providerType(ProviderType.KAKAO)
-            .build()
+    private fun member(id: Long, nickname: String): org.veri.be.domain.member.entity.Member {
+        return MemberFixture.aMember().id(id).nickname(nickname).build()
     }
 }

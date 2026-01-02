@@ -5,9 +5,9 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.veri.be.domain.book.entity.Book
 import org.veri.be.domain.book.repository.BookRepository
 import org.veri.be.slice.persistence.PersistenceSliceTestSupport
+import org.veri.be.support.fixture.BookFixture
 
 class BookRepositoryTest : PersistenceSliceTestSupport() {
 
@@ -19,10 +19,10 @@ class BookRepositoryTest : PersistenceSliceTestSupport() {
     inner class FindBookByIsbn {
 
         @Test
-        @DisplayName("isbn으로 도서를 조회한다")
+        @DisplayName("isbn으로 조회하면 → 도서를 반환한다")
         fun returnsBookByIsbn() {
             val book = bookRepository.save(
-                Book.builder()
+                BookFixture.aBook()
                     .image("https://example.com/book.png")
                     .title("title")
                     .author("author")
@@ -37,7 +37,7 @@ class BookRepositoryTest : PersistenceSliceTestSupport() {
         }
 
         @Test
-        @DisplayName("존재하지 않는 isbn이면 빈 결과를 반환한다")
+        @DisplayName("존재하지 않는 isbn이면 → 빈 결과를 반환한다")
         fun returnsEmptyWhenNotFound() {
             val found = bookRepository.findBookByIsbn("isbn-404")
 

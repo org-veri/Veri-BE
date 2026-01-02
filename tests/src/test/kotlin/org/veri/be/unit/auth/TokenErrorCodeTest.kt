@@ -13,7 +13,7 @@ class TokenErrorCodeTest {
     inner class EnumValues {
 
         @Test
-        @DisplayName("토큰 에러 코드와 메시지가 존재한다")
+        @DisplayName("모든 에러 코드를 조회하면 → 메시지가 존재한다")
         fun hasMessageAndCode() {
             for (info in TokenErrorCode.values()) {
                 assertThat(info.message).isNotBlank()

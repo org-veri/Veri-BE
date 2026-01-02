@@ -33,7 +33,7 @@ class ImageQueryServiceTest {
     inner class FetchUploadedImages {
 
         @Test
-        @DisplayName("빈 결과면 empty 응답을 반환한다")
+        @DisplayName("결과가 없으면 → empty 응답을 반환한다")
         fun returnsEmptyResponse() {
             val pageable = PageRequest.of(0, 10)
             given(imageRepository.findByMemberId(1L, pageable)).willReturn(Page.empty())
@@ -48,7 +48,7 @@ class ImageQueryServiceTest {
         }
 
         @Test
-        @DisplayName("이미지 URL 목록을 페이징 응답으로 반환한다")
+        @DisplayName("이미지 URL이 있으면 → 페이징 응답을 반환한다")
         fun returnsPageResponse() {
             val pageable = PageRequest.of(1, 2)
             val page = PageImpl(

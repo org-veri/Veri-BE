@@ -7,16 +7,16 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.veri.be.domain.book.entity.Book
 import org.veri.be.domain.book.repository.BookRepository
-import org.veri.be.domain.comment.entity.Comment
 import org.veri.be.domain.comment.repository.CommentRepository
-import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.domain.member.repository.MemberRepository
-import org.veri.be.domain.post.entity.Post
 import org.veri.be.domain.post.repository.PostRepository
 import org.veri.be.slice.persistence.PersistenceSliceTestSupport
+import org.veri.be.support.fixture.BookFixture
+import org.veri.be.support.fixture.CommentFixture
+import org.veri.be.support.fixture.MemberFixture
+import org.veri.be.support.fixture.PostFixture
 import java.time.LocalDateTime
 
 class CommentRepositoryTest : PersistenceSliceTestSupport() {
@@ -41,7 +41,7 @@ class CommentRepositoryTest : PersistenceSliceTestSupport() {
     inner class FindByPostIdAndParentIdIsNull {
 
         @Test
-        @DisplayName("부모가 없는 댓글만 조회한다")
+        @DisplayName("부모가 없는 댓글만 조회하면 → 결과를 반환한다")
         fun returnsRootComments() {
             val author = saveMember("author@test.com", "author")
             val post = savePost(author)
@@ -64,7 +64,7 @@ class CommentRepositoryTest : PersistenceSliceTestSupport() {
     inner class FindByPostIdAndParentIdIsNullOrderByCreatedAtAsc {
 
         @Test
-        @DisplayName("루트 댓글을 생성 시간 기준으로 정렬한다")
+        @DisplayName("루트 댓글을 생성 시간 기준으로 정렬하면 → 결과를 반환한다")
         fun returnsRootCommentsInCreatedOrder() {
             val author = saveMember("author@test.com", "author")
             val post = savePost(author)
@@ -94,7 +94,7 @@ class CommentRepositoryTest : PersistenceSliceTestSupport() {
     inner class FindByPostIdWithRepliesAndAuthor {
 
         @Test
-        @DisplayName("댓글, 대댓글, 작성자까지 fetch join으로 조회한다")
+        @DisplayName("댓글, 대댓글, 작성자까지 fetch join으로 조회하면 → 로딩된다")
         fun fetchesRepliesAndAuthors() {
             val author = saveMember("author@test.com", "author")
             val replier = saveMember("replier@test.com", "replier")
@@ -116,9 +116,9 @@ class CommentRepositoryTest : PersistenceSliceTestSupport() {
         }
     }
 
-    private fun saveMember(email: String, nickname: String): Member {
+    private fun saveMember(email: String, nickname: String): org.veri.be.domain.member.entity.Member {
         return memberRepository.save(
-            Member.builder()
+            MemberFixture.aMember()
                 .email(email)
                 .nickname(nickname)
                 .profileImageUrl("https://example.com/profile.png")
@@ -128,9 +128,9 @@ class CommentRepositoryTest : PersistenceSliceTestSupport() {
         )
     }
 
-    private fun savePost(author: Member): Post {
+    private fun savePost(author: org.veri.be.domain.member.entity.Member): org.veri.be.domain.post.entity.Post {
         val book = bookRepository.save(
-            Book.builder()
+            BookFixture.aBook()
                 .image("https://example.com/book.png")
                 .title("book")
                 .author("author")
@@ -138,7 +138,7 @@ class CommentRepositoryTest : PersistenceSliceTestSupport() {
                 .build()
         )
         return postRepository.save(
-            Post.builder()
+            PostFixture.aPost()
                 .author(author)
                 .book(book)
                 .title("title")
@@ -148,9 +148,14 @@ class CommentRepositoryTest : PersistenceSliceTestSupport() {
         )
     }
 
-    private fun saveComment(author: Member, post: Post, parent: Comment?, content: String): Comment {
+    private fun saveComment(
+        author: org.veri.be.domain.member.entity.Member,
+        post: org.veri.be.domain.post.entity.Post,
+        parent: org.veri.be.domain.comment.entity.Comment?,
+        content: String
+    ): org.veri.be.domain.comment.entity.Comment {
         return commentRepository.save(
-            Comment.builder()
+            CommentFixture.aComment()
                 .author(author)
                 .post(post)
                 .parent(parent)

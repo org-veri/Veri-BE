@@ -13,7 +13,7 @@ class JwtClaimsPayloadTest {
     inner class Of {
 
         @Test
-        @DisplayName("클레임 정보를 생성한다")
+        @DisplayName("클레임 정보를 생성하면 → 필드가 매핑된다")
         fun mapsFieldsToClaims() {
             val payload = JwtClaimsPayload(1L, "member@test.com", "member", false)
 

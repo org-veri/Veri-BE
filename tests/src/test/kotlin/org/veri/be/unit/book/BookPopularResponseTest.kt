@@ -13,7 +13,7 @@ class BookPopularResponseTest {
     inner class Record {
 
         @Test
-        @DisplayName("필드 값을 보존한다")
+        @DisplayName("record를 생성하면 → 필드 값을 보존한다")
         fun preservesValues() {
             val response = BookPopularResponse(
                 "https://example.com/book.png",

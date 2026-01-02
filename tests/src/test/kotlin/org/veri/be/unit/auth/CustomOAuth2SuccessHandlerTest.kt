@@ -12,7 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito.verify
+import org.mockito.BDDMockito.then
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
@@ -51,7 +51,7 @@ class CustomOAuth2SuccessHandlerTest {
     inner class OnAuthenticationSuccess {
 
         @Test
-        @DisplayName("OAuth2 사용자 정보로 로그인하고 응답을 작성한다")
+        @DisplayName("OAuth2 사용자 정보로 로그인하면 → 응답을 작성한다")
         fun writesLoginResponse() {
             val user = CustomOAuth2User(
                 listOf(SimpleGrantedAuthority("ROLE_USER")),
@@ -72,7 +72,7 @@ class CustomOAuth2SuccessHandlerTest {
 
             handler.onAuthenticationSuccess(request, response, authentication)
 
-            verify(authService).loginWithOAuth2(userInfoCaptor.capture())
+            then(authService).should().loginWithOAuth2(userInfoCaptor.capture())
             val captured = userInfoCaptor.value
             assertThat(captured.email).isEqualTo("member@test.com")
             assertThat(captured.nickname).isEqualTo("member")

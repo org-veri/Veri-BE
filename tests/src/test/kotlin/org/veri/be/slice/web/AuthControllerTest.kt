@@ -1,6 +1,5 @@
 package org.veri.be.slice.web
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -10,11 +9,9 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito.verify
+import org.mockito.BDDMockito.then
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
@@ -23,19 +20,16 @@ import org.veri.be.domain.auth.service.AuthService
 import org.veri.be.global.auth.dto.ReissueTokenRequest
 import org.veri.be.global.auth.dto.ReissueTokenResponse
 import org.veri.be.lib.response.ApiResponseAdvice
+import org.veri.be.support.ControllerTestSupport
 
 @ExtendWith(MockitoExtension::class)
-class AuthControllerTest {
-
-    private lateinit var mockMvc: MockMvc
-    private lateinit var objectMapper: ObjectMapper
+class AuthControllerTest : ControllerTestSupport() {
 
     @org.mockito.Mock
     private lateinit var authService: AuthService
 
     @BeforeEach
     fun setUp() {
-        objectMapper = ObjectMapper().findAndRegisterModules()
         val controller = AuthController(authService)
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
             .setControllerAdvice(ApiResponseAdvice())
@@ -47,7 +41,7 @@ class AuthControllerTest {
     inner class ReissueToken {
 
         @Test
-        @DisplayName("리프레시 토큰으로 새로운 액세스 토큰을 반환한다")
+        @DisplayName("리프레시 토큰을 보내면 → 새 액세스 토큰을 반환한다")
         fun returnsNewAccessToken() {
             val request = ReissueTokenRequest()
             ReflectionTestUtils.setField(request, "refreshToken", "refresh")
@@ -56,16 +50,12 @@ class AuthControllerTest {
                 .build()
             given(authService.reissueToken(any(ReissueTokenRequest::class.java))).willReturn(response)
 
-            mockMvc.perform(
-                post("/api/v1/auth/reissue")
-                    .contentType("application/json")
-                    .content(objectMapper.writeValueAsString(request))
-            )
+            postJson("/api/v1/auth/reissue", request)
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.result.accessToken").value("new-access"))
 
             val requestCaptor = ArgumentCaptor.forClass(ReissueTokenRequest::class.java)
-            verify(authService).reissueToken(requestCaptor.capture())
+            then(authService).should().reissueToken(requestCaptor.capture())
             assertThat(requestCaptor.value.refreshToken).isEqualTo("refresh")
         }
     }
@@ -75,15 +65,15 @@ class AuthControllerTest {
     inner class Logout {
 
         @Test
-        @DisplayName("로그아웃하면 상태 코드 204를 반환한다")
+        @DisplayName("로그아웃하면 → 204를 반환한다")
         fun logsOut() {
             mockMvc.perform(
-                post("/api/v1/auth/logout")
+                org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/api/v1/auth/logout")
                     .requestAttr("token", "access")
             )
                 .andExpect(status().isNoContent)
 
-            verify(authService).logout("access")
+            then(authService).should().logout("access")
         }
     }
 }
