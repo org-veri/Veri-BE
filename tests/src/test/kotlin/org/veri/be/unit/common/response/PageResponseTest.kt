@@ -14,7 +14,7 @@ class PageResponseTest {
     inner class Of {
 
         @Test
-        @DisplayName("0-based 페이지를 1-based로 보정한다")
+        @DisplayName("0-based 페이지면 → 1-based로 보정한다")
         fun adjustsPageIndex() {
             val response = PageResponse.of(
                 listOf("a", "b"),
@@ -36,7 +36,7 @@ class PageResponseTest {
     inner class Empty {
 
         @Test
-        @DisplayName("빈 응답을 생성한다")
+        @DisplayName("빈 페이지면 → empty 응답을 생성한다")
         fun returnsEmptyResponse() {
             val pageable = PageRequest.of(2, 5)
 

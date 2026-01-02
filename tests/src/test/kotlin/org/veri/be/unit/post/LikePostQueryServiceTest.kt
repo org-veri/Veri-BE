@@ -12,13 +12,13 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.BDDMockito.given
 import org.mockito.junit.jupiter.MockitoExtension
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.domain.post.entity.LikePost
-import org.veri.be.domain.post.entity.Post
 import org.veri.be.domain.post.repository.LikePostRepository
 import org.veri.be.domain.post.repository.dto.DetailLikeInfoQueryResult
 import org.veri.be.domain.post.service.LikePostQueryService
+import org.veri.be.support.fixture.LikePostFixture
+import org.veri.be.support.fixture.MemberFixture
+import org.veri.be.support.fixture.PostFixture
 
 @ExtendWith(MockitoExtension::class)
 class LikePostQueryServiceTest {
@@ -54,11 +54,11 @@ class LikePostQueryServiceTest {
     inner class GetDetailLikeInfoOfPost {
 
         @Test
-        @DisplayName("좋아요 수와 멤버 목록을 반환한다")
+        @DisplayName("좋아요가 있으면 → 수와 멤버 목록을 반환한다")
         fun returnsLikeInfo() {
-            val post = Post.builder().id(1L).title("title").content("content").build()
-            val member = member(1L, "member@test.com", "member")
-            val like = LikePost.builder().post(post).member(member).build()
+            val post = PostFixture.aPost().id(1L).title("title").content("content").build()
+            val member = MemberFixture.aMember().id(1L).nickname("member").build()
+            val like = LikePostFixture.aLikePost().post(post).member(member).build()
 
             given(fluentQuery.fetch()).willReturn(listOf(like))
 
@@ -71,11 +71,11 @@ class LikePostQueryServiceTest {
         }
 
         @Test
-        @DisplayName("요청자와 다른 좋아요가 있으면 isLiked는 false다")
+        @DisplayName("요청자와 다른 좋아요가 있으면 → isLiked는 false다")
         fun returnsFalseWhenNotAllMatch() {
-            val post = Post.builder().id(1L).title("title").content("content").build()
-            val member = member(2L, "other@test.com", "other")
-            val like = LikePost.builder().post(post).member(member).build()
+            val post = PostFixture.aPost().id(1L).title("title").content("content").build()
+            val member = MemberFixture.aMember().id(2L).nickname("other").build()
+            val like = LikePostFixture.aLikePost().post(post).member(member).build()
 
             given(fluentQuery.fetch()).willReturn(listOf(like))
 
@@ -84,17 +84,6 @@ class LikePostQueryServiceTest {
             assertThat(result.likeCount()).isEqualTo(1L)
             assertThat(result.isLiked()).isFalse()
         }
-    }
-
-    private fun member(id: Long, email: String, nickname: String): Member {
-        return Member.builder()
-            .id(id)
-            .email(email)
-            .nickname(nickname)
-            .profileImageUrl("https://example.com/profile.png")
-            .providerId("provider-$nickname")
-            .providerType(ProviderType.KAKAO)
-            .build()
     }
 
     private fun anyProperty(): Property<LikePost, *>? {

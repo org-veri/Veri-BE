@@ -9,10 +9,9 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito.verify
+import org.mockito.BDDMockito.then
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
-import org.veri.be.domain.book.entity.Reading
 import org.veri.be.domain.book.repository.ReadingRepository
 import org.veri.be.domain.card.controller.dto.response.CardUpdateResponse
 import org.veri.be.domain.card.controller.dto.response.CardVisibilityUpdateResponse
@@ -20,14 +19,16 @@ import org.veri.be.domain.card.entity.Card
 import org.veri.be.domain.card.entity.CardErrorInfo
 import org.veri.be.domain.card.repository.CardRepository
 import org.veri.be.domain.card.service.CardCommandService
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.domain.member.repository.MemberRepository
 import org.veri.be.global.storage.dto.PresignedPostFormResponse
 import org.veri.be.global.storage.dto.PresignedUrlRequest
 import org.veri.be.global.storage.dto.PresignedUrlResponse
 import org.veri.be.global.storage.service.StorageService
+import org.veri.be.support.assertion.CardAssert
 import org.veri.be.support.assertion.ExceptionAssertions
+import org.veri.be.support.fixture.CardFixture
+import org.veri.be.support.fixture.MemberFixture
+import org.veri.be.support.fixture.ReadingFixture
 import java.time.Duration
 import java.util.Optional
 
@@ -66,10 +67,16 @@ class CardCommandServiceTest {
     inner class CreateCard {
 
         @Test
-        @DisplayName("독서가 비공개면 카드도 비공개로 저장된다")
+        @DisplayName("독서가 비공개면 → 카드도 비공개로 저장된다")
         fun forcesPrivateWhenReadingPrivate() {
-            val member = member(1L, "member@test.com", "member")
-            val reading = Reading.builder().id(10L).isPublic(false).build()
+            val member = MemberFixture.aMember()
+                .id(1L)
+                .nickname("member")
+                .build()
+            val reading = ReadingFixture.aReading()
+                .id(10L)
+                .isPublic(false)
+                .build()
 
             given(readingRepository.findById(10L)).willReturn(Optional.of(reading))
             given(memberRepository.getReferenceById(1L)).willReturn(member)
@@ -81,8 +88,9 @@ class CardCommandServiceTest {
 
             val id = cardCommandService.createCard(member.id, "content", "https://example.com/card.png", 10L, true)
 
-            verify(cardRepository).save(cardCaptor.capture())
-            assertThat(cardCaptor.value.isPublic).isFalse()
+            then(cardRepository).should().save(cardCaptor.capture())
+            CardAssert.assertThat(cardCaptor.value)
+                .isPublic(false)
             assertThat(id).isEqualTo(1L)
         }
     }
@@ -92,10 +100,10 @@ class CardCommandServiceTest {
     inner class UpdateCard {
 
         @Test
-        @DisplayName("카드를 수정하고 응답을 반환한다")
+        @DisplayName("카드를 수정하면 → 응답을 반환한다")
         fun updatesCard() {
-            val member = member(1L, "member@test.com", "member")
-            val card = Card.builder()
+            val member = MemberFixture.aMember().id(1L).nickname("member").build()
+            val card = CardFixture.aCard()
                 .id(1L)
                 .member(member)
                 .content("before")
@@ -118,18 +126,19 @@ class CardCommandServiceTest {
     inner class ModifyVisibility {
 
         @Test
-        @DisplayName("공개 상태를 변경한다")
+        @DisplayName("공개 상태를 변경하면 → 결과를 반환한다")
         fun updatesVisibility() {
-            val member = member(1L, "member@test.com", "member")
-            val reading = Reading.builder().id(10L).isPublic(true).build()
-            val card = Card.builder().id(1L).member(member).reading(reading).isPublic(false).build()
+            val member = MemberFixture.aMember().id(1L).nickname("member").build()
+            val reading = ReadingFixture.aReading().id(10L).isPublic(true).build()
+            val card = CardFixture.aCard().id(1L).member(member).reading(reading).isPublic(false).build()
 
             given(cardRepository.findById(1L)).willReturn(Optional.of(card))
 
             val result: CardVisibilityUpdateResponse = cardCommandService.modifyVisibility(member.id, 1L, true)
 
-            verify(cardRepository).save(cardCaptor.capture())
-            assertThat(cardCaptor.value.isPublic).isTrue()
+            then(cardRepository).should().save(cardCaptor.capture())
+            CardAssert.assertThat(cardCaptor.value)
+                .isPublic(true)
             assertThat(result.id()).isEqualTo(1L)
             assertThat(result.isPublic()).isTrue()
         }
@@ -140,16 +149,16 @@ class CardCommandServiceTest {
     inner class DeleteCard {
 
         @Test
-        @DisplayName("카드를 삭제한다")
+        @DisplayName("카드를 삭제하면 → 저장소가 호출된다")
         fun deletesCard() {
-            val member = member(1L, "member@test.com", "member")
-            val card = Card.builder().id(1L).member(member).build()
+            val member = MemberFixture.aMember().id(1L).nickname("member").build()
+            val card = CardFixture.aCard().id(1L).member(member).build()
 
             given(cardRepository.findById(1L)).willReturn(Optional.of(card))
 
             cardCommandService.deleteCard(member.id, 1L)
 
-            verify(cardRepository).deleteById(1L)
+            then(cardRepository).should().deleteById(1L)
         }
     }
 
@@ -158,7 +167,7 @@ class CardCommandServiceTest {
     inner class GetPresignedUrlForOcr {
 
         @Test
-        @DisplayName("용량이 크면 예외가 발생한다")
+        @DisplayName("용량이 크면 → 예외가 발생한다")
         fun throwsWhenTooLarge() {
             val request = PresignedUrlRequest("image/png", 3 * 1024 * 1024L + 1)
 
@@ -169,7 +178,7 @@ class CardCommandServiceTest {
         }
 
         @Test
-        @DisplayName("이미지 타입이 아니면 예외가 발생한다")
+        @DisplayName("이미지 타입이 아니면 → 예외가 발생한다")
         fun throwsWhenUnsupportedType() {
             val request = PresignedUrlRequest("application/pdf", 100)
 
@@ -180,7 +189,7 @@ class CardCommandServiceTest {
         }
 
         @Test
-        @DisplayName("OCR용 Presigned URL을 반환한다")
+        @DisplayName("요청하면 → OCR용 Presigned URL을 반환한다")
         fun returnsPresignedUrl() {
             val request = PresignedUrlRequest("image/png", 100)
             val response = PresignedUrlResponse("https://example.com/presigned", "https://example.com/public")
@@ -199,7 +208,7 @@ class CardCommandServiceTest {
     inner class GetPresignedUrl {
 
         @Test
-        @DisplayName("용량이 크면 예외가 발생한다")
+        @DisplayName("용량이 크면 → 예외가 발생한다")
         fun throwsWhenTooLarge() {
             val request = PresignedUrlRequest("image/png", 3 * 1024 * 1024L + 1)
 
@@ -210,7 +219,7 @@ class CardCommandServiceTest {
         }
 
         @Test
-        @DisplayName("이미지 타입이 아니면 예외가 발생한다")
+        @DisplayName("이미지 타입이 아니면 → 예외가 발생한다")
         fun throwsWhenUnsupportedType() {
             val request = PresignedUrlRequest("application/pdf", 100)
 
@@ -221,7 +230,7 @@ class CardCommandServiceTest {
         }
 
         @Test
-        @DisplayName("이미지 업로드용 Presigned URL을 반환한다")
+        @DisplayName("요청하면 → 이미지 업로드용 Presigned URL을 반환한다")
         fun returnsPresignedUrl() {
             val request = PresignedUrlRequest("image/png", 100)
             val response = PresignedUrlResponse("https://example.com/presigned", "https://example.com/public")
@@ -240,7 +249,7 @@ class CardCommandServiceTest {
     inner class GetPresignedPost {
 
         @Test
-        @DisplayName("Presigned Post 폼을 반환한다")
+        @DisplayName("요청하면 → Presigned Post 폼을 반환한다")
         fun returnsPresignedPost() {
             val form = PresignedPostFormResponse("https://example.com", mapOf())
             given(storageService.generatePresignedPost("image/*", 3 * 1024 * 1024L, "public", Duration.ofMinutes(5)))
@@ -250,16 +259,5 @@ class CardCommandServiceTest {
 
             assertThat(result).isEqualTo(form)
         }
-    }
-
-    private fun member(id: Long, email: String, nickname: String): Member {
-        return Member.builder()
-            .id(id)
-            .email(email)
-            .nickname(nickname)
-            .profileImageUrl("https://example.com/profile.png")
-            .providerId("provider-$nickname")
-            .providerType(ProviderType.KAKAO)
-            .build()
     }
 }

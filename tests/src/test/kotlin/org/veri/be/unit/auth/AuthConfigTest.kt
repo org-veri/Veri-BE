@@ -34,7 +34,7 @@ class AuthConfigTest {
     inner class JwtFilterRegistration {
 
         @Test
-        @DisplayName("JWT 필터 등록 정보를 생성한다")
+        @DisplayName("필터 등록을 요청하면 → JWT 필터 정보를 생성한다")
         fun buildsFilterRegistration() {
             val authConfig = AuthConfig(
                 Mockito.mock(CustomOAuth2UserService::class.java),
@@ -56,7 +56,7 @@ class AuthConfigTest {
     inner class SecurityFilterChainConfig {
 
         @Test
-        @DisplayName("보안 필터 체인을 구성한다")
+        @DisplayName("보안 설정을 구성하면 → 필터 체인이 생성된다")
         fun buildsSecurityFilterChain() {
             val customOAuth2UserService = Mockito.mock(CustomOAuth2UserService::class.java)
             val customOAuth2SuccessHandler = Mockito.mock(CustomOAuth2SuccessHandler::class.java)

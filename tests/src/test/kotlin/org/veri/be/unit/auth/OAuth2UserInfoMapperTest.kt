@@ -17,7 +17,7 @@ class OAuth2UserInfoMapperTest {
     inner class Of {
 
         @Test
-        @DisplayName("Kakao 사용자 정보를 매핑한다")
+        @DisplayName("Kakao 사용자 정보를 변환하면 → OAuth2UserInfo가 생성된다")
         fun mapsKakaoUser() {
             val attributes = mapOf(
                 "id" to 12345L,
@@ -41,7 +41,7 @@ class OAuth2UserInfoMapperTest {
         }
 
         @Test
-        @DisplayName("지원하지 않는 ProviderType이면 예외가 발생한다")
+        @DisplayName("지원하지 않는 ProviderType이면 → 예외가 발생한다")
         fun throwsWhenUnsupported() {
             val attributes = mapOf<String, Any>()
             val authorities = listOf<GrantedAuthority>()

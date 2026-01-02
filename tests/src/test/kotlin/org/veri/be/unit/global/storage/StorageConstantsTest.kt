@@ -9,13 +9,13 @@ import java.lang.reflect.Modifier
 class StorageConstantsTest {
 
     @Test
-    @DisplayName("MB 상수는 1MB 바이트 수다")
+    @DisplayName("MB 상수를 조회하면 → 1MB 바이트 수다")
     fun hasMegabyteConstant() {
         assertThat(1024 * 1024L).isEqualTo(StorageConstants.MB)
     }
 
     @Test
-    @DisplayName("생성자는 외부에서 호출할 수 없도록 private이어야 한다")
+    @DisplayName("생성자를 조회하면 → private이어야 한다")
     fun constructorShouldBePrivate() {
         val constructor = StorageConstants::class.java.getDeclaredConstructor()
 

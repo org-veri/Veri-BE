@@ -4,9 +4,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
-import org.veri.be.domain.post.entity.Post
+import org.veri.be.support.fixture.MemberFixture
+import org.veri.be.support.fixture.PostFixture
 
 class PostTest {
 
@@ -15,10 +14,10 @@ class PostTest {
     inner class AddImage {
 
         @Test
-        @DisplayName("이미지를 추가하면 순서대로 저장된다")
+        @DisplayName("이미지를 추가하면 → 순서대로 저장된다")
         fun addsImageInOrder() {
-            val post = Post.builder()
-                .author(member(1L, "author@test.com", "author"))
+            val post = PostFixture.aPost()
+                .author(MemberFixture.aMember().id(1L).nickname("author").build())
                 .title("title")
                 .content("content")
                 .build()
@@ -37,10 +36,10 @@ class PostTest {
     inner class AuthorizeMember {
 
         @Test
-        @DisplayName("작성자가 아니면 false를 반환한다")
+        @DisplayName("작성자가 아니면 → false를 반환한다")
         fun falseWhenNotOwner() {
-            val author = member(1L, "author@test.com", "author")
-            val post = Post.builder()
+            val author = MemberFixture.aMember().id(1L).nickname("author").build()
+            val post = PostFixture.aPost()
                 .author(author)
                 .title("title")
                 .content("content")
@@ -55,10 +54,10 @@ class PostTest {
     inner class PublishUnpublish {
 
         @Test
-        @DisplayName("작성자가 공개 상태로 변경한다")
+        @DisplayName("작성자가 공개 상태로 변경하면 → 공개된다")
         fun publishes() {
-            val author = member(1L, "author@test.com", "author")
-            val post = Post.builder()
+            val author = MemberFixture.aMember().id(1L).nickname("author").build()
+            val post = PostFixture.aPost()
                 .author(author)
                 .isPublic(false)
                 .title("title")
@@ -71,10 +70,10 @@ class PostTest {
         }
 
         @Test
-        @DisplayName("작성자가 비공개 상태로 변경한다")
+        @DisplayName("작성자가 비공개 상태로 변경하면 → 비공개된다")
         fun unpublishes() {
-            val author = member(1L, "author@test.com", "author")
-            val post = Post.builder()
+            val author = MemberFixture.aMember().id(1L).nickname("author").build()
+            val post = PostFixture.aPost()
                 .author(author)
                 .isPublic(true)
                 .title("title")
@@ -85,16 +84,5 @@ class PostTest {
 
             assertThat(post.isPublic).isFalse()
         }
-    }
-
-    private fun member(id: Long, email: String, nickname: String): Member {
-        return Member.builder()
-            .id(id)
-            .email(email)
-            .nickname(nickname)
-            .profileImageUrl("https://example.com/profile.png")
-            .providerId("provider-$nickname")
-            .providerType(ProviderType.KAKAO)
-            .build()
     }
 }

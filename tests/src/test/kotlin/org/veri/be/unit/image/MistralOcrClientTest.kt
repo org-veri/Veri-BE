@@ -50,7 +50,7 @@ class MistralOcrClientTest {
     inner class RequestOcr {
 
         @Test
-        @DisplayName("응답 페이지를 합쳐서 반환한다")
+        @DisplayName("응답 페이지가 있으면 → 병합 결과를 반환한다")
         fun returnsMergedMarkdown() {
             val response = buildResponse(listOf("hello", "world"))
             val bodyCaptor = ArgumentCaptor.forClass(Any::class.java)
@@ -75,7 +75,7 @@ class MistralOcrClientTest {
         }
 
         @Test
-        @DisplayName("응답이 비어있으면 예외가 발생한다")
+        @DisplayName("응답이 비어있으면 → 예외가 발생한다")
         fun throwsWhenResponseEmpty() {
             org.mockito.Mockito.lenient().`when`(
                 restClient.post()
@@ -91,7 +91,7 @@ class MistralOcrClientTest {
         }
 
         @Test
-        @DisplayName("페이지가 비어있으면 예외가 발생한다")
+        @DisplayName("페이지가 비어있으면 → 예외가 발생한다")
         fun throwsWhenPagesEmpty() {
             val response = buildResponse(listOf())
             org.mockito.Mockito.lenient().`when`(
@@ -108,7 +108,7 @@ class MistralOcrClientTest {
         }
 
         @Test
-        @DisplayName("호출 실패 시 예외가 발생한다")
+        @DisplayName("호출에 실패하면 → 예외가 발생한다")
         fun throwsWhenRestClientFails() {
             org.mockito.Mockito.lenient().`when`(
                 restClient.post()
@@ -124,7 +124,7 @@ class MistralOcrClientTest {
         }
 
         @Test
-        @DisplayName("요청 생성 단계에서 실패하면 예외가 발생한다")
+        @DisplayName("요청 생성에 실패하면 → 예외가 발생한다")
         fun throwsWhenPostFails() {
             org.mockito.Mockito.lenient().`when`(restClient.post())
                 .thenThrow(RestClientException("fail"))

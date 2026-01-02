@@ -29,8 +29,10 @@
 │               │   ├── persistence
 │               │   └── web
 │               ├── support
-│               │   ├── assertion
-│               │   └── fixture
+│               │   ├── assertion   # Custom Assertions (복잡한 검증 로직 재사용)
+│               │   ├── fixture     # Test Data Builders (엔티티 생성 표준화)
+│               │   ├── steps       # Integration Test Steps (API 호출/검증 캡슐화)
+│               │   └── ControllerTestSupport.java  # Helper 메서드 (postJson 등)
 │               └── unit
 │                   ├── canvas
 │                   ├── chat
@@ -48,14 +50,26 @@
 ## 테스트 유형 및 가이드라인
 
 *   **통합 테스트 (Integration tests)**: `IntegrationTestSupport`를 확장하여 사용. 가짜 멤버(`mockMember`)와 `MemberContext`가 사전 설정된 `@SpringBootTest` 환경 제공.
+    *   **[추가]** 복잡한 시나리오 검증 시 API 호출과 검증 로직을 분리한 **`Steps` 패턴**을 적극 활용하여 테스트 메서드의 가독성 유지
 *   **컨트롤러 슬라이스 테스트 (Controller slice tests)**: `@WebMvcTest`를 사용하여 파라미터 유효성 검사, HTTP 상태 코드, 에러 타입을 검증.
+    *   **[추가]** `MockMvc`의 반복적인 호출(`perform`, `content` 등)은 `ControllerTestSupport` 내의 **Helper 메서드(`postJson` 등)**를 사용하여 단순화
 *   **영속성 테스트 (Persistence tests)**: `@DataJpaTest`를 사용하여 엔티티 매핑, 제약 조건, Cascade, 고아 제거 및 리포지토리 쿼리 검증.
 *   **단위 테스트 (Unit tests)**: Spring 컨텍스트 없이 도메인 로직을 검증하는 빠른 POJO 테스트.
+    *   **[추가]** 검증 로직이 복잡하거나 재사용되는 경우 **Custom Assertion**(`MemberAssert`)을 작성하여 활용
 
 ## 테스트 조직 및 규칙
 *   **패키지 구조**: `test/java/org/veri/be/{integration|slice|unit}/{domain}/`
 *   **가독성**: `@Nested` + `@DisplayName` 적극 활용.
 *   **패턴**: `Given-When-Then` 패턴 준수.
+
+### BDD 스타일 구현 가이드
+*   **Mockito 설정**: `Mockito.when` 대신 **`BDDMockito.given`**을 사용하여 문맥을 통일
+*   **검증**: `verify` 대신 **`then().should()`**를 사용하여 자연어 흐름 유지
+
+### Fixture 및 Builder 사용 의무화
+*   테스트 내에서 엔티티 생성 시 `new` 키워드나 기본 `@Builder` 사용 지양
+*   대신 `support/fixture` 내의 **Test Builder**(`MemberFixture.aMember()`)를 사용하여 필수값 누락 방지 및 가독성 향상
+*   복잡한 검증 로직은 **Custom Assertion**(`MemberAssert.assertThat()`)으로 분리하여 재사용
 
 ## 테스트 체크포인트 워크플로우 (Claude Code 전용)
 기능 구현 후 다음 명령어를 사용하여 테스트 커버리지를 유지합니다.
@@ -452,3 +466,305 @@ B. “Repository CRUD” 중 단순 save/find/delete의 기계적 검증
 
 
 3. **[Remaining Gaps]**: 현재 컨텍스트에서 해결하지 못한 부분이나 추가로 필요한 데이터가 있다면 명시.
+
+---
+
+# 부록: 테스트 작성 패턴 예시 (Best Practices)
+
+이 섹션에서는 팀원들이 바로 복사해서 사용할 수 있는 코드 예시를 제공합니다. 말로 설명하는 것보다 코드 예시 하나가 더 강력하기 때문입니다.
+
+## 1. BDD + Fixture + Custom Assert 패턴 (단위 테스트)
+
+```java
+@ExtendWith(MockitoExtension.class)
+class MemberQueryServiceTest {
+
+    @Mock
+    private MemberRepository memberRepository;
+
+    @InjectMocks
+    private MemberQueryService memberQueryService;
+
+    @Test
+    void 존재하는_회원을_ID로_조회한다() {
+        // Given
+        Member member = MemberFixture.aMember()
+                .id(1L)
+                .nickname("testUser")
+                .build();
+        given(memberRepository.findById(1L)).willReturn(Optional.of(member));
+
+        // When
+        MemberResponse result = memberQueryService.getMember(1L);
+
+        // Then
+        then(memberRepository).should().findById(1L);
+        MemberAssert.assertThat(result)
+                .hasId(1L)
+                .hasNickname("testUser")
+                .isActive();
+    }
+
+    @Test
+    void 존재하지_않는_회원_ID로_조회하면_예외가_발생한다() {
+        // Given
+        given(memberRepository.findById(999L)).willReturn(Optional.empty());
+
+        // When & Then
+        assertThatThrownBy(() -> memberQueryService.getMember(999L))
+                .isInstanceOf(ApplicationException.class)
+                .hasErrorCode(ErrorCode.MEMBER_NOT_FOUND);
+    }
+}
+```
+
+**핵심 포인트:**
+- `BDDMockito.given()` 사용으로 문맥 명확화
+- `MemberFixture.aMember()`로 필수값 누락 방지
+- `MemberAssert.assertThat()`으로 복잡한 검증 로직 재사용
+
+## 2. Steps 패턴 (통합 테스트)
+
+```java
+@SpringBootTest
+@AutoConfigureMockMvc
+class MemberIntegrationTest extends IntegrationTestSupport {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private MemberRepository memberRepository;
+
+    @Test
+    void 회원가입_전체_시나리오() {
+        // Given
+        var request = MemberSteps.회원가입_정보_생성();
+
+        // When
+        var response = MemberSteps.회원가입_요청(mockMvc, request);
+
+        // Then
+        MemberSteps.회원_생성_검증(response, request);
+        MemberSteps.데이터베이스에_저장됨(memberRepository, request.getEmail());
+    }
+
+    @Nested
+    @DisplayName("회원 정보 수정")
+    class UpdateMemberInfo {
+
+        @Test
+        void 닉네임을_변경한다() {
+            // Given
+            var memberId = MemberSteps.회원가입_후_ID_반환(mockMvc);
+            var updateRequest = MemberSteps.닉네임_변경_정보_생성("newNickname");
+
+            // When
+            MemberSteps.닉네임_변경_요청(mockMvc, memberId, updateRequest);
+
+            // Then
+            MemberSteps.닉네임_변경_확인(mockMvc, memberId, "newNickname");
+        }
+    }
+}
+```
+
+**Steps 클래스 예시:**
+
+```java
+public final class MemberSteps {
+
+    public static MemberSignupRequest 회원가입_정보_생성() {
+        return MemberSignupRequest.builder()
+                .email("test@example.com")
+                .password("Password123!")
+                .nickname("testUser")
+                .build();
+    }
+
+    public static ResultActions 회원가입_요청(MockMvc mockMvc, MemberSignupRequest request) throws Exception {
+        return mockMvc.perform(post("/api/members/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+    }
+
+    public static void 회원_생성_검증(ResultActions response, MemberSignupRequest request) throws Exception {
+        response.andExpect(status().isCreated())
+                .andExpect(jsonPath("$.email").value(request.getEmail()))
+                .andExpect(jsonPath("$.nickname").value(request.getNickname()));
+    }
+
+    public static void 데이터베이스에_저장됨(MemberRepository repository, String email) {
+        boolean exists = repository.existsByEmail(email);
+        assertThat(exists).isTrue();
+    }
+}
+```
+
+**핵심 포인트:**
+- API 호출 로직을 `Steps` 클래스로 캡슐화하여 테스트 코드를 시나리오 중심으로 작성
+- `ResultActions` 반환 체이닝으로 추가 검증 가능
+- `@Nested`와 조합하여 관련 시나리오 그룹화
+
+## 3. Controller Test Support + Helper 패턴 (슬라이스 테스트)
+
+```java
+@WebMvcTest(MemberController.class)
+class MemberControllerTest extends ControllerTestSupport {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
+    private MemberCommandService memberCommandService;
+    @MockBean
+    private MemberQueryService memberQueryService;
+
+    @Nested
+    @DisplayName("POST /api/members/signup")
+    class Signup {
+
+        @Test
+        void 정상적인_회원가입_요청이면_201을_반환한다() throws Exception {
+            // Given
+            var request = MemberFixture.회원가입_요청();
+            given(memberCommandService.signup(any())).willReturn(1L);
+
+            // When
+            var response = postJson("/api/members/signup", request);
+
+            // Then
+            response.andExpect(status().isCreated())
+                    .andExpect(header().exists("Location"));
+        }
+
+        @Test
+        void 이메일_형식이_올바르지_않으면_400을_반환한다() throws Exception {
+            // Given
+            var request = MemberFixture.회원가입_요청()
+                    .email("invalid-email");
+
+            // When
+            var response = postJson("/api/members/signup", request);
+
+            // Then
+            response.andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"));
+        }
+    }
+}
+```
+
+**ControllerTestSupport 예시:**
+
+```java
+public abstract class ControllerTestSupport {
+
+    @Autowired
+    protected MockMvc mockMvc;
+
+    @Autowired
+    protected ObjectMapper objectMapper;
+
+    protected ResultActions postJson(String url, Object request) throws Exception {
+        return mockMvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+    }
+
+    protected ResultActions putJson(String url, Object request) throws Exception {
+        return mockMvc.perform(put(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+    }
+
+    protected ResultActions get(String url, Map<String, String> params) throws Exception {
+        MockHttpServletRequestBuilder builder = get(url);
+        params.forEach(builder::param);
+        return mockMvc.perform(builder);
+    }
+}
+```
+
+**핵심 포인트:**
+- `postJson()`, `putJson()` 등 헬퍼 메서드로 반복적인 `MockMvc` 설정 코드 제거
+- 테스트 메서드가 "When-Then"에 집중할 수 있도록 지원
+- URL과 request만 전달하여 테스트 코드 간결화
+
+## 4. Custom Assert 패턴
+
+```java
+public class MemberAssert {
+
+    private final MemberResponse actual;
+
+    private MemberAssert(MemberResponse actual) {
+        this.actual = actual;
+    }
+
+    public static MemberAssert assertThat(MemberResponse actual) {
+        return new MemberAssert(actual);
+    }
+
+    public MemberAssert hasId(Long expectedId) {
+        assertThat(actual.getId()).isEqualTo(expectedId);
+        return this;
+    }
+
+    public MemberAssert hasNickname(String expectedNickname) {
+        assertThat(actual.getNickname()).isEqualTo(expectedNickname);
+        return this;
+    }
+
+    public MemberAssert hasEmail(String expectedEmail) {
+        assertThat(actual.getEmail()).isEqualTo(expectedEmail);
+        return this;
+    }
+
+    public MemberAssert isActive() {
+        assertThat(actual.getStatus()).isEqualTo(MemberStatus.ACTIVE);
+        return this;
+    }
+
+    public MemberAssert isDeleted() {
+        assertThat(actual.getStatus()).isEqualTo(MemberStatus.DELETED);
+        return this;
+    }
+
+    public void wasCreatedAt(LocalDateTime expectedTime) {
+        assertThat(actual.getCreatedAt()).isEqualTo(expectedTime);
+    }
+}
+```
+
+**사용 예시:**
+
+```java
+@Test
+void 회원_정보를_조회한다() {
+    // When
+    MemberResponse response = service.getMember(1L);
+
+    // Then
+    MemberAssert.assertThat(response)
+            .hasId(1L)
+            .hasEmail("test@example.com")
+            .hasNickname("testUser")
+            .isActive();
+}
+```
+
+**핵심 포인트:**
+- Method Chaining으로 유연한 검증 지원
+- 비즈니스 용어로 된 검증 메서드로 가독성 향상
+- 복잡한 검증 로직을 한 곳에서 관리하여 유지보수성 확보
+
+---
+
+## 패턴 적용 우선순위
+
+1. **모든 단위 테스트**: BDDMockito + Fixture 패턴 적용
+2. **복잡한 통합 테스트**: Steps 패턴으로 리팩토링 (3개 이상의 API 호출이 있을 때)
+3. **모든 컨트롤러 테스트**: ControllerTestSupport 상속 + Helper 메서드 사용
+4. **재사용되는 검증 로직**: Custom Assert로 추출 (2번 이상 반복 시)
+

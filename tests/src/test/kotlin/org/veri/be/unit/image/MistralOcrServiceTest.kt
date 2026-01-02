@@ -9,8 +9,8 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.BDDMockito.given
+import org.mockito.BDDMockito.then
 import org.mockito.Mockito.doNothing
-import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
 import org.veri.be.domain.image.client.OcrPort
 import org.veri.be.domain.image.entity.OcrResult
@@ -50,7 +50,7 @@ class MistralOcrServiceTest {
     inner class Extract {
 
         @Test
-        @DisplayName("원본 이미지 OCR 성공 시 결과를 저장한다")
+        @DisplayName("원본 이미지 OCR 성공 시 → 결과를 저장한다")
         fun savesOriginalResult() {
             doNothing().`when`(sleepSupport).sleep(any(Duration::class.java))
             given(ocrClient.requestOcr("https://example.com/ocr/image.png")).willReturn("text")
@@ -58,7 +58,7 @@ class MistralOcrServiceTest {
             val result = service.extract("https://example.com/ocr/image.png")
 
             assertThat(result).isEqualTo("text")
-            verify(ocrResultRepository).save(resultCaptor.capture())
+            then(ocrResultRepository).should().save(resultCaptor.capture())
             val saved = resultCaptor.value
             assertThat(saved.imageUrl).isEqualTo("https://example.com/ocr/image.png")
             assertThat(saved.preProcessedUrl).isNull()
@@ -66,7 +66,7 @@ class MistralOcrServiceTest {
         }
 
         @Test
-        @DisplayName("원본 실패 후 전처리 성공 시 전처리 URL로 저장한다")
+        @DisplayName("원본 실패 후 전처리 성공 시 → 전처리 URL로 저장한다")
         fun fallsBackToPreprocessedUrl() {
             doNothing().`when`(sleepSupport).sleep(any(Duration::class.java))
             given(ocrClient.requestOcr("https://example.com/ocr/image.png"))
@@ -77,13 +77,13 @@ class MistralOcrServiceTest {
             val result = service.extract("https://example.com/ocr/image.png")
 
             assertThat(result).isEqualTo("text")
-            verify(ocrResultRepository).save(resultCaptor.capture())
+            then(ocrResultRepository).should().save(resultCaptor.capture())
             val saved = resultCaptor.value
             assertThat(saved.preProcessedUrl).isEqualTo("https://example.com/ocr-preprocessed/image.jpg")
         }
 
         @Test
-        @DisplayName("원본과 전처리 모두 실패하면 예외가 발생한다")
+        @DisplayName("원본과 전처리 모두 실패하면 → 예외가 발생한다")
         fun throwsWhenBothFail() {
             doNothing().`when`(sleepSupport).sleep(any(Duration::class.java))
             given(ocrClient.requestOcr(any(String::class.java))).willThrow(RuntimeException("fail"))
@@ -95,7 +95,7 @@ class MistralOcrServiceTest {
         }
 
         @Test
-        @DisplayName("슬립 중 인터럽트가 발생하면 예외가 발생한다")
+        @DisplayName("슬립 중 인터럽트가 발생하면 → 예외가 발생한다")
         fun throwsWhenInterrupted() {
             org.mockito.Mockito.doThrow(InterruptedException("interrupt"))
                 .`when`(sleepSupport).sleep(any(Duration::class.java))

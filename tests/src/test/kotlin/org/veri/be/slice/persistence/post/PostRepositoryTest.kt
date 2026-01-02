@@ -9,18 +9,19 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
-import org.veri.be.domain.book.entity.Book
 import org.veri.be.domain.book.repository.BookRepository
-import org.veri.be.domain.comment.entity.Comment
 import org.veri.be.domain.comment.repository.CommentRepository
-import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.domain.member.repository.MemberRepository
 import org.veri.be.domain.post.entity.LikePost
-import org.veri.be.domain.post.entity.Post
 import org.veri.be.domain.post.repository.PostRepository
 import org.veri.be.domain.post.repository.dto.PostFeedQueryResult
 import org.veri.be.slice.persistence.PersistenceSliceTestSupport
+import org.veri.be.support.fixture.BookFixture
+import org.veri.be.support.fixture.CommentFixture
+import org.veri.be.support.fixture.LikePostFixture
+import org.veri.be.support.fixture.MemberFixture
+import org.veri.be.support.fixture.PostFixture
 
 class PostRepositoryTest : PersistenceSliceTestSupport() {
 
@@ -44,7 +45,7 @@ class PostRepositoryTest : PersistenceSliceTestSupport() {
     inner class GetPostFeeds {
 
         @Test
-        @DisplayName("공개 게시글만 조회하고 썸네일과 카운트를 함께 반환한다")
+        @DisplayName("공개 게시글만 조회하면 → 썸네일과 카운트를 반환한다")
         fun returnsPublicPostsWithCounts() {
             val author = saveMember("author@test.com", "author")
             val liker = saveMember("liker@test.com", "liker")
@@ -80,7 +81,7 @@ class PostRepositoryTest : PersistenceSliceTestSupport() {
     inner class FindAllByAuthorId {
 
         @Test
-        @DisplayName("작성자 기준으로 게시글을 조회한다")
+        @DisplayName("작성자 기준으로 게시글을 조회하면 → 결과를 반환한다")
         fun returnsPostsByAuthor() {
             val author = saveMember("author@test.com", "author")
             val other = saveMember("other@test.com", "other")
@@ -104,7 +105,7 @@ class PostRepositoryTest : PersistenceSliceTestSupport() {
     inner class FindByIdWithAllAssociations {
 
         @Test
-        @DisplayName("이미지, 작성자, 도서를 fetch join으로 조회한다")
+        @DisplayName("이미지, 작성자, 도서를 fetch join으로 조회하면 → 로딩된다")
         fun fetchesAllAssociations() {
             val author = saveMember("author@test.com", "author")
             val book = saveBook("isbn-1", "book-1")
@@ -124,9 +125,9 @@ class PostRepositoryTest : PersistenceSliceTestSupport() {
         }
     }
 
-    private fun saveMember(email: String, nickname: String): Member {
+    private fun saveMember(email: String, nickname: String): org.veri.be.domain.member.entity.Member {
         return memberRepository.save(
-            Member.builder()
+            MemberFixture.aMember()
                 .email(email)
                 .nickname(nickname)
                 .profileImageUrl("https://example.com/profile.png")
@@ -136,9 +137,9 @@ class PostRepositoryTest : PersistenceSliceTestSupport() {
         )
     }
 
-    private fun saveBook(isbn: String, title: String): Book {
+    private fun saveBook(isbn: String, title: String): org.veri.be.domain.book.entity.Book {
         return bookRepository.save(
-            Book.builder()
+            BookFixture.aBook()
                 .image("https://example.com/book.png")
                 .title(title)
                 .author("author")
@@ -147,8 +148,13 @@ class PostRepositoryTest : PersistenceSliceTestSupport() {
         )
     }
 
-    private fun savePost(author: Member, book: Book, isPublic: Boolean, title: String): Post {
-        return Post.builder()
+    private fun savePost(
+        author: org.veri.be.domain.member.entity.Member,
+        book: org.veri.be.domain.book.entity.Book,
+        isPublic: Boolean,
+        title: String
+    ): org.veri.be.domain.post.entity.Post {
+        return PostFixture.aPost()
             .author(author)
             .book(book)
             .title(title)
@@ -157,18 +163,22 @@ class PostRepositoryTest : PersistenceSliceTestSupport() {
             .build()
     }
 
-    private fun saveLike(member: Member, post: Post) {
+    private fun saveLike(member: org.veri.be.domain.member.entity.Member, post: org.veri.be.domain.post.entity.Post) {
         entityManager.persist(
-            LikePost.builder()
+            LikePostFixture.aLikePost()
                 .member(member)
                 .post(post)
                 .build()
         )
     }
 
-    private fun saveComment(author: Member, post: Post, content: String) {
+    private fun saveComment(
+        author: org.veri.be.domain.member.entity.Member,
+        post: org.veri.be.domain.post.entity.Post,
+        content: String
+    ) {
         commentRepository.save(
-            Comment.builder()
+            CommentFixture.aComment()
                 .author(author)
                 .post(post)
                 .content(content)

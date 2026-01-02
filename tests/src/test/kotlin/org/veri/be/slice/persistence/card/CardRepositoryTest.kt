@@ -9,18 +9,18 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
-import org.veri.be.domain.book.entity.Book
-import org.veri.be.domain.book.entity.Reading
 import org.veri.be.domain.book.repository.BookRepository
 import org.veri.be.domain.book.repository.ReadingRepository
-import org.veri.be.domain.card.entity.Card
 import org.veri.be.domain.card.repository.CardRepository
 import org.veri.be.domain.card.repository.dto.CardFeedItem
 import org.veri.be.domain.card.repository.dto.CardListItem
-import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.domain.member.repository.MemberRepository
 import org.veri.be.slice.persistence.PersistenceSliceTestSupport
+import org.veri.be.support.fixture.BookFixture
+import org.veri.be.support.fixture.CardFixture
+import org.veri.be.support.fixture.MemberFixture
+import org.veri.be.support.fixture.ReadingFixture
 
 class CardRepositoryTest : PersistenceSliceTestSupport() {
 
@@ -44,7 +44,7 @@ class CardRepositoryTest : PersistenceSliceTestSupport() {
     inner class FindAllByMemberId {
 
         @Test
-        @DisplayName("memberId에 해당하는 카드만 조회한다")
+        @DisplayName("memberId에 해당하는 카드만 조회하면 → 결과를 반환한다")
         fun returnsCardsForMember() {
             val member = saveMember("member-1@test.com", "member-1")
             val other = saveMember("member-2@test.com", "member-2")
@@ -70,7 +70,7 @@ class CardRepositoryTest : PersistenceSliceTestSupport() {
     inner class CountAllByMemberId {
 
         @Test
-        @DisplayName("memberId에 해당하는 카드 개수를 반환한다")
+        @DisplayName("memberId에 해당하는 카드 개수를 반환하면 → 결과를 반환한다")
         fun returnsCardCountForMember() {
             val member = saveMember("member-1@test.com", "member-1")
             val other = saveMember("member-2@test.com", "member-2")
@@ -92,7 +92,7 @@ class CardRepositoryTest : PersistenceSliceTestSupport() {
     inner class FindAllPublicItems {
 
         @Test
-        @DisplayName("공개 카드만 페이징 조회한다")
+        @DisplayName("공개 카드만 페이징 조회하면 → 결과를 반환한다")
         fun returnsOnlyPublicCards() {
             val member = saveMember("member-1@test.com", "member-1")
             val reading = saveReading(member, saveBook("isbn-1", "book-1"))
@@ -115,7 +115,7 @@ class CardRepositoryTest : PersistenceSliceTestSupport() {
     inner class FindByIdWithAllAssociations {
 
         @Test
-        @DisplayName("member, reading, book을 fetch join으로 조회한다")
+        @DisplayName("member, reading, book을 fetch join으로 조회하면 → 로딩된다")
         fun fetchesAllAssociations() {
             val member = saveMember("member-1@test.com", "member-1")
             val book = saveBook("isbn-1", "book-1")
@@ -134,9 +134,9 @@ class CardRepositoryTest : PersistenceSliceTestSupport() {
         }
     }
 
-    private fun saveMember(email: String, nickname: String): Member {
+    private fun saveMember(email: String, nickname: String): org.veri.be.domain.member.entity.Member {
         return memberRepository.save(
-            Member.builder()
+            MemberFixture.aMember()
                 .email(email)
                 .nickname(nickname)
                 .profileImageUrl("https://example.com/profile.png")
@@ -146,9 +146,9 @@ class CardRepositoryTest : PersistenceSliceTestSupport() {
         )
     }
 
-    private fun saveBook(isbn: String, title: String): Book {
+    private fun saveBook(isbn: String, title: String): org.veri.be.domain.book.entity.Book {
         return bookRepository.save(
-            Book.builder()
+            BookFixture.aBook()
                 .image("https://example.com/book.png")
                 .title(title)
                 .author("author")
@@ -157,9 +157,12 @@ class CardRepositoryTest : PersistenceSliceTestSupport() {
         )
     }
 
-    private fun saveReading(member: Member, book: Book): Reading {
+    private fun saveReading(
+        member: org.veri.be.domain.member.entity.Member,
+        book: org.veri.be.domain.book.entity.Book
+    ): org.veri.be.domain.book.entity.Reading {
         return readingRepository.save(
-            Reading.builder()
+            ReadingFixture.aReading()
                 .member(member)
                 .book(book)
                 .isPublic(true)
@@ -167,9 +170,14 @@ class CardRepositoryTest : PersistenceSliceTestSupport() {
         )
     }
 
-    private fun saveCard(member: Member, reading: Reading, isPublic: Boolean, content: String): Card {
+    private fun saveCard(
+        member: org.veri.be.domain.member.entity.Member,
+        reading: org.veri.be.domain.book.entity.Reading,
+        isPublic: Boolean,
+        content: String
+    ): org.veri.be.domain.card.entity.Card {
         return cardRepository.save(
-            Card.builder()
+            CardFixture.aCard()
                 .member(member)
                 .reading(reading)
                 .content(content)

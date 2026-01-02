@@ -9,8 +9,8 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.BDDMockito.given
+import org.mockito.BDDMockito.then
 import org.mockito.Mockito.never
-import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
 import org.veri.be.domain.book.client.BookSearchClient
@@ -19,6 +19,7 @@ import org.veri.be.domain.book.repository.BookRepository
 import org.veri.be.domain.book.service.BookService
 import org.veri.be.lib.exception.CommonErrorCode
 import org.veri.be.support.assertion.ExceptionAssertions
+import org.veri.be.support.fixture.BookFixture
 import java.util.Optional
 
 @ExtendWith(MockitoExtension::class)
@@ -45,9 +46,9 @@ class BookServiceTest {
     inner class AddBook {
 
         @Test
-        @DisplayName("이미 존재하면 기존 ID를 반환한다")
+        @DisplayName("이미 존재하면 → 기존 ID를 반환한다")
         fun returnsExistingId() {
-            val existing = Book.builder()
+            val existing = BookFixture.aBook()
                 .id(1L)
                 .title("title")
                 .author("author")
@@ -59,11 +60,11 @@ class BookServiceTest {
             val result = bookService.addBook("title", "https://example.com/book.png", "author", "publisher", "isbn-1")
 
             assertThat(result).isEqualTo(1L)
-            verify(bookRepository, never()).save(any(Book::class.java))
+            then(bookRepository).should(never()).save(any(Book::class.java))
         }
 
         @Test
-        @DisplayName("존재하지 않으면 신규 도서를 저장한다")
+        @DisplayName("존재하지 않으면 → 신규 도서를 저장한다")
         fun savesNewBook() {
             given(bookRepository.findBookByIsbn("isbn-1")).willReturn(Optional.empty())
             given(bookRepository.save(any(Book::class.java))).willAnswer { invocation ->
@@ -74,7 +75,7 @@ class BookServiceTest {
 
             val result = bookService.addBook("title", "https://example.com/book.png", "author", "publisher", "isbn-1")
 
-            verify(bookRepository).save(bookCaptor.capture())
+            then(bookRepository).should().save(bookCaptor.capture())
             val saved = bookCaptor.value
             assertThat(saved.title).isEqualTo("title")
             assertThat(saved.author).isEqualTo("author")
@@ -89,7 +90,7 @@ class BookServiceTest {
     inner class GetBookById {
 
         @Test
-        @DisplayName("bookId가 null이면 null을 반환한다")
+        @DisplayName("bookId가 null이면 → null을 반환한다")
         fun returnsNullWhenIdNull() {
             val result = bookService.getBookById(null)
 
@@ -97,7 +98,7 @@ class BookServiceTest {
         }
 
         @Test
-        @DisplayName("존재하지 않으면 NotFoundException을 던진다")
+        @DisplayName("존재하지 않으면 → 예외를 던진다")
         fun throwsWhenNotFound() {
             given(bookRepository.findById(1L)).willReturn(Optional.empty())
 
@@ -113,7 +114,7 @@ class BookServiceTest {
     inner class SearchBook {
 
         @Test
-        @DisplayName("검색 결과를 변환해 반환한다")
+        @DisplayName("검색 결과가 있으면 → 변환해 반환한다")
         fun returnsSearchResponse() {
             val item = org.veri.be.domain.book.dto.book.NaverBookItem()
             ReflectionTestUtils.setField(item, "title", "title")

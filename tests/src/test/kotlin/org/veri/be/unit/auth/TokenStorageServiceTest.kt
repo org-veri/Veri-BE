@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentCaptor
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito.verify
+import org.mockito.BDDMockito.then
 import org.mockito.junit.jupiter.MockitoExtension
 import org.veri.be.domain.auth.entity.BlacklistedToken
 import org.veri.be.domain.auth.entity.RefreshToken
@@ -53,11 +53,11 @@ class TokenStorageServiceTest {
     inner class AddRefreshToken {
 
         @Test
-        @DisplayName("만료 시간을 더한 리프레시 토큰을 저장한다")
+        @DisplayName("만료 시간을 더하면 → 리프레시 토큰을 저장한다")
         fun savesRefreshTokenWithExpiry() {
             tokenStorageService.addRefreshToken(1L, "refresh-token", 1000L)
 
-            verify(refreshTokenRepository).save(refreshTokenCaptor.capture())
+            then(refreshTokenRepository).should().save(refreshTokenCaptor.capture())
             val saved = refreshTokenCaptor.value
 
             assertThat(saved.userId).isEqualTo(1L)
@@ -71,11 +71,11 @@ class TokenStorageServiceTest {
     inner class AddBlackList {
 
         @Test
-        @DisplayName("만료 시간을 더한 블랙리스트 토큰을 저장한다")
+        @DisplayName("만료 시간을 더하면 → 블랙리스트 토큰을 저장한다")
         fun savesBlacklistedTokenWithExpiry() {
             tokenStorageService.addBlackList("access-token", 2000L)
 
-            verify(blacklistedTokenRepository).save(blacklistedTokenCaptor.capture())
+            then(blacklistedTokenRepository).should().save(blacklistedTokenCaptor.capture())
             val saved = blacklistedTokenCaptor.value
 
             assertThat(saved.token).isEqualTo("access-token")
@@ -88,7 +88,7 @@ class TokenStorageServiceTest {
     inner class IsBlackList {
 
         @Test
-        @DisplayName("만료되지 않은 토큰은 블랙리스트로 판단한다")
+        @DisplayName("만료되지 않은 토큰이면 → 블랙리스트로 판단한다")
         fun returnsTrueWhenNotExpired() {
             given(blacklistedTokenRepository.findById("token"))
                 .willReturn(
@@ -106,7 +106,7 @@ class TokenStorageServiceTest {
         }
 
         @Test
-        @DisplayName("만료된 토큰은 블랙리스트로 판단하지 않는다")
+        @DisplayName("만료된 토큰이면 → 블랙리스트로 판단하지 않는다")
         fun returnsFalseWhenExpired() {
             given(blacklistedTokenRepository.findById("token"))
                 .willReturn(
@@ -129,7 +129,7 @@ class TokenStorageServiceTest {
     inner class GetRefreshToken {
 
         @Test
-        @DisplayName("만료되지 않은 리프레시 토큰을 반환한다")
+        @DisplayName("만료되지 않은 리프레시 토큰이면 → 반환한다")
         fun returnsRefreshTokenWhenValid() {
             given(refreshTokenRepository.findById(1L))
                 .willReturn(
@@ -148,7 +148,7 @@ class TokenStorageServiceTest {
         }
 
         @Test
-        @DisplayName("만료된 리프레시 토큰은 null을 반환한다")
+        @DisplayName("만료된 리프레시 토큰이면 → null을 반환한다")
         fun returnsNullWhenExpired() {
             given(refreshTokenRepository.findById(1L))
                 .willReturn(
@@ -172,11 +172,11 @@ class TokenStorageServiceTest {
     inner class DeleteRefreshToken {
 
         @Test
-        @DisplayName("회원 ID로 리프레시 토큰을 삭제한다")
+        @DisplayName("회원 ID로 삭제하면 → 리프레시 토큰을 삭제한다")
         fun deletesRefreshTokenById() {
             tokenStorageService.deleteRefreshToken(1L)
 
-            verify(refreshTokenRepository).deleteById(1L)
+            then(refreshTokenRepository).should().deleteById(1L)
         }
     }
 }

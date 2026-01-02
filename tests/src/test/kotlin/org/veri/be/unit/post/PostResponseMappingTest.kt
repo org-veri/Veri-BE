@@ -6,17 +6,16 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
-import org.veri.be.domain.book.entity.Book
-import org.veri.be.domain.comment.entity.Comment
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.domain.member.repository.dto.MemberProfileQueryResult
 import org.veri.be.domain.post.dto.response.PostDetailResponse
 import org.veri.be.domain.post.dto.response.PostFeedResponse
 import org.veri.be.domain.post.dto.response.PostFeedResponseItem
-import org.veri.be.domain.post.entity.Post
 import org.veri.be.domain.post.repository.dto.DetailLikeInfoQueryResult
 import org.veri.be.domain.post.repository.dto.PostFeedQueryResult
+import org.veri.be.support.fixture.BookFixture
+import org.veri.be.support.fixture.CommentFixture
+import org.veri.be.support.fixture.MemberFixture
+import org.veri.be.support.fixture.PostFixture
 import java.time.LocalDateTime
 
 class PostResponseMappingTest {
@@ -26,9 +25,9 @@ class PostResponseMappingTest {
     inner class PostFeedResponseMapping {
 
         @Test
-        @DisplayName("페이지 결과를 응답 DTO로 변환한다")
+        @DisplayName("페이지 결과를 응답 DTO로 변환하면 → 결과를 반환한다")
         fun mapsPageToResponse() {
-            val author = member(1L, "author@test.com", "author")
+            val author = member(1L, "author")
             val book = book()
             val result = PostFeedQueryResult(
                 1L,
@@ -67,11 +66,11 @@ class PostResponseMappingTest {
     inner class PostDetailResponseMapping {
 
         @Test
-        @DisplayName("상세 응답을 조합한다")
+        @DisplayName("상세 응답을 조합하면 → 결과를 반환한다")
         fun mapsToDetailResponse() {
-            val author = member(1L, "author@test.com", "author")
+            val author = member(1L, "author")
             val book = book()
-            val post = Post.builder()
+            val post = PostFixture.aPost()
                 .id(1L)
                 .author(author)
                 .book(book)
@@ -79,7 +78,7 @@ class PostResponseMappingTest {
                 .content("content")
                 .build()
             post.addImage("https://example.com/1.png", 1)
-            post.addComment(Comment.builder().author(author).post(post).content("comment").build())
+            post.addComment(CommentFixture.aComment().author(author).post(post).content("comment").build())
 
             val likeInfo = DetailLikeInfoQueryResult(
                 listOf(MemberProfileQueryResult(2L, "viewer", "https://example.com/profile.png")),
@@ -97,10 +96,10 @@ class PostResponseMappingTest {
         }
 
         @Test
-        @DisplayName("삭제된 댓글은 마스킹된다")
+        @DisplayName("삭제된 댓글이면 → 마스킹된다")
         fun masksDeletedComment() {
-            val author = member(1L, "author@test.com", "author")
-            val deleted = Comment.builder()
+            val author = member(1L, "author")
+            val deleted = CommentFixture.aComment()
                 .id(10L)
                 .author(author)
                 .content("content")
@@ -116,19 +115,12 @@ class PostResponseMappingTest {
         }
     }
 
-    private fun member(id: Long, email: String, nickname: String): Member {
-        return Member.builder()
-            .id(id)
-            .email(email)
-            .nickname(nickname)
-            .profileImageUrl("https://example.com/profile.png")
-            .providerId("provider-$nickname")
-            .providerType(ProviderType.KAKAO)
-            .build()
+    private fun member(id: Long, nickname: String): org.veri.be.domain.member.entity.Member {
+        return MemberFixture.aMember().id(id).nickname(nickname).build()
     }
 
-    private fun book(): Book {
-        return Book.builder()
+    private fun book(): org.veri.be.domain.book.entity.Book {
+        return BookFixture.aBook()
             .id(10L)
             .title("book")
             .author("author")

@@ -12,8 +12,8 @@ import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.eq
 import org.mockito.BDDMockito.given
+import org.mockito.BDDMockito.then
 import org.mockito.Mockito.never
-import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
 import org.veri.be.domain.auth.service.AuthService
@@ -32,6 +32,7 @@ import org.veri.be.global.auth.oauth2.dto.OAuth2UserInfo
 import org.veri.be.global.auth.token.TokenProvider
 import org.veri.be.lib.exception.ApplicationException
 import org.veri.be.lib.exception.CommonErrorCode
+import org.veri.be.support.fixture.MemberFixture
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId
@@ -80,9 +81,9 @@ class AuthServiceTest {
     inner class Login {
 
         @Test
-        @DisplayName("액세스/리프레시 토큰을 발급하고 저장한다")
+        @DisplayName("토큰을 발급하면 → 리프레시를 저장한다")
         fun issuesTokensAndStoresRefresh() {
-            val member = member(1L, "member@test.com", "member")
+            val member = member(1L, "member")
             given(tokenProvider.generateAccessToken(any<JwtClaimsPayload>()))
                 .willReturn(TokenProvider.TokenGeneration("access", fixedClock.millis() + 1000))
             given(tokenProvider.generateRefreshToken(1L))
@@ -92,7 +93,7 @@ class AuthServiceTest {
 
             assertThat(response.accessToken).isEqualTo("access")
             assertThat(response.refreshToken).isEqualTo("refresh")
-            verify(tokenStorageService).addRefreshToken(1L, "refresh", fixedClock.millis() + 2000)
+            then(tokenStorageService).should().addRefreshToken(1L, "refresh", fixedClock.millis() + 2000)
         }
     }
 
@@ -101,12 +102,12 @@ class AuthServiceTest {
     inner class ReissueToken {
 
         @Test
-        @DisplayName("리프레시 토큰으로 액세스 토큰을 재발급한다")
+        @DisplayName("리프레시 토큰이면 → 액세스 토큰을 재발급한다")
         fun reissuesAccessToken() {
             val claims: Claims = Jwts.claims().add("id", 1L).build()
             given(tokenProvider.parseRefreshToken("refresh")).willReturn(claims)
             given(tokenStorageService.getRefreshToken(1L)).willReturn("refresh")
-            val member = member(1L, "member@test.com", "member")
+            val member = member(1L, "member")
             given(memberQueryService.findById(1L)).willReturn(member)
             given(tokenProvider.generateAccessToken(any<JwtClaimsPayload>()))
                 .willReturn(TokenProvider.TokenGeneration("new-access", fixedClock.millis() + 1000))
@@ -119,7 +120,7 @@ class AuthServiceTest {
         }
 
         @Test
-        @DisplayName("리프레시 토큰이 null이면 예외를 발생한다")
+        @DisplayName("리프레시 토큰이 null이면 → 예외를 발생한다")
         fun throwsExceptionWhenRefreshTokenIsNull() {
             val request = ReissueTokenRequest()
             ReflectionTestUtils.setField(request, "refreshToken", null)
@@ -132,7 +133,7 @@ class AuthServiceTest {
         }
 
         @Test
-        @DisplayName("리프레시 토큰이 blank이면 예외를 발생한다")
+        @DisplayName("리프레시 토큰이 blank이면 → 예외를 발생한다")
         fun throwsExceptionWhenRefreshTokenIsBlank() {
             val request = ReissueTokenRequest()
             ReflectionTestUtils.setField(request, "refreshToken", "   ")
@@ -145,7 +146,7 @@ class AuthServiceTest {
         }
 
         @Test
-        @DisplayName("리프레시 토큰이 블랙리스트에 있으면 예외를 발생한다")
+        @DisplayName("리프레시 토큰이 블랙리스트면 → 예외를 발생한다")
         fun throwsExceptionWhenTokenIsBlacklisted() {
             given(tokenBlacklistStore.isBlackList("blacklisted-refresh")).willReturn(true)
 
@@ -157,14 +158,14 @@ class AuthServiceTest {
             }
 
             assertThat(exception.errorCode).isEqualTo(AuthErrorInfo.UNAUTHORIZED)
-            verify(tokenBlacklistStore).isBlackList("blacklisted-refresh")
+            then(tokenBlacklistStore).should().isBlackList("blacklisted-refresh")
             // 블랙리스트에 있으므로 tokenProvider.parseRefreshToken과 tokenStorageService.getRefreshToken은 호출되지 않아야 함
-            verify(tokenProvider, never()).parseRefreshToken(any())
-            verify(tokenStorageService, never()).getRefreshToken(any())
+            then(tokenProvider).should(never()).parseRefreshToken(any())
+            then(tokenStorageService).should(never()).getRefreshToken(any())
         }
 
         @Test
-        @DisplayName("저장된 토큰과 일치하지 않으면 예외를 발생한다")
+        @DisplayName("저장된 토큰과 일치하지 않으면 → 예외를 발생한다")
         fun throwsExceptionWhenTokenMismatch() {
             val claims: Claims = Jwts.claims().add("id", 1L).build()
             given(tokenProvider.parseRefreshToken("different-refresh")).willReturn(claims)
@@ -187,7 +188,7 @@ class AuthServiceTest {
     inner class Logout {
 
         @Test
-        @DisplayName("남은 시간만큼 블랙리스트에 등록한다")
+        @DisplayName("로그아웃하면 → 남은 시간만큼 블랙리스트에 등록한다")
         fun blacklistsAccessAndRefresh() {
             val accessClaims: Claims = Jwts.claims()
                 .add("id", 1L)
@@ -203,13 +204,13 @@ class AuthServiceTest {
 
             authService.logout("access")
 
-            verify(tokenBlacklistStore).addBlackList("access", 60_000L)
-            verify(tokenBlacklistStore).addBlackList("refresh", 120_000L)
-            verify(tokenStorageService).deleteRefreshToken(1L)
+            then(tokenBlacklistStore).should().addBlackList("access", 60_000L)
+            then(tokenBlacklistStore).should().addBlackList("refresh", 120_000L)
+            then(tokenStorageService).should().deleteRefreshToken(1L)
         }
 
         @Test
-        @DisplayName("리프레시 토큰이 없으면 리프레시 블랙리스트는 등록하지 않는다")
+        @DisplayName("리프레시 토큰이 없으면 → 리프레시 블랙리스트는 등록하지 않는다")
         fun skipsRefreshWhenMissing() {
             val accessClaims: Claims = Jwts.claims()
                 .add("id", 1L)
@@ -220,8 +221,8 @@ class AuthServiceTest {
 
             authService.logout("access")
 
-            verify(tokenBlacklistStore).addBlackList("access", 60_000L)
-            verify(tokenBlacklistStore, never()).addBlackList(eq("refresh"), any(Long::class.java))
+            then(tokenBlacklistStore).should().addBlackList("access", 60_000L)
+            then(tokenBlacklistStore).should(never()).addBlackList(eq("refresh"), any(Long::class.java))
         }
     }
 
@@ -230,9 +231,9 @@ class AuthServiceTest {
     inner class LoginWithOAuth2 {
 
         @Test
-        @DisplayName("기존 회원이면 그대로 로그인한다")
+        @DisplayName("기존 회원이면 → 그대로 로그인한다")
         fun logsInExistingMember() {
-            val member = member(1L, "member@test.com", "member")
+            val member = member(1L, "member")
             val info = OAuth2UserInfo.builder()
                 .email("member@test.com")
                 .nickname("member")
@@ -253,7 +254,7 @@ class AuthServiceTest {
         }
 
         @Test
-        @DisplayName("신규 회원이면 닉네임 그대로 저장한다")
+        @DisplayName("신규 회원이면 → 닉네임 그대로 저장한다")
         fun savesNewMemberWithOriginalNickname() {
             val info = OAuth2UserInfo.builder()
                 .email("new@test.com")
@@ -277,13 +278,13 @@ class AuthServiceTest {
 
             authService.loginWithOAuth2(info)
 
-            verify(memberRepository).save(memberCaptor.capture())
+            then(memberRepository).should().save(memberCaptor.capture())
             val saved = memberCaptor.value
             assertThat(saved.nickname).isEqualTo("newbie")
         }
 
         @Test
-        @DisplayName("닉네임 충돌이면 suffix를 붙여 저장한다")
+        @DisplayName("닉네임 충돌이면 → suffix를 붙여 저장한다")
         fun updatesNicknameWhenDuplicate() {
             val info = OAuth2UserInfo.builder()
                 .email("new@test.com")
@@ -307,20 +308,13 @@ class AuthServiceTest {
 
             authService.loginWithOAuth2(info)
 
-            verify(memberRepository).save(memberCaptor.capture())
+            then(memberRepository).should().save(memberCaptor.capture())
             val saved = memberCaptor.value
             assertThat(saved.nickname).startsWith("dup_")
         }
     }
 
-    private fun member(id: Long, email: String, nickname: String): Member {
-        return Member.builder()
-            .id(id)
-            .email(email)
-            .nickname(nickname)
-            .profileImageUrl("https://example.com/profile.png")
-            .providerId("provider-$id")
-            .providerType(ProviderType.KAKAO)
-            .build()
+    private fun member(id: Long, nickname: String): Member {
+        return MemberFixture.aMember().id(id).nickname(nickname).providerId("provider-$id").build()
     }
 }

@@ -5,10 +5,10 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.domain.member.repository.MemberRepository
 import org.veri.be.slice.persistence.PersistenceSliceTestSupport
+import org.veri.be.support.fixture.MemberFixture
 
 class MemberRepositoryTest : PersistenceSliceTestSupport() {
 
@@ -20,10 +20,10 @@ class MemberRepositoryTest : PersistenceSliceTestSupport() {
     inner class FindByProviderIdAndProviderType {
 
         @Test
-        @DisplayName("provider 정보를 기준으로 회원을 조회한다")
+        @DisplayName("provider 정보로 조회하면 → 회원을 반환한다")
         fun returnsMemberByProvider() {
             val member = memberRepository.save(
-                Member.builder()
+                MemberFixture.aMember()
                     .email("member@test.com")
                     .nickname("tester")
                     .profileImageUrl("https://example.com/profile.png")
@@ -47,10 +47,10 @@ class MemberRepositoryTest : PersistenceSliceTestSupport() {
     inner class ExistsByNickname {
 
         @Test
-        @DisplayName("닉네임이 존재하면 true를 반환한다")
+        @DisplayName("닉네임이 존재하면 → true를 반환한다")
         fun returnsTrueWhenNicknameExists() {
             memberRepository.save(
-                Member.builder()
+                MemberFixture.aMember()
                     .email("member@test.com")
                     .nickname("tester")
                     .profileImageUrl("https://example.com/profile.png")
@@ -65,7 +65,7 @@ class MemberRepositoryTest : PersistenceSliceTestSupport() {
         }
 
         @Test
-        @DisplayName("닉네임이 존재하지 않으면 false를 반환한다")
+        @DisplayName("닉네임이 존재하지 않으면 → false를 반환한다")
         fun returnsFalseWhenNicknameMissing() {
             val exists = memberRepository.existsByNickname("missing")
 

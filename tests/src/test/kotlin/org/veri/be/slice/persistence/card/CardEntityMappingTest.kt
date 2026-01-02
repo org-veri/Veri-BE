@@ -6,16 +6,16 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.veri.be.domain.book.entity.Book
-import org.veri.be.domain.book.entity.Reading
 import org.veri.be.domain.book.repository.BookRepository
 import org.veri.be.domain.book.repository.ReadingRepository
-import org.veri.be.domain.card.entity.Card
 import org.veri.be.domain.card.repository.CardRepository
-import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.domain.member.repository.MemberRepository
 import org.veri.be.slice.persistence.PersistenceSliceTestSupport
+import org.veri.be.support.fixture.BookFixture
+import org.veri.be.support.fixture.CardFixture
+import org.veri.be.support.fixture.MemberFixture
+import org.veri.be.support.fixture.ReadingFixture
 
 class CardEntityMappingTest : PersistenceSliceTestSupport() {
 
@@ -39,10 +39,10 @@ class CardEntityMappingTest : PersistenceSliceTestSupport() {
     inner class ReadingAssociation {
 
         @Test
-        @DisplayName("독서를 삭제하면 카드의 reading_id가 null로 변경된다")
+        @DisplayName("독서를 삭제하면 → 카드의 reading_id가 null로 변경된다")
         fun setsReadingToNullOnDelete() {
             val member = memberRepository.save(
-                Member.builder()
+                MemberFixture.aMember()
                     .email("member@test.com")
                     .nickname("tester")
                     .profileImageUrl("https://example.com/profile.png")
@@ -51,7 +51,7 @@ class CardEntityMappingTest : PersistenceSliceTestSupport() {
                     .build()
             )
             val book = bookRepository.save(
-                Book.builder()
+                BookFixture.aBook()
                     .image("https://example.com/book.png")
                     .title("book")
                     .author("author")
@@ -59,14 +59,14 @@ class CardEntityMappingTest : PersistenceSliceTestSupport() {
                     .build()
             )
             val reading = readingRepository.save(
-                Reading.builder()
+                ReadingFixture.aReading()
                     .member(member)
                     .book(book)
                     .isPublic(true)
                     .build()
             )
             val card = cardRepository.save(
-                Card.builder()
+                CardFixture.aCard()
                     .member(member)
                     .reading(reading)
                     .content("content")

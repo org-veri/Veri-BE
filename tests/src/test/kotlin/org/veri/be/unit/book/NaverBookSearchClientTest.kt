@@ -65,7 +65,7 @@ class NaverBookSearchClientTest {
     inner class Search {
 
         @Test
-        @DisplayName("요청 파라미터와 헤더를 포함해 검색한다")
+        @DisplayName("요청 파라미터/헤더를 전달하면 → 검색을 수행한다")
         fun callsNaverSearch() {
             val body = "{\"total\":1,\"start\":1,\"display\":10,\"items\":[]}";
             given(responseSpec.toEntity(eq(String::class.java)))
@@ -78,14 +78,14 @@ class NaverBookSearchClientTest {
         }
 
         @Test
-        @DisplayName("start가 1000을 초과하면 예외가 발생한다")
+        @DisplayName("start가 1000을 초과하면 → 예외가 발생한다")
         fun throwsWhenStartTooLarge() {
             assertThatThrownBy { client.search("query", 101, 10) }
                 .isInstanceOf(NaverClientException::class.java)
         }
 
         @Test
-        @DisplayName("서버 오류 응답이면 예외가 발생한다")
+        @DisplayName("서버 오류 응답이면 → 예외가 발생한다")
         fun throwsWhenServerError() {
             given(responseSpec.toEntity(eq(String::class.java)))
                 .willThrow(RestClientException("fail"))
@@ -95,7 +95,7 @@ class NaverBookSearchClientTest {
         }
 
         @Test
-        @DisplayName("응답 파싱 실패 시 예외가 발생한다")
+        @DisplayName("응답 파싱에 실패하면 → 예외가 발생한다")
         fun throwsWhenParsingFails() {
             given(responseSpec.toEntity(eq(String::class.java)))
                 .willReturn(ResponseEntity("invalid-json", HttpStatus.OK))

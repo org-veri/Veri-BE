@@ -1,6 +1,5 @@
 package org.veri.be.slice.web
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -9,15 +8,10 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.eq
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito.verify
+import org.mockito.BDDMockito.then
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
@@ -38,14 +32,13 @@ import org.veri.be.global.auth.context.CurrentMemberInfo
 import org.veri.be.global.storage.dto.PresignedUrlRequest
 import org.veri.be.global.storage.dto.PresignedUrlResponse
 import org.veri.be.lib.response.ApiResponseAdvice
+import org.veri.be.support.ControllerTestSupport
+import org.veri.be.support.fixture.MemberFixture
 import java.time.LocalDateTime
 import java.util.Optional
 
 @ExtendWith(MockitoExtension::class)
-class CardControllerTest {
-
-    private lateinit var mockMvc: MockMvc
-    private lateinit var objectMapper: ObjectMapper
+class CardControllerTest : ControllerTestSupport() {
 
     @org.mockito.Mock
     private lateinit var cardCommandService: CardCommandService
@@ -58,13 +51,8 @@ class CardControllerTest {
 
     @BeforeEach
     fun setUp() {
-        objectMapper = ObjectMapper().findAndRegisterModules()
-        member = Member.builder()
+        member = MemberFixture.aMember()
             .id(1L)
-            .email("member@test.com")
-            .nickname("member")
-            .profileImageUrl("https://example.com/profile.png")
-            .providerId("provider-1")
             .providerType(ProviderType.KAKAO)
             .build()
 
@@ -90,31 +78,23 @@ class CardControllerTest {
     inner class CreateCard {
 
         @Test
-        @DisplayName("카드를 생성한다")
+        @DisplayName("카드를 생성하면 → 결과를 반환한다")
         fun createsCard() {
             val request = CardCreateRequest("content", "https://example.com/card.png", 10L, true)
             given(cardCommandService.createCard(member.id, "content", "https://example.com/card.png", 10L, true))
                 .willReturn(1L)
 
-            mockMvc.perform(
-                post("/api/v1/cards")
-                    .contentType("application/json")
-                    .content(objectMapper.writeValueAsString(request))
-            )
+            postJson("/api/v1/cards", request)
                 .andExpect(status().isCreated)
                 .andExpect(jsonPath("$.result.cardId").value(1L))
         }
 
         @Test
-        @DisplayName("필수 필드가 누락되면 400을 반환한다")
+        @DisplayName("필수 필드가 누락되면 → 400을 반환한다")
         fun returns400WhenFieldMissing() {
             val request = CardCreateRequest(null, null, null, null)
 
-            mockMvc.perform(
-                post("/api/v1/cards")
-                    .contentType("application/json")
-                    .content(objectMapper.writeValueAsString(request))
-            )
+            postJson("/api/v1/cards", request)
                 .andExpect(status().isBadRequest)
         }
     }
@@ -124,11 +104,11 @@ class CardControllerTest {
     inner class GetMyCardCount {
 
         @Test
-        @DisplayName("내 카드 개수를 반환한다")
+        @DisplayName("요청하면 → 내 카드 개수를 반환한다")
         fun returnsCount() {
             given(cardQueryService.getOwnedCardCount(1L)).willReturn(3)
 
-            mockMvc.perform(get("/api/v1/cards/my/count"))
+            get("/api/v1/cards/my/count")
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.result").value(3))
         }
@@ -139,7 +119,7 @@ class CardControllerTest {
     inner class GetMyCards {
 
         @Test
-        @DisplayName("내 카드 목록을 조회한다")
+        @DisplayName("요청하면 → 내 카드 목록을 반환한다")
         fun returnsCards() {
             val item = CardListItem(
                 1L,
@@ -157,34 +137,40 @@ class CardControllerTest {
             given(cardQueryService.getOwnedCards(eq(1L), eq(0), eq(10), any()))
                 .willReturn(page)
 
-            mockMvc.perform(
-                get("/api/v1/cards/my")
-                    .param("page", "1")
-                    .param("size", "10")
-                    .param("sort", "newest")
+            get(
+                "/api/v1/cards/my",
+                mapOf(
+                    "page" to "1",
+                    "size" to "10",
+                    "sort" to "newest"
+                )
             )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.result.cards[0].cardId").value(1L))
         }
 
         @Test
-        @DisplayName("page가 0 이하면 400을 반환한다")
+        @DisplayName("page가 0 이하면 → 400을 반환한다")
         fun returns400WhenPageIsInvalid() {
-            mockMvc.perform(
-                get("/api/v1/cards/my")
-                    .param("page", "0")
-                    .param("size", "10")
+            get(
+                "/api/v1/cards/my",
+                mapOf(
+                    "page" to "0",
+                    "size" to "10"
+                )
             )
                 .andExpect(status().isBadRequest)
         }
 
         @Test
-        @DisplayName("size가 0 이하면 400을 반환한다")
+        @DisplayName("size가 0 이하면 → 400을 반환한다")
         fun returns400WhenSizeIsInvalid() {
-            mockMvc.perform(
-                get("/api/v1/cards/my")
-                    .param("page", "1")
-                    .param("size", "0")
+            get(
+                "/api/v1/cards/my",
+                mapOf(
+                    "page" to "1",
+                    "size" to "0"
+                )
             )
                 .andExpect(status().isBadRequest)
         }
@@ -195,7 +181,7 @@ class CardControllerTest {
     inner class GetCard {
 
         @Test
-        @DisplayName("카드 상세를 조회한다")
+        @DisplayName("카드를 조회하면 → 상세를 반환한다")
         fun returnsCardDetail() {
             val response = CardDetailResponse(
                 1L,
@@ -209,7 +195,7 @@ class CardControllerTest {
             )
             given(cardQueryService.getCardDetail(1L, member.id)).willReturn(response)
 
-            mockMvc.perform(get("/api/v1/cards/1"))
+            get("/api/v1/cards/1")
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.result.id").value(1L))
         }
@@ -220,7 +206,7 @@ class CardControllerTest {
     inner class UpdateCard {
 
         @Test
-        @DisplayName("카드를 수정한다")
+        @DisplayName("카드를 수정하면 → 결과를 반환한다")
         fun updatesCard() {
             val request = CardUpdateRequest("content", "https://example.com/card.png")
             val response = CardUpdateResponse(
@@ -234,11 +220,7 @@ class CardControllerTest {
             given(cardCommandService.updateCard(member.id, 1L, "content", "https://example.com/card.png"))
                 .willReturn(response)
 
-            mockMvc.perform(
-                patch("/api/v1/cards/1")
-                    .contentType("application/json")
-                    .content(objectMapper.writeValueAsString(request))
-            )
+            patchJson("/api/v1/cards/1", request)
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.result.id").value(1L))
         }
@@ -249,12 +231,12 @@ class CardControllerTest {
     inner class DeleteCard {
 
         @Test
-        @DisplayName("카드를 삭제한다")
+        @DisplayName("카드를 삭제하면 → 204를 반환한다")
         fun deletesCard() {
-            mockMvc.perform(delete("/api/v1/cards/1"))
+            delete("/api/v1/cards/1")
                 .andExpect(status().isNoContent)
 
-            verify(cardCommandService).deleteCard(member.id, 1L)
+            then(cardCommandService).should().deleteCard(member.id, 1L)
         }
     }
 
@@ -263,31 +245,23 @@ class CardControllerTest {
     inner class UploadCardImage {
 
         @Test
-        @DisplayName("Presigned URL을 반환한다")
+        @DisplayName("요청하면 → Presigned URL을 반환한다")
         fun returnsPresignedUrl() {
             val request = PresignedUrlRequest("image/png", 100)
             val response = PresignedUrlResponse("https://example.com/presigned", "https://example.com/public")
             given(cardCommandService.getPresignedUrl(any(PresignedUrlRequest::class.java))).willReturn(response)
 
-            mockMvc.perform(
-                post("/api/v1/cards/image")
-                    .contentType("application/json")
-                    .content(objectMapper.writeValueAsString(request))
-            )
+            postJson("/api/v1/cards/image", request)
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.result.presignedUrl").value("https://example.com/presigned"))
         }
 
         @Test
-        @DisplayName("필수 필드가 누락되면 400을 반환한다")
+        @DisplayName("필수 필드가 누락되면 → 400을 반환한다")
         fun returns400WhenFieldMissing() {
             val request = PresignedUrlRequest(null, 0)
 
-            mockMvc.perform(
-                post("/api/v1/cards/image")
-                    .contentType("application/json")
-                    .content(objectMapper.writeValueAsString(request))
-            )
+            postJson("/api/v1/cards/image", request)
                 .andExpect(status().isBadRequest)
         }
     }
@@ -297,17 +271,13 @@ class CardControllerTest {
     inner class UploadCardImageForOcr {
 
         @Test
-        @DisplayName("OCR용 Presigned URL을 반환한다")
+        @DisplayName("요청하면 → OCR용 Presigned URL을 반환한다")
         fun returnsPresignedUrl() {
             val request = PresignedUrlRequest("image/png", 100)
             val response = PresignedUrlResponse("https://example.com/presigned", "https://example.com/public")
             given(cardCommandService.getPresignedUrlForOcr(any(PresignedUrlRequest::class.java))).willReturn(response)
 
-            mockMvc.perform(
-                post("/api/v1/cards/image/ocr")
-                    .contentType("application/json")
-                    .content(objectMapper.writeValueAsString(request))
-            )
+            postJson("/api/v1/cards/image/ocr", request)
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.result.presignedUrl").value("https://example.com/presigned"))
         }

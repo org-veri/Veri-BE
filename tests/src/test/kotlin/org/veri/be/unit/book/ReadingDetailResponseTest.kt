@@ -15,7 +15,7 @@ class ReadingDetailResponseTest {
     inner class Builder {
 
         @Test
-        @DisplayName("필드가 올바르게 세팅된다")
+        @DisplayName("빌더로 생성하면 → 필드가 세팅된다")
         fun buildsResponse() {
             val cardSummary = ReadingDetailResponse.CardSummaryResponse(
                 1L,

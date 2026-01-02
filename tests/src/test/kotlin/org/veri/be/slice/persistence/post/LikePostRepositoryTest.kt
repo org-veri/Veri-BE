@@ -6,17 +6,18 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.veri.be.domain.book.entity.Book
 import org.veri.be.domain.book.repository.BookRepository
-import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.domain.member.repository.MemberRepository
 import org.veri.be.domain.post.entity.LikePost
-import org.veri.be.domain.post.entity.Post
 import org.veri.be.domain.post.repository.LikePostRepository
 import org.veri.be.domain.post.repository.PostRepository
 import org.veri.be.domain.post.repository.dto.LikeInfoQueryResult
 import org.veri.be.slice.persistence.PersistenceSliceTestSupport
+import org.veri.be.support.fixture.BookFixture
+import org.veri.be.support.fixture.LikePostFixture
+import org.veri.be.support.fixture.MemberFixture
+import org.veri.be.support.fixture.PostFixture
 
 class LikePostRepositoryTest : PersistenceSliceTestSupport() {
 
@@ -40,7 +41,7 @@ class LikePostRepositoryTest : PersistenceSliceTestSupport() {
     inner class CountByPostId {
 
         @Test
-        @DisplayName("게시글의 좋아요 수를 반환한다")
+        @DisplayName("게시글의 좋아요 수를 조회하면 → 결과를 반환한다")
         fun returnsLikeCount() {
             val author = saveMember("author@test.com", "author")
             val liker = saveMember("liker@test.com", "liker")
@@ -58,7 +59,7 @@ class LikePostRepositoryTest : PersistenceSliceTestSupport() {
     inner class ExistsByPostIdAndMemberId {
 
         @Test
-        @DisplayName("좋아요 여부를 확인한다")
+        @DisplayName("좋아요 여부를 확인하면 → 결과를 반환한다")
         fun returnsLikeExists() {
             val author = saveMember("author@test.com", "author")
             val liker = saveMember("liker@test.com", "liker")
@@ -76,7 +77,7 @@ class LikePostRepositoryTest : PersistenceSliceTestSupport() {
     inner class DeleteByPostIdAndMemberId {
 
         @Test
-        @DisplayName("좋아요를 삭제한다")
+        @DisplayName("좋아요를 삭제하면 → 삭제된다")
         fun deletesLike() {
             val author = saveMember("author@test.com", "author")
             val liker = saveMember("liker@test.com", "liker")
@@ -94,7 +95,7 @@ class LikePostRepositoryTest : PersistenceSliceTestSupport() {
     inner class GetLikeInfoOfPost {
 
         @Test
-        @DisplayName("좋아요 수와 좋아요 여부를 함께 반환한다")
+        @DisplayName("좋아요 수와 여부를 조회하면 → 함께 반환한다")
         fun returnsLikeInfo() {
             val author = saveMember("author@test.com", "author")
             val liker = saveMember("liker@test.com", "liker")
@@ -108,9 +109,9 @@ class LikePostRepositoryTest : PersistenceSliceTestSupport() {
         }
     }
 
-    private fun saveMember(email: String, nickname: String): Member {
+    private fun saveMember(email: String, nickname: String): org.veri.be.domain.member.entity.Member {
         return memberRepository.save(
-            Member.builder()
+            MemberFixture.aMember()
                 .email(email)
                 .nickname(nickname)
                 .profileImageUrl("https://example.com/profile.png")
@@ -120,9 +121,9 @@ class LikePostRepositoryTest : PersistenceSliceTestSupport() {
         )
     }
 
-    private fun savePost(author: Member): Post {
+    private fun savePost(author: org.veri.be.domain.member.entity.Member): org.veri.be.domain.post.entity.Post {
         val book = bookRepository.save(
-            Book.builder()
+            BookFixture.aBook()
                 .image("https://example.com/book.png")
                 .title("book")
                 .author("author")
@@ -130,7 +131,7 @@ class LikePostRepositoryTest : PersistenceSliceTestSupport() {
                 .build()
         )
         return postRepository.save(
-            Post.builder()
+            PostFixture.aPost()
                 .author(author)
                 .book(book)
                 .title("title")
@@ -140,9 +141,9 @@ class LikePostRepositoryTest : PersistenceSliceTestSupport() {
         )
     }
 
-    private fun saveLike(member: Member, post: Post) {
+    private fun saveLike(member: org.veri.be.domain.member.entity.Member, post: org.veri.be.domain.post.entity.Post) {
         entityManager.persist(
-            LikePost.builder()
+            LikePostFixture.aLikePost()
                 .member(member)
                 .post(post)
                 .build()

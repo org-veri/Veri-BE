@@ -40,7 +40,7 @@ class JwtServiceTest {
     inner class AccessToken {
 
         @Test
-        @DisplayName("클레임과 만료 시간이 포함된다")
+        @DisplayName("토큰을 생성하면 → 클레임과 만료 시간이 포함된다")
         fun generatesAccessTokenWithClaims() {
             val payload = JwtClaimsPayload(1L, "member@test.com", "member", false)
 
@@ -62,7 +62,7 @@ class JwtServiceTest {
     inner class RefreshToken {
 
         @Test
-        @DisplayName("멤버 ID를 포함한 리프레시 토큰을 생성한다")
+        @DisplayName("리프레시 토큰을 생성하면 → 멤버 ID가 포함된다")
         fun generatesRefreshTokenWithMemberId() {
             val now = fixedClock.millis()
             val generated = jwtService.generateRefreshToken(2L)

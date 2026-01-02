@@ -9,7 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito.verify
+import org.mockito.BDDMockito.then
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.test.util.ReflectionTestUtils
 import org.veri.be.domain.comment.dto.request.CommentPostRequest
@@ -17,11 +17,12 @@ import org.veri.be.domain.comment.entity.Comment
 import org.veri.be.domain.comment.repository.CommentRepository
 import org.veri.be.domain.comment.service.CommentCommandService
 import org.veri.be.domain.comment.service.CommentQueryService
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.domain.member.repository.MemberRepository
-import org.veri.be.domain.post.entity.Post
 import org.veri.be.domain.post.service.PostQueryService
+import org.veri.be.support.assertion.CommentAssert
+import org.veri.be.support.fixture.CommentFixture
+import org.veri.be.support.fixture.MemberFixture
+import org.veri.be.support.fixture.PostFixture
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId
@@ -64,10 +65,10 @@ class CommentCommandServiceTest {
     inner class PostComment {
 
         @Test
-        @DisplayName("댓글을 저장하고 ID를 반환한다")
+        @DisplayName("댓글을 저장하면 → ID를 반환한다")
         fun savesComment() {
-            val member = member(1L, "member@test.com", "member")
-            val post = Post.builder().id(10L).title("title").content("content").build()
+            val member = MemberFixture.aMember().id(1L).nickname("member").build()
+            val post = PostFixture.aPost().id(10L).title("title").content("content").build()
             val request = CommentPostRequest(10L, "content")
 
             given(postQueryService.getPostById(10L)).willReturn(post)
@@ -81,7 +82,7 @@ class CommentCommandServiceTest {
 
             val result = commentCommandService.postComment(request, member.id)
 
-            verify(commentRepository).save(commentCaptor.capture())
+            then(commentRepository).should().save(commentCaptor.capture())
             val saved = commentCaptor.value
             assertThat(saved.post).isEqualTo(post)
             assertThat(saved.author).isEqualTo(member)
@@ -95,11 +96,11 @@ class CommentCommandServiceTest {
     inner class PostReply {
 
         @Test
-        @DisplayName("대댓글을 저장하고 ID를 반환한다")
+        @DisplayName("대댓글을 저장하면 → ID를 반환한다")
         fun savesReply() {
-            val member = member(2L, "reply@test.com", "reply")
-            val post = Post.builder().id(10L).title("title").content("content").build()
-            val parent = Comment.builder().id(5L).post(post).author(member).content("parent").build()
+            val member = MemberFixture.aMember().id(2L).nickname("reply").build()
+            val post = PostFixture.aPost().id(10L).title("title").content("content").build()
+            val parent = CommentFixture.aComment().id(5L).post(post).author(member).content("parent").build()
 
             given(commentQueryService.getCommentById(5L)).willReturn(parent)
             given(memberRepository.getReferenceById(2L)).willReturn(member)
@@ -112,7 +113,7 @@ class CommentCommandServiceTest {
 
             val result = commentCommandService.postReply(5L, "reply", member.id)
 
-            verify(commentRepository).save(commentCaptor.capture())
+            then(commentRepository).should().save(commentCaptor.capture())
             val saved = commentCaptor.value
             assertThat(saved.parent).isEqualTo(parent)
             assertThat(saved.post).isEqualTo(post)
@@ -127,18 +128,19 @@ class CommentCommandServiceTest {
     inner class EditComment {
 
         @Test
-        @DisplayName("댓글 내용을 수정한다")
+        @DisplayName("댓글 내용을 수정하면 → 저장된다")
         fun editsComment() {
-            val member = member(1L, "member@test.com", "member")
-            val comment = Comment.builder().id(1L).author(member).content("before").build()
+            val member = MemberFixture.aMember().id(1L).nickname("member").build()
+            val comment = CommentFixture.aComment().id(1L).author(member).content("before").build()
 
             given(commentQueryService.getCommentById(1L)).willReturn(comment)
             given(memberRepository.getReferenceById(1L)).willReturn(member)
 
             commentCommandService.editComment(1L, "after", member.id)
 
-            verify(commentRepository).save(commentCaptor.capture())
-            assertThat(commentCaptor.value.content).isEqualTo("after")
+            then(commentRepository).should().save(commentCaptor.capture())
+            CommentAssert.assertThat(commentCaptor.value)
+                .hasContent("after")
         }
     }
 
@@ -147,29 +149,19 @@ class CommentCommandServiceTest {
     inner class DeleteComment {
 
         @Test
-        @DisplayName("댓글을 삭제 처리한다")
+        @DisplayName("댓글을 삭제하면 → 삭제 처리된다")
         fun deletesComment() {
-            val member = member(1L, "member@test.com", "member")
-            val comment = Comment.builder().id(1L).author(member).content("content").build()
+            val member = MemberFixture.aMember().id(1L).nickname("member").build()
+            val comment = CommentFixture.aComment().id(1L).author(member).content("content").build()
 
             given(commentQueryService.getCommentById(1L)).willReturn(comment)
             given(memberRepository.getReferenceById(1L)).willReturn(member)
 
             commentCommandService.deleteComment(1L, member.id)
 
-            verify(commentRepository).save(commentCaptor.capture())
-            assertThat(commentCaptor.value.isDeleted).isTrue()
+            then(commentRepository).should().save(commentCaptor.capture())
+            CommentAssert.assertThat(commentCaptor.value)
+                .isDeleted(true)
         }
-    }
-
-    private fun member(id: Long, email: String, nickname: String): Member {
-        return Member.builder()
-            .id(id)
-            .email(email)
-            .nickname(nickname)
-            .profileImageUrl("https://example.com/profile.png")
-            .providerId("provider-$nickname")
-            .providerType(ProviderType.KAKAO)
-            .build()
     }
 }

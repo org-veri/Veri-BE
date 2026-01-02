@@ -9,14 +9,11 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.BDDMockito.given
+import org.mockito.BDDMockito.then
 import org.mockito.Mockito.never
-import org.mockito.Mockito.verify
 import org.mockito.junit.jupiter.MockitoExtension
-import org.veri.be.domain.book.entity.Book
 import org.veri.be.domain.book.service.BookService
 import org.veri.be.domain.card.entity.CardErrorInfo
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.domain.member.repository.MemberRepository
 import org.veri.be.domain.post.dto.request.PostCreateRequest
 import org.veri.be.domain.post.dto.response.LikeInfoResponse
@@ -31,6 +28,9 @@ import org.veri.be.global.storage.dto.PresignedUrlRequest
 import org.veri.be.global.storage.dto.PresignedUrlResponse
 import org.veri.be.global.storage.service.StorageService
 import org.veri.be.support.assertion.ExceptionAssertions
+import org.veri.be.support.fixture.BookFixture
+import org.veri.be.support.fixture.MemberFixture
+import org.veri.be.support.fixture.PostFixture
 import java.util.Comparator
 
 @ExtendWith(MockitoExtension::class)
@@ -79,14 +79,13 @@ class PostCommandServiceTest {
     inner class CreatePost {
 
         @Test
-        @DisplayName("이미지와 함께 게시글을 저장한다")
+        @DisplayName("이미지와 함께 게시글을 저장하면 → 저장된다")
         fun savesPostWithImages() {
-            val author = member(1L, "author@test.com", "author")
-            val book = Book.builder()
+            val author = MemberFixture.aMember().id(1L).nickname("author").build()
+            val book = BookFixture.aBook()
                 .id(10L)
                 .title("book")
                 .author("author")
-                .image("https://example.com/book.png")
                 .isbn("isbn-1")
                 .build()
             val request = PostCreateRequest(
@@ -102,7 +101,7 @@ class PostCommandServiceTest {
 
             postCommandService.createPost(request, author.id)
 
-            verify(postRepository).save(postCaptor.capture())
+            then(postRepository).should().save(postCaptor.capture())
             val saved = postCaptor.value
 
             assertThat(saved.title).isEqualTo("title")
@@ -122,10 +121,10 @@ class PostCommandServiceTest {
     inner class DeletePost {
 
         @Test
-        @DisplayName("게시글을 삭제한다")
+        @DisplayName("게시글을 삭제하면 → 삭제된다")
         fun deletesPost() {
-            val author = member(1L, "author@test.com", "author")
-            val post = Post.builder()
+            val author = MemberFixture.aMember().id(1L).nickname("author").build()
+            val post = PostFixture.aPost()
                 .id(1L)
                 .author(author)
                 .title("title")
@@ -136,7 +135,7 @@ class PostCommandServiceTest {
 
             postCommandService.deletePost(1L, author.id)
 
-            verify(postRepository).deleteById(1L)
+            then(postRepository).should().deleteById(1L)
         }
     }
 
@@ -145,10 +144,10 @@ class PostCommandServiceTest {
     inner class PublishPost {
 
         @Test
-        @DisplayName("게시글을 공개로 변경한다")
+        @DisplayName("게시글을 공개로 변경하면 → 저장된다")
         fun publishesPost() {
-            val author = member(1L, "author@test.com", "author")
-            val post = Post.builder()
+            val author = MemberFixture.aMember().id(1L).nickname("author").build()
+            val post = PostFixture.aPost()
                 .id(1L)
                 .author(author)
                 .isPublic(false)
@@ -161,7 +160,7 @@ class PostCommandServiceTest {
 
             postCommandService.publishPost(1L, author.id)
 
-            verify(postRepository).save(postCaptor.capture())
+            then(postRepository).should().save(postCaptor.capture())
             assertThat(postCaptor.value.isPublic).isTrue()
         }
     }
@@ -171,10 +170,10 @@ class PostCommandServiceTest {
     inner class UnPublishPost {
 
         @Test
-        @DisplayName("게시글을 비공개로 변경한다")
+        @DisplayName("게시글을 비공개로 변경하면 → 저장된다")
         fun unpublishesPost() {
-            val author = member(1L, "author@test.com", "author")
-            val post = Post.builder()
+            val author = MemberFixture.aMember().id(1L).nickname("author").build()
+            val post = PostFixture.aPost()
                 .id(1L)
                 .author(author)
                 .isPublic(true)
@@ -187,7 +186,7 @@ class PostCommandServiceTest {
 
             postCommandService.unPublishPost(1L, author.id)
 
-            verify(postRepository).save(postCaptor.capture())
+            then(postRepository).should().save(postCaptor.capture())
             assertThat(postCaptor.value.isPublic).isFalse()
         }
     }
@@ -197,7 +196,7 @@ class PostCommandServiceTest {
     inner class GetPresignedUrl {
 
         @Test
-        @DisplayName("용량이 초과되면 예외가 발생한다")
+        @DisplayName("용량이 초과되면 → 예외가 발생한다")
         fun throwsWhenImageTooLarge() {
             val request = PresignedUrlRequest("image/png", 1024 * 1024L + 1)
 
@@ -208,7 +207,7 @@ class PostCommandServiceTest {
         }
 
         @Test
-        @DisplayName("이미지 타입이 아니면 예외가 발생한다")
+        @DisplayName("이미지 타입이 아니면 → 예외가 발생한다")
         fun throwsWhenUnsupportedType() {
             val request = PresignedUrlRequest("application/pdf", 100)
 
@@ -219,7 +218,7 @@ class PostCommandServiceTest {
         }
 
         @Test
-        @DisplayName("이미지 업로드용 Presigned URL을 반환한다")
+        @DisplayName("요청하면 → 이미지 업로드용 Presigned URL을 반환한다")
         fun returnsPresignedUrl() {
             val request = PresignedUrlRequest("image/png", 100)
             val response = PresignedUrlResponse("https://example.com/presigned", "https://example.com/public")
@@ -237,9 +236,9 @@ class PostCommandServiceTest {
     inner class LikePostAction {
 
         @Test
-        @DisplayName("이미 좋아요가 있으면 저장하지 않는다")
+        @DisplayName("이미 좋아요가 있으면 → 저장하지 않는다")
         fun returnsLikeInfoWhenAlreadyLiked() {
-            val member = member(1L, "member@test.com", "member")
+            val member = MemberFixture.aMember().id(1L).nickname("member").build()
             given(likePostRepository.existsByPostIdAndMemberId(1L, 1L)).willReturn(true)
             given(likePostRepository.countByPostId(1L)).willReturn(2L)
 
@@ -247,7 +246,7 @@ class PostCommandServiceTest {
 
             assertThat(result.likeCount()).isEqualTo(2L)
             assertThat(result.isLiked()).isTrue()
-            verify(likePostRepository, never()).save(any(LikePost::class.java))
+            then(likePostRepository).should(never()).save(any(LikePost::class.java))
         }
     }
 
@@ -256,10 +255,10 @@ class PostCommandServiceTest {
     inner class LikePostActionNotExists {
 
         @Test
-        @DisplayName("좋아요를 저장하고 카운트를 반환한다")
+        @DisplayName("좋아요를 저장하면 → 카운트를 반환한다")
         fun savesLikeWhenNotExists() {
-            val member = member(1L, "member@test.com", "member")
-            val post = Post.builder().id(1L).author(member).title("title").content("content").build()
+            val member = MemberFixture.aMember().id(1L).nickname("member").build()
+            val post = PostFixture.aPost().id(1L).author(member).title("title").content("content").build()
 
             given(likePostRepository.existsByPostIdAndMemberId(1L, 1L)).willReturn(false)
             given(postQueryService.getPostById(1L)).willReturn(post)
@@ -268,7 +267,7 @@ class PostCommandServiceTest {
 
             val result: LikeInfoResponse = postCommandService.likePost(1L, member.id)
 
-            verify(likePostRepository).save(likePostCaptor.capture())
+            then(likePostRepository).should().save(likePostCaptor.capture())
             assertThat(likePostCaptor.value.post).isEqualTo(post)
             assertThat(likePostCaptor.value.member).isEqualTo(member)
             assertThat(result.likeCount()).isEqualTo(1L)
@@ -281,27 +280,16 @@ class PostCommandServiceTest {
     inner class UnlikePostAction {
 
         @Test
-        @DisplayName("좋아요를 삭제하고 카운트를 반환한다")
+        @DisplayName("좋아요를 삭제하면 → 카운트를 반환한다")
         fun deletesLike() {
-            val member = member(1L, "member@test.com", "member")
+            val member = MemberFixture.aMember().id(1L).nickname("member").build()
             given(likePostRepository.countByPostId(1L)).willReturn(0L)
 
             val result: LikeInfoResponse = postCommandService.unlikePost(1L, member.id)
 
-            verify(likePostRepository).deleteByPostIdAndMemberId(1L, 1L)
+            then(likePostRepository).should().deleteByPostIdAndMemberId(1L, 1L)
             assertThat(result.likeCount()).isZero()
             assertThat(result.isLiked()).isFalse()
         }
-    }
-
-    private fun member(id: Long, email: String, nickname: String): Member {
-        return Member.builder()
-            .id(id)
-            .email(email)
-            .nickname(nickname)
-            .profileImageUrl("https://example.com/profile.png")
-            .providerId("provider-$nickname")
-            .providerType(ProviderType.KAKAO)
-            .build()
     }
 }
