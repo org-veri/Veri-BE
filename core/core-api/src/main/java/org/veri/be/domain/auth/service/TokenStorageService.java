@@ -1,16 +1,16 @@
 package org.veri.be.domain.auth.service;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.veri.be.domain.auth.entity.BlacklistedToken;
 import org.veri.be.domain.auth.entity.RefreshToken;
 import org.veri.be.domain.auth.repository.BlacklistedTokenRepository;
 import org.veri.be.domain.auth.repository.RefreshTokenRepository;
+import org.veri.be.global.cache.CacheConfig;
 
 import java.time.Clock;
-import java.time.Duration;
 import java.time.Instant;
 
 @Service
@@ -20,12 +20,6 @@ public class TokenStorageService implements TokenBlacklistStore {
     private final RefreshTokenRepository refreshTokenRepository;
     private final BlacklistedTokenRepository blacklistedTokenRepository;
     private final Clock clock;
-
-    // 네거티브 캐시: 블랙리스트에 없는 토큰도 캐싱하여 DB 조회 감소
-    private final Cache<String, Boolean> blacklistCache = Caffeine.newBuilder()
-            .expireAfterWrite(Duration.ofSeconds(30))
-            .maximumSize(1000)
-            .build();
 
     public void addRefreshToken(Long id, String refresh, long expiredAt) {
         refreshTokenRepository.save(
@@ -38,6 +32,7 @@ public class TokenStorageService implements TokenBlacklistStore {
     }
 
     @Override
+    @CacheEvict(cacheNames = CacheConfig.TOKEN_BLACKLIST, key = "#token", condition = "#token != null")
     public void addBlackList(String token, long expiredAt) {
         blacklistedTokenRepository.save(
                 BlacklistedToken.builder()
@@ -45,8 +40,6 @@ public class TokenStorageService implements TokenBlacklistStore {
                         .expiredAt(Instant.now(clock).plusMillis(expiredAt))
                         .build()
         );
-        // 캐시도 즉시 업데이트
-        blacklistCache.put(token, true);
     }
 
     public void deleteRefreshToken(Long userId) {
@@ -54,23 +47,15 @@ public class TokenStorageService implements TokenBlacklistStore {
     }
 
     @Override
+    @Cacheable(cacheNames = CacheConfig.TOKEN_BLACKLIST, key = "#token", condition = "#token != null")
     public boolean isBlackList(String token) {
         if (token == null) {
             return false;
         }
 
-        // 1차: 캐시에서 조회
-        Boolean cached = blacklistCache.getIfPresent(token);
-        if (cached != null) {
-            return cached;
-        }
-
-        // 2차: DB 조회 후 캐시에 저장
-        boolean isBlacklisted = blacklistedTokenRepository.findById(token)
+        return blacklistedTokenRepository.findById(token)
                 .map(b -> b.getExpiredAt().isAfter(Instant.now(clock)))
                 .orElse(false);
-        blacklistCache.put(token, isBlacklisted);
-        return isBlacklisted;
     }
 
     public String getRefreshToken(Long id) {

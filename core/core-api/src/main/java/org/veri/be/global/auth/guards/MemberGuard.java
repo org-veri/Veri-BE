@@ -2,7 +2,7 @@ package org.veri.be.global.auth.guards;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.veri.be.domain.member.entity.Member;
+import org.veri.be.global.auth.context.CurrentMemberInfo;
 import org.veri.be.lib.auth.guard.Guard;
 import org.veri.be.lib.exception.CommonErrorCode;
 import org.veri.be.lib.exception.ApplicationException;
@@ -17,13 +17,13 @@ public class MemberGuard implements Guard {
 
     @Override
     public void canActivate() {
-        Optional<Member> member = currentMemberAccessor.getCurrentMember();
+        Optional<CurrentMemberInfo> member = currentMemberAccessor.getCurrentMemberInfo();
         if (!checkMemberHasRole(member)) {
             throw ApplicationException.of(CommonErrorCode.DOES_NOT_HAVE_PERMISSION);
         }
     }
 
-    private boolean checkMemberHasRole(Optional<Member> member) {
+    private boolean checkMemberHasRole(Optional<CurrentMemberInfo> member) {
         return member.isPresent();
     }
 }
