@@ -27,9 +27,15 @@ public class MockTokenController {
         member = memberRepository.findById(memberId)
                 .orElseThrow(() -> ApplicationException.of(CommonErrorCode.INVALID_REQUEST));
 
+        JwtClaimsPayload claimsPayload = new JwtClaimsPayload(
+                member.getId(),
+                member.getEmail(),
+                member.getNickname(),
+                false
+        );
 
         return LoginResponse.builder()
-                .accessToken(tokenProvider.generateAccessToken(JwtClaimsPayload.from(member)).token())
+                .accessToken(tokenProvider.generateAccessToken(claimsPayload).token())
                 .refreshToken(tokenProvider.generateRefreshToken(member.getId()).token())
                 .build();
     }
