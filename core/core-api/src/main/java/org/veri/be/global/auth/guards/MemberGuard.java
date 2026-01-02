@@ -17,13 +17,13 @@ public class MemberGuard implements Guard {
 
     @Override
     public void canActivate() {
-        Optional<CurrentMemberInfo> member = currentMemberAccessor.getCurrentMemberInfo();
+        CurrentMemberInfo member = currentMemberAccessor.getCurrentMemberInfoOrNull();
         if (!checkMemberHasRole(member)) {
             throw ApplicationException.of(CommonErrorCode.DOES_NOT_HAVE_PERMISSION);
         }
     }
 
-    private boolean checkMemberHasRole(Optional<CurrentMemberInfo> member) {
-        return member.isPresent();
+    private boolean checkMemberHasRole(CurrentMemberInfo member) {
+        return member != null;
     }
 }

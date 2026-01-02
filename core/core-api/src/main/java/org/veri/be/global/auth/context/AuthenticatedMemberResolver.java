@@ -7,9 +7,6 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import org.veri.be.domain.member.entity.Member;
-import org.veri.be.global.auth.AuthErrorInfo;
-import org.veri.be.lib.exception.ApplicationException;
 
 @Component
 @RequiredArgsConstructor
@@ -19,7 +16,8 @@ public class AuthenticatedMemberResolver implements HandlerMethodArgumentResolve
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(AuthenticatedMember.class) && parameter.getParameterType().equals(Member.class);
+        return parameter.hasParameterAnnotation(AuthenticatedMember.class)
+                && parameter.getParameterType().equals(CurrentMemberInfo.class);
     }
 
     @Override
@@ -29,7 +27,6 @@ public class AuthenticatedMemberResolver implements HandlerMethodArgumentResolve
             NativeWebRequest webRequest,
             WebDataBinderFactory binderFactory
     ) {
-        return currentMemberAccessor.getCurrentMember()
-                .orElseThrow(() -> ApplicationException.of(AuthErrorInfo.UNAUTHORIZED));
+        return currentMemberAccessor.getMemberInfoOrThrow();
     }
 }
