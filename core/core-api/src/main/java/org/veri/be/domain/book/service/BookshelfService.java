@@ -22,6 +22,7 @@ import org.veri.be.domain.book.repository.dto.BookPopularQueryResult;
 import org.veri.be.domain.book.repository.dto.ReadingQueryResult;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.global.auth.context.CurrentMemberAccessor;
+import org.veri.be.global.auth.context.CurrentMemberInfo;
 import org.veri.be.lib.exception.ApplicationException;
 import org.veri.be.lib.exception.CommonErrorCode;
 
@@ -91,7 +92,8 @@ public class BookshelfService {
         Reading reading = readingRepository.findByIdWithCardsAndBook(memberBookId)
                 .orElseThrow(() -> ApplicationException.of(BookErrorCode.BAD_REQUEST));
 
-        if (!reading.isPublic() && !reading.authorizeMember(currentMemberAccessor.getMemberOrThrow().getId())) {
+        CurrentMemberInfo memberInfo = currentMemberAccessor.getMemberInfoOrThrow();
+        if (!reading.isPublic() && !reading.authorizeMember(memberInfo.id())) {
             throw ApplicationException.of(CommonErrorCode.RESOURCE_NOT_FOUND);
         }
 
