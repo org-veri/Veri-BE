@@ -13,8 +13,8 @@ import org.veri.be.global.auth.dto.ReissueTokenRequest;
 import org.veri.be.global.auth.dto.ReissueTokenResponse;
 import org.veri.be.global.auth.oauth2.dto.OAuth2UserInfo;
 import org.veri.be.global.auth.token.TokenProvider;
-import org.veri.be.lib.exception.CommonErrorCode;
 import org.veri.be.lib.exception.ApplicationException;
+import org.veri.be.lib.exception.CommonErrorCode;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -33,7 +33,7 @@ public class AuthService implements Authenticator {
     private final Clock clock;
 
     public LoginResponse login(Member member) {
-        TokenProvider.TokenGeneration accessToken = tokenProvider.generateAccessToken(JwtClaimsPayload.from(member));
+        TokenProvider.TokenGeneration accessToken = tokenProvider.generateAccessToken(this.makeClaimsPayload(member));
         TokenProvider.TokenGeneration refreshToken = tokenProvider.generateRefreshToken(member.getId());
         tokenStorageService.addRefreshToken(member.getId(), refreshToken.token(), refreshToken.expiredAt());
         return LoginResponse.builder()
@@ -48,7 +48,7 @@ public class AuthService implements Authenticator {
         if (refreshToken == null || refreshToken.isBlank()) {
             throw ApplicationException.of(CommonErrorCode.INVALID_REQUEST);
         }
-        
+
         if (tokenBlacklistStore.isBlackList(refreshToken)) {
             throw ApplicationException.of(AuthErrorInfo.UNAUTHORIZED);
         }
@@ -115,5 +115,14 @@ public class AuthService implements Authenticator {
             }
             return memberRepository.save(member);
         }
+    }
+
+    private JwtClaimsPayload makeClaimsPayload(Member member) {
+        return new JwtClaimsPayload(
+                member.getId(),
+                member.getEmail(),
+                member.getNickname(),
+                false
+        );
     }
 }

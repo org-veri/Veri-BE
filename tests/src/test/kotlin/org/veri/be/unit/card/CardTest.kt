@@ -45,7 +45,7 @@ class CardTest {
                 .image("https://example.com/before.png")
                 .build()
 
-            val updated = card.updateContent("after", "https://example.com/after.png", owner)
+            val updated = card.updateContent("after", "https://example.com/after.png", owner.id)
 
             assertThat(updated.content).isEqualTo("after")
             assertThat(updated.image).isEqualTo("https://example.com/after.png")
@@ -71,7 +71,7 @@ class CardTest {
                 .build()
 
             ExceptionAssertions.assertApplicationException(
-                { card.changeVisibility(owner, true) },
+                { card.changeVisibility(owner.id, true) },
                 CardErrorInfo.READING_MS_NOT_PUBLIC
             )
         }
@@ -90,7 +90,7 @@ class CardTest {
                 .isPublic(true)
                 .build()
 
-            card.changeVisibility(owner, false)
+            card.changeVisibility(owner.id, false)
 
             assertThat(card.isPublic).isFalse()
         }
@@ -121,9 +121,9 @@ class CardTest {
                 .isPublic(false)
                 .build()
 
-            assertThatNoException().isThrownBy { card.assertReadableBy(owner) }
+            assertThatNoException().isThrownBy { card.assertReadableBy(owner.id) }
             ExceptionAssertions.assertApplicationException(
-                { card.assertReadableBy(reader) },
+                { card.assertReadableBy(reader.id) },
                 CardErrorInfo.READING_MS_NOT_PUBLIC
             )
         }

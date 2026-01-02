@@ -8,8 +8,8 @@ import org.veri.be.domain.comment.dto.request.CommentEditRequest;
 import org.veri.be.domain.comment.dto.request.CommentPostRequest;
 import org.veri.be.domain.comment.dto.request.ReplyPostRequest;
 import org.veri.be.domain.comment.service.CommentCommandService;
-import org.veri.be.domain.member.entity.Member;
 import org.veri.be.global.auth.context.AuthenticatedMember;
+import org.veri.be.global.auth.context.CurrentMemberInfo;
 import org.veri.be.lib.response.ApiResponse;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,18 +26,18 @@ public class CommentController {
     @Operation(summary = "댓글 작성", description = "게시글에 댓글을 작성합니다.")
     public ApiResponse<Long> postComment(
             @RequestBody @Valid CommentPostRequest request,
-            @AuthenticatedMember Member member
+            @AuthenticatedMember CurrentMemberInfo memberInfo
     ) {
-        return ApiResponse.created(commentCommandService.postComment(request, member));
+        return ApiResponse.created(commentCommandService.postComment(request, memberInfo.id()));
     }
 
     @PostMapping("/reply")
     @Operation(summary = "대댓글 작성", description = "댓글에 대한 대댓글을 작성합니다.")
     public ApiResponse<Long> postReply(
             @RequestBody ReplyPostRequest request,
-            @AuthenticatedMember Member member
+            @AuthenticatedMember CurrentMemberInfo memberInfo
     ) {
-        return ApiResponse.created(commentCommandService.postReply(request.parentCommentId(), request.content(), member));
+        return ApiResponse.created(commentCommandService.postReply(request.parentCommentId(), request.content(), memberInfo.id()));
     }
 
     @PatchMapping("/{commentId}")
@@ -45,17 +45,17 @@ public class CommentController {
     public void editComment(
             @PathVariable Long commentId,
             @RequestBody CommentEditRequest request,
-            @AuthenticatedMember Member member
+            @AuthenticatedMember CurrentMemberInfo memberInfo
     ) {
-        commentCommandService.editComment(commentId, request.content(), member);
+        commentCommandService.editComment(commentId, request.content(), memberInfo.id());
     }
 
     @DeleteMapping("/{commentId}")
     @Operation(summary = "댓글 삭제", description = "댓글을 삭제합니다.")
     public void deleteComment(
             @PathVariable Long commentId,
-            @AuthenticatedMember Member member
+            @AuthenticatedMember CurrentMemberInfo memberInfo
     ) {
-        commentCommandService.deleteComment(commentId, member);
+        commentCommandService.deleteComment(commentId, memberInfo.id());
     }
 }

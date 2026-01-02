@@ -6,9 +6,7 @@ import java.lang.annotation.*;
 
 @Documented
 @Parameter(hidden = true)
-@Target({
-        ElementType.PARAMETER
-})
+@Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AuthenticatedMember {
 }

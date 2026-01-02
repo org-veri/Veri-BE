@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.domain.member.repository.MemberRepository
+import org.veri.be.global.auth.JwtClaimsPayload
 import org.veri.be.global.auth.context.CurrentMemberInfo
 import org.veri.be.global.auth.context.MemberContext
 import org.veri.be.global.auth.context.ThreadLocalCurrentMemberAccessor
@@ -38,28 +39,26 @@ class ThreadLocalCurrentMemberAccessorTest {
     }
 
     @Nested
-    @DisplayName("getCurrentMemberInfo")
-    inner class GetCurrentMemberInfo {
+    @DisplayName("getCurrentMemberInfoOrNull")
+    inner class GetCurrentMemberInfoOrNull {
 
         @Test
         @DisplayName("ID가 있으면 DB에서 정보를 조회한다")
         fun loadsMemberInfoFromDbWhenIdPresent() {
             val member = member(1L, "member@test.com", "member")
-            MemberContext.setCurrentMemberId(1L)
-            given(memberRepository.findById(1L)).willReturn(Optional.of(member))
+            MemberContext.setCurrentMemberInfo(JwtClaimsPayload(member.id, member.email, member.nickname, false))
 
-            val result: Optional<CurrentMemberInfo> = accessor.currentMemberInfo
+            val result: CurrentMemberInfo? = accessor.getCurrentMemberInfoOrNull()
 
-            assertThat(result).contains(CurrentMemberInfo.from(member))
-            verify(memberRepository).findById(1L)
+            assertThat(result).isEqualTo(CurrentMemberInfo.from(JwtClaimsPayload(member.id, member.email, member.nickname, false)))
         }
 
         @Test
         @DisplayName("Context에 아무것도 없으면 Empty를 반환한다")
         fun returnsEmptyWhenContextEmpty() {
-            val result: Optional<CurrentMemberInfo> = accessor.currentMemberInfo
+            val result: CurrentMemberInfo? = accessor.getCurrentMemberInfoOrNull()
 
-            assertThat(result).isEmpty()
+            assertThat(result).isNull()
         }
     }
 
@@ -71,7 +70,7 @@ class ThreadLocalCurrentMemberAccessorTest {
         @DisplayName("ID가 있으면 DB에서 조회한다")
         fun loadsMemberFromDbWhenIdPresent() {
             val member = member(1L, "member@test.com", "member")
-            MemberContext.setCurrentMemberId(1L)
+            MemberContext.setCurrentMemberInfo(JwtClaimsPayload(member.id, member.email, member.nickname, false))
             given(memberRepository.findById(1L)).willReturn(Optional.of(member))
 
             val result: Optional<Member> = accessor.currentMember
@@ -83,9 +82,10 @@ class ThreadLocalCurrentMemberAccessorTest {
         @Test
         @DisplayName("Context에 아무것도 없으면 Empty를 반환한다")
         fun returnsEmptyWhenContextEmpty() {
-            val result: Optional<Member> = accessor.currentMember
-
-            assertThat(result).isEmpty()
+            org.veri.be.support.assertion.ExceptionAssertions.assertApplicationException(
+                { accessor.currentMember },
+                org.veri.be.global.auth.AuthErrorInfo.UNAUTHORIZED
+            )
         }
     }
 

@@ -19,7 +19,10 @@ public class MemberCommandService {
 
 
     @Transactional
-    public MemberResponse.MemberSimpleResponse updateInfo(UpdateMemberInfoRequest request, Member requestMember) {
+    public MemberResponse.MemberSimpleResponse updateInfo(UpdateMemberInfoRequest request, Long memberId) {
+        Member requestMember = memberRepository.findById(memberId).orElseThrow(() ->
+                ApplicationException.of(MemberErrorCode.NOT_FOUND));
+
         if (!requestMember.getNickname().equals(request.nickname()) && memberQueryService.existsByNickname(request.nickname())) {
             throw ApplicationException.of(MemberErrorCode.ALREADY_EXIST_NICKNAME);
         }

@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.veri.be.global.auth.context.AuthenticatedMember;
-import org.veri.be.domain.member.entity.Member;
+import org.veri.be.global.auth.context.CurrentMemberInfo;
 import org.veri.be.domain.post.controller.enums.PostSortType;
 import org.veri.be.domain.post.dto.request.PostCreateRequest;
 import org.veri.be.domain.post.dto.response.LikeInfoResponse;
@@ -39,15 +39,15 @@ public class PostController {
     @Operation(summary = "게시글 작성", description = "새로운 게시글을 작성합니다.")
     public ApiResponse<Long> createPost(
             @RequestBody @Valid PostCreateRequest request,
-            @AuthenticatedMember Member member
+            @AuthenticatedMember CurrentMemberInfo memberInfo
     ) {
-        return ApiResponse.created(this.postCommandService.createPost(request, member));
+        return ApiResponse.created(this.postCommandService.createPost(request, memberInfo.id()));
     }
 
     @GetMapping("/my")
     @Operation(summary = "내 게시글 목록 조회", description = "로그인한 사용자의 게시글 목록을 조회합니다.")
-    public ApiResponse<PostListResponse> getMyPosts(@AuthenticatedMember Member member) {
-        return ApiResponse.ok(PostListResponse.from(postQueryService.getPostsOfMember(member.getId())));
+    public ApiResponse<PostListResponse> getMyPosts(@AuthenticatedMember CurrentMemberInfo memberInfo) {
+        return ApiResponse.ok(PostListResponse.from(postQueryService.getPostsOfMember(memberInfo.id())));
     }
 
     @Operation(summary = "전체 게시글 목록 조회", description = "모든 사용자의 게시글 목록을 페이지네이션과 정렬 기준으로 조회합니다.")
@@ -70,18 +70,18 @@ public class PostController {
     @Operation(summary = "게시글 상세 조회", description = "게시글 ID로 게시글의 상세 정보를 조회합니다.")
     public ApiResponse<PostDetailResponse> getPostDetail(
             @PathVariable Long postId,
-            @AuthenticatedMember Member member
+            @AuthenticatedMember CurrentMemberInfo memberInfo
     ) {
-        return ApiResponse.ok(this.postQueryService.getPostDetail(postId, member));
+        return ApiResponse.ok(this.postQueryService.getPostDetail(postId, memberInfo.id()));
     }
 
     @DeleteMapping("/{postId}")
     @Operation(summary = "게시글 삭제", description = "게시글을 삭제합니다.")
     public ApiResponse<Void> deletePost(
             @PathVariable Long postId,
-            @AuthenticatedMember Member member
+            @AuthenticatedMember CurrentMemberInfo memberInfo
     ) {
-        this.postCommandService.deletePost(postId, member);
+        this.postCommandService.deletePost(postId, memberInfo.id());
         return ApiResponse.noContent();
     }
 
@@ -89,9 +89,9 @@ public class PostController {
     @Operation(summary = "게시글 공개", description = "게시글을 공개합니다.")
     public ApiResponse<Void> publishPost(
             @PathVariable Long postId,
-            @AuthenticatedMember Member member
+            @AuthenticatedMember CurrentMemberInfo memberInfo
     ) {
-        this.postCommandService.publishPost(postId, member);
+        this.postCommandService.publishPost(postId, memberInfo.id());
         return ApiResponse.noContent();
     }
 
@@ -99,9 +99,9 @@ public class PostController {
     @Operation(summary = "게시글 비공개", description = "게시글을 비공개합니다.")
     public ApiResponse<Void> unPublishPost(
             @PathVariable Long postId,
-            @AuthenticatedMember Member member
+            @AuthenticatedMember CurrentMemberInfo memberInfo
     ) {
-        this.postCommandService.unPublishPost(postId, member);
+        this.postCommandService.unPublishPost(postId, memberInfo.id());
         return ApiResponse.noContent();
     }
 
@@ -109,18 +109,18 @@ public class PostController {
     @Operation(summary = "게시글 좋아요", description = "게시글에 좋아요를 추가합니다.")
     public ApiResponse<LikeInfoResponse> likePost(
             @PathVariable Long postId,
-            @AuthenticatedMember Member member
+            @AuthenticatedMember CurrentMemberInfo memberInfo
     ) {
-        return ApiResponse.ok(this.postCommandService.likePost(postId, member));
+        return ApiResponse.ok(this.postCommandService.likePost(postId, memberInfo.id()));
     }
 
     @PostMapping("/unlike/{postId}")
     @Operation(summary = "게시글 좋아요 취소", description = "게시글의 좋아요를 취소합니다.")
     public ApiResponse<LikeInfoResponse> unlikePost(
             @PathVariable Long postId,
-            @AuthenticatedMember Member member
+            @AuthenticatedMember CurrentMemberInfo memberInfo
     ) {
-        return ApiResponse.ok(this.postCommandService.unlikePost(postId, member));
+        return ApiResponse.ok(this.postCommandService.unlikePost(postId, memberInfo.id()));
     }
 
     @Operation(summary = "게시글 이미지 presigned URL 발급", description = "게시글 이미지 업로드를 위한 presigned URL을 발급합니다.")

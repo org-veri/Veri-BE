@@ -17,6 +17,7 @@ import org.veri.be.domain.book.service.BookService
 import org.veri.be.domain.card.entity.CardErrorInfo
 import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.member.entity.enums.ProviderType
+import org.veri.be.domain.member.repository.MemberRepository
 import org.veri.be.domain.post.dto.request.PostCreateRequest
 import org.veri.be.domain.post.dto.response.LikeInfoResponse
 import org.veri.be.domain.post.entity.LikePost
@@ -50,6 +51,9 @@ class PostCommandServiceTest {
     @org.mockito.Mock
     private lateinit var likePostRepository: LikePostRepository
 
+    @org.mockito.Mock
+    private lateinit var memberRepository: MemberRepository
+
     private lateinit var postCommandService: PostCommandService
 
     @org.mockito.Captor
@@ -65,7 +69,8 @@ class PostCommandServiceTest {
             postQueryService,
             bookService,
             storageService,
-            likePostRepository
+            likePostRepository,
+            memberRepository
         )
     }
 
@@ -92,9 +97,10 @@ class PostCommandServiceTest {
             )
 
             given(bookService.getBookById(10L)).willReturn(book)
+            given(memberRepository.getReferenceById(1L)).willReturn(author)
             given(postRepository.save(any(Post::class.java))).willAnswer { invocation -> invocation.getArgument(0) }
 
-            postCommandService.createPost(request, author)
+            postCommandService.createPost(request, author.id)
 
             verify(postRepository).save(postCaptor.capture())
             val saved = postCaptor.value
@@ -128,7 +134,7 @@ class PostCommandServiceTest {
 
             given(postQueryService.getPostById(1L)).willReturn(post)
 
-            postCommandService.deletePost(1L, author)
+            postCommandService.deletePost(1L, author.id)
 
             verify(postRepository).deleteById(1L)
         }
@@ -151,8 +157,9 @@ class PostCommandServiceTest {
                 .build()
 
             given(postQueryService.getPostById(1L)).willReturn(post)
+            given(memberRepository.getReferenceById(1L)).willReturn(author)
 
-            postCommandService.publishPost(1L, author)
+            postCommandService.publishPost(1L, author.id)
 
             verify(postRepository).save(postCaptor.capture())
             assertThat(postCaptor.value.isPublic).isTrue()
@@ -176,8 +183,9 @@ class PostCommandServiceTest {
                 .build()
 
             given(postQueryService.getPostById(1L)).willReturn(post)
+            given(memberRepository.getReferenceById(1L)).willReturn(author)
 
-            postCommandService.unPublishPost(1L, author)
+            postCommandService.unPublishPost(1L, author.id)
 
             verify(postRepository).save(postCaptor.capture())
             assertThat(postCaptor.value.isPublic).isFalse()
@@ -235,7 +243,7 @@ class PostCommandServiceTest {
             given(likePostRepository.existsByPostIdAndMemberId(1L, 1L)).willReturn(true)
             given(likePostRepository.countByPostId(1L)).willReturn(2L)
 
-            val result: LikeInfoResponse = postCommandService.likePost(1L, member)
+            val result: LikeInfoResponse = postCommandService.likePost(1L, member.id)
 
             assertThat(result.likeCount()).isEqualTo(2L)
             assertThat(result.isLiked()).isTrue()
@@ -255,9 +263,10 @@ class PostCommandServiceTest {
 
             given(likePostRepository.existsByPostIdAndMemberId(1L, 1L)).willReturn(false)
             given(postQueryService.getPostById(1L)).willReturn(post)
+            given(memberRepository.getReferenceById(1L)).willReturn(member)
             given(likePostRepository.countByPostId(1L)).willReturn(1L)
 
-            val result: LikeInfoResponse = postCommandService.likePost(1L, member)
+            val result: LikeInfoResponse = postCommandService.likePost(1L, member.id)
 
             verify(likePostRepository).save(likePostCaptor.capture())
             assertThat(likePostCaptor.value.post).isEqualTo(post)
@@ -277,7 +286,7 @@ class PostCommandServiceTest {
             val member = member(1L, "member@test.com", "member")
             given(likePostRepository.countByPostId(1L)).willReturn(0L)
 
-            val result: LikeInfoResponse = postCommandService.unlikePost(1L, member)
+            val result: LikeInfoResponse = postCommandService.unlikePost(1L, member.id)
 
             verify(likePostRepository).deleteByPostIdAndMemberId(1L, 1L)
             assertThat(result.likeCount()).isZero()

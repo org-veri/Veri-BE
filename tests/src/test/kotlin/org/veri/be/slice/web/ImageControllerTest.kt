@@ -25,6 +25,7 @@ import org.veri.be.domain.image.service.ImageCommandService
 import org.veri.be.domain.image.service.ImageQueryService
 import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.member.entity.enums.ProviderType
+import org.veri.be.global.auth.JwtClaimsPayload
 import org.veri.be.global.auth.context.AuthenticatedMemberResolver
 import org.veri.be.global.auth.context.CurrentMemberAccessor
 import org.veri.be.global.auth.context.CurrentMemberInfo
@@ -45,6 +46,7 @@ class ImageControllerTest {
     private lateinit var imageQueryService: ImageQueryService
 
     private lateinit var member: Member
+    private lateinit var memberInfo: CurrentMemberInfo
 
     @BeforeEach
     fun setUp() {
@@ -58,20 +60,20 @@ class ImageControllerTest {
             .providerType(ProviderType.KAKAO)
             .build()
 
+        memberInfo = CurrentMemberInfo.from(JwtClaimsPayload(member.id, member.email, member.nickname, false))
         val controller = ImageController(imageCommandService, imageQueryService)
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
             .setControllerAdvice(ApiResponseAdvice())
             .setCustomArgumentResolvers(
-                AuthenticatedMemberResolver(testMemberAccessor(member))
+                AuthenticatedMemberResolver(testMemberAccessor(memberInfo))
             )
             .build()
     }
 
-    private fun testMemberAccessor(member: Member): CurrentMemberAccessor {
-        val info = CurrentMemberInfo.from(member)
+    private fun testMemberAccessor(memberInfo: CurrentMemberInfo): CurrentMemberAccessor {
         return object : CurrentMemberAccessor {
-            override fun getCurrentMemberInfoOrNull() = info
-            override fun getCurrentMember() = Optional.of(member)
+            override fun getCurrentMemberInfoOrNull() = memberInfo
+            override fun getCurrentMember() = Optional.empty<Member>()
         }
     }
 
@@ -82,7 +84,7 @@ class ImageControllerTest {
         @Test
         @DisplayName("이미지 OCR 결과를 반환한다")
         fun returnsOcrResult() {
-            given(imageCommandService.processWithMistral(member, "https://example.com/image.png"))
+            given(imageCommandService.processWithMistral(member.id, "https://example.com/image.png"))
                 .willReturn("text")
 
             mockMvc.perform(
@@ -101,7 +103,7 @@ class ImageControllerTest {
         @Test
         @DisplayName("이미지 OCR 결과를 반환한다")
         fun returnsOcrResult() {
-            given(imageCommandService.processWithMistral(member, "https://example.com/image.png"))
+            given(imageCommandService.processWithMistral(member.id, "https://example.com/image.png"))
                 .willReturn("text")
 
             mockMvc.perform(

@@ -34,8 +34,10 @@ import org.veri.be.domain.book.entity.Reading
 import org.veri.be.domain.book.entity.enums.ReadingStatus
 import org.veri.be.domain.book.service.BookService
 import org.veri.be.domain.book.service.BookshelfService
+import org.veri.be.domain.book.service.ReadingQueryService
 import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.member.entity.enums.ProviderType
+import org.veri.be.global.auth.JwtClaimsPayload
 import org.veri.be.global.auth.context.AuthenticatedMemberResolver
 import org.veri.be.global.auth.context.CurrentMemberAccessor
 import org.veri.be.global.auth.context.CurrentMemberInfo
@@ -56,7 +58,11 @@ class BookshelfControllerTest {
     @org.mockito.Mock
     private lateinit var bookshelfService: BookshelfService
 
+    @org.mockito.Mock
+    private lateinit var readingQueryService: ReadingQueryService
+
     private lateinit var member: Member
+    private lateinit var memberInfo: CurrentMemberInfo
 
     @BeforeEach
     fun setUp() {
@@ -69,21 +75,21 @@ class BookshelfControllerTest {
             .providerId("provider-1")
             .providerType(ProviderType.KAKAO)
             .build()
+        memberInfo = CurrentMemberInfo.from(JwtClaimsPayload(member.id, member.email, member.nickname, false))
 
-        val controller = BookshelfController(bookshelfService, bookService)
+        val controller = BookshelfController(readingQueryService, bookshelfService, bookService)
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
             .setControllerAdvice(ApiResponseAdvice(), GlobalExceptionHandler())
             .setCustomArgumentResolvers(
-                AuthenticatedMemberResolver(testMemberAccessor(member))
+                AuthenticatedMemberResolver(testMemberAccessor(memberInfo))
             )
             .build()
     }
 
-    private fun testMemberAccessor(member: Member): CurrentMemberAccessor {
-        val info = CurrentMemberInfo.from(member)
+    private fun testMemberAccessor(memberInfo: CurrentMemberInfo): CurrentMemberAccessor {
         return object : CurrentMemberAccessor {
-            override fun getCurrentMemberInfoOrNull() = info
-            override fun getCurrentMember() = Optional.of(member)
+            override fun getCurrentMemberInfoOrNull() = memberInfo
+            override fun getCurrentMember() = Optional.empty<Member>()
         }
     }
 
@@ -110,7 +116,7 @@ class BookshelfControllerTest {
                 PageRequest.of(0, 10),
                 1
             )
-            given(bookshelfService.searchAllReadingOfMember(eq(1L), any(), eq(0), eq(10), eq(ReadingSortType.NEWEST)))
+            given(readingQueryService.searchAllReadingOfMember(eq(1L), any(), eq(0), eq(10), eq(ReadingSortType.NEWEST)))
                 .willReturn(page)
 
             mockMvc.perform(
@@ -144,7 +150,7 @@ class BookshelfControllerTest {
                 .id(20L)
                 .createdAt(LocalDateTime.of(2024, 1, 1, 0, 0))
                 .build()
-            given(bookshelfService.addToBookshelf(member, 10L, true)).willReturn(reading)
+            given(bookshelfService.addToBookshelf(member.id, 10L, true)).willReturn(reading)
 
             mockMvc.perform(
                 post("/api/v2/bookshelf")
@@ -235,7 +241,7 @@ class BookshelfControllerTest {
             )
                 .andExpect(status().isNoContent)
 
-            verify(bookshelfService).modifyBook(eq(member), eq(4.5), any(), any(), eq(10L))
+            verify(bookshelfService).modifyBook(eq(member.id), eq(4.5), any(), any(), eq(10L))
         }
     }
 
@@ -246,7 +252,7 @@ class BookshelfControllerTest {
         @Test
         @DisplayName("완독 책 개수를 반환한다")
         fun returnsDoneCount() {
-            given(bookshelfService.searchMyReadingDoneCount(1L)).willReturn(3)
+            given(readingQueryService.searchMyReadingDoneCount(1L)).willReturn(3)
 
             mockMvc.perform(get("/api/v2/bookshelf/my/count"))
                 .andExpect(status().isOk)
@@ -261,7 +267,7 @@ class BookshelfControllerTest {
         @Test
         @DisplayName("제목과 저자로 책장 ID를 반환한다")
         fun returnsReadingId() {
-            given(bookshelfService.searchByTitleAndAuthor(1L, "title", "author"))
+            given(readingQueryService.searchByTitleAndAuthor(1L, "title", "author"))
                 .willReturn(10L)
 
             mockMvc.perform(
@@ -290,7 +296,7 @@ class BookshelfControllerTest {
             )
                 .andExpect(status().isNoContent)
 
-            verify(bookshelfService).rateScore(member, 4.5, 10L)
+            verify(bookshelfService).rateScore(member.id, 4.5, 10L)
         }
     }
 
@@ -304,7 +310,7 @@ class BookshelfControllerTest {
             mockMvc.perform(patch("/api/v2/bookshelf/10/status/start"))
                 .andExpect(status().isNoContent)
 
-            verify(bookshelfService).readStart(member, 10L)
+            verify(bookshelfService).readStart(member.id, 10L)
         }
     }
 
@@ -318,7 +324,7 @@ class BookshelfControllerTest {
             mockMvc.perform(patch("/api/v2/bookshelf/10/status/over"))
                 .andExpect(status().isNoContent)
 
-            verify(bookshelfService).readOver(member, 10L)
+            verify(bookshelfService).readOver(member.id, 10L)
         }
     }
 
@@ -329,7 +335,7 @@ class BookshelfControllerTest {
         @Test
         @DisplayName("독서 공개 여부를 수정한다")
         fun modifiesVisibility() {
-            given(bookshelfService.modifyVisibility(member, 10L, true))
+            given(bookshelfService.modifyVisibility(member.id, 10L, true))
                 .willReturn(ReadingVisibilityUpdateResponse(10L, true))
 
             mockMvc.perform(
@@ -351,7 +357,7 @@ class BookshelfControllerTest {
             mockMvc.perform(delete("/api/v2/bookshelf/10"))
                 .andExpect(status().isNoContent)
 
-            verify(bookshelfService).deleteBook(member, 10L)
+            verify(bookshelfService).deleteBook(member.id, 10L)
         }
     }
 }

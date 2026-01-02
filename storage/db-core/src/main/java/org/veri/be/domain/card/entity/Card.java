@@ -51,16 +51,16 @@ public class Card extends BaseEntity implements Authorizable {
     private boolean isPublic = false;
 
 
-    public Card updateContent(String content, String imageUrl, Member actor) {
-        authorizeOrThrow(actor.getId());
+    public Card updateContent(String content, String imageUrl, Long memberId) {
+        authorizeOrThrow(memberId);
         return this.toBuilder()
                 .content(content)
                 .image(imageUrl)
                 .build();
     }
 
-    public void changeVisibility(Member actor, boolean makePublic) {
-        authorizeOrThrow(actor.getId());
+    public void changeVisibility(Long memberId, boolean makePublic) {
+        authorizeOrThrow(memberId);
         if (makePublic) {
             setPublic();
         } else {
@@ -84,8 +84,13 @@ public class Card extends BaseEntity implements Authorizable {
         return memberId.equals(this.member.getId());
     }
 
-    public void assertReadableBy(Member viewer) {
-        if (this.isPublic || this.authorizeMember(viewer.getId())) return;
+    public void assertReadableBy(Long memberId) {
+        if (this.isPublic) {
+            return;
+        }
+        if (memberId != null && this.authorizeMember(memberId)) {
+            return;
+        }
         throw ApplicationException.of(CardErrorInfo.READING_MS_NOT_PUBLIC);
     }
 }
