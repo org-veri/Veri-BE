@@ -14,3 +14,28 @@
 
 ## History
 2025-12-27 - App Bootstrap and Client Port Extraction - Moved boot class to **core-app**, moved client implementations to client modules, added **OcrPort** and storage DTOs/ports in **core-api**, updated dependencies and scripts, and verified full `clean test build` - Modified Files: `core/core-app/src/main/java/org/veri/be/CoreApiApplication.java`, `core/core-app/build.gradle.kts`, `core/core-api/build.gradle.kts`, `core/core-api/src/main/java/org/veri/be/domain/image/client/OcrPort.java`, `core/core-api/src/main/java/org/veri/be/domain/image/service/MistralOcrService.java`, `core/core-api/src/main/java/org/veri/be/domain/image/dto/OcrResult.java`, `core/core-api/src/main/java/org/veri/be/global/storage/service/StorageService.java`, `core/core-api/src/main/java/org/veri/be/global/storage/dto/PresignedPostFormResponse.java`, `core/core-api/src/main/java/org/veri/be/global/storage/service/StorageConstants.java`, `core/core-api/src/main/java/org/veri/be/global/storage/service/StorageUtil.java`, `core/core-api/src/main/java/org/veri/be/global/storage/dto/PresignedUrlRequest.java`, `core/core-api/src/main/java/org/veri/be/global/storage/dto/PresignedUrlResponse.java`, `core/core-api/src/main/java/org/veri/be/domain/book/dto/book/NaverBookItem.java`, `core/core-api/src/main/java/org/veri/be/domain/book/dto/book/NaverBookResponse.java`, `core/core-api/src/main/java/org/veri/be/domain/book/client/NaverClientException.java`, `clients/client-aws/build.gradle.kts`, `clients/client-aws/src/main/java/org/veri/be/global/storage/service/AwsStorageService.java`, `clients/client-ocr/build.gradle.kts`, `clients/client-ocr/src/main/java/org/veri/be/domain/image/client/MistralOcrAdapter.java`, `clients/client-search/build.gradle.kts`, `clients/client-search/src/main/java/org/veri/be/domain/book/client/NaverBookClient.java`, `Dockerfile`, `makefile`, `tests/build.gradle.kts`, `tests/src/test/java/org/veri/be/unit/image/MistralOcrServiceTest.java`, `tests/src/test/java/org/veri/be/integration/SharedTestConfig.java`, `tests/src/test/java/org/veri/be/integration/support/stub/StubStorageService.java`, `tests/src/test/java/org/veri/be/slice/web/CardControllerV2Test.java`, `tests/src/test/java/org/veri/be/unit/card/CardCommandServiceTest.java`, `tests/src/test/java/org/veri/be/unit/global/storage/AwsStorageServiceTest.java`
+
+
+## Review
+**Source File**:
+```
+.agents/review/app-bootstrap-client-ports-2025-12-27.md
+```
+
+### Review Content
+
+# Implementation Review - 2025-12-27
+
+## Metadata
+- **Reviewer**: Codex
+- **Scope**: App bootstrap split and client port extraction
+
+## Summary
+- **Completed**: Moved boot class to **core-app**, moved client implementations to client modules behind ports, and updated dependencies/scripts.
+- **Verified**: Ran `./gradlew clean test build` successfully.
+
+## Findings
+- **None**
+
+## Action Items
+- **None**

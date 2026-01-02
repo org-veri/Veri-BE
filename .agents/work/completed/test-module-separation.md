@@ -30,3 +30,28 @@
 
 ## History
 2025-02-14 15:06 KST - Created **tests** module, moved test sources/resources from **app**, updated app dependencies, and configured JaCoCo to report against **app** classes. Ran **:tests:test** and **:tests:jacocoTestReport**. Modified files: **settings.gradle**, **app/build.gradle.kts**, **tests/build.gradle.kts**, **tests/src/test/**.
+
+
+## Review
+**Source File**:
+```
+.agents/review/test-module-separation-2025-02-14.md
+```
+
+### Review Content
+
+# Delivery Review - 2025-02-14
+
+**Reviewer**: Codex
+**Scope**: Test module separation and JaCoCo reporting
+
+## Summary
+Moved all tests into a dedicated **tests** module and configured JaCoCo reporting against **app** classes. Test execution and coverage report generation completed successfully.
+
+## Findings
+- **Gradle**: `:tests:test` completes with the new module structure.
+- **JaCoCo**: `:tests:jacocoTestReport` generates report under `tests/build/reports/jacoco/test/html/index.html`.
+- **Dependencies**: Tests module pulls app runtime elements to satisfy compile classpath for existing tests.
+
+## Action Items
+- None.
