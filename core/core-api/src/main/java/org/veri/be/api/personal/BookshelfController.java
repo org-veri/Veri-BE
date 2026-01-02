@@ -20,6 +20,7 @@ import org.veri.be.domain.book.dto.reading.response.ReadingVisibilityUpdateRespo
 import org.veri.be.domain.book.entity.Reading;
 import org.veri.be.domain.book.service.BookService;
 import org.veri.be.domain.book.service.BookshelfService;
+import org.veri.be.domain.book.service.ReadingQueryService;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.global.auth.context.AuthenticatedMember;
 import org.veri.be.global.auth.guards.MemberGuard;
@@ -36,6 +37,7 @@ import org.veri.be.lib.response.ApiResponse;
 @Validated
 public class BookshelfController {
 
+    private final ReadingQueryService readingQueryService;
     private final BookshelfService bookshelfService;
     private final BookService bookService;
 
@@ -55,7 +57,7 @@ public class BookshelfController {
         if (request.getPage() < 1 || request.getSize() < 1) {
             throw ApplicationException.of(CommonErrorCode.INVALID_REQUEST);
         }
-        Page<ReadingResponse> pageData = bookshelfService.searchAllReadingOfMember(
+        Page<ReadingResponse> pageData = readingQueryService.searchAllReadingOfMember(
                 member.getId(),
                 request.getStatuses(),
                 request.getPage() - 1, request.getSize(), request.getSortType());
@@ -98,7 +100,7 @@ public class BookshelfController {
     @Operation(summary = "내 완독 책 개수 조회", description = "내가 완독한 책의 개수를 조회합니다.")
     @GetMapping("/my/count")
     public ApiResponse<Integer> getMyBookCount(@AuthenticatedMember Member member) {
-        Integer count = bookshelfService.searchMyReadingDoneCount(member.getId());
+        Integer count = readingQueryService.searchMyReadingDoneCount(member.getId());
 
         return ApiResponse.ok(count);
     }
@@ -109,7 +111,7 @@ public class BookshelfController {
             @AuthenticatedMember Member member,
             @RequestParam String title,
             @RequestParam String author) {
-        Long memberBookId = bookshelfService.searchByTitleAndAuthor(member.getId(), title, author);
+        Long memberBookId = readingQueryService.searchByTitleAndAuthor(member.getId(), title, author);
 
         return ApiResponse.ok(memberBookId);
     }
