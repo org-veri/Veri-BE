@@ -5,22 +5,20 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import org.veri.be.domain.book.entity.Book
 import org.veri.be.domain.book.repository.BookRepository
 import org.veri.be.domain.comment.dto.request.CommentEditRequest
 import org.veri.be.domain.comment.dto.request.CommentPostRequest
 import org.veri.be.domain.comment.dto.request.ReplyPostRequest
 import org.veri.be.domain.comment.service.CommentCommandService
-import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.domain.post.dto.request.PostCreateRequest
 import org.veri.be.domain.post.service.PostCommandService
 import org.veri.be.integration.IntegrationTestSupport
+import org.veri.be.support.fixture.BookFixture
+import org.veri.be.support.fixture.MemberFixture
+import org.veri.be.support.steps.CommentSteps
 
 class CommentIntegrationTest : IntegrationTestSupport() {
 
@@ -37,44 +35,32 @@ class CommentIntegrationTest : IntegrationTestSupport() {
     @DisplayName("POST /api/v1/comments")
     inner class PostComment {
         @Test
-        @DisplayName("댓글 작성 성공")
+        @DisplayName("댓글을 작성하면 → 201을 반환한다")
         fun postCommentSuccess() {
             val postId = createPost()
             val request = CommentPostRequest(postId, "Comment content")
 
-            mockMvc.perform(
-                post("/api/v1/comments")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-            )
+            CommentSteps.postComment(mockMvc, objectMapper, request)
                 .andExpect(status().isCreated)
                 .andExpect(jsonPath("$.result").exists())
         }
 
         @Test
-        @DisplayName("게시글 미존재")
+        @DisplayName("게시글이 없으면 → 404를 반환한다")
         fun postCommentNotFound() {
             val request = CommentPostRequest(999L, "Content")
 
-            mockMvc.perform(
-                post("/api/v1/comments")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-            )
+            CommentSteps.postComment(mockMvc, objectMapper, request)
                 .andExpect(status().isNotFound)
         }
 
         @Test
-        @DisplayName("content 누락")
+        @DisplayName("content가 누락되면 → 400을 반환한다")
         fun postCommentInvalid() {
             val postId = createPost()
             val request = CommentPostRequest(postId, null)
 
-            mockMvc.perform(
-                post("/api/v1/comments")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-            )
+            CommentSteps.postComment(mockMvc, objectMapper, request)
                 .andExpect(status().isBadRequest)
         }
     }
@@ -83,29 +69,21 @@ class CommentIntegrationTest : IntegrationTestSupport() {
     @DisplayName("POST /api/v1/comments/reply")
     inner class PostReply {
         @Test
-        @DisplayName("대댓글 성공")
+        @DisplayName("대댓글을 작성하면 → 201을 반환한다")
         fun replySuccess() {
             val parentId = createComment()
             val request = ReplyPostRequest(parentId, "Reply content")
 
-            mockMvc.perform(
-                post("/api/v1/comments/reply")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-            )
+            CommentSteps.postReply(mockMvc, objectMapper, request)
                 .andExpect(status().isCreated)
         }
 
         @Test
-        @DisplayName("삭제된/존재하지 않는 부모")
+        @DisplayName("삭제된/존재하지 않는 부모면 → 404를 반환한다")
         fun replyNotFound() {
             val request = ReplyPostRequest(999L, "Reply")
 
-            mockMvc.perform(
-                post("/api/v1/comments/reply")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-            )
+            CommentSteps.postReply(mockMvc, objectMapper, request)
                 .andExpect(status().isNotFound)
         }
     }
@@ -114,24 +92,20 @@ class CommentIntegrationTest : IntegrationTestSupport() {
     @DisplayName("PATCH /api/v1/comments/{commentId}")
     inner class EditComment {
         @Test
-        @DisplayName("본인 댓글 수정")
+        @DisplayName("본인 댓글을 수정하면 → 200을 반환한다")
         fun editSuccess() {
             val commentId = createComment()
             val request = CommentEditRequest("Edited")
 
-            mockMvc.perform(
-                patch("/api/v1/comments/$commentId")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-            )
+            CommentSteps.editComment(mockMvc, objectMapper, commentId, request)
                 .andExpect(status().isOk)
         }
 
         @Test
-        @DisplayName("타인 댓글 수정 시도")
+        @DisplayName("타인 댓글을 수정하면 → 403을 반환한다")
         fun editForbidden() {
             val postId = createPost()
-            var otherMember = Member.builder()
+            var otherMember = MemberFixture.aMember()
                 .email("other@prompt.town")
                 .nickname("타인")
                 .profileImageUrl("https://example.com/other.png")
@@ -145,11 +119,7 @@ class CommentIntegrationTest : IntegrationTestSupport() {
             )
             val request = CommentEditRequest("Edited")
 
-            mockMvc.perform(
-                patch("/api/v1/comments/$commentId")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-            )
+            CommentSteps.editComment(mockMvc, objectMapper, commentId, request)
                 .andExpect(status().isForbidden)
         }
     }
@@ -158,29 +128,29 @@ class CommentIntegrationTest : IntegrationTestSupport() {
     @DisplayName("DELETE /api/v1/comments/{commentId}")
     inner class DeleteComment {
         @Test
-        @DisplayName("소유 댓글 삭제(soft delete)")
+        @DisplayName("소유 댓글을 삭제하면 → 200을 반환한다")
         fun deleteSuccess() {
             val commentId = createComment()
 
-            mockMvc.perform(delete("/api/v1/comments/$commentId"))
+            CommentSteps.deleteComment(mockMvc, commentId)
                 .andExpect(status().isOk)
         }
 
         @Test
-        @DisplayName("이미 삭제된 댓글 재삭제")
+        @DisplayName("이미 삭제된 댓글을 재삭제하면 → 200을 반환한다")
         fun alreadyDeleted() {
             val commentId = createComment()
 
-            mockMvc.perform(delete("/api/v1/comments/$commentId"))
+            CommentSteps.deleteComment(mockMvc, commentId)
                 .andExpect(status().isOk)
 
-            mockMvc.perform(delete("/api/v1/comments/$commentId"))
+            CommentSteps.deleteComment(mockMvc, commentId)
                 .andExpect(status().isOk)
         }
     }
 
     private fun createPost(): Long {
-        var book = Book.builder().title("T").image("I").isbn("ISBN").build()
+        var book = BookFixture.aBook().title("T").image("I").isbn("ISBN").build()
         book = bookRepository.save(book)
         return postCommandService.createPost(
             PostCreateRequest("Post", "Content", listOf(), book.id),

@@ -15,7 +15,7 @@ class PostSortTypeTest {
     inner class From {
 
         @Test
-        @DisplayName("정렬 값이 newest면 NEWEST를 반환한다")
+        @DisplayName("정렬 값이 newest면 → NEWEST를 반환한다")
         fun returnsNewest() {
             val result = PostSortType.from("newest")
 
@@ -23,7 +23,7 @@ class PostSortTypeTest {
         }
 
         @Test
-        @DisplayName("정렬 값이 oldest면 OLDEST를 반환한다")
+        @DisplayName("정렬 값이 oldest면 → OLDEST를 반환한다")
         fun returnsOldest() {
             val result = PostSortType.from("oldest")
 
@@ -31,7 +31,7 @@ class PostSortTypeTest {
         }
 
         @Test
-        @DisplayName("정렬 값이 다르면 예외가 발생한다")
+        @DisplayName("정렬 값이 다르면 → 예외가 발생한다")
         fun throwsWhenInvalid() {
             ExceptionAssertions.assertApplicationException(
                 { PostSortType.from("invalid") },

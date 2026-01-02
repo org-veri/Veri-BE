@@ -16,7 +16,7 @@ class BookConverterTest {
     inner class ToBookResponse {
 
         @Test
-        @DisplayName("네이버 응답 아이템을 도서 응답으로 변환한다")
+        @DisplayName("네이버 응답 아이템이면 → 도서 응답으로 변환한다")
         fun mapsNaverItem() {
             val item = NaverBookItem()
             setField(item, "title", "title")
@@ -40,7 +40,7 @@ class BookConverterTest {
     inner class ToBookSearchResponse {
 
         @Test
-        @DisplayName("페이지 정보와 결과를 변환한다")
+        @DisplayName("검색 응답이면 → 페이지 정보와 결과를 변환한다")
         fun mapsSearchResponse() {
             val item = NaverBookItem()
             setField(item, "title", "title")
@@ -65,7 +65,7 @@ class BookConverterTest {
         }
 
         @Test
-        @DisplayName("display가 0 이하이면 기본값 10으로 계산한다")
+        @DisplayName("display가 0 이하이면 → 기본값 10으로 계산한다")
         fun defaultsDisplayWhenZero() {
             val response = NaverBookResponse()
             setField(response, "items", listOf<NaverBookItem>())

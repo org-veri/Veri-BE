@@ -1,67 +1,53 @@
 package org.veri.be.integration.usecase
 
-import com.jayway.jsonpath.JsonPath
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Import
-import org.springframework.http.MediaType
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import org.veri.be.domain.book.client.BookSearchClient
 import org.veri.be.domain.book.dto.book.AddBookRequest
 import org.veri.be.integration.IntegrationTestSupport
 import org.veri.be.integration.SharedTestConfig
+import org.veri.be.support.steps.BookshelfSteps
 
 @Import(SharedTestConfig::class)
 class BookshelfIntegrationTest : IntegrationTestSupport() {
-
-    @Autowired
-    private lateinit var bookSearchClient: BookSearchClient
 
     @Nested
     @DisplayName("GET /api/v2/bookshelf/my")
     inner class GetMyBooks {
         @Test
-        @DisplayName("기본 조회")
+        @DisplayName("기본 조회하면 → 200을 반환한다")
         fun getMyBooksSuccess() {
-            mockMvc.perform(get("/api/v2/bookshelf/my"))
+            BookshelfSteps.getMyBooks(mockMvc)
                 .andExpect(status().isOk)
         }
 
         @Test
-        @DisplayName("상태/정렬 필터링")
+        @DisplayName("상태/정렬 필터링이면 → 200을 반환한다")
         fun getMyBooksFiltered() {
-            mockMvc.perform(
-                get("/api/v2/bookshelf/my")
-                    .param("statuses", "READING", "DONE")
-                    .param("sortType", "SCORE")
+            BookshelfSteps.getMyBooks(
+                mockMvc,
+                mapOf(
+                    "statuses" to listOf("READING", "DONE"),
+                    "sortType" to listOf("SCORE")
+                )
             )
                 .andExpect(status().isOk)
         }
 
         @Test
-        @DisplayName("잘못된 sortType")
+        @DisplayName("잘못된 sortType이면 → 400을 반환한다")
         fun getMyBooksInvalidSort() {
-            mockMvc.perform(
-                get("/api/v2/bookshelf/my")
-                    .param("sortType", "INVALID")
-            )
+            BookshelfSteps.getMyBooks(mockMvc, mapOf("sortType" to listOf("INVALID")))
                 .andExpect(status().isBadRequest)
         }
 
         @Test
-        @DisplayName("page 최소 위반")
+        @DisplayName("page 최소 위반이면 → 400을 반환한다")
         fun getMyBooksInvalidPage() {
-            mockMvc.perform(
-                get("/api/v2/bookshelf/my")
-                    .param("page", "0")
-            )
+            BookshelfSteps.getMyBooks(mockMvc, mapOf("page" to listOf("0")))
                 .andExpect(status().isBadRequest)
         }
     }
@@ -70,49 +56,33 @@ class BookshelfIntegrationTest : IntegrationTestSupport() {
     @DisplayName("POST /api/v2/bookshelf")
     inner class AddBook {
         @Test
-        @DisplayName("새 도서 + 책장 추가")
+        @DisplayName("새 도서를 책장에 추가하면 → 201을 반환한다")
         fun addBookSuccess() {
             val request = AddBookRequest("Title", "Img", "Author", "Pub", "ISBN123", false)
 
-            mockMvc.perform(
-                post("/api/v2/bookshelf")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-            )
+            BookshelfSteps.addBook(mockMvc, objectMapper, request)
                 .andExpect(status().isCreated)
                 .andExpect(jsonPath("$.result.memberBookId").exists())
         }
 
         @Test
-        @DisplayName("동일 도서 중복 추가")
+        @DisplayName("동일 도서 중복 추가면 → 201을 반환한다")
         fun addDuplicateBook() {
             val request = AddBookRequest("Title", "Img", "Author", "Pub", "ISBN123", false)
 
-            mockMvc.perform(
-                post("/api/v2/bookshelf")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-            )
+            BookshelfSteps.addBook(mockMvc, objectMapper, request)
                 .andExpect(status().isCreated)
 
-            mockMvc.perform(
-                post("/api/v2/bookshelf")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-            )
+            BookshelfSteps.addBook(mockMvc, objectMapper, request)
                 .andExpect(status().isCreated)
         }
 
         @Test
-        @DisplayName("잘못된 ISBN 등 유효성")
+        @DisplayName("유효성 실패면 → 400을 반환한다")
         fun addBookValidationFail() {
             val request = AddBookRequest(null, null, null, null, null, false)
 
-            mockMvc.perform(
-                post("/api/v2/bookshelf")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-            )
+            BookshelfSteps.addBook(mockMvc, objectMapper, request)
                 .andExpect(status().isBadRequest)
         }
     }
@@ -121,23 +91,22 @@ class BookshelfIntegrationTest : IntegrationTestSupport() {
     @DisplayName("GET /api/v2/bookshelf/search")
     inner class SearchBooks {
         @Test
-        @DisplayName("키워드 검색 성공")
+        @DisplayName("키워드 검색하면 → 결과를 반환한다")
         fun searchSuccess() {
-            mockMvc.perform(
-                get("/api/v2/bookshelf/search")
-                    .param("query", "Test")
-            )
+            BookshelfSteps.searchBooks(mockMvc, mapOf("query" to "Test"))
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.result.books[0].title").value("Stub Book Title"))
         }
 
         @Test
-        @DisplayName("page 범위 위반")
+        @DisplayName("page 범위 위반이면 → 400을 반환한다")
         fun searchInvalidPage() {
-            mockMvc.perform(
-                get("/api/v2/bookshelf/search")
-                    .param("query", "Test")
-                    .param("page", "0")
+            BookshelfSteps.searchBooks(
+                mockMvc,
+                mapOf(
+                    "query" to "Test",
+                    "page" to "0"
+                )
             )
                 .andExpect(status().isBadRequest)
         }
@@ -147,16 +116,16 @@ class BookshelfIntegrationTest : IntegrationTestSupport() {
     @DisplayName("GET /api/v2/bookshelf/my/count")
     inner class GetCount {
         @Test
-        @DisplayName("완독 수 존재")
+        @DisplayName("완독 수가 존재하면 → 200을 반환한다")
         fun countSuccess() {
-            mockMvc.perform(get("/api/v2/bookshelf/my/count"))
+            BookshelfSteps.getMyCount(mockMvc)
                 .andExpect(status().isOk)
         }
 
         @Test
-        @DisplayName("완독 없음")
+        @DisplayName("완독이 없으면 → 0을 반환한다")
         fun countZero() {
-            mockMvc.perform(get("/api/v2/bookshelf/my/count"))
+            BookshelfSteps.getMyCount(mockMvc)
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.result").value(0))
         }
@@ -166,41 +135,35 @@ class BookshelfIntegrationTest : IntegrationTestSupport() {
     @DisplayName("PATCH /api/v2/bookshelf/{id}/modify")
     inner class ModifyBook {
         @Test
-        @DisplayName("점수/기간 모두 수정")
+        @DisplayName("점수/기간을 수정하면 → 204를 반환한다")
         fun modifySuccess() {
             val id = createReading()
-            mockMvc.perform(
-                patch("/api/v2/bookshelf/$id/modify")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(
-                        "{\"score\": 4.5, \"startedAt\": \"2024-01-01T00:00:00\", \"endedAt\": \"2024-01-02T00:00:00\"}"
-                    )
+            BookshelfSteps.modifyReading(
+                mockMvc,
+                id,
+                "{\"score\": 4.5, \"startedAt\": \"2024-01-01T00:00:00\", \"endedAt\": \"2024-01-02T00:00:00\"}"
             )
                 .andExpect(status().isNoContent)
         }
 
         @Test
-        @DisplayName("점수 0.5 단위 위반")
+        @DisplayName("점수 0.5 단위 위반이면 → 400을 반환한다")
         fun modifyScoreInvalid() {
-            mockMvc.perform(
-                patch("/api/v2/bookshelf/1/modify")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(
-                        "{\"score\": 4.4, \"startedAt\": \"2024-01-01T00:00:00\", \"endedAt\": \"2024-01-02T00:00:00\"}"
-                    )
+            BookshelfSteps.modifyReading(
+                mockMvc,
+                1,
+                "{\"score\": 4.4, \"startedAt\": \"2024-01-01T00:00:00\", \"endedAt\": \"2024-01-02T00:00:00\"}"
             )
                 .andExpect(status().isBadRequest)
         }
 
         @Test
-        @DisplayName("startedAt/endedAt 역전")
+        @DisplayName("startedAt/endedAt 역전이면 → 400을 반환한다")
         fun modifyTimeReverse() {
-            mockMvc.perform(
-                patch("/api/v2/bookshelf/1/modify")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(
-                        "{\"score\": 4.5, \"startedAt\": \"2024-01-02T00:00:00\", \"endedAt\": \"2024-01-01T00:00:00\"}"
-                    )
+            BookshelfSteps.modifyReading(
+                mockMvc,
+                1,
+                "{\"score\": 4.5, \"startedAt\": \"2024-01-02T00:00:00\", \"endedAt\": \"2024-01-01T00:00:00\"}"
             )
                 .andExpect(status().isBadRequest)
         }
@@ -210,38 +173,26 @@ class BookshelfIntegrationTest : IntegrationTestSupport() {
     @DisplayName("PATCH /api/v2/bookshelf/{id}/rate")
     inner class RateBook {
         @Test
-        @DisplayName("정상 별점 등록")
+        @DisplayName("정상 별점을 등록하면 → 204를 반환한다")
         fun rateSuccess() {
             val id = createReading()
-            mockMvc.perform(
-                patch("/api/v2/bookshelf/$id/rate")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content("{\"score\": 3.5}")
-            )
+            BookshelfSteps.rateReading(mockMvc, id, "{\"score\": 3.5}")
                 .andExpect(status().isNoContent)
         }
 
         @Test
-        @DisplayName("범위 위반")
+        @DisplayName("범위 위반이면 → 400을 반환한다")
         fun rateInvalid() {
-            mockMvc.perform(
-                patch("/api/v2/bookshelf/1/rate")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content("{\"score\": 5.5}")
-            )
+            BookshelfSteps.rateReading(mockMvc, 1, "{\"score\": 5.5}")
                 .andExpect(status().isBadRequest)
         }
 
         @Test
-        @DisplayName("null 로 점수 제거")
+        @DisplayName("null 로 점수 제거하면 → 204를 반환한다")
         fun rateNull() {
             val readingId = createReading()
 
-            mockMvc.perform(
-                patch("/api/v2/bookshelf/$readingId/rate")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content("{\"score\": null}")
-            )
+            BookshelfSteps.rateReading(mockMvc, readingId, "{\"score\": null}")
                 .andExpect(status().isNoContent)
         }
     }
@@ -250,30 +201,30 @@ class BookshelfIntegrationTest : IntegrationTestSupport() {
     @DisplayName("PATCH /api/v2/bookshelf/{id}/status")
     inner class StatusBook {
         @Test
-        @DisplayName("독서 시작")
+        @DisplayName("독서를 시작하면 → 204를 반환한다")
         fun startSuccess() {
             val id = createReading()
-            mockMvc.perform(patch("/api/v2/bookshelf/$id/status/start"))
+            BookshelfSteps.startReading(mockMvc, id)
                 .andExpect(status().isNoContent)
         }
 
         @Test
-        @DisplayName("독서 완료")
+        @DisplayName("독서를 완료하면 → 204를 반환한다")
         fun overSuccess() {
             val id = createReading()
-            mockMvc.perform(patch("/api/v2/bookshelf/$id/status/over"))
+            BookshelfSteps.finishReading(mockMvc, id)
                 .andExpect(status().isNoContent)
         }
 
         @Test
-        @DisplayName("이미 DONE 상태")
+        @DisplayName("이미 DONE 상태면 → 204를 반환한다")
         fun statusAlreadyDone() {
             val readingId = createReading()
 
-            mockMvc.perform(patch("/api/v2/bookshelf/$readingId/status/over"))
+            BookshelfSteps.finishReading(mockMvc, readingId)
                 .andExpect(status().isNoContent)
 
-            mockMvc.perform(patch("/api/v2/bookshelf/$readingId/status/start"))
+            BookshelfSteps.startReading(mockMvc, readingId)
                 .andExpect(status().isNoContent)
         }
     }
@@ -282,13 +233,10 @@ class BookshelfIntegrationTest : IntegrationTestSupport() {
     @DisplayName("PATCH /api/v2/bookshelf/{id}/visibility")
     inner class VisibilityBook {
         @Test
-        @DisplayName("공개로 전환")
+        @DisplayName("공개로 전환하면 → 200을 반환한다")
         fun visibilitySuccess() {
             val id = createReading()
-            mockMvc.perform(
-                patch("/api/v2/bookshelf/$id/visibility")
-                    .param("isPublic", "true")
-            )
+            BookshelfSteps.updateVisibility(mockMvc, id, true)
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.result.isPublic").value(true))
         }
@@ -298,17 +246,17 @@ class BookshelfIntegrationTest : IntegrationTestSupport() {
     @DisplayName("DELETE /api/v2/bookshelf/{id}")
     inner class DeleteBook {
         @Test
-        @DisplayName("정상 삭제")
+        @DisplayName("정상 삭제하면 → 204를 반환한다")
         fun deleteSuccess() {
             val id = createReading()
-            mockMvc.perform(delete("/api/v2/bookshelf/$id"))
+            BookshelfSteps.deleteReading(mockMvc, id)
                 .andExpect(status().isNoContent)
         }
 
         @Test
-        @DisplayName("존재하지 않는 ID")
+        @DisplayName("존재하지 않는 ID면 → 404를 반환한다")
         fun deleteNotFound() {
-            mockMvc.perform(delete("/api/v2/bookshelf/999"))
+            BookshelfSteps.deleteReading(mockMvc, 999)
                 .andExpect(status().isNotFound)
         }
     }
@@ -322,12 +270,6 @@ class BookshelfIntegrationTest : IntegrationTestSupport() {
             "ISBN${System.currentTimeMillis()}",
             false
         )
-        val responseString = mockMvc.perform(
-            post("/api/v2/bookshelf")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(addRequest))
-        )
-            .andReturn().response.contentAsString
-        return JsonPath.read(responseString, "$.result.memberBookId")
+        return BookshelfSteps.createReadingId(mockMvc, objectMapper, addRequest)
     }
 }

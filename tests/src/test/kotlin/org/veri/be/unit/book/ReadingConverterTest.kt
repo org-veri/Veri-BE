@@ -7,13 +7,12 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
 import org.veri.be.domain.book.dto.reading.response.ReadingDetailResponse
-import org.veri.be.domain.book.entity.Book
-import org.veri.be.domain.book.entity.Reading
-import org.veri.be.domain.card.entity.Card
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.global.auth.JwtClaimsPayload
 import org.veri.be.global.auth.context.CurrentMemberInfo
+import org.veri.be.support.fixture.BookFixture
+import org.veri.be.support.fixture.CardFixture
+import org.veri.be.support.fixture.MemberFixture
+import org.veri.be.support.fixture.ReadingFixture
 
 @ExtendWith(MockitoExtension::class)
 class ReadingConverterTest {
@@ -23,9 +22,9 @@ class ReadingConverterTest {
     inner class ToReadingDetailResponse {
 
         @Test
-        @DisplayName("소유자라면 모든 카드가 포함된다")
+        @DisplayName("소유자라면 → 모든 카드가 포함된다")
         fun returnsAllCardsForOwner() {
-            val owner = member(1L, "owner@test.com", "owner")
+            val owner = member(1L, "owner")
             val reading = reading(owner, cards())
 
             val response = ReadingDetailResponse.from(reading, CurrentMemberInfo.from(JwtClaimsPayload(owner.id, owner.email, owner.nickname, false)))
@@ -36,10 +35,10 @@ class ReadingConverterTest {
         }
 
         @Test
-        @DisplayName("비소유자라면 공개 카드만 포함된다")
+        @DisplayName("비소유자라면 → 공개 카드만 포함된다")
         fun filtersCardsForNonOwner() {
-            val owner = member(1L, "owner@test.com", "owner")
-            val viewer = member(2L, "viewer@test.com", "viewer")
+            val owner = member(1L, "owner")
+            val viewer = member(2L, "viewer")
             val reading = reading(owner, cards())
 
             val response = ReadingDetailResponse.from(reading, CurrentMemberInfo.from(JwtClaimsPayload(viewer.id, viewer.email, viewer.nickname, false)))
@@ -49,13 +48,13 @@ class ReadingConverterTest {
         }
     }
 
-    private fun cards(): List<Card> {
-        val publicCard = Card.builder()
+    private fun cards(): List<org.veri.be.domain.card.entity.Card> {
+        val publicCard = CardFixture.aCard()
             .id(1L)
             .image("https://example.com/1.png")
             .isPublic(true)
             .build()
-        val privateCard = Card.builder()
+        val privateCard = CardFixture.aCard()
             .id(2L)
             .image("https://example.com/2.png")
             .isPublic(false)
@@ -63,14 +62,14 @@ class ReadingConverterTest {
         return listOf(publicCard, privateCard)
     }
 
-    private fun reading(owner: Member, cards: List<Card>): Reading {
-        val book = Book.builder()
+    private fun reading(owner: org.veri.be.domain.member.entity.Member, cards: List<org.veri.be.domain.card.entity.Card>): org.veri.be.domain.book.entity.Reading {
+        val book = BookFixture.aBook()
             .id(10L)
             .title("book")
             .author("author")
             .image("https://example.com/book.png")
             .build()
-        return Reading.builder()
+        return ReadingFixture.aReading()
             .id(100L)
             .member(owner)
             .book(book)
@@ -79,14 +78,7 @@ class ReadingConverterTest {
             .build()
     }
 
-    private fun member(id: Long, email: String, nickname: String): Member {
-        return Member.builder()
-            .id(id)
-            .email(email)
-            .nickname(nickname)
-            .profileImageUrl("https://example.com/profile.png")
-            .providerId("provider-$nickname")
-            .providerType(ProviderType.KAKAO)
-            .build()
+    private fun member(id: Long, nickname: String): org.veri.be.domain.member.entity.Member {
+        return MemberFixture.aMember().id(id).nickname(nickname).build()
     }
 }

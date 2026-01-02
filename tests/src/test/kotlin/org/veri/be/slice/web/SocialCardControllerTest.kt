@@ -1,19 +1,15 @@
 package org.veri.be.slice.web
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito.verify
+import org.mockito.BDDMockito.then
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
@@ -30,14 +26,13 @@ import org.veri.be.global.auth.context.AuthenticatedMemberResolver
 import org.veri.be.global.auth.context.CurrentMemberAccessor
 import org.veri.be.global.auth.context.CurrentMemberInfo
 import org.veri.be.lib.response.ApiResponseAdvice
+import org.veri.be.support.ControllerTestSupport
+import org.veri.be.support.fixture.MemberFixture
 import java.time.LocalDateTime
 import java.util.Optional
 
 @ExtendWith(MockitoExtension::class)
-class SocialCardControllerTest {
-
-    private lateinit var mockMvc: MockMvc
-    private lateinit var objectMapper: ObjectMapper
+class SocialCardControllerTest : ControllerTestSupport() {
 
     @org.mockito.Mock
     private lateinit var cardCommandService: CardCommandService
@@ -50,13 +45,8 @@ class SocialCardControllerTest {
 
     @BeforeEach
     fun setUp() {
-        objectMapper = ObjectMapper().findAndRegisterModules()
-        member = Member.builder()
+        member = MemberFixture.aMember()
             .id(1L)
-            .email("member@test.com")
-            .nickname("member")
-            .profileImageUrl("https://example.com/profile.png")
-            .providerId("provider-1")
             .providerType(ProviderType.KAKAO)
             .build()
 
@@ -82,7 +72,7 @@ class SocialCardControllerTest {
     inner class GetCards {
 
         @Test
-        @DisplayName("카드 피드를 반환한다")
+        @DisplayName("요청하면 → 카드 피드를 반환한다")
         fun returnsCardFeed() {
             val item = CardFeedItem(
                 10L,
@@ -100,36 +90,42 @@ class SocialCardControllerTest {
             )
             given(cardQueryService.getAllCards(0, 10, CardSortType.NEWEST)).willReturn(page)
 
-            mockMvc.perform(
-                get("/api/v1/cards")
-                    .param("page", "1")
-                    .param("size", "10")
-                    .param("sort", "newest")
+            get(
+                "/api/v1/cards",
+                mapOf(
+                    "page" to "1",
+                    "size" to "10",
+                    "sort" to "newest"
+                )
             )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.result.cards[0].cardId").value(10L))
 
-            verify(cardQueryService).getAllCards(0, 10, CardSortType.NEWEST)
+            then(cardQueryService).should().getAllCards(0, 10, CardSortType.NEWEST)
         }
 
         @Test
-        @DisplayName("page가 0 이하면 400을 반환한다")
+        @DisplayName("page가 0 이하면 → 400을 반환한다")
         fun returns400WhenPageIsInvalid() {
-            mockMvc.perform(
-                get("/api/v1/cards")
-                    .param("page", "0")
-                    .param("size", "10")
+            get(
+                "/api/v1/cards",
+                mapOf(
+                    "page" to "0",
+                    "size" to "10"
+                )
             )
                 .andExpect(status().isBadRequest)
         }
 
         @Test
-        @DisplayName("size가 0 이하면 400을 반환한다")
+        @DisplayName("size가 0 이하면 → 400을 반환한다")
         fun returns400WhenSizeIsInvalid() {
-            mockMvc.perform(
-                get("/api/v1/cards")
-                    .param("page", "1")
-                    .param("size", "0")
+            get(
+                "/api/v1/cards",
+                mapOf(
+                    "page" to "1",
+                    "size" to "0"
+                )
             )
                 .andExpect(status().isBadRequest)
         }
@@ -140,13 +136,13 @@ class SocialCardControllerTest {
     inner class ModifyVisibility {
 
         @Test
-        @DisplayName("카드 공개 여부를 수정한다")
+        @DisplayName("카드 공개 여부를 수정하면 → 결과를 반환한다")
         fun updatesVisibility() {
             given(cardCommandService.modifyVisibility(member.id, 20L, true))
                 .willReturn(CardVisibilityUpdateResponse(20L, true))
 
             mockMvc.perform(
-                patch("/api/v1/cards/20/visibility")
+                org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch("/api/v1/cards/20/visibility")
                     .param("isPublic", "true")
             )
                 .andExpect(status().isOk)

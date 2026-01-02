@@ -7,17 +7,16 @@ import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.veri.be.api.common.dto.MemberProfileResponse
-import org.veri.be.domain.book.entity.Book
-import org.veri.be.domain.book.entity.Reading
 import org.veri.be.domain.card.controller.dto.request.CardCreateRequest
 import org.veri.be.domain.card.controller.dto.response.CardDetailResponse
 import org.veri.be.domain.card.controller.dto.response.CardListResponse
 import org.veri.be.domain.card.controller.dto.response.CardUpdateResponse
-import org.veri.be.domain.card.entity.Card
 import org.veri.be.domain.card.repository.dto.CardFeedItem
 import org.veri.be.domain.card.repository.dto.CardListItem
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
+import org.veri.be.support.fixture.BookFixture
+import org.veri.be.support.fixture.CardFixture
+import org.veri.be.support.fixture.MemberFixture
+import org.veri.be.support.fixture.ReadingFixture
 import java.time.LocalDateTime
 
 class CardResponseMappingTest {
@@ -27,11 +26,11 @@ class CardResponseMappingTest {
     inner class CardResponseMapping {
 
         @Test
-        @DisplayName("카드 상세 응답으로 변환한다")
+        @DisplayName("카드 상세 응답으로 변환하면 → 결과를 반환한다")
         fun mapsToDetailResponse() {
-            val member = member(1L, "member@test.com", "member")
+            val member = member(1L, "member")
             val reading = reading()
-            val card = Card.builder()
+            val card = CardFixture.aCard()
                 .id(1L)
                 .member(member)
                 .reading(reading)
@@ -50,10 +49,10 @@ class CardResponseMappingTest {
         }
 
         @Test
-        @DisplayName("카드 수정 응답으로 변환한다")
+        @DisplayName("카드 수정 응답으로 변환하면 → 결과를 반환한다")
         fun mapsToUpdateResponse() {
             val reading = reading()
-            val card = Card.builder()
+            val card = CardFixture.aCard()
                 .id(1L)
                 .reading(reading)
                 .content("content")
@@ -75,9 +74,9 @@ class CardResponseMappingTest {
     inner class CardListResponseMapping {
 
         @Test
-        @DisplayName("피드 페이지를 응답으로 변환한다")
+        @DisplayName("피드 페이지를 응답으로 변환하면 → 결과를 반환한다")
         fun mapsFeedPage() {
-            val member = member(1L, "member@test.com", "member")
+            val member = member(1L, "member")
             val item = CardFeedItem(
                 1L,
                 member,
@@ -100,9 +99,9 @@ class CardResponseMappingTest {
         }
 
         @Test
-        @DisplayName("내 카드 목록을 응답으로 변환한다")
+        @DisplayName("내 카드 목록을 응답으로 변환하면 → 결과를 반환한다")
         fun mapsOwnCards() {
-            val member = member(1L, "member@test.com", "member")
+            val member = member(1L, "member")
             val item = CardListItem(
                 1L,
                 "book",
@@ -130,7 +129,7 @@ class CardResponseMappingTest {
     inner class CardCreateRequestDefaults {
 
         @Test
-        @DisplayName("isPublic이 null이면 false로 기본 설정된다")
+        @DisplayName("isPublic이 null이면 → false로 기본 설정된다")
         fun defaultsIsPublic() {
             val request = CardCreateRequest("content", "https://example.com/card.png", 1L, null)
 
@@ -138,25 +137,18 @@ class CardResponseMappingTest {
         }
     }
 
-    private fun member(id: Long, email: String, nickname: String): Member {
-        return Member.builder()
-            .id(id)
-            .email(email)
-            .nickname(nickname)
-            .profileImageUrl("https://example.com/profile.png")
-            .providerId("provider-$nickname")
-            .providerType(ProviderType.KAKAO)
-            .build()
+    private fun member(id: Long, nickname: String): org.veri.be.domain.member.entity.Member {
+        return MemberFixture.aMember().id(id).nickname(nickname).build()
     }
 
-    private fun reading(): Reading {
-        val book = Book.builder()
+    private fun reading(): org.veri.be.domain.book.entity.Reading {
+        val book = BookFixture.aBook()
             .id(10L)
             .title("book")
             .author("author")
             .image("https://example.com/book.png")
             .build()
-        return Reading.builder()
+        return ReadingFixture.aReading()
             .id(20L)
             .book(book)
             .build()

@@ -1,6 +1,5 @@
 package org.veri.be.slice.web
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -10,13 +9,10 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.eq
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito.verify
+import org.mockito.BDDMockito.then
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
@@ -31,13 +27,12 @@ import org.veri.be.global.auth.context.CurrentMemberAccessor
 import org.veri.be.global.auth.context.CurrentMemberInfo
 import org.veri.be.global.response.PageResponse
 import org.veri.be.lib.response.ApiResponseAdvice
+import org.veri.be.support.ControllerTestSupport
+import org.veri.be.support.fixture.MemberFixture
 import java.util.Optional
 
 @ExtendWith(MockitoExtension::class)
-class ImageControllerTest {
-
-    private lateinit var mockMvc: MockMvc
-    private lateinit var objectMapper: ObjectMapper
+class ImageControllerTest : ControllerTestSupport() {
 
     @org.mockito.Mock
     private lateinit var imageCommandService: ImageCommandService
@@ -50,13 +45,8 @@ class ImageControllerTest {
 
     @BeforeEach
     fun setUp() {
-        objectMapper = ObjectMapper().findAndRegisterModules()
-        member = Member.builder()
+        member = MemberFixture.aMember()
             .id(1L)
-            .email("member@test.com")
-            .nickname("member")
-            .profileImageUrl("https://example.com/profile.png")
-            .providerId("provider-1")
             .providerType(ProviderType.KAKAO)
             .build()
 
@@ -82,13 +72,13 @@ class ImageControllerTest {
     inner class OcrImageV0 {
 
         @Test
-        @DisplayName("이미지 OCR 결과를 반환한다")
+        @DisplayName("이미지를 OCR하면 → 결과를 반환한다")
         fun returnsOcrResult() {
             given(imageCommandService.processWithMistral(member.id, "https://example.com/image.png"))
                 .willReturn("text")
 
             mockMvc.perform(
-                post("/api/v0/images/ocr")
+                org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/api/v0/images/ocr")
                     .param("imageUrl", "https://example.com/image.png")
             )
                 .andExpect(status().isOk)
@@ -101,13 +91,13 @@ class ImageControllerTest {
     inner class OcrImageV1 {
 
         @Test
-        @DisplayName("이미지 OCR 결과를 반환한다")
+        @DisplayName("이미지를 OCR하면 → 결과를 반환한다")
         fun returnsOcrResult() {
             given(imageCommandService.processWithMistral(member.id, "https://example.com/image.png"))
                 .willReturn("text")
 
             mockMvc.perform(
-                post("/api/v1/images/ocr")
+                org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/api/v1/images/ocr")
                     .param("imageUrl", "https://example.com/image.png")
             )
                 .andExpect(status().isOk)
@@ -120,7 +110,7 @@ class ImageControllerTest {
     inner class GetImageFiles {
 
         @Test
-        @DisplayName("업로드 이미지 목록을 반환한다")
+        @DisplayName("요청하면 → 업로드 이미지 목록을 반환한다")
         fun returnsUploadedImages() {
             val response = PageResponse.of(
                 listOf("https://example.com/image.png"),
@@ -132,17 +122,19 @@ class ImageControllerTest {
             given(imageQueryService.fetchUploadedImages(1L, PageRequest.of(0, 5)))
                 .willReturn(response)
 
-            mockMvc.perform(
-                get("/api/v0/images")
-                    .param("page", "1")
-                    .param("size", "5")
+            get(
+                "/api/v0/images",
+                mapOf(
+                    "page" to "1",
+                    "size" to "5"
+                )
             )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.result.page").value(1))
                 .andExpect(jsonPath("$.result.content[0]").value("https://example.com/image.png"))
 
             val pageableCaptor = ArgumentCaptor.forClass(Pageable::class.java)
-            verify(imageQueryService).fetchUploadedImages(eq(1L), pageableCaptor.capture())
+            then(imageQueryService).should().fetchUploadedImages(eq(1L), pageableCaptor.capture())
             val pageable = pageableCaptor.value
             val request = PageRequest.of(pageable.pageNumber, pageable.pageSize)
             assertThat(request).isEqualTo(PageRequest.of(0, 5))

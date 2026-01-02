@@ -9,14 +9,13 @@ import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.veri.be.lib.exception.CommonErrorCode
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.global.auth.JwtClaimsPayload
 import org.veri.be.global.auth.context.CurrentMemberAccessor
 import org.veri.be.global.auth.context.CurrentMemberInfo
 import org.veri.be.global.auth.guards.MemberGuard
 import org.veri.be.support.assertion.ExceptionAssertions
 import org.mockito.BDDMockito.given
+import org.veri.be.support.fixture.MemberFixture
 
 @ExtendWith(MockitoExtension::class)
 class MemberGuardTest {
@@ -32,7 +31,7 @@ class MemberGuardTest {
     inner class CanActivate {
 
         @Test
-        @DisplayName("로그인한 사용자가 있으면 통과한다")
+        @DisplayName("로그인한 사용자가 있으면 → 통과한다")
         fun allowsWhenMemberPresent() {
             given(currentMemberAccessor.getCurrentMemberInfoOrNull()).willReturn(
                 CurrentMemberInfo.from(JwtClaimsPayload(member().id, member().email, member().nickname, false))
@@ -42,7 +41,7 @@ class MemberGuardTest {
         }
 
         @Test
-        @DisplayName("로그인한 사용자가 없으면 예외가 발생한다")
+        @DisplayName("로그인한 사용자가 없으면 → 예외가 발생한다")
         fun throwsWhenMemberMissing() {
             given(currentMemberAccessor.getCurrentMemberInfoOrNull()).willReturn(null)
 
@@ -53,14 +52,7 @@ class MemberGuardTest {
         }
     }
 
-    private fun member(): Member {
-        return Member.builder()
-            .id(1L)
-            .email("member@test.com")
-            .nickname("member")
-            .profileImageUrl("https://example.com/profile.png")
-            .providerId("provider-1")
-            .providerType(ProviderType.KAKAO)
-            .build()
+    private fun member(): org.veri.be.domain.member.entity.Member {
+        return MemberFixture.aMember().id(1L).nickname("member").build()
     }
 }

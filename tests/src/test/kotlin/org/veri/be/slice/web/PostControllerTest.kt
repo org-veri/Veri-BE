@@ -1,6 +1,5 @@
 package org.veri.be.slice.web
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -9,21 +8,16 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.eq
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito.verify
+import org.mockito.BDDMockito.then
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.veri.be.api.common.dto.MemberProfileResponse
 import org.veri.be.api.social.PostController
 import org.veri.be.domain.book.dto.book.BookResponse
-import org.veri.be.domain.book.entity.Book
 import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.domain.post.controller.enums.PostSortType
@@ -41,14 +35,14 @@ import org.veri.be.global.auth.context.CurrentMemberInfo
 import org.veri.be.global.storage.dto.PresignedUrlRequest
 import org.veri.be.global.storage.dto.PresignedUrlResponse
 import org.veri.be.lib.response.ApiResponseAdvice
+import org.veri.be.support.ControllerTestSupport
+import org.veri.be.support.fixture.BookFixture
+import org.veri.be.support.fixture.MemberFixture
 import java.time.LocalDateTime
 import java.util.Optional
 
 @ExtendWith(MockitoExtension::class)
-class PostControllerTest {
-
-    private lateinit var mockMvc: MockMvc
-    private lateinit var objectMapper: ObjectMapper
+class PostControllerTest : ControllerTestSupport() {
 
     @org.mockito.Mock
     private lateinit var postCommandService: PostCommandService
@@ -61,13 +55,8 @@ class PostControllerTest {
 
     @BeforeEach
     fun setUp() {
-        objectMapper = ObjectMapper().findAndRegisterModules()
-        member = Member.builder()
+        member = MemberFixture.aMember()
             .id(1L)
-            .email("member@test.com")
-            .nickname("member")
-            .profileImageUrl("https://example.com/profile.png")
-            .providerId("provider-1")
             .providerType(ProviderType.KAKAO)
             .build()
 
@@ -93,7 +82,7 @@ class PostControllerTest {
     inner class CreatePost {
 
         @Test
-        @DisplayName("게시글을 작성하면 ID를 반환한다")
+        @DisplayName("게시글을 작성하면 → ID를 반환한다")
         fun returnsCreatedId() {
             val request = PostCreateRequest(
                 "title",
@@ -103,25 +92,17 @@ class PostControllerTest {
             )
             given(postCommandService.createPost(any(PostCreateRequest::class.java), eq(member.id))).willReturn(99L)
 
-            mockMvc.perform(
-                post("/api/v1/posts")
-                    .contentType("application/json")
-                    .content(objectMapper.writeValueAsString(request))
-            )
+            postJson("/api/v1/posts", request)
                 .andExpect(status().isCreated)
                 .andExpect(jsonPath("$.result").value(99L))
         }
 
         @Test
-        @DisplayName("필수 필드가 누락되면 400을 반환한다")
+        @DisplayName("필수 필드가 누락되면 → 400을 반환한다")
         fun returns400WhenFieldMissing() {
             val request = PostCreateRequest(null, null, null, null)
 
-            mockMvc.perform(
-                post("/api/v1/posts")
-                    .contentType("application/json")
-                    .content(objectMapper.writeValueAsString(request))
-            )
+            postJson("/api/v1/posts", request)
                 .andExpect(status().isBadRequest)
         }
     }
@@ -131,7 +112,7 @@ class PostControllerTest {
     inner class GetMyPosts {
 
         @Test
-        @DisplayName("내 게시글 목록을 반환한다")
+        @DisplayName("요청하면 → 내 게시글 목록을 반환한다")
         fun returnsMyPosts() {
             val item = PostFeedResponseItem(
                 10L,
@@ -153,7 +134,7 @@ class PostControllerTest {
             )
             given(postQueryService.getPostsOfMember(1L)).willReturn(listOf(item))
 
-            mockMvc.perform(get("/api/v1/posts/my"))
+            get("/api/v1/posts/my")
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.result.count").value(1))
                 .andExpect(jsonPath("$.result.posts[0].postId").value(10L))
@@ -165,14 +146,11 @@ class PostControllerTest {
     inner class GetPosts {
 
         @Test
-        @DisplayName("페이지와 정렬 기준에 맞는 목록을 반환한다")
+        @DisplayName("페이지와 정렬 기준에 맞으면 → 목록을 반환한다")
         fun returnsFeed() {
-            val book = Book.builder()
+            val book = BookFixture.aBook()
                 .id(3L)
                 .title("book")
-                .author("author")
-                .image("https://example.com/book.png")
-                .publisher("publisher")
                 .isbn("isbn-1")
                 .build()
             val item = PostFeedQueryResult(
@@ -194,16 +172,18 @@ class PostControllerTest {
             )
             given(postQueryService.getPostFeeds(0, 10, PostSortType.NEWEST)).willReturn(page)
 
-            mockMvc.perform(
-                get("/api/v1/posts")
-                    .param("page", "1")
-                    .param("size", "10")
-                    .param("sort", "newest")
+            get(
+                "/api/v1/posts",
+                mapOf(
+                    "page" to "1",
+                    "size" to "10",
+                    "sort" to "newest"
+                )
             )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.result.posts[0].postId").value(20L))
 
-            verify(postQueryService).getPostFeeds(0, 10, PostSortType.NEWEST)
+            then(postQueryService).should().getPostFeeds(0, 10, PostSortType.NEWEST)
         }
     }
 
@@ -212,7 +192,7 @@ class PostControllerTest {
     inner class GetPostDetail {
 
         @Test
-        @DisplayName("게시글 상세를 반환한다")
+        @DisplayName("게시글을 조회하면 → 상세를 반환한다")
         fun returnsDetail() {
             val response = PostDetailResponse.builder()
                 .postId(30L)
@@ -230,7 +210,7 @@ class PostControllerTest {
                 .build()
             given(postQueryService.getPostDetail(30L, member.id)).willReturn(response)
 
-            mockMvc.perform(get("/api/v1/posts/30"))
+            get("/api/v1/posts/30")
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.result.postId").value(30L))
                 .andExpect(jsonPath("$.result.title").value("title"))
@@ -242,12 +222,12 @@ class PostControllerTest {
     inner class DeletePost {
 
         @Test
-        @DisplayName("게시글을 삭제하면 상태 코드 204를 반환한다")
+        @DisplayName("게시글을 삭제하면 → 204를 반환한다")
         fun deletesPost() {
-            mockMvc.perform(delete("/api/v1/posts/40"))
+            delete("/api/v1/posts/40")
                 .andExpect(status().isNoContent)
 
-            verify(postCommandService).deletePost(40L, member.id)
+            then(postCommandService).should().deletePost(40L, member.id)
         }
     }
 
@@ -256,12 +236,12 @@ class PostControllerTest {
     inner class PublishPost {
 
         @Test
-        @DisplayName("게시글을 공개하면 상태 코드 204를 반환한다")
+        @DisplayName("게시글을 공개하면 → 204를 반환한다")
         fun publishesPost() {
-            mockMvc.perform(post("/api/v1/posts/50/publish"))
+            post("/api/v1/posts/50/publish")
                 .andExpect(status().isNoContent)
 
-            verify(postCommandService).publishPost(50L, member.id)
+            then(postCommandService).should().publishPost(50L, member.id)
         }
     }
 
@@ -270,12 +250,12 @@ class PostControllerTest {
     inner class UnpublishPost {
 
         @Test
-        @DisplayName("게시글을 비공개하면 상태 코드 204를 반환한다")
+        @DisplayName("게시글을 비공개하면 → 204를 반환한다")
         fun unpublishesPost() {
-            mockMvc.perform(post("/api/v1/posts/60/unpublish"))
+            post("/api/v1/posts/60/unpublish")
                 .andExpect(status().isNoContent)
 
-            verify(postCommandService).unPublishPost(60L, member.id)
+            then(postCommandService).should().unPublishPost(60L, member.id)
         }
     }
 
@@ -284,11 +264,11 @@ class PostControllerTest {
     inner class LikePost {
 
         @Test
-        @DisplayName("좋아요를 추가하면 정보를 반환한다")
+        @DisplayName("좋아요를 추가하면 → 정보를 반환한다")
         fun likesPost() {
             given(postCommandService.likePost(70L, member.id)).willReturn(LikeInfoResponse(5L, true))
 
-            mockMvc.perform(post("/api/v1/posts/like/70"))
+            post("/api/v1/posts/like/70")
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.result.likeCount").value(5L))
                 .andExpect(jsonPath("$.result.isLiked").value(true))
@@ -300,11 +280,11 @@ class PostControllerTest {
     inner class UnlikePost {
 
         @Test
-        @DisplayName("좋아요를 취소하면 정보를 반환한다")
+        @DisplayName("좋아요를 취소하면 → 정보를 반환한다")
         fun unlikesPost() {
             given(postCommandService.unlikePost(80L, member.id)).willReturn(LikeInfoResponse(4L, false))
 
-            mockMvc.perform(post("/api/v1/posts/unlike/80"))
+            post("/api/v1/posts/unlike/80")
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.result.likeCount").value(4L))
                 .andExpect(jsonPath("$.result.isLiked").value(false))
@@ -316,7 +296,7 @@ class PostControllerTest {
     inner class UploadImage {
 
         @Test
-        @DisplayName("이미지 presigned URL을 반환한다")
+        @DisplayName("요청하면 → 이미지 presigned URL을 반환한다")
         fun returnsPresignedUrl() {
             val request = PresignedUrlRequest("image/png", 100L)
             val response = PresignedUrlResponse(
@@ -325,25 +305,17 @@ class PostControllerTest {
             )
             given(postCommandService.getPresignedUrl(any(PresignedUrlRequest::class.java))).willReturn(response)
 
-            mockMvc.perform(
-                post("/api/v1/posts/image")
-                    .contentType("application/json")
-                    .content(objectMapper.writeValueAsString(request))
-            )
+            postJson("/api/v1/posts/image", request)
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.result.publicUrl").value("https://example.com/public"))
         }
 
         @Test
-        @DisplayName("필수 필드가 누락되면 400을 반환한다")
+        @DisplayName("필수 필드가 누락되면 → 400을 반환한다")
         fun returns400WhenFieldMissing() {
             val request = PresignedUrlRequest(null, 0)
 
-            mockMvc.perform(
-                post("/api/v1/posts/image")
-                    .contentType("application/json")
-                    .content(objectMapper.writeValueAsString(request))
-            )
+            postJson("/api/v1/posts/image", request)
                 .andExpect(status().isBadRequest)
         }
     }

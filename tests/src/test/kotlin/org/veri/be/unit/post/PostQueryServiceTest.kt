@@ -9,21 +9,16 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito.verify
+import org.mockito.BDDMockito.then
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.veri.be.api.common.dto.MemberProfileResponse
-import org.veri.be.domain.book.entity.Book
-import org.veri.be.domain.comment.entity.Comment
 import org.veri.be.domain.comment.service.CommentQueryService
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.domain.member.repository.dto.MemberProfileQueryResult
 import org.veri.be.domain.post.controller.enums.PostSortType
 import org.veri.be.domain.post.dto.response.PostDetailResponse
 import org.veri.be.domain.post.dto.response.PostFeedResponseItem
-import org.veri.be.domain.post.entity.Post
 import org.veri.be.domain.post.repository.PostRepository
 import org.veri.be.domain.post.repository.dto.DetailLikeInfoQueryResult
 import org.veri.be.domain.post.repository.dto.PostFeedQueryResult
@@ -31,6 +26,10 @@ import org.veri.be.domain.post.service.LikePostQueryService
 import org.veri.be.domain.post.service.PostQueryService
 import org.veri.be.lib.exception.CommonErrorCode
 import org.veri.be.support.assertion.ExceptionAssertions
+import org.veri.be.support.fixture.BookFixture
+import org.veri.be.support.fixture.CommentFixture
+import org.veri.be.support.fixture.MemberFixture
+import org.veri.be.support.fixture.PostFixture
 import java.time.LocalDateTime
 
 @ExtendWith(MockitoExtension::class)
@@ -64,13 +63,13 @@ class PostQueryServiceTest {
     inner class GetPostFeeds {
 
         @Test
-        @DisplayName("정렬 조건에 맞는 페이징 요청을 전달한다")
+        @DisplayName("정렬 조건에 맞으면 → 페이징 요청을 전달한다")
         fun passesPagingWithSort() {
             given(postRepository.getPostFeeds(any(Pageable::class.java))).willReturn(Page.empty<PostFeedQueryResult>())
 
             postQueryService.getPostFeeds(1, 20, PostSortType.NEWEST)
 
-            verify(postRepository).getPostFeeds(pageableCaptor.capture())
+            then(postRepository).should().getPostFeeds(pageableCaptor.capture())
             val pageable = pageableCaptor.value
             assertThat(pageable.pageNumber).isEqualTo(1)
             assertThat(pageable.pageSize).isEqualTo(20)
@@ -83,10 +82,10 @@ class PostQueryServiceTest {
     inner class GetPostsOfMember {
 
         @Test
-        @DisplayName("작성자의 게시글을 응답 DTO로 변환한다")
+        @DisplayName("작성자의 게시글이면 → 응답 DTO로 변환한다")
         fun mapsPostsToResponse() {
-            val author = member(1L, "author@test.com", "author")
-            val book = book()
+            val author = MemberFixture.aMember().id(1L).nickname("author").build()
+            val book = BookFixture.aBook().id(10L).build()
             val result = PostFeedQueryResult(
                 1L,
                 "title",
@@ -117,7 +116,7 @@ class PostQueryServiceTest {
     inner class GetPostById {
 
         @Test
-        @DisplayName("존재하지 않으면 NotFoundException을 던진다")
+        @DisplayName("존재하지 않으면 → 예외를 던진다")
         fun throwsWhenNotFound() {
             given(postRepository.findById(1L)).willReturn(java.util.Optional.empty())
 
@@ -133,12 +132,12 @@ class PostQueryServiceTest {
     inner class GetPostDetail {
 
         @Test
-        @DisplayName("게시글 상세 정보를 조합한다")
+        @DisplayName("게시글 상세 요청이면 → 정보를 조합한다")
         fun returnsPostDetail() {
-            val author = member(1L, "author@test.com", "author")
-            val requester = member(2L, "request@test.com", "requester")
-            val book = book()
-            val post = Post.builder()
+            val author = MemberFixture.aMember().id(1L).nickname("author").build()
+            val requester = MemberFixture.aMember().id(2L).nickname("requester").build()
+            val book = BookFixture.aBook().id(10L).build()
+            val post = PostFixture.aPost()
                 .id(1L)
                 .author(author)
                 .book(book)
@@ -146,7 +145,7 @@ class PostQueryServiceTest {
                 .content("content")
                 .build()
             post.addImage("https://example.com/1.png", 1)
-            post.addComment(Comment.builder().author(author).post(post).content("comment").build())
+            post.addComment(CommentFixture.aComment().author(author).post(post).content("comment").build())
 
             val likeInfo = DetailLikeInfoQueryResult(
                 listOf(MemberProfileQueryResult(2L, "requester", "https://example.com/profile.png")),
@@ -169,9 +168,9 @@ class PostQueryServiceTest {
         }
 
         @Test
-        @DisplayName("게시글이 없으면 NotFoundException을 던진다")
+        @DisplayName("게시글이 없으면 → 예외를 던진다")
         fun throwsWhenPostMissing() {
-            val requester = member(2L, "request@test.com", "requester")
+            val requester = MemberFixture.aMember().id(2L).nickname("requester").build()
             given(postRepository.findByIdWithAllAssociations(1L)).willReturn(java.util.Optional.empty())
 
             ExceptionAssertions.assertApplicationException(
@@ -179,26 +178,5 @@ class PostQueryServiceTest {
                 CommonErrorCode.RESOURCE_NOT_FOUND
             )
         }
-    }
-
-    private fun member(id: Long, email: String, nickname: String): Member {
-        return Member.builder()
-            .id(id)
-            .email(email)
-            .nickname(nickname)
-            .profileImageUrl("https://example.com/profile.png")
-            .providerId("provider-$nickname")
-            .providerType(ProviderType.KAKAO)
-            .build()
-    }
-
-    private fun book(): Book {
-        return Book.builder()
-            .id(10L)
-            .title("book")
-            .author("author")
-            .image("https://example.com/book.png")
-            .isbn("isbn-1")
-            .build()
     }
 }

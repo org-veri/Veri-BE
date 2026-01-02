@@ -30,7 +30,7 @@ class CustomOAuth2UserServiceTest {
     inner class LoadUser {
 
         @Test
-        @DisplayName("OAuth2 사용자 정보를 CustomOAuth2User로 변환한다")
+        @DisplayName("OAuth2 사용자 정보를 로드하면 → CustomOAuth2User로 변환한다")
         fun returnsCustomOAuth2User() {
             // given
             val restOperations = Mockito.mock(RestOperations::class.java)

@@ -5,13 +5,14 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.veri.be.domain.book.entity.Book
-import org.veri.be.domain.comment.entity.Comment
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
-import org.veri.be.domain.post.entity.Post
 import org.veri.be.lib.exception.ApplicationException
 import org.veri.be.lib.exception.CommonErrorCode
+import org.veri.be.support.fixture.BookFixture
+import org.veri.be.support.fixture.CommentFixture
+import org.veri.be.support.fixture.MemberFixture
+import org.veri.be.support.fixture.PostFixture
+import org.veri.be.domain.member.entity.Member
+import org.veri.be.domain.post.entity.Post
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId
@@ -23,12 +24,12 @@ class CommentTest {
     inner class ReplyBy {
 
         @Test
-        @DisplayName("대댓글을 생성하면 부모/작성자/게시글이 연결된다")
+        @DisplayName("대댓글을 생성하면 → 부모/작성자/게시글이 연결된다")
         fun createsReplyWithParentAndAuthor() {
-            val author = member(1L, "author@test.com", "author")
-            val replier = member(2L, "replier@test.com", "replier")
+            val author = MemberFixture.aMember().id(1L).nickname("author").build()
+            val replier = MemberFixture.aMember().id(2L).nickname("replier").build()
             val post = post(author)
-            val parent = Comment.builder()
+            val parent = CommentFixture.aComment()
                 .author(author)
                 .post(post)
                 .content("parent")
@@ -48,10 +49,10 @@ class CommentTest {
     inner class EditBy {
 
         @Test
-        @DisplayName("작성자가 수정하면 내용이 변경된다")
+        @DisplayName("작성자가 수정하면 → 내용이 변경된다")
         fun editsContentByAuthor() {
-            val author = member(1L, "author@test.com", "author")
-            val comment = Comment.builder()
+            val author = MemberFixture.aMember().id(1L).nickname("author").build()
+            val comment = CommentFixture.aComment()
                 .author(author)
                 .content("before")
                 .build()
@@ -62,11 +63,11 @@ class CommentTest {
         }
 
         @Test
-        @DisplayName("작성자가 아니면 ApplicationException이 발생한다")
+        @DisplayName("작성자가 아니면 → ApplicationException이 발생한다")
         fun throwsWhenNotAuthor() {
-            val author = member(1L, "author@test.com", "author")
-            val other = member(2L, "other@test.com", "other")
-            val comment = Comment.builder()
+            val author = MemberFixture.aMember().id(1L).nickname("author").build()
+            val other = MemberFixture.aMember().id(2L).nickname("other").build()
+            val comment = CommentFixture.aComment()
                 .author(author)
                 .content("content")
                 .build()
@@ -82,10 +83,10 @@ class CommentTest {
     inner class DeleteBy {
 
         @Test
-        @DisplayName("작성자가 삭제하면 deletedAt이 설정된다")
+        @DisplayName("작성자가 삭제하면 → deletedAt이 설정된다")
         fun marksDeletedAt() {
-            val author = member(1L, "author@test.com", "author")
-            val comment = Comment.builder()
+            val author = MemberFixture.aMember().id(1L).nickname("author").build()
+            val comment = CommentFixture.aComment()
                 .author(author)
                 .content("content")
                 .build()
@@ -102,11 +103,11 @@ class CommentTest {
         }
 
         @Test
-        @DisplayName("작성자가 아니면 ApplicationException이 발생한다")
+        @DisplayName("작성자가 아니면 → ApplicationException이 발생한다")
         fun throwsWhenNotAuthor() {
-            val author = member(1L, "author@test.com", "author")
-            val other = member(2L, "other@test.com", "other")
-            val comment = Comment.builder()
+            val author = MemberFixture.aMember().id(1L).nickname("author").build()
+            val other = MemberFixture.aMember().id(2L).nickname("other").build()
+            val comment = CommentFixture.aComment()
                 .author(author)
                 .content("content")
                 .build()
@@ -123,10 +124,10 @@ class CommentTest {
     inner class IsRoot {
 
         @Test
-        @DisplayName("부모가 없으면 root 댓글이다")
+        @DisplayName("부모가 없으면 → root 댓글이다")
         fun returnsTrueWhenNoParent() {
-            val comment = Comment.builder()
-                .author(member(1L, "author@test.com", "author"))
+            val comment = CommentFixture.aComment()
+                .author(MemberFixture.aMember().id(1L).nickname("author").build())
                 .content("content")
                 .build()
 
@@ -134,14 +135,14 @@ class CommentTest {
         }
 
         @Test
-        @DisplayName("부모가 있으면 root가 아니다")
+        @DisplayName("부모가 있으면 → root가 아니다")
         fun returnsFalseWhenParentExists() {
-            val parent = Comment.builder()
-                .author(member(1L, "author@test.com", "author"))
+            val parent = CommentFixture.aComment()
+                .author(MemberFixture.aMember().id(1L).nickname("author").build())
                 .content("parent")
                 .build()
-            val comment = Comment.builder()
-                .author(member(2L, "child@test.com", "child"))
+            val comment = CommentFixture.aComment()
+                .author(MemberFixture.aMember().id(2L).nickname("child").build())
                 .content("content")
                 .parent(parent)
                 .build()
@@ -150,25 +151,13 @@ class CommentTest {
         }
     }
 
-    private fun member(id: Long, email: String, nickname: String): Member {
-        return Member.builder()
-            .id(id)
-            .email(email)
-            .nickname(nickname)
-            .profileImageUrl("https://example.com/profile.png")
-            .providerId("provider-$nickname")
-            .providerType(ProviderType.KAKAO)
-            .build()
-    }
-
     private fun post(author: Member): Post {
-        val book = Book.builder()
-            .image("https://example.com/book.png")
+        val book = BookFixture.aBook()
             .title("book")
             .author("author")
             .isbn("isbn-1")
             .build()
-        return Post.builder()
+        return PostFixture.aPost()
             .author(author)
             .book(book)
             .title("title")

@@ -35,7 +35,7 @@ class CustomAuthorizationRequestResolverTest {
     inner class Resolve {
 
         @Test
-        @DisplayName("Origin 헤더가 있으면 redirectUri를 변경한다")
+        @DisplayName("Origin 헤더가 있으면 → redirectUri를 변경한다")
         fun overridesRedirectUriWhenOriginProvided() {
             val resolver = CustomAuthorizationRequestResolver(repository())
             val request = MockHttpServletRequest("GET", "/oauth2/authorization/kakao")
@@ -48,7 +48,7 @@ class CustomAuthorizationRequestResolverTest {
         }
 
         @Test
-        @DisplayName("요청 URL이 없으면 기본 redirectUri를 유지한다")
+        @DisplayName("요청 URL이 없으면 → 기본 redirectUri를 유지한다")
         fun keepsDefaultRedirectUriWhenNoOrigin() {
             val repo = repository()
             val resolver = CustomAuthorizationRequestResolver(repo)
@@ -63,7 +63,7 @@ class CustomAuthorizationRequestResolverTest {
         }
 
         @Test
-        @DisplayName("요청이 매칭되지 않으면 null을 반환한다")
+        @DisplayName("요청이 매칭되지 않으면 → null을 반환한다")
         fun returnsNullWhenNoMatch() {
             val resolver = CustomAuthorizationRequestResolver(repository())
             val request = MockHttpServletRequest("GET", "/other/path")
@@ -74,7 +74,7 @@ class CustomAuthorizationRequestResolverTest {
         }
 
         @Test
-        @DisplayName("clientRegistrationId가 주어지면 redirectUri를 변경한다")
+        @DisplayName("clientRegistrationId가 주어지면 → redirectUri를 변경한다")
         fun overridesRedirectUriWithClientRegistrationId() {
             val resolver = CustomAuthorizationRequestResolver(repository())
             val request = MockHttpServletRequest("GET", "/oauth2/authorization/kakao")

@@ -21,7 +21,7 @@ class AuthorizationHeaderUtilTest {
     inner class ExtractTokenFromAuthorizationHeader {
 
         @Test
-        @DisplayName("Bearer 토큰을 추출한다")
+        @DisplayName("Bearer 스킴이면 → 토큰을 추출한다")
         fun extractsBearerToken() {
             given(request.getHeader("Authorization")).willReturn("Bearer token-value")
 
@@ -31,7 +31,7 @@ class AuthorizationHeaderUtilTest {
         }
 
         @Test
-        @DisplayName("Authorization 헤더가 없으면 null을 반환한다")
+        @DisplayName("Authorization 헤더가 없으면 → null을 반환한다")
         fun returnsNullWhenMissing() {
             given(request.getHeader("Authorization")).willReturn(null)
 
@@ -41,7 +41,7 @@ class AuthorizationHeaderUtilTest {
         }
 
         @Test
-        @DisplayName("Bearer 스킴이 아니면 null을 반환한다")
+        @DisplayName("Bearer 스킴이 아니면 → null을 반환한다")
         fun returnsNullWhenNotBearer() {
             given(request.getHeader("Authorization")).willReturn("Basic abc")
 

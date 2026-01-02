@@ -22,7 +22,7 @@ class MemberContextTest {
     inner class GetCurrentMemberId {
 
         @Test
-        @DisplayName("저장된 멤버 ID를 반환한다")
+        @DisplayName("멤버 정보를 저장하면 → ID를 반환한다")
         fun returnsStoredMemberId() {
             MemberContext.setCurrentMemberInfo(JwtClaimsPayload(10L, "member@test.com", "member", false))
 
@@ -35,7 +35,7 @@ class MemberContextTest {
     inner class Clear {
 
         @Test
-        @DisplayName("토큰과 ID를 모두 비운다")
+        @DisplayName("clear를 호출하면 → 토큰과 ID를 모두 비운다")
         fun clearsContext() {
             MemberContext.setCurrentMemberInfo(JwtClaimsPayload(1L, "member@test.com", "member", false))
             MemberContext.setCurrentToken("token")
@@ -48,7 +48,7 @@ class MemberContextTest {
     }
 
     @Test
-    @DisplayName("생성자는 외부에서 호출할 수 없도록 private이어야 한다")
+    @DisplayName("생성자를 조회하면 → private으로 제한된다")
     fun constructorShouldBePrivate() {
         val constructor: Constructor<MemberContext> = MemberContext::class.java.getDeclaredConstructor()
 

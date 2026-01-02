@@ -7,17 +7,17 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito.verify
+import org.mockito.BDDMockito.then
 import org.mockito.junit.jupiter.MockitoExtension
 import org.veri.be.api.common.dto.MemberProfileResponse
 import org.veri.be.domain.comment.entity.Comment
 import org.veri.be.domain.comment.repository.CommentRepository
 import org.veri.be.domain.comment.service.CommentQueryService
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.domain.post.dto.response.PostDetailResponse
 import org.veri.be.lib.exception.CommonErrorCode
 import org.veri.be.support.assertion.ExceptionAssertions
+import org.veri.be.support.fixture.CommentFixture
+import org.veri.be.support.fixture.MemberFixture
 import java.time.LocalDateTime
 import java.util.Optional
 
@@ -39,16 +39,16 @@ class CommentQueryServiceTest {
     inner class GetCommentsByPostId {
 
         @Test
-        @DisplayName("댓글과 대댓글을 응답으로 매핑한다")
+        @DisplayName("댓글과 대댓글이 있으면 → 응답으로 매핑한다")
         fun mapsCommentsWithReplies() {
-            val author = member(1L, "author@test.com", "author")
-            val replier = member(2L, "replier@test.com", "replier")
-            val reply = Comment.builder()
+            val author = MemberFixture.aMember().id(1L).nickname("author").build()
+            val replier = MemberFixture.aMember().id(2L).nickname("replier").build()
+            val reply = CommentFixture.aComment()
                 .id(2L)
                 .author(replier)
                 .content("reply")
                 .build()
-            val root = Comment.builder()
+            val root = CommentFixture.aComment()
                 .id(1L)
                 .author(author)
                 .content("root")
@@ -69,10 +69,10 @@ class CommentQueryServiceTest {
         }
 
         @Test
-        @DisplayName("삭제된 댓글은 내용과 작성자를 마스킹한다")
+        @DisplayName("삭제된 댓글이면 → 내용과 작성자를 마스킹한다")
         fun masksDeletedComment() {
-            val author = member(1L, "author@test.com", "author")
-            val deleted = Comment.builder()
+            val author = MemberFixture.aMember().id(1L).nickname("author").build()
+            val deleted = CommentFixture.aComment()
                 .id(1L)
                 .author(author)
                 .content("root")
@@ -97,7 +97,7 @@ class CommentQueryServiceTest {
     inner class GetCommentById {
 
         @Test
-        @DisplayName("존재하지 않으면 NotFoundException을 던진다")
+        @DisplayName("존재하지 않으면 → 예외를 던진다")
         fun throwsWhenNotFound() {
             given(commentRepository.findById(1L)).willReturn(Optional.empty())
 
@@ -108,26 +108,15 @@ class CommentQueryServiceTest {
         }
 
         @Test
-        @DisplayName("댓글을 조회한다")
+        @DisplayName("댓글을 조회하면 → 결과를 반환한다")
         fun returnsComment() {
-            val comment = Comment.builder().id(1L).content("content").build()
+            val comment = CommentFixture.aComment().id(1L).content("content").build()
             given(commentRepository.findById(1L)).willReturn(Optional.of(comment))
 
             val found = commentQueryService.getCommentById(1L)
 
             assertThat(found.id).isEqualTo(1L)
-            verify(commentRepository).findById(1L)
+            then(commentRepository).should().findById(1L)
         }
-    }
-
-    private fun member(id: Long, email: String, nickname: String): Member {
-        return Member.builder()
-            .id(id)
-            .email(email)
-            .nickname(nickname)
-            .profileImageUrl("https://example.com/profile.png")
-            .providerId("provider-$nickname")
-            .providerType(ProviderType.KAKAO)
-            .build()
     }
 }

@@ -11,7 +11,7 @@ import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.ArgumentCaptor
 import org.mockito.Captor
 import org.mockito.Mock
-import org.mockito.Mockito.verify
+import org.mockito.BDDMockito.then
 import org.mockito.junit.jupiter.MockitoExtension
 import org.veri.be.domain.image.entity.OcrResult
 import org.veri.be.domain.image.repository.OcrResultRepository
@@ -47,7 +47,7 @@ class AbstractOcrServiceTest {
 
         @ParameterizedTest
         @MethodSource("org.veri.be.unit.image.AbstractOcrServiceTest#preprocessedUrlCases")
-        @DisplayName("입력 경로에 따라 전처리 URL을 생성한다")
+        @DisplayName("입력 경로가 주어지면 → 전처리 URL을 생성한다")
         fun buildsPreprocessedUrl(input: String, expected: String) {
             val service = testService()
 
@@ -62,13 +62,13 @@ class AbstractOcrServiceTest {
     inner class SaveOcrResult {
 
         @Test
-        @DisplayName("OCR 결과를 저장한다")
+        @DisplayName("OCR 결과를 저장하면 → 결과를 저장한다")
         fun savesResult() {
             val service: OcrService = testService()
 
             service.extract("https://example.com/ocr/image.png")
 
-            verify(ocrResultRepository).save(resultCaptor.capture())
+            then(ocrResultRepository).should().save(resultCaptor.capture())
             val saved = resultCaptor.value
             assertThat(saved.imageUrl).isEqualTo("https://example.com/ocr/image.png")
             assertThat(saved.resultText).isEqualTo("text")

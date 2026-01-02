@@ -14,7 +14,7 @@ class UuidStorageKeyGeneratorTest {
     inner class Generate {
 
         @Test
-        @DisplayName("prefix와 확장자를 포함한 키를 생성한다")
+        @DisplayName("prefix와 확장자를 전달하면 → 키를 생성한다")
         fun generatesKeyWithPrefixAndExtension() {
             val generator = UuidStorageKeyGenerator()
 

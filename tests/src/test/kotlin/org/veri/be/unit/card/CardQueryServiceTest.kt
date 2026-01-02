@@ -9,17 +9,17 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.BDDMockito.given
+import org.mockito.BDDMockito.then
 import org.mockito.junit.jupiter.MockitoExtension
 import org.veri.be.domain.card.controller.dto.response.CardDetailResponse
 import org.veri.be.domain.card.controller.enums.CardSortType
-import org.veri.be.domain.card.entity.Card
 import org.veri.be.domain.card.repository.CardRepository
 import org.veri.be.domain.card.repository.dto.CardFeedItem
 import org.veri.be.domain.card.service.CardQueryService
-import org.veri.be.domain.member.entity.Member
-import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.lib.exception.CommonErrorCode
 import org.veri.be.support.assertion.ExceptionAssertions
+import org.veri.be.support.fixture.CardFixture
+import org.veri.be.support.fixture.MemberFixture
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -46,14 +46,14 @@ class CardQueryServiceTest {
     inner class GetOwnedCards {
 
         @Test
-        @DisplayName("정렬 조건에 맞는 페이징 요청을 전달한다")
+        @DisplayName("정렬 조건에 맞으면 → 페이징 요청을 전달한다")
         fun passesPagingWithSort() {
             given(cardRepository.findAllByMemberId(any(Long::class.java), any(Pageable::class.java)))
                 .willReturn(Page.empty())
 
             cardQueryService.getOwnedCards(1L, 1, 20, CardSortType.NEWEST)
 
-            org.mockito.Mockito.verify(cardRepository).findAllByMemberId(any(Long::class.java), pageableCaptor.capture())
+            then(cardRepository).should().findAllByMemberId(any(Long::class.java), pageableCaptor.capture())
             val pageable = pageableCaptor.value
             assertThat(pageable.pageNumber).isEqualTo(1)
             assertThat(pageable.pageSize).isEqualTo(20)
@@ -66,10 +66,10 @@ class CardQueryServiceTest {
     inner class GetCardDetail {
 
         @Test
-        @DisplayName("카드 상세 응답을 반환한다")
+        @DisplayName("카드를 조회하면 → 상세 응답을 반환한다")
         fun returnsDetailResponse() {
-            val viewer = member(1L, "member@test.com", "member")
-            val card = Card.builder().id(1L).member(viewer).build()
+            val viewer = MemberFixture.aMember().id(1L).nickname("member").build()
+            val card = CardFixture.aCard().id(1L).member(viewer).build()
             val response: CardDetailResponse = CardDetailResponse.from(card, viewer.id)
 
             given(cardRepository.findByIdWithAllAssociations(1L)).willReturn(Optional.of(card))
@@ -80,7 +80,7 @@ class CardQueryServiceTest {
         }
 
         @Test
-        @DisplayName("카드가 없으면 예외가 발생한다")
+        @DisplayName("카드가 없으면 → 예외가 발생한다")
         fun throwsWhenNotFound() {
             given(cardRepository.findByIdWithAllAssociations(1L)).willReturn(Optional.empty())
 
@@ -96,7 +96,7 @@ class CardQueryServiceTest {
     inner class GetCardById {
 
         @Test
-        @DisplayName("카드가 없으면 예외가 발생한다")
+        @DisplayName("카드가 없으면 → 예외가 발생한다")
         fun throwsWhenNotFound() {
             given(cardRepository.findById(1L)).willReturn(Optional.empty())
 
@@ -112,7 +112,7 @@ class CardQueryServiceTest {
     inner class GetOwnedCardCount {
 
         @Test
-        @DisplayName("카드 수를 반환한다")
+        @DisplayName("요청하면 → 카드 수를 반환한다")
         fun returnsCount() {
             given(cardRepository.countAllByMemberId(1L)).willReturn(3)
 
@@ -127,7 +127,7 @@ class CardQueryServiceTest {
     inner class GetAllCards {
 
         @Test
-        @DisplayName("공개 카드 목록을 페이징 조회한다")
+        @DisplayName("요청하면 → 공개 카드 목록을 반환한다")
         fun returnsPublicCards() {
             val page: Page<CardFeedItem> = PageImpl(
                 listOf(),
@@ -140,16 +140,5 @@ class CardQueryServiceTest {
 
             assertThat(result).isEqualTo(page)
         }
-    }
-
-    private fun member(id: Long, email: String, nickname: String): Member {
-        return Member.builder()
-            .id(id)
-            .email(email)
-            .nickname(nickname)
-            .profileImageUrl("https://example.com/profile.png")
-            .providerId("provider-$nickname")
-            .providerType(ProviderType.KAKAO)
-            .build()
     }
 }

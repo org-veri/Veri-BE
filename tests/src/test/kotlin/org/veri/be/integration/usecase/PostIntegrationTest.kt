@@ -4,20 +4,16 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.MediaType
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import org.veri.be.domain.book.entity.Book
 import org.veri.be.domain.book.repository.BookRepository
 import org.veri.be.domain.post.dto.request.PostCreateRequest
-import org.veri.be.domain.post.entity.Post
 import org.veri.be.domain.post.repository.PostRepository
 import org.veri.be.global.storage.dto.PresignedUrlRequest
-import org.veri.be.global.storage.service.StorageService
 import org.veri.be.integration.IntegrationTestSupport
+import org.veri.be.support.fixture.BookFixture
+import org.veri.be.support.fixture.PostFixture
+import org.veri.be.support.steps.PostSteps
 
 class PostIntegrationTest : IntegrationTestSupport() {
 
@@ -27,14 +23,11 @@ class PostIntegrationTest : IntegrationTestSupport() {
     @Autowired
     private lateinit var postRepository: PostRepository
 
-    @Autowired
-    private lateinit var storageService: StorageService
-
     @Nested
     @DisplayName("POST /api/v1/posts")
     inner class CreatePost {
         @Test
-        @DisplayName("게시글 작성")
+        @DisplayName("게시글을 작성하면 → 201을 반환한다")
         fun createPostSuccess() {
             val book = createBook()
 
@@ -45,11 +38,7 @@ class PostIntegrationTest : IntegrationTestSupport() {
                 book.id
             )
 
-            mockMvc.perform(
-                post("/api/v1/posts")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-            )
+            PostSteps.requestCreatePost(mockMvc, objectMapper, request)
                 .andExpect(status().isCreated)
                 .andExpect(jsonPath("$.result").exists())
         }
@@ -59,11 +48,11 @@ class PostIntegrationTest : IntegrationTestSupport() {
     @DisplayName("GET /api/v1/posts/my")
     inner class GetMyPosts {
         @Test
-        @DisplayName("나의 게시글 목록")
+        @DisplayName("나의 게시글 목록을 조회하면 → 결과를 반환한다")
         fun getMyPostsSuccess() {
             createPost(getMockMember().id, true)
 
-            mockMvc.perform(get("/api/v1/posts/my"))
+            PostSteps.getMyPosts(mockMvc)
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.result.count").value(1))
         }
@@ -73,32 +62,26 @@ class PostIntegrationTest : IntegrationTestSupport() {
     @DisplayName("GET /api/v1/posts")
     inner class GetFeed {
         @Test
-        @DisplayName("전체 feed 최신순")
+        @DisplayName("전체 feed를 조회하면 → 최신순으로 반환한다")
         fun getFeedSuccess() {
             createPost(getMockMember().id, true)
 
-            mockMvc.perform(get("/api/v1/posts"))
+            PostSteps.getFeed(mockMvc)
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.result.posts[0]").exists())
         }
 
         @Test
-        @DisplayName("page=0")
+        @DisplayName("page=0이면 → 400을 반환한다")
         fun invalidPage() {
-            mockMvc.perform(
-                get("/api/v1/posts")
-                    .param("page", "0")
-            )
+            PostSteps.getFeed(mockMvc, mapOf("page" to "0"))
                 .andExpect(status().isBadRequest)
         }
 
         @Test
-        @DisplayName("정렬 파라미터 오류")
+        @DisplayName("정렬 파라미터 오류면 → 400을 반환한다")
         fun invalidSort() {
-            mockMvc.perform(
-                get("/api/v1/posts")
-                    .param("sort", "INVALID")
-            )
+            PostSteps.getFeed(mockMvc, mapOf("sort" to "INVALID"))
                 .andExpect(status().isBadRequest)
         }
     }
@@ -107,19 +90,19 @@ class PostIntegrationTest : IntegrationTestSupport() {
     @DisplayName("GET /api/v1/posts/{postId}")
     inner class GetDetail {
         @Test
-        @DisplayName("상세 조회 성공")
+        @DisplayName("상세 조회하면 → 200을 반환한다")
         fun getDetailSuccess() {
             val post = createPost(getMockMember().id, true)
 
-            mockMvc.perform(get("/api/v1/posts/${post.id}"))
+            PostSteps.getDetail(mockMvc, post.id)
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.result.postId").value(post.id))
         }
 
         @Test
-        @DisplayName("존재하지 않는 게시글")
+        @DisplayName("존재하지 않는 게시글이면 → 404를 반환한다")
         fun getDetailNotFound() {
-            mockMvc.perform(get("/api/v1/posts/999"))
+            PostSteps.getDetail(mockMvc, 999L)
                 .andExpect(status().isNotFound)
         }
     }
@@ -128,48 +111,36 @@ class PostIntegrationTest : IntegrationTestSupport() {
     @DisplayName("POST /api/v1/posts/image")
     inner class PresignedUrl {
         @Test
-        @DisplayName("presigned URL 발급")
+        @DisplayName("presigned URL을 발급하면 → 200을 반환한다")
         fun urlSuccess() {
             val request = PresignedUrlRequest("image/png", 1000L)
 
-            mockMvc.perform(
-                post("/api/v1/posts/image")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-            )
+            PostSteps.requestPresignedUrl(mockMvc, objectMapper, request)
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.result.presignedUrl").value("http://stub.presigned.url"))
         }
 
         @Test
-        @DisplayName("용량 초과")
+        @DisplayName("용량이 초과되면 → 400을 반환한다")
         fun urlTooLarge() {
             val request = PresignedUrlRequest("image/png", 10 * 1024 * 1024L)
 
-            mockMvc.perform(
-                post("/api/v1/posts/image")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-            )
+            PostSteps.requestPresignedUrl(mockMvc, objectMapper, request)
                 .andExpect(status().isBadRequest)
         }
 
         @Test
-        @DisplayName("이미지 타입 아님")
+        @DisplayName("이미지 타입이 아니면 → 400을 반환한다")
         fun urlInvalidType() {
             val request = PresignedUrlRequest("text/plain", 1000L)
 
-            mockMvc.perform(
-                post("/api/v1/posts/image")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request))
-            )
+            PostSteps.requestPresignedUrl(mockMvc, objectMapper, request)
                 .andExpect(status().isBadRequest)
         }
     }
 
-    private fun createBook(): Book {
-        val book = Book.builder()
+    private fun createBook(): org.veri.be.domain.book.entity.Book {
+        val book = BookFixture.aBook()
             .title("Title")
             .image("Img")
             .author("Author")
@@ -179,9 +150,9 @@ class PostIntegrationTest : IntegrationTestSupport() {
         return bookRepository.save(book)
     }
 
-    private fun createPost(memberId: Long, isPublic: Boolean): Post {
+    private fun createPost(memberId: Long, isPublic: Boolean): org.veri.be.domain.post.entity.Post {
         val book = createBook()
-        val post = Post.builder()
+        val post = PostFixture.aPost()
             .author(memberRepository.findById(memberId).orElseThrow())
             .book(book)
             .title("Post")
