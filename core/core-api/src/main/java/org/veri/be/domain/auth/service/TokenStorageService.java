@@ -47,7 +47,11 @@ public class TokenStorageService implements TokenBlacklistStore {
     }
 
     @Override
-    @Cacheable(cacheNames = CacheConfig.TOKEN_BLACKLIST, key = "#token", condition = "#token != null")
+    @Cacheable(
+            cacheNames = CacheConfig.TOKEN_BLACKLIST,
+            key = "#token",
+            condition = "#token != null"
+    )
     public boolean isBlackList(String token) {
         if (token == null) {
             return false;
