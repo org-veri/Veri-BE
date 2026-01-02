@@ -16,6 +16,9 @@ import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.domain.member.exception.MemberErrorCode
 import org.veri.be.domain.member.repository.MemberRepository
 import org.veri.be.domain.member.service.MemberQueryService
+import org.veri.be.global.auth.JwtClaimsPayload
+import org.veri.be.global.auth.context.CurrentMemberInfo
+import org.veri.be.global.auth.context.ThreadLocalCurrentMemberAccessor
 import org.veri.be.support.assertion.ExceptionAssertions
 import java.util.Optional
 
@@ -31,11 +34,19 @@ class MemberQueryServiceTest {
     @org.mockito.Mock
     private lateinit var cardRepository: CardRepository
 
+    @org.mockito.Mock
+    private lateinit var threadLocalCurrentMemberAccessor: ThreadLocalCurrentMemberAccessor
+
     private lateinit var memberQueryService: MemberQueryService
 
     @BeforeEach
     fun setUp() {
-        memberQueryService = MemberQueryService(memberRepository, readingRepository, cardRepository)
+        memberQueryService = MemberQueryService(
+            memberRepository,
+            readingRepository,
+            cardRepository,
+            threadLocalCurrentMemberAccessor
+        )
     }
 
     @Nested
@@ -74,10 +85,12 @@ class MemberQueryServiceTest {
         fun returnsMemberInfo() {
             val member = member(1L, "member@test.com", "member")
 
-            given(readingRepository.countAllByMember(member)).willReturn(3)
+            given(readingRepository.countAllByMemberId(1L)).willReturn(3)
             given(cardRepository.countAllByMemberId(1L)).willReturn(2)
+            given(threadLocalCurrentMemberAccessor.memberOrThrow).willReturn(member)
 
-            val response: MemberResponse.MemberInfoResponse = memberQueryService.findMyInfo(member)
+            val response: MemberResponse.MemberInfoResponse =
+                memberQueryService.findMyInfo(CurrentMemberInfo.from(JwtClaimsPayload(member.id, member.email, member.nickname, false)))
 
             assertThat(response.numOfReadBook).isEqualTo(3)
             assertThat(response.numOfCard).isEqualTo(2)

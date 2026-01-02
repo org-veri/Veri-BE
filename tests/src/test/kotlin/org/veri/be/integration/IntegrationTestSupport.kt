@@ -14,6 +14,7 @@ import org.veri.be.Application
 import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.member.entity.enums.ProviderType
 import org.veri.be.domain.member.repository.MemberRepository
+import org.veri.be.global.auth.JwtClaimsPayload
 import org.veri.be.global.auth.context.MemberContext
 
 @Transactional
@@ -46,7 +47,7 @@ abstract class IntegrationTestSupport {
             .providerType(ProviderType.KAKAO)
             .build()
         mockMember = memberRepository.save(mockMember)
-        MemberContext.setCurrentMemberId(mockMember.id)
+        MemberContext.setCurrentMemberInfo(JwtClaimsPayload(mockMember.id, mockMember.email, mockMember.nickname, false))
     }
 
     fun getMockMember(): Member = mockMember

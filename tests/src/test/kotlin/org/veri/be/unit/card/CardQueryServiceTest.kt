@@ -70,11 +70,11 @@ class CardQueryServiceTest {
         fun returnsDetailResponse() {
             val viewer = member(1L, "member@test.com", "member")
             val card = Card.builder().id(1L).member(viewer).build()
-            val response: CardDetailResponse = CardDetailResponse.from(card, viewer)
+            val response: CardDetailResponse = CardDetailResponse.from(card, viewer.id)
 
             given(cardRepository.findByIdWithAllAssociations(1L)).willReturn(Optional.of(card))
 
-            val result = cardQueryService.getCardDetail(1L, viewer)
+            val result = cardQueryService.getCardDetail(1L, viewer.id)
 
             assertThat(result).isEqualTo(response)
         }

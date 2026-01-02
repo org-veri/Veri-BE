@@ -111,7 +111,7 @@ class AuthIntegrationTest : IntegrationTestSupport() {
         @DisplayName("정상 로그아웃")
         fun logoutSuccess() {
             val accessToken = tokenProvider.generateAccessToken(
-                JwtClaimsPayload.from(getMockMember())
+                JwtClaimsPayload(getMockMember().id, getMockMember().email, getMockMember().nickname, false)
             ).token()
 
             mockMvc.perform(
@@ -125,7 +125,7 @@ class AuthIntegrationTest : IntegrationTestSupport() {
         @DisplayName("이미 블랙리스트 처리된 토큰으로 재요청")
         fun alreadyLoggedOut() {
             val accessToken = tokenProvider.generateAccessToken(
-                JwtClaimsPayload.from(getMockMember())
+                JwtClaimsPayload(getMockMember().id, getMockMember().email, getMockMember().nickname, false)
             ).token()
 
             mockMvc.perform(
@@ -145,7 +145,7 @@ class AuthIntegrationTest : IntegrationTestSupport() {
         @DisplayName("refresh 토큰이 저장소에 없음")
         fun noRefreshTokenInStorage() {
             val accessToken = tokenProvider.generateAccessToken(
-                JwtClaimsPayload.from(getMockMember())
+                JwtClaimsPayload(getMockMember().id, getMockMember().email, getMockMember().nickname, false)
             ).token()
             tokenStorageService.deleteRefreshToken(getMockMember().id)
 

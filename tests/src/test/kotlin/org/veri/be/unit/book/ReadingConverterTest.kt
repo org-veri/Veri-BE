@@ -12,6 +12,7 @@ import org.veri.be.domain.book.entity.Reading
 import org.veri.be.domain.card.entity.Card
 import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.member.entity.enums.ProviderType
+import org.veri.be.global.auth.JwtClaimsPayload
 import org.veri.be.global.auth.context.CurrentMemberInfo
 
 @ExtendWith(MockitoExtension::class)
@@ -27,7 +28,7 @@ class ReadingConverterTest {
             val owner = member(1L, "owner@test.com", "owner")
             val reading = reading(owner, cards())
 
-            val response = ReadingDetailResponse.from(reading, CurrentMemberInfo.from(owner))
+            val response = ReadingDetailResponse.from(reading, CurrentMemberInfo.from(JwtClaimsPayload(owner.id, owner.email, owner.nickname, false)))
 
             assertThat(response.cardSummaries()).hasSize(2)
             assertThat(response.cardSummaries()).extracting<Long> { it.cardId() }
@@ -41,7 +42,7 @@ class ReadingConverterTest {
             val viewer = member(2L, "viewer@test.com", "viewer")
             val reading = reading(owner, cards())
 
-            val response = ReadingDetailResponse.from(reading, CurrentMemberInfo.from(viewer))
+            val response = ReadingDetailResponse.from(reading, CurrentMemberInfo.from(JwtClaimsPayload(viewer.id, viewer.email, viewer.nickname, false)))
 
             assertThat(response.cardSummaries()).hasSize(1)
             assertThat(response.cardSummaries()[0].cardId()).isEqualTo(1L)

@@ -141,7 +141,7 @@ class CommentIntegrationTest : IntegrationTestSupport() {
             otherMember = memberRepository.save(otherMember)
             val commentId = commentCommandService.postComment(
                 CommentPostRequest(postId, "Other comment"),
-                otherMember
+                otherMember.id
             )
             val request = CommentEditRequest("Edited")
 
@@ -184,7 +184,7 @@ class CommentIntegrationTest : IntegrationTestSupport() {
         book = bookRepository.save(book)
         return postCommandService.createPost(
             PostCreateRequest("Post", "Content", listOf(), book.id),
-            getMockMember()
+            getMockMember().id
         )
     }
 
@@ -192,7 +192,7 @@ class CommentIntegrationTest : IntegrationTestSupport() {
         val postId = createPost()
         return commentCommandService.postComment(
             CommentPostRequest(postId, "Comment"),
-            getMockMember()
+            getMockMember().id
         )
     }
 }

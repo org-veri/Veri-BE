@@ -22,6 +22,7 @@ import org.veri.be.domain.card.repository.CardRepository
 import org.veri.be.domain.card.service.CardCommandService
 import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.member.entity.enums.ProviderType
+import org.veri.be.domain.member.repository.MemberRepository
 import org.veri.be.global.storage.dto.PresignedPostFormResponse
 import org.veri.be.global.storage.dto.PresignedUrlRequest
 import org.veri.be.global.storage.dto.PresignedUrlResponse
@@ -42,6 +43,9 @@ class CardCommandServiceTest {
     @org.mockito.Mock
     private lateinit var storageService: StorageService
 
+    @org.mockito.Mock
+    private lateinit var memberRepository: MemberRepository
+
     private lateinit var cardCommandService: CardCommandService
 
     @org.mockito.Captor
@@ -52,7 +56,8 @@ class CardCommandServiceTest {
         cardCommandService = CardCommandService(
             cardRepository,
             readingRepository,
-            storageService
+            storageService,
+            memberRepository
         )
     }
 
@@ -67,13 +72,14 @@ class CardCommandServiceTest {
             val reading = Reading.builder().id(10L).isPublic(false).build()
 
             given(readingRepository.findById(10L)).willReturn(Optional.of(reading))
+            given(memberRepository.getReferenceById(1L)).willReturn(member)
             given(cardRepository.save(any(Card::class.java))).willAnswer { invocation ->
                 val saved = invocation.getArgument<Card>(0)
                 ReflectionTestUtils.setField(saved, "id", 1L)
                 saved
             }
 
-            val id = cardCommandService.createCard(member, "content", "https://example.com/card.png", 10L, true)
+            val id = cardCommandService.createCard(member.id, "content", "https://example.com/card.png", 10L, true)
 
             verify(cardRepository).save(cardCaptor.capture())
             assertThat(cardCaptor.value.isPublic).isFalse()
@@ -95,13 +101,13 @@ class CardCommandServiceTest {
                 .content("before")
                 .image("https://example.com/before.png")
                 .build()
-            val updated = card.updateContent("after", "https://example.com/after.png", member)
+            val updated = card.updateContent("after", "https://example.com/after.png", member.id)
             val response = CardUpdateResponse.from(updated)
 
             given(cardRepository.findById(1L)).willReturn(Optional.of(card))
             given(cardRepository.save(any(Card::class.java))).willReturn(updated)
 
-            val result = cardCommandService.updateCard(member, 1L, "after", "https://example.com/after.png")
+            val result = cardCommandService.updateCard(member.id, 1L, "after", "https://example.com/after.png")
 
             assertThat(result).isEqualTo(response)
         }
@@ -120,7 +126,7 @@ class CardCommandServiceTest {
 
             given(cardRepository.findById(1L)).willReturn(Optional.of(card))
 
-            val result: CardVisibilityUpdateResponse = cardCommandService.modifyVisibility(member, 1L, true)
+            val result: CardVisibilityUpdateResponse = cardCommandService.modifyVisibility(member.id, 1L, true)
 
             verify(cardRepository).save(cardCaptor.capture())
             assertThat(cardCaptor.value.isPublic).isTrue()
@@ -141,7 +147,7 @@ class CardCommandServiceTest {
 
             given(cardRepository.findById(1L)).willReturn(Optional.of(card))
 
-            cardCommandService.deleteCard(member, 1L)
+            cardCommandService.deleteCard(member.id, 1L)
 
             verify(cardRepository).deleteById(1L)
         }
