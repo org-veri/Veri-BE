@@ -42,9 +42,33 @@ tasks.jacocoTestReport {
         html.required.set(true)
     }
 
-    val appMainClasses = project(":core:core-api").layout.buildDirectory.dir("classes/java/main").get().asFile
-    val appKotlinClasses = project(":core:core-api").layout.buildDirectory.dir("classes/kotlin/main").get().asFile
-    val classTrees = listOf(appMainClasses, appKotlinClasses).map { classesDir ->
+    val targetProjects = listOf(
+        project(":core:core-api"),
+        project(":core:core-app"),
+        project(":core:core-enum"),
+        project(":clients"),
+        project(":storage:db-core"),
+        project(":support:common"),
+        project(":support:logging"),
+        project(":support:monitoring")
+    )
+
+    sourceDirectories.setFrom(
+        files(
+            targetProjects.map { target ->
+                target.projectDir.resolve("src/main/java")
+            } + targetProjects.map { target ->
+                target.projectDir.resolve("src/main/kotlin")
+            }
+        )
+    )
+
+    val classTrees = targetProjects.flatMap { target ->
+        listOf(
+            target.layout.buildDirectory.dir("classes/java/main").get().asFile,
+            target.layout.buildDirectory.dir("classes/kotlin/main").get().asFile
+        )
+    }.map { classesDir ->
         fileTree(classesDir) {
             exclude(
                 "**/mock/*",
