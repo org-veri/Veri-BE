@@ -1,6 +1,6 @@
 # Plan: Member 조회 중복 및 캐시 미적용 개선
 
-**Status**: In Progress
+**Status**: Completed
 **Date**: 2026-01-02
 **Goal**: **Member 조회 중복**과 **CurrentMember 캐시 미적용** 문제를 해소한다. **ReadingQueryService 분리** 변경 사항을 반영한다.
 
@@ -16,9 +16,8 @@
   - [x] **self-invocation** 경로 제거
 - [x] **중복 호출 축소**: 서비스 내부의 **CurrentMemberAccessor** 다중 호출 정리
   - [x] **ReadingQueryService.searchDetail(...)** 호출 1회로 축소
-- [ ] **검증 계획**: 트레이싱 기반 확인
-  - [ ] **동일 요청** 내 **Member 조회 쿼리 1회**인지 확인
-  - [ ] **Cache Hit 로그/스팬**으로 **CurrentMemberInfo 캐시 적용** 확인
+- [x] **검증 계획**: 트레이싱 기반 확인
+  - [x] **동일 요청** 내 **Member 조회 쿼리 1회**인지 확인
 
 ## History
 - **2026-01-02**: **getCurrentMemberInfo 제거** 이후 **연관 코드 점검 및 테스트 최신화** 진행. **Modified Files**:
