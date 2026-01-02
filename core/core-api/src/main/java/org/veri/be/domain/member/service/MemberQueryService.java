@@ -3,7 +3,6 @@ package org.veri.be.domain.member.service;
 import lombok.RequiredArgsConstructor;
 import org.veri.be.domain.book.repository.ReadingRepository;
 import org.veri.be.domain.card.repository.CardRepository;
-import org.veri.be.domain.member.converter.MemberConverter;
 import org.veri.be.domain.member.dto.MemberResponse;
 import org.veri.be.domain.member.entity.Member;
 import org.veri.be.domain.member.exception.MemberErrorCode;
@@ -27,7 +26,11 @@ public class MemberQueryService {
     }
 
     public MemberResponse.MemberInfoResponse findMyInfo(Member member) {
-        return MemberConverter.toMemberInfoResponse(member, readingRepository.countAllByMember(member), cardRepository.countAllByMemberId(member.getId()));
+        return MemberResponse.MemberInfoResponse.from(
+                member,
+                readingRepository.countAllByMember(member),
+                cardRepository.countAllByMemberId(member.getId())
+        );
     }
 
     public boolean existsByNickname(String nickname) {

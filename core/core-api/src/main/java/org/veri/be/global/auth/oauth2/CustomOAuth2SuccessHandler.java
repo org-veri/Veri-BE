@@ -13,7 +13,7 @@ import org.veri.be.global.auth.dto.LoginResponse;
 import org.veri.be.global.auth.Authenticator;
 import org.veri.be.global.auth.oauth2.dto.CustomOAuth2User;
 import org.veri.be.global.auth.oauth2.dto.OAuth2UserInfo;
-import org.veri.be.global.auth.oauth2.dto.OAuth2UserInfoMapper;
+import org.veri.be.global.auth.oauth2.dto.OAuth2UserInfo;
 import org.veri.be.lib.response.ApiResponse;
 
 import java.io.IOException;
@@ -32,7 +32,7 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
             Authentication authentication
     ) throws IOException {
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
-        OAuth2UserInfo userInfo = OAuth2UserInfoMapper.of(oAuth2User);
+        OAuth2UserInfo userInfo = OAuth2UserInfo.from(oAuth2User);
 
         LoginResponse loginResponse = this.authService.loginWithOAuth2(userInfo);
 

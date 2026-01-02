@@ -4,11 +4,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.veri.be.domain.member.converter.MemberConverter
 import org.veri.be.domain.member.dto.MemberResponse
 import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.member.entity.enums.ProviderType
-import java.lang.reflect.Modifier
 
 class MemberConverterTest {
 
@@ -21,7 +19,8 @@ class MemberConverterTest {
         fun convertsToResponse() {
             val member = member()
 
-            val response: MemberResponse.MemberInfoResponse = MemberConverter.toMemberInfoResponse(member, 2, 3)
+            val response: MemberResponse.MemberInfoResponse =
+                MemberResponse.MemberInfoResponse.from(member, 2, 3)
 
             assertThat(response.email).isEqualTo(member.email)
             assertThat(response.nickname).isEqualTo(member.nickname)
@@ -42,11 +41,4 @@ class MemberConverterTest {
             .build()
     }
 
-    @Test
-    @DisplayName("생성자는 외부에서 호출할 수 없도록 private이어야 한다")
-    fun constructorShouldBePrivate() {
-        val constructor = MemberConverter::class.java.getDeclaredConstructor()
-
-        assertThat(Modifier.isPrivate(constructor.modifiers)).isTrue()
-    }
 }

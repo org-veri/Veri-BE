@@ -1,36 +1,21 @@
 package org.veri.be.unit.book
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.BDDMockito.given
 import org.mockito.junit.jupiter.MockitoExtension
-import org.veri.be.domain.book.dto.reading.ReadingConverter
 import org.veri.be.domain.book.dto.reading.response.ReadingDetailResponse
 import org.veri.be.domain.book.entity.Book
 import org.veri.be.domain.book.entity.Reading
 import org.veri.be.domain.card.entity.Card
 import org.veri.be.domain.member.entity.Member
 import org.veri.be.domain.member.entity.enums.ProviderType
-import org.veri.be.global.auth.context.CurrentMemberAccessor
 import org.veri.be.global.auth.context.CurrentMemberInfo
-import java.util.Optional
 
 @ExtendWith(MockitoExtension::class)
 class ReadingConverterTest {
-
-    @org.mockito.Mock
-    private lateinit var currentMemberAccessor: CurrentMemberAccessor
-
-    private lateinit var readingConverter: ReadingConverter
-
-    @BeforeEach
-    fun setUp() {
-        readingConverter = ReadingConverter(currentMemberAccessor)
-    }
 
     @Nested
     @DisplayName("toReadingDetailResponse")
@@ -42,9 +27,7 @@ class ReadingConverterTest {
             val owner = member(1L, "owner@test.com", "owner")
             val reading = reading(owner, cards())
 
-            given(currentMemberAccessor.getCurrentMemberInfo()).willReturn(Optional.of(CurrentMemberInfo.from(owner)))
-
-            val response = readingConverter.toReadingDetailResponse(reading)
+            val response = ReadingDetailResponse.from(reading, CurrentMemberInfo.from(owner))
 
             assertThat(response.cardSummaries()).hasSize(2)
             assertThat(response.cardSummaries()).extracting<Long> { it.cardId() }
@@ -58,9 +41,7 @@ class ReadingConverterTest {
             val viewer = member(2L, "viewer@test.com", "viewer")
             val reading = reading(owner, cards())
 
-            given(currentMemberAccessor.getCurrentMemberInfo()).willReturn(Optional.of(CurrentMemberInfo.from(viewer)))
-
-            val response = readingConverter.toReadingDetailResponse(reading)
+            val response = ReadingDetailResponse.from(reading, CurrentMemberInfo.from(viewer))
 
             assertThat(response.cardSummaries()).hasSize(1)
             assertThat(response.cardSummaries()[0].cardId()).isEqualTo(1L)

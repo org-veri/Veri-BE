@@ -6,7 +6,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.veri.be.domain.card.controller.dto.CardConverter;
 import org.veri.be.domain.card.controller.dto.response.CardDetailResponse;
 import org.veri.be.domain.card.controller.enums.CardSortType;
 import org.veri.be.domain.card.entity.Card;
@@ -37,7 +36,7 @@ public class CardQueryService {
 
         card.assertReadableBy(viewer);
 
-        return CardConverter.toCardDetailResponse(card, viewer);
+        return CardDetailResponse.from(card, viewer);
     }
 
     public Card getCardById(Long cardId) {

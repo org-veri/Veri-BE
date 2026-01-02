@@ -3,7 +3,6 @@ package org.veri.be.domain.book.service;
 import lombok.RequiredArgsConstructor;
 import org.veri.be.domain.book.client.BookSearchClient;
 import org.veri.be.domain.book.client.NaverClientException;
-import org.veri.be.domain.book.dto.book.BookConverter;
 import org.veri.be.domain.book.dto.book.BookSearchResponse;
 import org.veri.be.domain.book.entity.Book;
 import org.veri.be.domain.book.exception.BookErrorCode;
@@ -46,7 +45,7 @@ public class BookService {
      */
     public BookSearchResponse searchBook(String query, int page, int size) {
         try {
-            return BookConverter.toBookSearchResponse(bookSearchClient.search(query, page, size));
+            return BookSearchResponse.from(bookSearchClient.search(query, page, size));
         } catch (NaverClientException _) {
             throw ApplicationException.of(BookErrorCode.BAD_REQUEST);
         }

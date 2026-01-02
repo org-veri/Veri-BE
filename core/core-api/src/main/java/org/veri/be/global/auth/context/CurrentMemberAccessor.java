@@ -8,7 +8,11 @@ import java.util.Optional;
 
 public interface CurrentMemberAccessor {
 
-    Optional<CurrentMemberInfo> getCurrentMemberInfo();
+    default Optional<CurrentMemberInfo> getCurrentMemberInfo() {
+        return Optional.ofNullable(getCurrentMemberInfoOrNull());
+    }
+
+    CurrentMemberInfo getCurrentMemberInfoOrNull();
 
     default CurrentMemberInfo getMemberInfoOrThrow() {
         return getCurrentMemberInfo().orElseThrow(() -> ApplicationException.of(AuthErrorInfo.UNAUTHORIZED));
