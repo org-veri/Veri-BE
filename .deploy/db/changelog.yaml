@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1-init
+      author: minseo
+      context: init
+      changes:
+        - sqlFile:
+            path: changelog/1_init.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true
+  - changeSet:
+      id: 2-add-indexes
+      author: codex
+      changes:
+        - sqlFile:
+            path: changelog/changes/2_add_indexes.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true
+  - changeSet:
+      id: 3-add-filesort-indexes
+      author: codex
+      changes:
+        - sqlFile:
+            path: changelog/changes/3_add_filesort_indexes.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true

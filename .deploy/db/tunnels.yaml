@@ -1,0 +1,6 @@
+tunnels:
+  - name: veri-prod
+    local_port: 13306
+    remote_host: veri-db.c5oigii4uyfc.ap-northeast-2.rds.amazonaws.com
+    remote_port: 3306
+    ssh_host: aws-very
